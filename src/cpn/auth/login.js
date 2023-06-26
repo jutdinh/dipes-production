@@ -30,7 +30,7 @@ export default () => {
 
     const submit = (e) => {
         e.preventDefault()
-        fetch(`${proxy}/auth/login`, {
+        fetch(`${proxy()}/auth/login`, {
             method: "post",
             headers: {
                 "content-type": "application/json"

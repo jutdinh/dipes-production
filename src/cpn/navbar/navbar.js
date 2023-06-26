@@ -1,12 +1,14 @@
-import { useSelector } from "react-redux"
-import { useState } from "react";
+import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 export default () => {
-   const { proxy, lang } = useSelector(state => state)
+   const { proxy, lang, pages } = useSelector(state => state)
    const stringifiedUser = localStorage.getItem("user");
    const user = JSON.parse(stringifiedUser) || {}
    const [activeLink, setActiveLink] = useState("/");
+   const [uis, setUis] = useState([]);
 
+   console.log(pages)
    return (
       <nav id="sidebar">
          <div class="sidebar_blog_1">
@@ -40,16 +42,7 @@ export default () => {
                   </NavLink>
                </li>
 
-               {/* <li className="navbar-item">
-                  <NavLink
-                     to="/projects"
-                     activeClassName="nav-active"
-                     isActive={() => window.location.pathname.startsWith("/projects")}
-                  >
-                     <i class="fa fa-briefcase purple_color2"></i>
-                     <span>{lang["projects manager"]}</span>
-                  </NavLink>
-               </li> */}
+
                {user.role === "ad" || user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/users" activeClassName="nav-active">
@@ -58,17 +51,8 @@ export default () => {
                      </NavLink>
                   </li>
                ) : null}
-               {/* <li><a href="/statistic"><i class="fa fa-bar-chart-o green_color"></i> <span>{lang["statistic"]}</span></a></li>
-               <li><a href="/workflow"><i class="fa fa-clock-o orange_color"></i> <span>{lang["workflow"]}</span></a></li>
-               <li>
-                  <a href="/contacts">
-                     <i class="fa fa-paper-plane red_color"></i> <span>{lang["contacts"]}</span></a>
-               </li>
 
-               <li><a href="/about"><i class="fa fa-info purple_color2"></i> <span>{lang["about us"]}</span></a></li>
-
-               <li><a href="/settings"><i class="fa fa-cog yellow_color"></i> <span>{lang["settings"]}</span></a></li> */}
-               { user.role === "uad" ? (
+               {user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/logs" activeClassName="nav-active">
                         <i class="fa fa-shield"></i>
@@ -76,6 +60,34 @@ export default () => {
                      </NavLink>
                   </li>
                ) : null}
+
+               <li class="active">
+                  <a href="#dashboard" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-dashboard yellow_color"></i> <span>Dashboard</span></a>
+                  <ul class="collapse list-unstyled" id="dashboard">
+                  { pages && pages.map(ui => (
+                  ui.status ? (
+                     <li className="navbar-item">
+                        <NavLink to={ui.url} activeClassName="nav-active">
+                        <i class="fa fa-users icon-user"></i>
+                           <span>{ui.title}</span>
+                        </NavLink>
+                     </li>
+                  ) : null
+               ))}
+                  </ul>
+               </li>
+            </ul>
+            <ul class="list-unstyled components">
+               {/* {pages.map(ui => (
+                  ui.status ? (
+                     <li className="navbar-item">
+                        <NavLink to={ui.url} activeClassName="nav-active">
+                           <span>{ui.title}</span>
+                        </NavLink>
+                     </li>
+                  ) : null
+               ))} */}
+         
             </ul>
 
          </div>

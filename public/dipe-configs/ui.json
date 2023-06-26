@@ -1,0 +1,48 @@
+{
+    "uis": [
+        {
+            "id": 5,
+            "ui_id": 5,
+            "title": "Trang 1",
+            "version_id": 1,
+            "url": "/Trang-1",
+            "status": true,
+            "params": [],
+            "create_by": {
+                "username": "nhan",
+                "fullname": "nhân",
+                "role": "ad",
+                "email": "trongnhan54@outlook.com.vn",
+                "phone": "0309584883",
+                "avatar": "/image/avatar/nhan.png",
+                "address": "TV",
+                "note": "Ghi chú",
+                "create_by": "su",
+                "create_at": "08-06-2023 lúc 19:46"
+            },
+            "create_at": "26-06-2023 22:17:31"
+        },
+        {
+            "id": 6,
+            "ui_id": 6,
+            "title": "Trang 2 ",
+            "version_id": 1,
+            "url": "/Trang-2-",
+            "status": true,
+            "params": [],
+            "create_by": {
+                "username": "nhan",
+                "fullname": "nhân",
+                "role": "ad",
+                "email": "trongnhan54@outlook.com.vn",
+                "phone": "0309584883",
+                "avatar": "/image/avatar/nhan.png",
+                "address": "TV",
+                "note": "Ghi chú",
+                "create_by": "su",
+                "create_at": "08-06-2023 lúc 19:46"
+            },
+            "create_at": "26-06-2023 22:17:50"
+        }
+    ]
+}

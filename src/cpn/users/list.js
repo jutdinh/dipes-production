@@ -51,7 +51,7 @@ export default (props) => {
     // Get all user
     const [profiles, setProfile] = useState([]);
     useEffect(() => {
-        fetch(`${proxy}/auth/all/accounts`, {
+        fetch(`${proxy()}/auth/all/accounts`, {
             headers: {
                 Authorization: _token
             }
@@ -130,7 +130,7 @@ export default (props) => {
         }
         // console.log(_token);
         if (user.username && user.password) {
-            fetch(`${proxy}/auth/signup`, {
+            fetch(`${proxy()}/auth/signup`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -185,7 +185,7 @@ export default (props) => {
             confirmButtonColor: 'rgb(209, 72, 81)',
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`${proxy}/auth/user`, {
+                fetch(`${proxy()}/auth/user`, {
                     method: 'DELETE',
                     headers: {
                         "content-type": "application/json",
@@ -253,7 +253,7 @@ export default (props) => {
                 ...editUser
             }
         };
-        fetch(`${proxy}/auth/user`, {
+        fetch(`${proxy()}/auth/user`, {
             method: 'PUT',
             headers: {
                 "content-type": "application/json",
@@ -561,7 +561,7 @@ export default (props) => {
                                                             </div>
                                                             <div class="right">
                                                                 <div class="profile_contacts">
-                                                                    <img class="img-responsive" width={100} src={proxy + item.avatar} alt="#" />
+                                                                    <img class="img-responsive" width={100} src={proxy() + item.avatar} alt="#" />
                                                                 </div>
                                                             </div>
                                                             {/* {item.username !== auth.username && item.role !== auth.role && ( */}
@@ -614,7 +614,7 @@ export default (props) => {
                                                             </div>
                                                             <div class="right">
                                                                 <div class="profile_contacts">
-                                                                    <img class="img-responsive" width={100} src={proxy + item.avatar} alt="#" />
+                                                                    <img class="img-responsive" width={100} src={proxy() + item.avatar} alt="#" />
                                                                 </div>
                                                             </div>
                                                             <div class="bottom_list">
@@ -665,7 +665,7 @@ export default (props) => {
                                                             </div>
                                                             <div class="right">
                                                                 <div class="profile_contacts">
-                                                                    <img class="img-responsive" width={100} src={proxy + item.avatar} alt="#" />
+                                                                    <img class="img-responsive" width={100} src={proxy() + item.avatar} alt="#" />
                                                                 </div>
                                                             </div>
                                                             <div class="bottom_list">

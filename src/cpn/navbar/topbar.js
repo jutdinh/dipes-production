@@ -112,7 +112,7 @@ export default () => {
                             <ul class="user_profile_dd ">
                                 <li>
                                     <a class="dropdown-toggle" data-toggle="dropdown">
-                                        <img class="img-responsive circle-image" src={proxy + auth.avatar} alt="#" />
+                                        <img class="img-responsive circle-image" src={(proxy()) + auth.avatar} alt="#" />
                                         <span class="name_user"> {generateUserLastName()}</span>
                                     </a>
                                     <div class="dropdown-menu">

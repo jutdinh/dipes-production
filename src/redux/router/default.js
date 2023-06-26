@@ -8,6 +8,9 @@ export default (state, action) => {
             return setProjects(state, action);
         default:
             return state;
+        case "setUIPages":
+            return setUIPages(state, action);
+            break;
     }
 }
 
@@ -16,9 +19,14 @@ const setAuthInfor = (state, action) => {
     const currentAccount = action.payload.user;
 
     return { ...state, auth: currentAccount }
-} 
+}
 
 const setProjects = (state, action) => {
     const { projects } = action.payload;
     return { ...state, projects }
 }
+
+const setUIPages = (state, action) => {
+    const { pages } = action.payload;
+    return { ...state, pages }
+} 

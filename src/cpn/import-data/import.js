@@ -49,10 +49,8 @@ export default () => {
     const importData = async () => {
         if (!uploadedJson) {
             // al.failure("Thất bại", "Vui lòng tải lên một file JSON trước khi import");
-
             return;
         }
-
         try {
             const response = await fetch(`${(proxy())}/api/json/import`, {
                 method: 'POST',
@@ -80,7 +78,6 @@ export default () => {
                     text: "Import dữ liệu thất bại",
                     icon: "error",
                     showConfirmButton: true,
-
                 })
             }
         } catch (error) {
@@ -160,7 +157,6 @@ export default () => {
         }
     }
 
-
     const CustomFileInput = ({ onChange, ...props }) => {
         const fileInputRef = useRef(null);
         const handleButtonClick = () => {
@@ -184,11 +180,6 @@ export default () => {
             </div>
         );
     };
-
-
-
-
-
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -199,7 +190,6 @@ export default () => {
                         </div>
                     </div>
                 </div>
-
                 <div class="row margin_top_30">
                     <div class="col-md-2"></div>
                     <div class="col-md-8">
@@ -209,7 +199,7 @@ export default () => {
                                     <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>Import</h5>
                                 </div>
                             </div>
-                            <div class="full price_table padding_infor_info" style={{ display: 'flex', flexDirection: 'column', minHeight: '40vh' }}>
+                            {/* <div class="full price_table padding_infor_info" style={{ display: 'flex', flexDirection: 'column', minHeight: '40vh' }}>
                                 <div class="row" style={{ marginBottom: 'auto' }}>
                                     <div class="col-md-12 mt-4">
                                         <label>Tên Tệp: {file.name} </label>
@@ -249,20 +239,53 @@ export default () => {
                                         )}
                                     </div>
                                 </div>
+                            </div> */}
+                            <div class="full price_table padding_infor_info" style={{ display: 'flex', flexDirection: 'column', minHeight: '40vh' }}>
+                                <div class="row" style={{ marginBottom: 'auto' }}>
+                                    <div class="col-md-12 mt-4">
+                                        <label>Tên Tệp: {file.name} </label>
+                                    </div>
+                                    <div class="col-md-12 mt-4">
+                                        <label>Dạng Tệp:
+                                            {uploadedJson ? (
+                                                getFileType() === "Không đúng định dạng, vui lòng chọn lại !" ? (
+                                                    <span className="text-red"> {getFileType()}</span>
+                                                ) : (
+                                                    getFileType()
+                                                )
+                                            ) : null}
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-12" style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'auto' }}>
+                                    <CustomFileInput onChange={handleFileUpload} />
+                                    {uploadedJson && (
+                                        getFileType() == "Api" ? (
+                                            <button
+                                                onClick={importAPI}
+                                                className="btn btn-primary ml-1"
+                                            >
+                                                Import API
+                                            </button>
+                                        ) : getFileType() == "Database" ? (
+                                            <button
+                                                onClick={importData}
+                                                className="btn btn-primary"
+                                            >
+                                                Import Database
+                                            </button>
+                                        ) : (
+                                            <p className="text-red-500">
+                                            </p>
+                                        )
+                                    )}
+                                </div>
                             </div>
-
-
                         </div>
-
                     </div>
-
                 </div>
-
-
             </div>
-
         </div>
-
     )
 }
 

@@ -19,7 +19,7 @@ export default (props) => {
         { id: 3, label: "Người theo dõi dự án ( Monitor Staff )", value: "ps" },
     ]
     useEffect(() => {
-        fetch(`${proxy}/auth/u/${user.username}`, {
+        fetch(`${proxy()}/auth/u/${user.username}`, {
             headers: {
                 Authorization: _token
             }
@@ -51,7 +51,7 @@ export default (props) => {
                 reader.readAsDataURL(file);
                 reader.onload = (e) => {
                     setProfile({ ...profile, avatar: e.target.result })
-                    fetch(`${proxy}/auth/self/avatar`, {
+                    fetch(`${proxy()}/auth/self/avatar`, {
                         method: "PUT",
                         headers: {
                             "content-type": "application/json",
@@ -105,7 +105,7 @@ export default (props) => {
             }
         };
         console.log(requestBody)
-        fetch(`${proxy}/auth/self/info`, {
+        fetch(`${proxy()}/auth/self/info`, {
             method: 'PUT',
             headers: {
                 "content-type": "application/json",
@@ -239,7 +239,7 @@ export default (props) => {
                                                 <img
                                                     width="180"
                                                     className="rounded-circle"
-                                                    src={profile.avatar && profile.avatar.length < 255 ? (proxy + profile.avatar) : profile.avatar}
+                                                    src={profile.avatar && profile.avatar.length < 255 ? (proxy() + profile.avatar) : profile.avatar}
                                                     alt="#"
                                                 />
                                                 <input type="file"
