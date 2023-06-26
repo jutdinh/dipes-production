@@ -1,0 +1,20 @@
+$nav-color: #34A1C7;
+
+._main-bg {
+    background-position: center;
+    // background-image: url(../media/bg/main-bg.png);
+    background:$nav-color ;
+    background-repeat: repeat;
+}
+
+
+._hightlight-bg{
+    background-color: $nav-color ;
+    *{
+        color: white;
+    }
+}
+
+._trans-bg{
+    box-shadow: 2px 2px 5px 3px rgba(0,0,0,0.5);
+}

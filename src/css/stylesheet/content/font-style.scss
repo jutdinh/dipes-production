@@ -1,0 +1,47 @@
+._italic{
+    font-style: italic;
+}
+
+._bold{
+    font-weight: bold;
+}
+
+._underline-fit{
+    display: block;
+    width: max-content;
+    &::after{
+        display: block;
+        content: "";
+        width: 100%;
+        border-top: 1px solid #000;
+    }
+}
+
+._underline-hover{
+    &::after{
+        display: block;
+        content: "";
+        width: 100%;
+        border-top: 1px solid transparent;
+    }
+
+    &:hover{
+        &::after{
+            border-top: 1px solid #000;
+        }
+    }
+}
+
+._no-underline{
+    text-decoration: none;
+}
+
+._underline{
+    display: block;
+    &::after{
+        display: block;
+        content: "";
+        width: 100%;
+        border-top: 1px solid #000;
+    }
+}

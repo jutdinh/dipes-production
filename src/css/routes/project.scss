@@ -1,0 +1,66 @@
+._project-card{
+    width: 100%;
+    max-width: 325px;
+}
+
+._project-card-50-pct{
+    ._project-card{
+        max-width: unset
+    }
+}
+._project-block{
+    max-width: 100%;
+}
+._task-description-box{
+    height: 125px;
+    resize: none;
+    overflow: auto;
+}
+
+._scaled-card{
+    min-width: 325px;
+}
+
+._dual-scroll-view{
+    height: 80vh;
+}
+
+._users-box{
+    height: calc(100% - 150px);
+}
+
+
+._table-view{
+    table{
+        border: 1px solid #ccc;
+        border-collapse: collapse;
+        ._header{
+            background: #cacaca;
+
+        }
+        tbody{
+            td{
+                border-bottom: 1px solid #ccc;
+            }
+        }
+    }
+}
+
+
+._table-hover{
+    img{
+        opacity: 0;
+    }
+
+    &:hover{
+        img{
+            opacity: 1;
+        }
+    }
+}
+
+
+._task-highlight {
+    background: rgb(216, 216, 216) !important;
+    color: rgb(0, 0, 0);
+}

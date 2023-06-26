@@ -1,0 +1,125 @@
+._app-p-300{
+    padding-left: 300px;
+}
+
+
+._drop-arrow{
+    display: block;
+    width: 12px;
+    height: 12px;
+    transform: rotate(-45deg);
+    border-bottom: 3px solid white;
+    border-left: 3px solid white;
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+
+._dropbox{
+    ._dropbox-label{
+        text-decoration: none;
+        color: white;
+    }
+
+    ._dropbox-container{
+        ._item{
+            padding: 0.5em;
+            padding-left: 2em;
+            a{
+                text-decoration: none;
+                color: white;
+                &::before{
+                    content: "➤";
+                    color: white;
+                    margin-right: 0.5em;
+                }
+            }
+        }
+    }
+}
+
+
+._close{
+    width: 24px;
+    height: 24px;
+    background-color: $color-4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    cursor: pointer;
+
+    ._icon{
+        display: block;
+        width: 12px;
+        height: 12px;
+        background-image: url('../media/icon/close.png');
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+}
+
+
+._navbar{
+    width: 300px;
+    height: 100vh;
+    background: white;
+    box-shadow: 2px 2px 5px 3px rgba(0,0,0,0.5);
+}
+
+._horizon-bar{
+    width: 100%;
+    background-color: white;
+    box-shadow: 2px 2px 5px 3px rgba(0,0,0,0.5);
+}
+
+._avatar-container{
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: linear-gradient(to right, #ba00ff, #1800ff);
+}
+
+
+._white-arrow-right{
+    display: block;
+    width: 12px;
+    height: 12px;
+    border: none;
+    border-left: 4px solid white;
+    border-bottom: 4px solid white;
+    transform: rotate(-135deg);
+}
+
+._black-arrow-left{
+    display: block;
+    width: 12px;
+    height: 12px;
+    border: none;
+    border-left: 4px solid black;
+    border-bottom: 4px solid black;
+    transform: rotate(45deg);
+}
+
+
+._float-text{
+    max-width: 524px;
+}
+
+._flex-wrap-child{
+    min-width: 448px;
+}
+
+._cross-hover{
+    ._cross-over{
+        display: none;
+    }
+}
+
+._cross-hover:hover{
+
+    ._cross-over{
+        display: block;
+    }
+}

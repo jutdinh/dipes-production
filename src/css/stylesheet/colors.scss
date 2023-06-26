@@ -1,0 +1,84 @@
+._mylan-color{
+    color: $mylan-color;
+}
+
+._theme-color{
+    color: $theme-color;
+}
+
+._light-blue{
+    color: $color-0;
+}
+
+._deep-gray{
+    color: $color-1;
+}
+
+._gray{
+    color: $color-2;
+}
+
+._light-gray{
+    color: $color-3;
+}
+
+._white{
+    color: white;
+}
+
+._crimson{
+    color: $color-4;
+}
+
+
+._bg-theme-color{
+    background-color: $theme-color;
+}
+
+._bg-light-blue{
+    background-color: $color-0;
+}
+
+._bg-deep-gray{
+    background-color: $color-1;
+    color: white;
+}
+
+._bg-gray{
+    background-color: $color-2;
+    color: white;
+}
+
+._bg-white{
+    background-color: #fff;
+}
+
+._bg-green{
+    background-color: $mylan-color;
+}
+
+._bg-greenn{
+    background-color: $color-5;
+}
+
+._bg-warning{
+    background-color: $color-6;
+}
+
+._bg-light-gray{
+    background-color: $color-3;
+    color: white;
+}
+
+._bg-crimson{
+    background-color: $color-4;
+    color: white;
+}
+
+._trans-dark{
+    background: rgba(0, 0, 0, 0.5 );
+}
+
+._trans-dark-25{
+    background: rgba(0, 0, 0, 0.25 );
+}

@@ -1,0 +1,444 @@
+._hover{
+    transition: 0.25s ease;
+    &:hover{
+        background: $color-3;
+    }
+}
+._hover-light{
+    transition: 0.25s ease;
+    &:hover{
+        background: $theme-color;
+        td{
+            border: 1px solid #fff !important;
+            color: #fff;
+        }
+    }
+}
+
+._hover-scaled{
+    transition: ease-in-out 0.25s;
+    &:hover{
+        transform: scale(1.1);
+    }
+}
+
+._hover-text-danger{
+    &:hover{
+        color: $color-4;
+    }
+}
+
+._hover-text-safe{
+    &:hover{
+        color: $theme-color;
+    }
+}
+
+._ease{
+    transition: ease-in-out 0.25s;
+}
+
+._pointer{
+    cursor: pointer;
+}
+
+._no-overflow{
+    overflow: hidden;
+    transition: ease 0.25s;
+}
+
+._overflow{
+    overflow: auto;
+}
+._scroll-x{
+    overflow-x: scroll;
+}
+
+._scroll-y{
+    overflow-y: scroll;
+}
+
+._fade-in-ease{
+    animation-name: fadeInEase;
+    animation-duration: 1s;
+    opacity: 1;
+}
+
+._horizon-scroll-bar{
+    &::-webkit-scrollbar{
+        height: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb{
+        background-color: #777;
+    }
+
+    &::-webkit-scrollbar-thumb:hover{
+        background-color: #333;
+    }
+
+    &::-webkit-scrollbar-track{
+        background-color: #fff;
+    }
+}
+
+@keyframes fadeInEase {
+    from {
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}
+
+._drop-input{
+    overflow: hidden;
+    height: 0px;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: ease 0.25s;
+    background: white;
+
+    .drop-container{
+        height: 200px;
+        overflow-y: scroll;
+    };
+}
+
+$hidenDist: -242px;
+
+._navbar{
+    transition: ease-in-out 0.5s;
+}
+
+._app{
+    transition: ease-in-out 0.5s;
+}
+
+._app-stretch{
+    width: calc( 100vw - 52px );
+    top: 0;
+    left: 52px !important;
+}
+
+._app-scaled{
+    width: calc( 100vw - 300px );
+    left: 300px !important;
+}
+
+._nav-show{
+    animation-name: navShow;
+    animation-duration: 0.5s;
+    left: 0;
+
+    ._order-0{
+        order: 0;
+    }
+
+    ._order-1{
+        order: 1;
+    }
+}
+
+._nav-hide{
+    animation-name: navShow;
+    animation-duration: 0.5s;
+    left: $hidenDist;
+
+    ._order-0{
+        order: 1;
+    }
+
+    ._order-1{
+        order: 0;
+    }
+}
+
+
+@keyframes navShow {
+    0%{
+        left: $hidenDist;
+    }
+    100%{
+        left: 0px;
+    }
+}
+
+@keyframes navHide {
+    0%{
+        left: 0px;
+    }
+
+    100%{
+        left: $hidenDist;
+    }
+}
+
+._hori-hide{
+    animation-name: horiHide;
+    animation-duration: 0.25s;
+    margin-left: 100vw;
+}
+
+@keyframes horiHide {
+    0%{
+        margin-left: 0;
+    }
+    100%{
+        margin-left: 100vw;
+    }
+}
+
+._hori-show{
+    animation-name: horiShow;
+    animation-duration: 0.25s;
+    margin-left: 0;
+}
+
+@keyframes horiShow {
+    0%{
+        margin-left: 100vw;
+    }
+    100%{
+        margin-left: 0;
+    }
+}
+
+
+._dock{
+    display: block;
+    position: absolute;
+    top: 5px;
+    right: 35px;
+    width: 15px;
+    height: 15px;
+    background: black;
+    transform: rotate(45deg);
+}
+
+
+._circle-processing{
+    width: 100px;
+    animation-name: circleProcessing;
+    animation-duration: 0.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes circleProcessing {
+    0%{
+        transform: rotate(0deg);
+    }
+    50%{
+        transform: rotate(180deg);
+    }
+    100%{
+        transform: rotate(360deg);
+    }
+}
+
+._alert{
+    width: 80%;
+    max-width: 425px;
+    min-height: 275px;
+}
+
+._pop-in{
+    animation-name: popIn;
+    animation-duration: 0.25s;
+    transform: scale(1);
+}
+
+._icon-box{
+    width: 72px;
+    height: 72px;
+    margin: auto;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+._success-circle{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 5px solid $color-5;
+    animation-name: cuccesscircle;
+    opacity: 1;
+    animation-duration: 1s;
+}
+
+._warning-circle{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 5px solid $color-6;
+    animation-name: cuccesscircle;
+    opacity: 1;
+    animation-duration: 1s;
+}
+
+._failure-circle{
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 5px solid $color-4;
+    animation-name: cuccesscircle;
+    opacity: 1;
+    animation-duration: 1s;
+}
+
+._success-left{
+    display: block;
+    width: 18px;
+    border-top: 5px solid $color-5;
+    position: absolute;
+    top: 48px;
+    left: 28px;
+    transform-origin: 0 0;
+    transform: rotate(225deg);
+    animation:successleft;
+    animation-duration: 0.3s;
+}
+
+._success-right{
+    display: block;
+    width: 36px;
+    border-top: 5px solid $color-5;
+    position: absolute;
+    top: 48px;
+    left: 28px;
+    transform-origin: 0 0;
+    transform: rotate(315deg);
+    animation: successright;
+    animation-duration: 0.3s;
+}
+
+._failure-left{
+    display: block;
+    width: 36px;
+    border-top: 5px solid $color-4;
+    position: absolute;
+    top: 36px;
+    left: 18px;
+    transform: rotate(225deg);
+    animation:failureWidth;
+    animation-duration: 0.3s;
+}
+
+._failure-right{
+    display: block;
+    width: 36px;
+    border-top: 5px solid $color-4;
+    position: absolute;
+    top: 36px;
+    right: 18px;
+    transform: rotate(135deg);
+    animation: failureWidth;
+    animation-duration: 0.3s;
+}
+
+._warning-i{
+    display: block;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation-name: shakingI;
+    animation-duration: 0.3s;
+    font-size: 48px;
+    color: $color-6;
+}
+
+@keyframes shakingI {
+    0%{
+        transform: rotate(0deg);
+    }
+    25%{
+        transform: rotate(10deg);
+    }
+    50%{
+        transform: rotate(0deg);
+    }
+    75%{
+        transform: rotate(-10deg);
+    }
+    100%{
+        transform: rotate(0deg);
+    }
+}
+
+@keyframes cuccesscircle {
+    from{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}
+
+@keyframes successleft {
+    0% {
+        width: 0px;
+    }
+    50%{
+        width: 24px;
+    }
+    100%{
+        width: 24px;
+    }
+}
+
+@keyframes successright {
+    0% {
+        width: 0px;
+    }
+    50%{
+        width: 0px;
+    }
+    100%{
+        width: 36px;
+    }
+}
+
+@keyframes failureWidth
+{
+    from {
+        width: 0px;
+    }
+    to{
+        width: 36px;
+    }
+}
+
+._alert-btn{
+    margin: auto;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0.25em;
+    padding-left: 1em;
+    padding-right: 1em;
+    color: white;
+    text-align: center;
+    font-size: 20px;
+    border: none;
+    border-radius: 8px;
+}
+
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.95);
+    }
+    40% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

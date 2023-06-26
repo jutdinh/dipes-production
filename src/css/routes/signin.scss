@@ -1,0 +1,33 @@
+._login-bg {
+    background-position: center;
+    // background-image: url(../media/bg/login-bg.png);
+    background: $nav-color;
+    background-repeat: repeat;
+
+    ._login-form{
+        width: 500px;
+        /* Ratio w/h = 0.8125 */
+        height: 620px;
+        background-image: url(../media/bg/form-bg.png);
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+}
+
+._sign-btn{
+    padding: 0.5em 1em;
+    border: none;
+    text-transform: uppercase;
+    color: white;
+    border-radius: 12px;
+    background: linear-gradient(to right, #ba00ff, #1800ff);
+}
+
+
+._red-mark{
+    &::after{
+        content: " *";
+        color: #ff6655;
+    }
+}
