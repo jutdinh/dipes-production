@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 
 import { Home } from './dashboard';
+import { Import } from './import-data';
 import { Navigation, PageNotFound } from './navigations';
 import { Login, SignUp, SignOut } from './auth';
 import { Settings } from './settings';
@@ -60,6 +61,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signout" element={<SignOut />} />
         <Route path="/" element={<Navigation Child={Home} />} />
+        <Route path="/import" element={<Navigation Child={Import} />} />
         <Route path="/projects" element={<Navigation Child={Projects} />} />
         <Route path="/projects/:project_id" element={<Navigation Child={ProjectsCard} />} />
         <Route path="/projects/detail/:project_id" element={<Navigation Child={ProjectDetail} />} />

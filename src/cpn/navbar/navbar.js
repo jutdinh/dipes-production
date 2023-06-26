@@ -29,12 +29,18 @@ export default () => {
             <ul class="list-unstyled components">
                <li className="navbar-item">
                   <NavLink to="/" activeClassName="nav-active">
-                     <i class="fa fa-home"></i>
+                     <i class="fa fa-home icon-home"></i>
                      <span>{lang["home"]}</span>
                   </NavLink>
                </li>
-
                <li className="navbar-item">
+                  <NavLink to="/import" activeClassName="nav-active">
+                     <i class="fa fa-upload icon-import"></i>
+                     <span>Import</span>
+                  </NavLink>
+               </li>
+
+               {/* <li className="navbar-item">
                   <NavLink
                      to="/projects"
                      activeClassName="nav-active"
@@ -43,16 +49,16 @@ export default () => {
                      <i class="fa fa-briefcase purple_color2"></i>
                      <span>{lang["projects manager"]}</span>
                   </NavLink>
-               </li>
+               </li> */}
                {user.role === "ad" || user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/users" activeClassName="nav-active">
-                        <i class="fa fa-users"></i>
+                        <i class="fa fa-users icon-user"></i>
                         <span>{lang["accounts manager"]}</span>
                      </NavLink>
                   </li>
                ) : null}
-               <li><a href="/statistic"><i class="fa fa-bar-chart-o green_color"></i> <span>{lang["statistic"]}</span></a></li>
+               {/* <li><a href="/statistic"><i class="fa fa-bar-chart-o green_color"></i> <span>{lang["statistic"]}</span></a></li>
                <li><a href="/workflow"><i class="fa fa-clock-o orange_color"></i> <span>{lang["workflow"]}</span></a></li>
                <li>
                   <a href="/contacts">
@@ -61,7 +67,7 @@ export default () => {
 
                <li><a href="/about"><i class="fa fa-info purple_color2"></i> <span>{lang["about us"]}</span></a></li>
 
-               <li><a href="/settings"><i class="fa fa-cog yellow_color"></i> <span>{lang["settings"]}</span></a></li>
+               <li><a href="/settings"><i class="fa fa-cog yellow_color"></i> <span>{lang["settings"]}</span></a></li> */}
                { user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/logs" activeClassName="nav-active">

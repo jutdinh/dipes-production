@@ -316,7 +316,7 @@
 
 
 .navbar-item .active {
-    background-color: #4CAF50;
+    background-color: #569259;
     /* Màu nền xanh lá cây */
     color: white;
     /* Màu chữ trắng */
@@ -375,6 +375,29 @@
 .blue_color_custom {
     color: #34a83e !important;
 }
+
+/* NAV */
+.icon-home{
+    color: rgb(253, 253, 253);
+}
+
+.icon-import
+{
+    color: rgb(250, 143, 129);
+}
+
+.icon-user{
+    color: #386fc1;
+}
+
+
+
+
+
+
+
+
+
 
 .modal-dialog-left {
     position: absolute;
