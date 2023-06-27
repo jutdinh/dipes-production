@@ -72,15 +72,16 @@ export default () => {
         }
     }
 
-    const sidebarToggle = (e) => {
-        $('#sidebar').toggleClass('active');
-    } 
+    // const sidebarToggle = (e) => {
+    //     $('#sidebar').toggleClass('active');
+    // } 
 
     return (
         <div class="topbar">
             <nav class="bg-cus navbar navbar-expand-lg navbar-light">
                 <div class="full d-flex flex-row">
-                    <button onClick={ sidebarToggle } type="button" id="sidebarCollapse" class="sidebar_toggle"><i class="fa fa-bars"></i></button>
+                    {/* <button onClick={ sidebarToggle } type="button" id="sidebarCollapse" class="sidebar_toggle"><i class="fa fa-bars"></i></button> */}
+                    <button  type="button" id="sidebarCollapse" class="sidebar_toggle"><i class="fa fa-bars"></i></button>
                     <div className="ml-auto dropdown d-flex align-items-center">
                         <div className="d-flex flex-nowrap"
                             id="lang-drop-toggle"

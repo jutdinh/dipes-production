@@ -11,39 +11,40 @@ export default (props) => {
     const { proxy, unique_string } = useSelector(state => state);
     const [relatedTable, setRelatedTable] = useState({})
     const [pk, setPK] = useState([]);
-
+    console.log(table)
+    console.log(field)
     useEffect(() => {
         if (defaultValue !== undefined) {
             if (isFieldForeign()) {
-                const thisFieldForeignKey = table.fk.filter(fk => {
-                    const { fks } = fk;
-                    const isKeyExisted = fks.filter(key => {
-                        const { field_alias, ref_on } = key;
-                        return field_alias == field.field_alias;
-                    })[0]
-                    return isKeyExisted ? true : false;
-                })[0];
+                // const thisFieldForeignKey = table.foreign_keys.filter(fk => {
+                //     const { fks } = fk;
+                //     const isKeyExisted = fks.filter(key => {
+                //         const { field_alias, ref_on } = key;
+                //         return field_alias == field.field_alias;
+                //     })[0]
+                //     return isKeyExisted ? true : false;
+                // })[0];
 
-                const { table_alias, fks } = thisFieldForeignKey;
-                fetch(`${proxy()}/api/${unique_string}/apis/table/data/${table_alias}`).then(res => res.json()).then(res => {
-                    const { success, data, fields, pk } = res;
-                    setForeignData(data)
-                    setFields(fields)
+                // const { table_alias, fks } = thisFieldForeignKey;
+                // fetch(`${proxy()}/apis/apis/table/data/${table_alias}`).then(res => res.json()).then(res => {
+                //     const { success, data, fields, pk } = res;
+                //     setForeignData(data)
+                //     setFields(fields)
 
 
-                    const showKey = fks.filter(k => k.field_alias == field.field_alias)[0].ref_on
-                    setShowKey(showKey)
-                    const rTable = related.filter(tb => tb.table_alias == table_alias)[0];
-                    setRelatedTable(rTable)
-                    setPK(pk)
+                //     const showKey = fks.filter(k => k.field_alias == field.field_alias)[0].ref_on
+                //     setShowKey(showKey)
+                //     const rTable = related.filter(tb => tb.table_alias == table_alias)[0];
+                //     setRelatedTable(rTable)
+                //     setPK(pk)
 
-                    const primary = pk[0]; /* This may cause some freaking bug whence has more than 1 key in primary set  */
-                    const currentData = data.filter(d => d[primary] == defaultValue)[0];
+                //     const primary = pk[0]; /* This may cause some freaking bug whence has more than 1 key in primary set  */
+                //     const currentData = data.filter(d => d[primary] == defaultValue)[0];
 
-                    if (currentData) {
-                        setCurrent(currentData)
-                    }
-                })
+                //     if (currentData) {
+                //         setCurrent(currentData)
+                //     }
+                // })
 
             } else {
                 setCurrent(defaultValue)
@@ -102,12 +103,12 @@ export default (props) => {
     }, [foreignData])
 
     const isFieldForeign = () => {
-        const isForeign = table.fk.filter(key => {
-            const { fks } = key;
-            const fkExisted = fks.filter(k => k.field_alias == field.field_alias)[0]
-            return fkExisted ? true : false
-        })[0]
-        return isForeign ? true : false;
+        // const isForeign = table.fk.filter(key => {
+        //     const { fks } = key;
+        //     const fkExisted = fks.filter(k => k.field_alias == field.field_alias)[0]
+        //     return fkExisted ? true : false
+        // })[0]
+        // return isForeign ? true : false;
     }
 
     const fieldChangeData = (e) => {
@@ -154,19 +155,18 @@ export default (props) => {
 
     if (!isFieldForeign()) {
         return (
-            <div className="w-100-pct p-1 m-t-1">
-                <div>
-                    <div>
-                        <span className="block text-16-px">
-                            {field.field_name}{!field.nullable && <span style={{ color: 'red' }}> *</span>}
-                        </span>
-                    </div>
-                    <div className="m-t-0-5">
-                        <input type={field.props.AUTO_INCREMENT ? "text" : "number"}
-                            className="p-t-0-5 p-b-0-5 p-l-1 text-16-px block w-100-pct border-1"
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <form>
+                        <div class="form-group">
+                            <label for="name">{field.field_name}{!field.nullable && <span style={{ color: 'red' }}> *</span>}</label>
+                            <input type={field.props.AUTO_INCREMENT ? "text" : "number"}
+                            className="form-control"
                             placeholder="" onChange={fieldChangeData} value={current}
                         />
-                    </div>
+                        </div>
+                      
+                    </form>
                 </div>
             </div>
         )

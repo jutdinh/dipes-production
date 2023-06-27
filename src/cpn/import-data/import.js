@@ -52,7 +52,7 @@ export default () => {
             return;
         }
         try {
-            const response = await fetch(`http://192.168.15.160:5000/versions/import/database`, {
+            const response = await fetch(`${proxy()}/versions/import/database`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ export default () => {
             return;
         }
         try {
-            const response = await fetch(`http://192.168.15.160:5000/versions/import/api`, {
+            const response = await fetch(`${proxy()}/versions/import/api`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

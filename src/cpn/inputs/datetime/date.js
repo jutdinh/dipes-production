@@ -16,17 +16,21 @@ export default ( props ) => {
     }, [defaultValue])
 
     return(
-        <div className="w-100-pct p-1 m-t-1">
-            <div>
-            {field.field_name}{!field.nullable && <span style={{color: 'red'}}> *</span>}
-            </div>
-            <div className="m-t-0-5">
-                <input type="date"
-                    className="p-t-0-5 p-b-0-5 p-l-1 text-16-px block w-100-pct border-1"
+       
+         <div class="row justify-content-center">
+         <div class="col-md-6">
+             <form>
+                 <div class="form-group">
+                     <label for="name"> {field.field_name}{!field.nullable && <span style={{color: 'red'}}> *</span>}</label>
+                     <input type="date"
+                    className="form-control"
                     placeholder="" onChange={ fieldChangeData } value={ current }
                     />
-            </div>
-        </div>
+                 </div>
+               
+             </form>
+         </div>
+     </div>
     )
 }
 

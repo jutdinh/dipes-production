@@ -24,7 +24,7 @@ import { UI, CreateUi} from './ui'
 import updateApi from './api/update-api';
 
 
-import { Fetch } from './page';
+import { Fetch, InputPost, InputPut  } from './page';
 
 import "../css/index.scss";
 
@@ -104,8 +104,8 @@ function App() {
 
 
         <Route exac path="/:url" element={ < Navigation Child={Fetch} /> } />
-
-
+        <Route exac path="apis/api/:id_str/input_info" element={ < Navigation Child={InputPost} /> } />
+        <Route exac path="apis/api/:id_str/input_info" element={ < Navigation Child={InputPut} /> } />
 
       </Routes>
     </Router>

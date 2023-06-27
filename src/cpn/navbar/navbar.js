@@ -10,18 +10,18 @@ export default () => {
    const [activeLink, setActiveLink] = useState("/");
    const [uis, setUis] = useState([]);
    const [isOpen, setIsOpen] = useState(false);
-   console.log(pages)
+   // console.log(pages)
 
    const OpenTab = (url) => {
       window.location.href = `/fetch/${url}`;
       // window.location.href = `tables`;
    };
 
-   useEffect(() => {
-      if (window.innerWidth < 1200) {
-         $('#sidebar').toggleClass('active');
-      }
-   }, [window.location.href])
+   // useEffect(() => {
+   //    if (window.innerWidth < 1200) {
+   //       $('#sidebar').toggleClass('active');
+   //    }
+   // }, [window.location.href])
 
    return (
       <nav id="sidebar" class>

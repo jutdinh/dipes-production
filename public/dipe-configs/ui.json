@@ -1,107 +1,72 @@
 {
     "data": [
         {
-            "id": 1,
-            "ui_id": 1,
-            "title": "Trang 1",
-            "version_id": 37,
-            "url": "/trang-1",
-            "status": false,
+            "id": 9,
+            "ui_id": 9,
+            "title": "Loại sản phẩm",
+            "version_id": 2,
+            "url": "/loai-san-pham",
+            "status": true,
             "params": [],
             "create_by": {
                 "username": "nhan",
-                "fullname": "Tô Trọng Nhân",
+                "fullname": "nhân",
                 "role": "ad",
-                "email": "totrongnhan@gmail.com",
-                "phone": "0359695554",
+                "email": "trongnhan54@outlook.com.vn",
+                "phone": "0309584883",
                 "avatar": "/image/avatar/nhan.png",
-                "address": "Trà Vinh",
+                "address": "TV",
                 "note": "Ghi chú",
                 "create_by": "su",
-                "create_at": "06-06-2023 lúc 10:53"
+                "create_at": "08-06-2023 lúc 19:46"
             },
-            "create_at": "26-06-2023 08:33:51",
+            "create_at": "27-06-2023 21:30:44",
             "components": [
                 {
-                    "id": 1,
-                    "component_id": 1,
-                    "component_name": "Bảng Sản Phẩm",
-                    "ui_id": 1,
+                    "id": 8,
+                    "component_id": 8,
+                    "component_name": "Loại sản phẩm",
+                    "ui_id": 9,
                     "layout_id": 0,
-                    "api_get": "/api/1764F3B5BD1F440D9B621EBCC22A0529",
-                    "api_post": "/api/BB8458FAECD8415286167A1266442030",
-                    "api_put": "/api/CA1E102AC2FF4377BDC796A6091F0A21",
-                    "api_delete": "/api/CA1E102AC2FF4377BDC796A6091F0A21"
+                    "api_get": "/api/A8960778630249AA81B6BA1917407687",
+                    "api_post": "/api/5E2E101654B74387A2F43CEB15BCD7BB",
+                    "api_put": "/api/C5885E874F10491F9C8F517D92B0B395",
+                    "api_delete": "/api/C5885E874F10491F9C8F517D92B0B395"
                 }
             ]
         },
         {
-            "id": 2,
-            "ui_id": 2,
-            "title": "Trang 2",
-            "version_id": 37,
-            "url": "/trang-2",
+            "id": 10,
+            "ui_id": 10,
+            "title": "Sản phẩm",
+            "version_id": 2,
+            "url": "/san-pham",
             "status": true,
             "params": [],
             "create_by": {
                 "username": "nhan",
-                "fullname": "Tô Trọng Nhân",
+                "fullname": "nhân",
                 "role": "ad",
-                "email": "totrongnhan@gmail.com",
-                "phone": "0359695554",
+                "email": "trongnhan54@outlook.com.vn",
+                "phone": "0309584883",
                 "avatar": "/image/avatar/nhan.png",
-                "address": "Trà Vinh",
+                "address": "TV",
                 "note": "Ghi chú",
                 "create_by": "su",
-                "create_at": "06-06-2023 lúc 10:53"
+                "create_at": "08-06-2023 lúc 19:46"
             },
-            "create_at": "26-06-2023 08:36:03",
+            "create_at": "27-06-2023 21:30:57",
             "components": [
                 {
-                    "id": 2,
-                    "component_id": 2,
-                    "component_name": "Bảng Khách Hàng",
-                    "ui_id": 2,
-                    "layout_id": 1,
-                    "api_get": "/api/1A8BC4D382F348AC8591DF64B77653C1",
-                    "api_post": "/api/AB8307D095DC4B4BA6ADA5148165E8BF",
-                    "api_put": "/api/809ECBFD14EB48E6ACA0CEA89C326DF6",
-                    "api_delete": "/api/809ECBFD14EB48E6ACA0CEA89C326DF6"
-                }
-            ]
-        },
-        {
-            "id": 3,
-            "ui_id": 3,
-            "title": "Trang 3",
-            "version_id": 37,
-            "url": "/trang-3",
-            "status": true,
-            "params": [],
-            "create_by": {
-                "username": "nhan",
-                "fullname": "Tô Trọng Nhân",
-                "role": "ad",
-                "email": "totrongnhan@gmail.com",
-                "phone": "0359695554",
-                "avatar": "/image/avatar/nhan.png",
-                "address": "Trà Vinh",
-                "note": "Ghi chú",
-                "create_by": "su",
-                "create_at": "06-06-2023 lúc 10:53"
-            },
-            "create_at": "26-06-2023 08:36:21",
-            "components": [
-                {
-                    "id": 3,
-                    "component_id": 3,
-                    "component_name": "Bảng Sản Phẩm",
-                    "ui_id": 3,
-                    "layout_id": 1,
-                    "api_get": "/api/A6CA9E5D6B774614866CD54C6D338FA4",
-                    "api_post": "/api/5144F210524C489A9EF17932078B14E8",
-                    "api_put": "/api/ABA83FC45C194164AE2DFDCAB768624A",
-                    "api_delete": "/api/ABA83FC45C194164AE2DFDCAB768624A"
+                    "id": 9,
+                    "component_id": 9,
+                    "component_name": "Sản phẩm",
+                    "ui_id": 10,
+                    "layout_id": 0,
+                    "api_get": "/api/0219F302DFA947AFB1DF8AEB6FFEB2A8",
+                    "api_post": "/api/67C27E6A918D4E30B72B9A5864D39B17",
+                    "api_put": "/api/EC405525070A48F7BE6AF5E975A877D7",
+                    "api_delete": "/api/EC405525070A48F7BE6AF5E975A877D7"
                 }
             ]
         }

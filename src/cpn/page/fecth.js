@@ -13,52 +13,89 @@ export default () => {
     const { project_id, version_id, url } = useParams();
     let navigate = useNavigate();
     const [uis, setUis] = useState([]);
+    const [apiData, setApiData] = useState([])
 
 
-  
     const [page, setPage] = useState([]);
 
     useEffect(() => {
         const result = pages?.find(page => page.url === `/${url}`);
 
-    if (result) {
-        setPage(result);
-        console.log(result)
-    } else {
-        console.log('Không tìm thấy trang với URL: ' + url);
-    }
-        
+        if (result) {
+            setPage(result);
+        } else {
+            console.log('Không tìm thấy trang với URL: ' + url);
+        }
+
     }, [pages, url]);
- 
+    console.log(page)
     useEffect(() => {
-        if (pages ) {
+        if (page && page.components) {
             const id_str = page.components?.[0]?.api_get.split('/')[2];
             console.log(id_str)
             fetch(`${proxy()}/apis/api/${id_str}/input_info`)
                 .then(res => res.json())
                 .then(res => {
-                    const { api, success } = res;
+                    const { data, success, content } = res;
                     if (!success) {
+                        console.log("succcess", data)
                         // al.failure("Lỗi", "Không tìm thấy dữ liệu")
-                        return;
+
                     }
                     // setApi(api);
-                    console.log(api)
+
                     // callApi(api)
                 })
         }
     }, [page])
 
-    const apisManager = (project) => {
-        window.location.href = `/projects/${version_id}/uis/create`;
-        // window.location.href = `tables`;
-    };
-    const updateApi = (apiData) => {
-        console.log(apiData)
-        window.location.href = `/projects/${version_id}/apis/update/${apiData.api_id}`;
-        // window.location.href = `tables`;
-    };
-    console.log(url)
+
+    const callApi = (api) => {
+        /* this must be fixed */
+
+        fetch(`${proxy()}${page.apis.get}`).then(res => res.json()).then(res => {
+            const { success, content, data } = res;
+
+            //  al.failure("Lỗi", "Đọc dữ liệu thất bại ")
+
+            setApiData(data)
+
+        })
+    }
+
+    const redirectToInput = () => {
+        // console.log(page)
+        const id_str = page.components?.[0]?.api_post.split('/')[2];
+        window.location.href = `apis/api/${id_str}/input_info`;
+
+    }
+
+    // const redirectToInputPut = (data) => {
+    //     const id_str_put = page.apis.put.split(`/`)[4];
+
+    //     let rawParams = page.apis.put.split(`/${id_str_put}/`)[1];
+    //     // console.log(rawParams)
+    //     const keys = Object.keys(data);
+    //     keys.map(key => {
+    //         const value = data[key];
+    //         rawParams = rawParams.replaceAll(key, value);
+    //     })
+
+    //     openTab(`/su/api/put/input/${id_str_put}/${rawParams}`)
+    // }
+
+
+
+
+
+
+
+
+
+
+
+
+
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -94,13 +131,20 @@ export default () => {
                                             {/* <button type="button" class="btn btn-primary custom-buttonadd ml-auto" data-toggle="modal" data-target="#addTable">
                                                 <i class="fa fa-plus"></i>
                                             </button> */}
-                                            <button type="button" class="btn btn-primary custom-buttonadd ml-auto" onClick={() => apisManager()}>
+                                            <button type="button" class="btn btn-primary custom-buttonadd ml-auto" onClick={() => redirectToInput()}>
                                                 <i class="fa fa-plus"></i>
                                             </button>
                                         </div>
-                                       
+
                                     </div>
+                                    <div class="form-group col-lg-6">
+                                        <label class="font-weight-bold text-small" for="firstname">{lang["fullname"]}<span className='red_star ml-1'>*</span></label>
+                                        <input type="text" class="form-control" placeholder={lang["p.fullname"]} />
+
+                                    </div>
+                               
                                 </div>
+                              
                             </div>
                         </div>
                     </div>
