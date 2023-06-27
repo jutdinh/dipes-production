@@ -60,7 +60,7 @@
                 {
                     "id": 2,
                     "component_id": 2,
-                    "component_name": "Bảng Sản Phẩm",
+                    "component_name": "Bảng Khách Hàng",
                     "ui_id": 2,
                     "layout_id": 1,
                     "api_get": "/api/1A8BC4D382F348AC8591DF64B77653C1",

@@ -52,7 +52,7 @@ export default () => {
             return;
         }
         try {
-            const response = await fetch(`${(proxy())}/api/json/import`, {
+            const response = await fetch(`http://192.168.15.160:5000/versions/import/database`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -97,9 +97,8 @@ export default () => {
             // al.failure("Thất bại", "Vui lòng tải lên một file JSON trước khi import");
             return;
         }
-
         try {
-            const response = await fetch(`${proxy()}/api/json/import-api`, {
+            const response = await fetch(`http://192.168.15.160:5000/versions/import/api`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -196,7 +195,7 @@ export default () => {
                         <div class="white_shd full ">
                             <div class="full graph_head">
                                 <div class="heading1 margin_0">
-                                    <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>Import</h5>
+                                    <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3 mb-2"></i></a>Import</h5>
                                 </div>
                             </div>
                             {/* <div class="full price_table padding_infor_info" style={{ display: 'flex', flexDirection: 'column', minHeight: '40vh' }}>

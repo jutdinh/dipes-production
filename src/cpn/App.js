@@ -7,6 +7,8 @@ import {
   Route,
 } from "react-router-dom";
 
+
+
 import { Home } from './dashboard';
 import { Import } from './import-data';
 import { Navigation, PageNotFound } from './navigations';
@@ -52,7 +54,7 @@ function App() {
         })
 
       }
-    }
+    }   
 
     const fetchData = async () => {
       try {
@@ -70,9 +72,7 @@ function App() {
 
     fetchData();
 
-  }, [])
-
-
+  }, [])  
 
   return (
 

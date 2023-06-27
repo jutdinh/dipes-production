@@ -1,6 +1,8 @@
 import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import $ from 'jquery'
+
 export default () => {
    const { proxy, lang, pages } = useSelector(state => state)
    const stringifiedUser = localStorage.getItem("user");
@@ -14,8 +16,15 @@ export default () => {
       window.location.href = `/fetch/${url}`;
       // window.location.href = `tables`;
    };
+
+   useEffect(() => {
+      if (window.innerWidth < 1200) {
+         $('#sidebar').toggleClass('active');
+      }
+   }, [window.location.href])
+
    return (
-      <nav id="sidebar" class="ps ps--active-x">
+      <nav id="sidebar" class>
          <div class="sidebar_blog_1">
             <div class="sidebar-header">
                <div class="logo_section">
@@ -46,8 +55,6 @@ export default () => {
                      <span>Import</span>
                   </NavLink>
                </li>
-
-
                {user.role === "ad" || user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/users" activeClassName="nav-active">
@@ -65,10 +72,13 @@ export default () => {
                      </NavLink>
                   </li>
                ) : null}
-               
+
                <li class="active">
-                  <a href="#dashboard" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-dashboard yellow_color"></i> <span>Dashboard</span></a>
-                  <ul class="collapse list-unstyled " id="dashboard">
+                  <a href="#dashboard" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                     <i class="fa fa-dashboard yellow_color"></i>
+                     <span>Dashboard</span>
+                  </a>
+                  <ul class="collapse list-unstyled show nav-custom " id="dashboard">
                      {pages && pages.map(ui => (
                         ui.status ? (
                            <li className="navbar-item">

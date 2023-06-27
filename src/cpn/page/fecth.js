@@ -30,7 +30,24 @@ export default () => {
         
     }, [pages, url]);
  
-   
+    useEffect(() => {
+        if (pages ) {
+            const id_str = page.components?.[0]?.api_get.split('/')[2];
+            console.log(id_str)
+            fetch(`${proxy()}/apis/api/${id_str}/input_info`)
+                .then(res => res.json())
+                .then(res => {
+                    const { api, success } = res;
+                    if (!success) {
+                        // al.failure("Lỗi", "Không tìm thấy dữ liệu")
+                        return;
+                    }
+                    // setApi(api);
+                    console.log(api)
+                    // callApi(api)
+                })
+        }
+    }, [page])
 
     const apisManager = (project) => {
         window.location.href = `/projects/${version_id}/uis/create`;
@@ -58,7 +75,7 @@ export default () => {
                         <div class="white_shd full margin_bottom_30">
                             <div class="full graph_head d-flex">
                                 <div class="heading1 margin_0 ">
-                                    <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page.title}</h5>
+                                    <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5>
                                 </div>
                                 <div class="ml-auto">
                                     <i class="fa fa-newspaper-o icon-ui"></i>
@@ -81,7 +98,7 @@ export default () => {
                                                 <i class="fa fa-plus"></i>
                                             </button>
                                         </div>
-
+                                       
                                     </div>
                                 </div>
                             </div>

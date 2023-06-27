@@ -14,47 +14,47 @@ export default () => {
     const [users, setUsers] = useState([]);
     const [projects, setProjects] = useState([]);
 
-    useEffect(() => {
-        fetch(`${proxy}/projects/all/projects`, {
-            headers: {
-                Authorization: _token
-            }
-        })
-            .then(res => res.json())
-            .then(resp => {
-                const { success, data, status, content } = resp;
-                console.log(resp)
-                if (success) {
-                    if (data != undefined && data.length > 0) {
-                        setProjects(data);
+    // useEffect(() => {
+    //     fetch(`${proxy()}/projects/all/projects`, {
+    //         headers: {
+    //             Authorization: _token
+    //         }
+    //     })
+    //         .then(res => res.json())
+    //         .then(resp => {
+    //             const { success, data, status, content } = resp;
+    //             console.log(resp)
+    //             if (success) {
+    //                 if (data != undefined && data.length > 0) {
+    //                     setProjects(data);
 
-                    }
-                } else {
-                    // window.location = "/404-not-found"
-                }
-            })
-    }, [])
+    //                 }
+    //             } else {
+    //                 // window.location = "/404-not-found"
+    //             }
+    //         })
+    // }, [])
 
-    useEffect(() => {
-        fetch(`${proxy}/auth/all/accounts`, {
-            headers: {
-                Authorization: _token
-            }
-        })
-            .then(res => res.json())
-            .then(resp => {
-                const { success, data, status, content } = resp;
-                // console.log(resp)
-                if (success) {
-                    if (data != undefined && data.length > 0) {
-                        setUsers(data);
-                        // console.log(data)
-                    }
-                } else {
-                    // window.location = "/404-not-found"
-                }
-            })
-    }, [])
+    // useEffect(() => {
+    //     fetch(`${proxy()}/auth/all/accounts`, {
+    //         headers: {
+    //             Authorization: _token
+    //         }
+    //     })
+    //         .then(res => res.json())
+    //         .then(resp => {
+    //             const { success, data, status, content } = resp;
+    //             // console.log(resp)
+    //             if (success) {
+    //                 if (data != undefined && data.length > 0) {
+    //                     setUsers(data);
+    //                     // console.log(data)
+    //                 }
+    //             } else {
+    //                 // window.location = "/404-not-found"
+    //             }
+    //         })
+    // }, [])
 
     const data = [
         { name: 'Page A', uv: 400, pv: 2400, amt: 2400 },
@@ -98,7 +98,7 @@ export default () => {
                             </div>
                             <div class="counter_no">
                                 <div>
-                                    <p class="total_no">{projects.length}</p>
+                                    <p class="total_no">1</p>
                                     <p class="head_couter">{lang["projects"]}</p>
                                 </div>
                             </div>
@@ -113,7 +113,7 @@ export default () => {
                             </div>
                             <div class="counter_no">
                                 <div>
-                                    <p class="total_no">{users.length}</p>
+                                    <p class="total_no">1</p>
                                     <p class="head_couter">Member</p>
                                 </div>
                             </div>

@@ -2,6 +2,8 @@ import { useSelector } from "react-redux";
 import { Dropdown } from "../common";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from 'react-responsive'
+import $ from 'jquery';
+
 export default () => {
     const { proxy, lang, auth, profiles } = useSelector(state => state);
 
@@ -70,11 +72,15 @@ export default () => {
         }
     }
 
+    const sidebarToggle = (e) => {
+        $('#sidebar').toggleClass('active');
+    } 
+
     return (
         <div class="topbar">
             <nav class="bg-cus navbar navbar-expand-lg navbar-light">
                 <div class="full d-flex flex-row">
-                    <button type="button" id="sidebarCollapse" class="sidebar_toggle"><i class="fa fa-bars"></i></button>
+                    <button onClick={ sidebarToggle } type="button" id="sidebarCollapse" class="sidebar_toggle"><i class="fa fa-bars"></i></button>
                     <div className="ml-auto dropdown d-flex align-items-center">
                         <div className="d-flex flex-nowrap"
                             id="lang-drop-toggle"
