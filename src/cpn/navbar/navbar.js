@@ -7,10 +7,15 @@ export default () => {
    const user = JSON.parse(stringifiedUser) || {}
    const [activeLink, setActiveLink] = useState("/");
    const [uis, setUis] = useState([]);
-
+   const [isOpen, setIsOpen] = useState(false);
    console.log(pages)
+
+   const OpenTab = (url) => {
+      window.location.href = `/fetch/${url}`;
+      // window.location.href = `tables`;
+   };
    return (
-      <nav id="sidebar">
+      <nav id="sidebar" class="ps ps--active-x">
          <div class="sidebar_blog_1">
             <div class="sidebar-header">
                <div class="logo_section">
@@ -21,7 +26,7 @@ export default () => {
                <div class="icon_setting"></div>
                <div class="user_profle_side">
                   <div class="logo_section">
-                     <a href="index.html"><img class="img-responsive" src="/images/logo/logo.png" alt="#" /></a>
+                     <a href="/"><img class="img-responsive" src="/images/logo/logo.png" alt="#" /></a>
                   </div>
                </div>
             </div>
@@ -60,42 +65,27 @@ export default () => {
                      </NavLink>
                   </li>
                ) : null}
-
+               
                <li class="active">
                   <a href="#dashboard" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fa fa-dashboard yellow_color"></i> <span>Dashboard</span></a>
-                  <ul class="collapse list-unstyled" id="dashboard">
-                  { pages && pages.map(ui => (
-                  ui.status ? (
-                     <li className="navbar-item">
-                        <NavLink to={ui.url} activeClassName="nav-active">
-                        <i class="fa fa-users icon-user"></i>
-                           <span>{ui.title}</span>
-                        </NavLink>
-                     </li>
-                  ) : null
-               ))}
+                  <ul class="collapse list-unstyled " id="dashboard">
+                     {pages && pages.map(ui => (
+                        ui.status ? (
+                           <li className="navbar-item">
+                              <NavLink to={ui.url} activeClassName="nav-active">
+                                 <i class="fa fa-shield"></i>
+                                 <span>{ui.title}</span>
+                              </NavLink>
+                           </li>
+                        ) : null
+                     ))}
                   </ul>
                </li>
             </ul>
-            <ul class="list-unstyled components">
-               {/* {pages.map(ui => (
-                  ui.status ? (
-                     <li className="navbar-item">
-                        <NavLink to={ui.url} activeClassName="nav-active">
-                           <span>{ui.title}</span>
-                        </NavLink>
-                     </li>
-                  ) : null
-               ))} */}
-         
-            </ul>
-
          </div>
-
          <div class="footer-custom">
             <p>&copy; 2023 - Designed by Mylan Group </p>
          </div>
-
       </nav>
    )
 }

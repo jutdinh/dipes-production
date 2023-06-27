@@ -449,7 +449,6 @@ export default () => {
             const fomular_alias = await generateUniqueFormularAlias(display_name);
             const newCalculate = { display_name, fomular_alias, fomular };
 
-
             // Cập nhật modalTemp
             setModalTemp(prev => ({
                 ...prev,
@@ -486,10 +485,7 @@ export default () => {
         event.preventDefault();
         if (validateStatistical()) {
             const fomular_alias = await generateUniqueFormularAlias(display_name);
- 
             const newStatistical = { fomular_alias, display_name, field, fomular };
-
-
             // Cập nhật modalTemp
             setModalTemp(prev => ({
                 ...prev,
@@ -500,7 +496,6 @@ export default () => {
             setField("");
             setFomular("");
         }
-
     };
     console.log(modalTemp)
 
@@ -516,12 +511,10 @@ export default () => {
     const findTableAndFieldInfo = (fieldId) => {
         for (const [tableId, tableInfo] of Object.entries(tableFields)) {
             const fieldInfo = tableInfo.fields.find((field) => field.id === fieldId);
-
             if (fieldInfo) {
                 return { tableId, fieldInfo };
             }
         }
-
         return { tableId: null, fieldInfo: null };
     };
 
@@ -546,7 +539,6 @@ export default () => {
                             <div class="full graph_head">
                                 <div class="heading1 margin_0 ">
                                     <h5><a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>Tạo mới api </h5>
-
                                 </div>
                             </div>
                             <div class="table_section padding_infor_info">
@@ -583,8 +575,6 @@ export default () => {
                                                 <label class="ml-1">PRIVATE</label>
                                             </div>
                                         </div>
-
-                                        
                                     </div> */}
                                     <div class="form-group col-lg-4">
                                         <label class="font-weight-bold">Trạng thái <span className='red_star'>*</span></label>
@@ -606,7 +596,6 @@ export default () => {
                                                 <label class="ml-1">Off</label>
                                             </div>
                                         </div>
-
                                     </div>
                                     <div class="form-group col-lg-8"></div>
                                     <div class="form-group col-lg-5">
@@ -616,7 +605,6 @@ export default () => {
                                                 <input
                                                     type="radio"
                                                     checked={modalTemp.api_method === "get"}
-
                                                     onChange={() => {
                                                         const updatedModalTemp = {
                                                             ...modalTemp,
@@ -627,7 +615,6 @@ export default () => {
                                                             body: [],
                                                             calculates: [],
                                                             statistic: []
-
                                                         };
                                                         setModalTemp(updatedModalTemp);
                                                     }}
@@ -648,7 +635,6 @@ export default () => {
                                                             body: [],
                                                             calculates: [],
                                                             statistic: []
-
                                                         };
                                                         setModalTemp(updatedModalTemp);
                                                     }}

@@ -24,7 +24,7 @@ $(document).ready(function () {
   // });
   // $('#example15').calendar();
   // /*-- tooltip js --*/
-  // $('[data-toggle="tooltip"]').tooltip();
+  $('[data-toggle="tooltip"]').tooltip();
 });
 
 /*--------------------------------------

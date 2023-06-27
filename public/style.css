@@ -33,7 +33,7 @@
         -> button section
         -> pagination
         -> model bt
-    17. Gallery Section     
+    17. Gallery Section   
     18. Icons
     19. Invoice  
     20. Price table
@@ -742,6 +742,14 @@ a:focus {
     margin: 0;
     padding: 12px 0 12px 20px;
     height: auto;
+}
+#sidebar {
+  width: 250px;
+  /* các thuộc tính CSS khác */
+}
+
+#sidebar.active {
+  width: 0;
 }
 
 .sidebar_toggle {

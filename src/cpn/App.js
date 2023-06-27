@@ -21,6 +21,9 @@ import { Apis, CreateApi, UpdateAi,StatisticalField} from './api';
 import { UI, CreateUi} from './ui'
 import updateApi from './api/update-api';
 
+
+import { Fetch } from './page';
+
 import "../css/index.scss";
 
 function App() {
@@ -56,7 +59,7 @@ function App() {
         const response = await axios.get('/dipe-configs/ui.json');
         dispatch({
             type: "setUIPages",
-            payload: { pages: response.data.uis}
+            payload: { pages: response.data.data}
         })     
         
       } catch (error) {
@@ -98,6 +101,12 @@ function App() {
         <Route path="/users/profile" element={<Navigation Child={Profile} />} />
         <Route path="/settings" element={<Navigation Child={Settings} />} />
         <Route path="*" element={<PageNotFound />} />
+
+
+        <Route exac path="/:url" element={ < Navigation Child={Fetch} /> } />
+
+
+
       </Routes>
     </Router>
 
