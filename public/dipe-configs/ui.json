@@ -69,6 +69,41 @@
                     "api_delete": "/api/6AB9D42EE9D347DD9722A2871F188D7D"
                 }
             ]
+        },
+        {
+            "id": 11,
+            "ui_id": 11,
+            "title": "Khách hàng",
+            "version_id": 37,
+            "url": "/khach-hang",
+            "status": true,
+            "params": [],
+            "create_by": {
+                "username": "nhan",
+                "fullname": "Tô Trọng Nhân",
+                "role": "ad",
+                "email": "totrongnhan@gmail.com",
+                "phone": "0359695554",
+                "avatar": "/image/avatar/nhan.png",
+                "address": "Trà Vinh",
+                "note": "Ghi chú",
+                "create_by": "su",
+                "create_at": "06-06-2023 lúc 10:53"
+            },
+            "create_at": "28-06-2023 14:52:46",
+            "components": [
+                {
+                    "id": 11,
+                    "component_id": 11,
+                    "component_name": "Bảng Khách Hàng",
+                    "ui_id": 11,
+                    "layout_id": 0,
+                    "api_get": "/api/F755E13C3CF84422BF564648083E336B",
+                    "api_post": "/api/2BA4D6C1BD0E405C8D6D8F2885741B1B",
+                    "api_put": "/api/86623DE803AB4598A29552699B9483CF",
+                    "api_delete": "/api/221B319862FE4159AD5F41F6CFB8E4C0"
+                }
+            ]
         }
     ]
 }

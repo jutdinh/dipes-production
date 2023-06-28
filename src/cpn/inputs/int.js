@@ -83,8 +83,8 @@ export default (props) => {
 
     const fieldChangeData = (e) => {
         const rawJSON = e.target.value
-        const value = JSON.parse( rawJSON )
-        
+        const value = JSON.parse(rawJSON)
+
         setCurrent(value[pk])
         changeTrigger(field, value[pk])
     }
@@ -145,24 +145,24 @@ export default (props) => {
     } else {
         return (
             <div class="row justify-content-center">
-            <div class="col-md-6">
-                <form>
-                    <div class="form-group">
-                        <label for="name">{field.field_name}{!field.nullable && <span style={{ color: 'red' }}> *</span>}</label>
-                        <select className="form-control" name="role" onChange={ fieldChangeData } value={generateData(current)}>  
-                        <option value={""} >Chọn</option>                          
-                            {foreignData.length > 0 && foreignData.map((d, index) =>
-                                <option value={JSON.stringify(d)} >
-                                    <div key={index} className="form-control" >
-                                        <span>{generateData(d)}</span>
-                                    </div>
-                                </option>
+                <div class="col-md-6">
+                    <form>
+                        <div class="form-group">
+                            <label for="name">{field.field_name}{!field.nullable && <span style={{ color: 'red' }}> *</span>}</label>
+                            <select className="form-control" name="role" onChange={fieldChangeData} value={generateData(current)}>
+                                <option value={""} >Chọn</option>
+                                {foreignData.length > 0 && foreignData.map((d, index) =>
+                                    <option value={JSON.stringify(d)} >
+                                        <div key={index} className="form-control" >
+                                            <span>{generateData(d)}</span>
+                                        </div>
+                                    </option>
                                 )}
-                        </select>
-                    </div>
-                </form>
+                            </select>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
         )
     }
 }

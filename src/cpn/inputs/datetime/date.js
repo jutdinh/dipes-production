@@ -14,7 +14,6 @@ export default ( props ) => {
         setCurrent(defaultValue)
         console.log(defaultValue)
     }, [defaultValue])
-
     return(
        
          <div class="row justify-content-center">
@@ -27,7 +26,6 @@ export default ( props ) => {
                     placeholder="" onChange={ fieldChangeData } value={ current }
                     />
                  </div>
-               
              </form>
          </div>
      </div>
