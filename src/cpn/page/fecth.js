@@ -66,8 +66,104 @@ export default () => {
         window.location.href = `apis/api/${id_str}/input_info`;
     }
 
+    const deleteData = (data) => {
+       
 
+        fetch(`${proxy()}${page.components?.[0]?.api_delete}`, {
+            method: "DELETE",
+            headers: {
+                "content-type": "application/json"
+            }
+        }).then(res => res.json()).then(res => {
+            const { success, content } = res;
+            if (success) {
+                Swal.fire({
+                    title: "Thành công!",
+                    text: content,
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(function () {
+                    // window.location.reload();
+                });
+            } else {
+                Swal.fire({
+                    title: "Thất bại!",
+                    text: content,
+                    icon: "error",
+                    showConfirmButton: true,
 
+                }).then(function () {
+                    // Không cần reload trang
+                });
+            }
+        })
+    }
+    const handleDeleteApi = (uiid) => {
+        console.log(uiid)
+        const requestBody = {
+            version_id: version_id,
+            ui_id: uiid.id
+        };
+        console.log(requestBody)
+        Swal.fire({
+            title: 'Xác nhận xóa',
+            text: 'Bạn có chắc chắn muốn xóa api này?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy',
+            confirmButtonColor: 'rgb(209, 72, 81)',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`${proxy()}${page.components?.[0]?.api_delete}`, {
+                    method: 'DELETE',
+                    headers: {
+                        "content-type": "application/json",
+                        Authorization: `${_token}`,
+                    },
+                    body: JSON.stringify(requestBody)
+                })
+                    .then(res => res.json())
+                    .then((resp) => {
+                        const { success, content, data, status } = resp;
+                        if (status === "0x52404") {
+                            Swal.fire({
+                                title: "Cảnh báo!",
+                                text: content,
+                                icon: "warning",
+                                showConfirmButton: false,
+                                timer: 1500,
+                            }).then(function () {
+                                window.location.reload();
+                            });
+                            return;
+                        }
+                        if (success) {
+                            Swal.fire({
+                                title: "Thành công!",
+                                text: content,
+                                icon: "success",
+                                showConfirmButton: false,
+                                timer: 1500,
+                            }).then(function () {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "Thất bại!",
+                                text: content,
+                                icon: "error",
+                                showConfirmButton: false,
+                                timer: 2000,
+                            }).then(function () {
+                                // Không cần reload trang
+                            });
+                        }
+                    });
+            }
+        });
+    }
     const redirectToInputPUT = (data) => {
         console.log(data)
         // const id_str = page.components?.[0]?.api_post.split('/')[2];
@@ -156,7 +252,7 @@ export default () => {
                                                                 ))}
                                                                 <td class="align-center" style={{ minWidth: "80px" }}>
                                                                     <i class="fa fa-edit size pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
-                                                                    <i class="fa fa-trash-o size pointer icon-margin icon-delete" title={lang["delete"]}></i>
+                                                                    <i class="fa fa-trash-o size pointer icon-margin icon-delete" onClick={() => deleteData(row)} title={lang["delete"]}></i>
                                                                 </td>
                                                             </tr>
                                                         ))}

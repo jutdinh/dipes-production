@@ -60,8 +60,14 @@ export default () => {
 
     const changeTrigger = (field, value) => {
         const newData = data;
-        newData[field.fomular_alias] = value;
-        setData(newData)
+        if (value === "true") {
+            newData[field.fomular_alias] = true;
+        } else if (value === "false") {
+            newData[field.fomular_alias] = false;
+        } else {
+            newData[field.fomular_alias] = value;
+        }
+        setData(newData);
     }
     const nullCheck = () => {
         let valid = true;
@@ -115,7 +121,7 @@ export default () => {
                         showConfirmButton: false,
                         timer: 1500
                     }).then(function () {
-                        window.location.reload();
+                        // window.location.reload();
                     });
                 }else{
                     Swal.fire({
