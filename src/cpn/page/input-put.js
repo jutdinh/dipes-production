@@ -103,7 +103,6 @@ export default () => {
                     setTables(tables)
                     setRelatedTables(relatedTables)
 
-
                     fetch(`${proxy()}/api/apis/retrive/put/data/${id_str}`)
                         .then(res => res.json()).then(res => {
                             const { data } = res;
@@ -235,7 +234,7 @@ export default () => {
                                                 </div>
                                             )}
                                             {fields.map(field =>
-                                                <React.StrictMode key={field.field_id}>
+                                                <div key={field.field_id}>
                                                     {field.data_type == "PHONE" ?
                                                         <DataPhone
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
@@ -314,7 +313,7 @@ export default () => {
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} defaultValue={initialData[field.field_alias]} /> : null
                                                     }
-                                                </React.StrictMode>
+                                                </div>
                                             )}
                                             <div className="m-t-1">
                                                 <div className="p-1">

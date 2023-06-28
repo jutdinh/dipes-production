@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import React, { useRef } from "react";
+import { useRef } from "react";
 import Swal from 'sweetalert2';
 import { Profile } from '.';
 export default (props) => {

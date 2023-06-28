@@ -64,11 +64,12 @@ export default () => {
                   </li>
                ) : null}
 
+               
                {user.role === "uad" ? (
                   <li className="navbar-item">
-                     <NavLink to="/logs" activeClassName="nav-active">
-                        <i class="fa fa-shield"></i>
-                        <span>{lang["log.title"]}</span>
+                     <NavLink to="/diagram" activeClassName="nav-active">
+                        <i class="fa fa-database pointer icon-database"></i>
+                        <span>{lang["diagram"]}</span>
                      </NavLink>
                   </li>
                ) : null}
@@ -83,7 +84,7 @@ export default () => {
                         ui.status ? (
                            <li className="navbar-item">
                               <NavLink to={ui.url} activeClassName="nav-active">
-                                 <i class="fa fa-shield"></i>
+                                 <i class="fa fa-newspaper-o"></i>
                                  <span>{ui.title}</span>
                               </NavLink>
                            </li>
@@ -91,6 +92,14 @@ export default () => {
                      ))}
                   </ul>
                </li>
+               {user.role === "uad" ? (
+                  <li className="navbar-item">
+                     <NavLink to="/logs" activeClassName="nav-active">
+                        <i class="fa fa-shield"></i>
+                        <span>{lang["log.title"]}</span>
+                     </NavLink>
+                  </li>
+               ) : null}
             </ul>
          </div>
          <div class="footer-custom">

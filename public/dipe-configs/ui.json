@@ -1,72 +1,72 @@
 {
     "data": [
         {
-            "id": 9,
-            "ui_id": 9,
-            "title": "Loại sản phẩm",
-            "version_id": 2,
-            "url": "/loai-san-pham",
+            "id": 8,
+            "ui_id": 8,
+            "title": "Sản  phẩm",
+            "version_id": 37,
+            "url": "/san--pham",
             "status": true,
             "params": [],
             "create_by": {
                 "username": "nhan",
-                "fullname": "nhân",
+                "fullname": "Tô Trọng Nhân",
                 "role": "ad",
-                "email": "trongnhan54@outlook.com.vn",
-                "phone": "0309584883",
+                "email": "totrongnhan@gmail.com",
+                "phone": "0359695554",
                 "avatar": "/image/avatar/nhan.png",
-                "address": "TV",
+                "address": "Trà Vinh",
                 "note": "Ghi chú",
                 "create_by": "su",
-                "create_at": "08-06-2023 lúc 19:46"
+                "create_at": "06-06-2023 lúc 10:53"
             },
-            "create_at": "27-06-2023 21:30:44",
+            "create_at": "28-06-2023 10:15:34",
             "components": [
                 {
                     "id": 8,
                     "component_id": 8,
-                    "component_name": "Loại sản phẩm",
-                    "ui_id": 9,
+                    "component_name": "Bảng Sản Phẩm",
+                    "ui_id": 8,
                     "layout_id": 0,
-                    "api_get": "/api/A8960778630249AA81B6BA1917407687",
-                    "api_post": "/api/5E2E101654B74387A2F43CEB15BCD7BB",
-                    "api_put": "/api/C5885E874F10491F9C8F517D92B0B395",
-                    "api_delete": "/api/C5885E874F10491F9C8F517D92B0B395"
+                    "api_get": "/api/848C64CF6B614DE8A6F673EBC3AB93CC",
+                    "api_post": "/api/D45C95B08E374571B176CD19BC2FF694",
+                    "api_put": "/api/FD7150A7DBCE4D00B0F293B358DF9B78",
+                    "api_delete": "/api/40122707771C4568B4CABA77EC6D0A24"
                 }
             ]
         },
         {
-            "id": 10,
-            "ui_id": 10,
-            "title": "Sản phẩm",
-            "version_id": 2,
-            "url": "/san-pham",
+            "id": 9,
+            "ui_id": 9,
+            "title": "Loại",
+            "version_id": 37,
+            "url": "/loai",
             "status": true,
             "params": [],
             "create_by": {
                 "username": "nhan",
-                "fullname": "nhân",
+                "fullname": "Tô Trọng Nhân",
                 "role": "ad",
-                "email": "trongnhan54@outlook.com.vn",
-                "phone": "0309584883",
+                "email": "totrongnhan@gmail.com",
+                "phone": "0359695554",
                 "avatar": "/image/avatar/nhan.png",
-                "address": "TV",
+                "address": "Trà Vinh",
                 "note": "Ghi chú",
                 "create_by": "su",
-                "create_at": "08-06-2023 lúc 19:46"
+                "create_at": "06-06-2023 lúc 10:53"
             },
-            "create_at": "27-06-2023 21:30:57",
+            "create_at": "28-06-2023 10:15:43",
             "components": [
                 {
                     "id": 9,
                     "component_id": 9,
-                    "component_name": "Sản phẩm",
-                    "ui_id": 10,
+                    "component_name": "Loại",
+                    "ui_id": 9,
                     "layout_id": 0,
-                    "api_get": "/api/0219F302DFA947AFB1DF8AEB6FFEB2A8",
-                    "api_post": "/api/67C27E6A918D4E30B72B9A5864D39B17",
-                    "api_put": "/api/EC405525070A48F7BE6AF5E975A877D7",
-                    "api_delete": "/api/EC405525070A48F7BE6AF5E975A877D7"
+                    "api_get": "/api/F97F9408180441D4ADF42A3FF1A51FBB",
+                    "api_post": "/api/D5369C68237644AF8D7C06229E141222",
+                    "api_put": "/api/7E42861C765844E69336394CB18FF951",
+                    "api_delete": "/api/6AB9D42EE9D347DD9722A2871F188D7D"
                 }
             ]
         }

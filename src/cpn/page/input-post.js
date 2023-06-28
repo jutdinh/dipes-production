@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
-
+import Swal from 'sweetalert2';
 import {
     Varchar, Char, Text, Int,
     DateInput, TimeInput, DateTimeInput,
@@ -22,7 +22,7 @@ export default () => {
     const [errors, setErrors] = useState({});
     const [data, setData] = useState({});
     const [relatedTables, setRelatedTables] = useState([])
-    const [page, setPage] = useState([]);
+    const [page, setPage] = useState(null);
 
 
     const [phoneError, setPhoneError] = useState(false);
@@ -33,76 +33,105 @@ export default () => {
     const handleEmailError = (error) => {
         setEmailError(error);
     };
-    const [post, setPost] = useState({});
+    console.log(pages)
+
     useEffect(() => {
 
         fetch(`${proxy()}/apis/api/${id_str}/input_info`).then(res => res.json())
             .then(res => {
                 const { success, api, relatedTables, data } = res;
-                if (!success) {
-
-                    console.log(data)
+                if (success) {
+                    // console.log(data)
                     setFields(data.body)
                     setTables(data.tables)
-
                 } else {
                     // al.failure("Lỗi", "Không thực hiện được chức năng này")
-
                 }
-
-                // // const { url } = api.url;
-                // const page = pages.components?.[1]?.filter(p => p.apis_post == api.url.url)[0]
-                // if (page) {
-                //     const { param } = page;
-                //     console.log(page)
-                //     // modifyPageParam(param)
-                // }
             })
     }, [pages])
+    const result = pages?.find(item => {
+        // Lấy id từ api_get
+        const api_get_id = item.components?.[0]?.api_post.split('/')[2];
+        // console.log(api_get_id)
+        // So sánh với id_str
+        return api_get_id === id_str;
+    });
+    // console.log (result)
 
     const changeTrigger = (field, value) => {
         const newData = data;
-        newData[field.field_alias] = value;
+        newData[field.fomular_alias] = value;
         setData(newData)
     }
     const nullCheck = () => {
         let valid = true;
-        for (let i = 0; i < fields.length; i++) {
-            const field = fields[i];
-            const { nullable, field_alias } = field;
-            if (!nullable) {
-                if (data[field_alias] == null || data[field_alias] == undefined || data[field_alias] == "") {
-                    valid = false
-                }
-            }
-        }
+        // for (let i = 0; i < fields.length; i++) {
+        //     const field = fields[i];
+        //     const { nullable, fomular_alias } = field;
+        //     if (!nullable) {
+        //         if (data[fomular_alias] == null || data[fomular_alias] == undefined || data[fomular_alias] == "") {
+        //             valid = false
+        //         }
+        //     }
+        // }
         return valid;
     }
 
 
     const submit = () => {
 
+        console.log(data)
         if (!emailError && !phoneError && nullCheck(data)) {
-            fetch(`${proxy()}${api.url.url}`, {
+            fetch(`${proxy()}${result?.components?.[0]?.api_post}`, {
                 method: "POST",
                 headers: {
                     "content-type": "application/json"
                 },
 
-                body: JSON.stringify({ data })
+                body: JSON.stringify({ ...data })
 
             }).then(res => res.json()).then(res => {
-                const { success, data, fk } = res;
-                // console.log(res)
-                if (success) {
-                    // al.success("Thành công", "Thành công thêm dữ liệu!")
-                    setTimeout(() => {
+                const { success, data, fk, content } = res;
+                console.log(res)
+                const errors = [
+                    "primaryConflict",
+                    "foreignConflict",
+                    "typeError"
+                ]
+
+                let valid = true;
+                for (let i = 0; i < errors.length; i++) {
+                    const isInValid = res[errors[i]]
+                    if (isInValid) {
+                        valid = false
+                    }
+                }
+                console.log(`VALID: ${valid}`)
+                if (valid) {
+                    Swal.fire({
+                        title: "Thành công!",
+                        text: content,
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(function () {
                         window.location.reload();
-                    }, 1600);
-                } else {
-                    // al.failure("Lỗi",data)
+                    });
+                }else{
+                    Swal.fire({
+                        title: "Thất bại!",
+                        text: content,
+                        icon: "error",
+                        showConfirmButton: true,
+
+                    }).then(function () {
+                        // Không cần reload trang
+                    });
                 }
             })
+
+
+
         } else {
             if (emailError) {
                 // al.failure("Lỗi", "Địa chỉ email không hợp lệ");
@@ -114,8 +143,7 @@ export default () => {
         }
     };
 
-    console.log("tables", tables)
-    console.log("body", fields)
+
     return (
 
         <div class="midde_cont">
@@ -134,7 +162,8 @@ export default () => {
                             <div class="full graph_head d-flex">
                                 <div class="heading1 margin_0 ">
                                     {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
-                                    <h5>Trang post</h5>
+
+                                    <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{result?.title} &gt;&gt; Thêm mới</h5>
                                 </div>
                                 {/* <div class="ml-auto">
                                 <i class="fa fa-newspaper-o icon-ui"></i>
@@ -161,9 +190,9 @@ export default () => {
                                         <div className="w-50-pct mg-auto p-1 bg-white">
                                             <span className="block text-32-px text-center p-0-5">{api.api_name}</span>
                                             {fields.map(field =>
-                                                <React.StrictMode key={field.field_id}>
+                                                <div key={field.field_id}>
 
-                                                    {field.props.DATATYPE == "PHONE" ?
+                                                    {field.DATATYPE == "PHONE" ?
                                                         <DataPhone
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
@@ -171,43 +200,43 @@ export default () => {
                                                             onPhoneError={handlePhoneError}
                                                         /> : null
                                                     }
-                                                    {field.props.DATATYPE == "VARCHAR" ?
+                                                    {field.DATATYPE == "VARCHAR" ?
                                                         <Varchar
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.props.DATATYPE == "CHAR" ?
+                                                    {field.DATATYPE == "CHAR" ?
                                                         <Char
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.props.DATATYPE == "TEXT" ?
+                                                    {field.DATATYPE == "TEXT" ?
                                                         <Text
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.props.DATATYPE == "INT" || field.data_type == "BIG INT" ?
+                                                    {field.DATATYPE == "INT" || field.data_type == "BIG INT" ?
                                                         <Int
                                                             table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.props.DATATYPE == "INT UNSIGNED" || field.data_type == "BIG INT UNSIGNED" ?
+                                                    {field.DATATYPE == "INT UNSIGNED" || field.data_type == "BIG INT UNSIGNED" ?
                                                         <Int
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} unsigned={true} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.props.DATATYPE == "DATE" ?
+                                                    {field.DATATYPE == "DATE" ?
                                                         <DateInput
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.props.DATATYPE == "EMAIL" ?
+                                                    {field.DATATYPE == "EMAIL" ?
                                                         <DataEmail
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
@@ -215,37 +244,37 @@ export default () => {
                                                             onEmailError={handleEmailError}
                                                         /> : null
                                                     }
-                                                    {field.props.DATATYPE == "TIME" ?
+                                                    {field.DATATYPE == "TIME" ?
                                                         <TimeInput
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.props.DATATYPE == "DATETIME" ?
+                                                    {field.DATATYPE == "DATETIME" ?
                                                         <DateTimeInput
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.props.DATATYPE == "DECIMAL" ?
+                                                    {field.DATATYPE == "DECIMAL" ?
                                                         <Decimal
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.props.DATATYPE == "DECIMAL UNSIGNED" ?
+                                                    {field.DATATYPE == "DECIMAL UNSIGNED" ?
                                                         <Decimal
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} unsigned={true} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.props.DATATYPE == "BOOL" ?
+                                                    {field.DATATYPE == "BOOL" ?
                                                         <Bool
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
-                                                </React.StrictMode>
+                                                </div>
                                             )}
                                             {/* <div className="m-t-1">
                                                 <div className="p-1">
@@ -257,17 +286,17 @@ export default () => {
                                                     </div>
                                                 </div>
                                             </div> */}
-                                        
-                                               
-                                                <div class="row justify-content-center">
-                                                    <div class="col-md-6">
-                                                        <div class="mt-2 d-flex justify-content-end">
-                                                            <button type="button" onClick={submit} class="btn btn-success mr-2">{lang["btn.create"]}</button>
-                                                            <button type="button" onClick={() => navigate(-1)} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
-                                                        </div>
+
+
+                                            <div class="row justify-content-center">
+                                                <div class="col-md-6">
+                                                    <div class="mt-2 d-flex justify-content-end">
+                                                        <button type="button" onClick={submit} class="btn btn-success mr-2">{lang["btn.create"]}</button>
+                                                        <button type="button" onClick={() => navigate(-1)} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
                                                     </div>
                                                 </div>
-                                           
+                                            </div>
+
 
                                         </div>
                                     </div>

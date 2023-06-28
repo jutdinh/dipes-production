@@ -18,7 +18,7 @@ export default {
     "signout": "Đăng xuất",
     "dashboard": "Bảng điều khiển",
     "home": "Trang chủ",
-    
+    "diagram": "Biểu đồ",
     "user info": "Xin chào",
     "projects manager": "Quản lý dự án",
     "project list": "Danh sách dự án",

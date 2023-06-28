@@ -10,77 +10,56 @@ export default (props) => {
     const [showKey, setShowKey] = useState("")
     const { proxy, unique_string } = useSelector(state => state);
     const [relatedTable, setRelatedTable] = useState({})
-    const [pk, setPK] = useState([]);
-    console.log(table)
-    console.log(field)
+    const [pk, setPK] = useState("");
+    // console.log(table)
+    // console.log("data field",field.id)
+
     useEffect(() => {
         if (defaultValue !== undefined) {
-            if (isFieldForeign()) {
-                // const thisFieldForeignKey = table.foreign_keys.filter(fk => {
-                //     const { fks } = fk;
-                //     const isKeyExisted = fks.filter(key => {
-                //         const { field_alias, ref_on } = key;
-                //         return field_alias == field.field_alias;
-                //     })[0]
-                //     return isKeyExisted ? true : false;
-                // })[0];
+            const key = isFieldForeign()
+            if (key) {
 
-                // const { table_alias, fks } = thisFieldForeignKey;
-                // fetch(`${proxy()}/apis/apis/table/data/${table_alias}`).then(res => res.json()).then(res => {
-                //     const { success, data, fields, pk } = res;
-                //     setForeignData(data)
-                //     setFields(fields)
+                // fetch(`${proxy()}/apis/apis/table/data/${table_alias}`).then(res => res.json()).then(res => {/table/:table_id/data
+                fetch(`${proxy()}/apis/table/${key.table_id}/data`).then(res => res.json()).then(res => {
+                    const { success, data, fields } = res;
+                    console.log(data)
+                    setForeignData(data.data)
+                    setFields(data.fields)
 
-
-                //     const showKey = fks.filter(k => k.field_alias == field.field_alias)[0].ref_on
-                //     setShowKey(showKey)
-                //     const rTable = related.filter(tb => tb.table_alias == table_alias)[0];
-                //     setRelatedTable(rTable)
-                //     setPK(pk)
-
-                //     const primary = pk[0]; /* This may cause some freaking bug whence has more than 1 key in primary set  */
-                //     const currentData = data.filter(d => d[primary] == defaultValue)[0];
-
-                //     if (currentData) {
-                //         setCurrent(currentData)
-                //     }
-                // })
+                    const { ref_field_id } = key;
+                    const primaryField = fields.find(field => field.id == ref_field_id);
+                    if (primaryField) {
+                        setPK(primaryField.fomular_alias)
+                    }
+                })
 
             } else {
                 setCurrent(defaultValue)
             }
         } else {
-            if (!isFieldForeign() && field.props.AUTO_INCREMENT) {
-                fetch(`${proxy()}/api/${unique_string}/apis/api/get/auto_increment/${field.field_alias}`)
+            if (!isFieldForeign() && field.AUTO_INCREMENT) {
+                fetch(`${proxy()}/apis/field/autoid/${field.id}`)
                     .then(res => res.json()).then(res => {
-                        const { id } = res;
-                        setCurrent(id)
-                        changeTrigger(field, id)
+                        const { data } = res;
+                        // console.log(data.id)
+                        setCurrent(data.id)
+                        changeTrigger(field, data.id)
                     })
             } else {
-                if (isFieldForeign()) {
-                    const thisFieldForeignKey = table.fk.filter(fk => {
-                        const { fks } = fk;
-                        const isKeyExisted = fks.filter(key => {
-                            const { field_alias, ref_on } = key;
-                            return field_alias == field.field_alias;
-                        })[0]
-                        return isKeyExisted ? true : false;
-                    })[0];
-                    const { table_alias, fks } = thisFieldForeignKey;
+                const key = isFieldForeign()
+                if (key) {
                     if (foreignData.length == 0) {
-                        fetch(`${proxy()}/api/${unique_string}/apis/table/data/${table_alias}`).then(res => res.json()).then(res => {
-                            const { success, data, fields, pk } = res;
-                            setForeignData(data)
-                            setFields(fields)
+                        fetch(`${proxy()}/apis/table/${key.table_id}/data`).then(res => res.json()).then(res => {
+                            const { success, data, fields } = res;
+                            console.log(data)
+                            setForeignData(data.data)
+                            setFields(data.fields)
 
-
-                            const showKey = fks.filter(k => k.field_alias == field.field_alias)[0].ref_on
-                            setShowKey(showKey)
-                            const rTable = related.filter(tb => tb.table_alias == table_alias)[0];
-                            setRelatedTable(rTable)
-                            setPK(pk)
-
+                            const { ref_field_id } = key;
+                            const primaryField = data.fields.find(field => field.id == ref_field_id);
+                            if (primaryField) {
+                                setPK(primaryField.fomular_alias)
+                            }
                         })
                     }
                 }
@@ -93,28 +72,21 @@ export default (props) => {
 
     }, [])
 
-    useEffect(() => {
-        // console.log(defaultValue)
-        // console.log(pk)
-        // console.log(foreignData)
-
-        const filtedCurrent = foreignData.filter(data => data[pk[0]] == defaultValue)[0];///////////////////////////////////////////////////
-        setCurrent(filtedCurrent)
-    }, [foreignData])
-
     const isFieldForeign = () => {
-        // const isForeign = table.fk.filter(key => {
-        //     const { fks } = key;
-        //     const fkExisted = fks.filter(k => k.field_alias == field.field_alias)[0]
-        //     return fkExisted ? true : false
-        // })[0]
-        // return isForeign ? true : false;
+        const { foreign_keys } = table;
+        const key = foreign_keys.find(key => key.field_id == field.id)
+        if (key) {
+            return key
+        }
+        return false
     }
 
     const fieldChangeData = (e) => {
-        const value = e.target.value
-        setCurrent(e.target.value)
-        changeTrigger(field, value)
+        const rawJSON = e.target.value
+        const value = JSON.parse( rawJSON )
+        
+        setCurrent(value[pk])
+        changeTrigger(field, value[pk])
     }
 
     const blurTrigger = (e) => {
@@ -141,17 +113,18 @@ export default (props) => {
 
         // }else{
         //     return null
-        // }
+        // }c
+        console.log(data)
         if (data) {
-            return data[pk[0]]
+            return data[pk]
         }
         return null
     }
 
-    const dataClickedTrigger = (data) => {
-        setCurrent(data);
-        changeTrigger(field, data[showKey])
-    }
+    // const dataClickedTrigger = (data) => {
+    //     setCurrent(data);
+    //     changeTrigger(field, data[pk])
+    // }
 
     if (!isFieldForeign()) {
         return (
@@ -160,62 +133,36 @@ export default (props) => {
                     <form>
                         <div class="form-group">
                             <label for="name">{field.field_name}{!field.nullable && <span style={{ color: 'red' }}> *</span>}</label>
-                            <input type={field.props.AUTO_INCREMENT ? "text" : "number"}
-                            className="form-control"
-                            placeholder="" onChange={fieldChangeData} value={current}
-                        />
+                            <input type={field.AUTO_INCREMENT ? "text" : "number"}
+                                className="form-control"
+                                placeholder="" onChange={fieldChangeData} value={current}
+                            />
                         </div>
-                      
                     </form>
                 </div>
             </div>
         )
     } else {
         return (
-            <div className="w-100-pct p-1 m-t-1">
-                <div>
-                    <div>
-                        <span className="block text-16-px">
-                            {/* { field.field_name } */}
-
-                            {field.field_name}{!field.nullable && <span style={{ color: 'red' }}> *</span>}
-                        </span>
-                    </div>
-                    <div className="m-t-0-5">
-                        <input type="text"
-                            className="p-t-0-5 p-b-0-5 p-l-1 text-16-px block w-100-pct border-1"
-                            placeholder="" onChange={fieldChangeData} value={generateData(current)}         ////////////////////
-                            onFocus={focusTrigger}
-                            onBlur={blurTrigger}
-                        />
-
-                        {/* FOREIGN DATA SHOW AND CHOSE */}
-                    </div>
-
-                    <div className="rel">
-                        <div className="abs-default w-100-pct no-overflow bg-white shadow" style={{ height: `${height}px` }}>
-                            <div className="block w-100-pct p-0-5 overflow" style={{ height: `${height}px` }}>
-                                {foreignData.length > 0 && foreignData.map((d, index) =>
-                                    <div key={index} className="flex flex-no-wrap hover pointer" onClick={() => { dataClickedTrigger(d) }}>
-
-                                        <div className="div p-0-5 w-max-content">
-                                            <span>{generateData(d)}</span>
-                                        </div>
-
-                                        {/* fields ? fields.map( field =>
-                                        <div key={field.field_id} className="div p-0-5 w-max-content">
-                                            <span>{ d[ field.field_alias ] }</span>
-                                        </div>
-                                    ) : null */}
+            <div class="row justify-content-center">
+            <div class="col-md-6">
+                <form>
+                    <div class="form-group">
+                        <label for="name">{field.field_name}{!field.nullable && <span style={{ color: 'red' }}> *</span>}</label>
+                        <select className="form-control" name="role" onChange={ fieldChangeData } value={generateData(current)}>  
+                        <option value={""} >Chọn</option>                          
+                            {foreignData.length > 0 && foreignData.map((d, index) =>
+                                <option value={JSON.stringify(d)} >
+                                    <div key={index} className="form-control" >
+                                        <span>{generateData(d)}</span>
                                     </div>
+                                </option>
                                 )}
-                            </div>
-                        </div>
+                        </select>
                     </div>
-
-                </div>
+                </form>
             </div>
+        </div>
         )
     }
-
 }
