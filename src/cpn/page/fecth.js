@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StatusEnum, StatusTask } from '../enum/status';
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
+import { version } from "react-dom";
 
 export default () => {
     const { lang, proxy, auth, pages } = useSelector(state => state);
@@ -99,7 +100,7 @@ export default () => {
     }
     const handleDelete = (data) => {
         console.log(data)
-       
+
 
         let api_delete = page.components[0].api_delete;
 
@@ -110,10 +111,17 @@ export default () => {
 
             if (foundObjects.length > 0) {
                 // Lấy ra mảng các id từ foundObjects
-                let ids = foundObjects.map(obj => obj.id);
+                let fomular_alias = foundObjects.map(obj => obj.fomular_alias);
+                console.log(fomular_alias)
 
+                const newData = [];
+                if (data.hasOwnProperty(fomular_alias)) {
+                    newData.push(data[fomular_alias]);
+                }
+
+                console.log(newData);
                 // Tạo chuỗi newParams bằng cách nối api_delete và ids
-                let newParams = `${api_delete}/${ids.join("/")}`;
+                let newParams = `${api_delete}/${newData.join("/")}`;
 
                 console.log(newParams);
             } else {
