@@ -41,7 +41,7 @@ export default () => {
             .then(res => {
                 const { success, api, relatedTables, data } = res;
                 if (success) {
-                    // console.log(data)
+                    console.log(data)
                     setFields(data.body)
                     setTables(data.tables)
                 } else {
@@ -49,6 +49,7 @@ export default () => {
                 }
             })
     }, [pages])
+
     const result = pages?.find(item => {
         // Lấy id từ api_get
         const api_get_id = item.components?.[0]?.api_post.split('/')[2];

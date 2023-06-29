@@ -12,7 +12,8 @@ export default () => {
     const _token = localStorage.getItem("_token");
     const { project_id, version_id, url } = useParams();
     let navigate = useNavigate();
-    const [uis, setUis] = useState([]);
+    const [dataTables, setDataTables] = useState([]);
+    const [dataFields, setDataFields] = useState([]);
     const [apiData, setApiData] = useState([])
     const [apiDataName, setApiDataName] = useState([])
 
@@ -31,7 +32,7 @@ export default () => {
     console.log(page)
     useEffect(() => {
         if (page && page.components) {
-            const id_str = page.components?.[0]?.api_get.split('/')[2];
+            const id_str = page.components?.[0]?.api_post.split('/')[2];
             console.log(id_str)
             fetch(`${proxy()}/apis/api/${id_str}/input_info`)
                 .then(res => res.json())
@@ -39,20 +40,25 @@ export default () => {
                     const { data, success, content } = res;
                     if (success) {
                         console.log("succcess", data)
-                        // al.failure("Lỗi", "Không tìm thấy dữ liệu")
+                        setDataTables(data.tables)
+                        setDataFields(data.body)
                     }
                     // setApi(api);
                     callApi()
                 })
         }
     }, [page])
+    console.log(dataFields)
+
+
+
 
     const callApi = (api) => {
         /* this must be fixed */
         fetch(`${proxy()}${page.components?.[0]?.api_get}`).then(res => res.json()).then(res => {
             const { success, content, data, fields } = res;
-            console.log(data)
-            console.log(fields)
+            // console.log(data)
+            // console.log(fields)
             //  al.failure("Lỗi", "Đọc dữ liệu thất bại ")
 
             setApiData(data)
@@ -67,9 +73,14 @@ export default () => {
     }
 
     const deleteData = (data) => {
-       
+        let rawParams = page.apis.delete;
+        // const keys = Object.keys(data);
+        // keys.map(key => {
+        //     const value = data[key];
+        //     rawParams = rawParams.replaceAll(key, value);
+        // })
 
-        fetch(`${proxy()}${page.components?.[0]?.api_delete}`, {
+        fetch(`${proxy()}${rawParams}`, {
             method: "DELETE",
             headers: {
                 "content-type": "application/json"
@@ -77,38 +88,44 @@ export default () => {
         }).then(res => res.json()).then(res => {
             const { success, content } = res;
             if (success) {
-                Swal.fire({
-                    title: "Thành công!",
-                    text: content,
-                    icon: "success",
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(function () {
-                    // window.location.reload();
-                });
+                // al.success("Thành công", "Xóa dữ liệu thành công")
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1600);
             } else {
-                Swal.fire({
-                    title: "Thất bại!",
-                    text: content,
-                    icon: "error",
-                    showConfirmButton: true,
-
-                }).then(function () {
-                    // Không cần reload trang
-                });
+                // al.failure("Thất bại", "Xóa thất bại")
             }
         })
     }
-    const handleDeleteApi = (uiid) => {
-        console.log(uiid)
-        const requestBody = {
-            version_id: version_id,
-            ui_id: uiid.id
-        };
-        console.log(requestBody)
+    const handleDelete = (data) => {
+        console.log(data)
+       
+
+        let api_delete = page.components[0].api_delete;
+
+        let primaryKeys = dataTables && dataTables[0] && dataTables[0].primary_key ? dataTables[0].primary_key : null;
+        let newParams = api_delete;
+        if (primaryKeys) {
+            let foundObjects = dataFields.filter((obj) => primaryKeys.includes(obj.id));
+
+            if (foundObjects.length > 0) {
+                // Lấy ra mảng các id từ foundObjects
+                let ids = foundObjects.map(obj => obj.id);
+
+                // Tạo chuỗi newParams bằng cách nối api_delete và ids
+                let newParams = `${api_delete}/${ids.join("/")}`;
+
+                console.log(newParams);
+            } else {
+                console.log('Không tìm thấy đối tượng nào có id trong primaryKeys');
+            }
+        } else {
+            console.log('Không tìm thấy primaryKeys');
+        }
+
         Swal.fire({
             title: 'Xác nhận xóa',
-            text: 'Bạn có chắc chắn muốn xóa api này?',
+            text: 'Bạn có chắc chắn muốn xóa trường này?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Xóa',
@@ -116,29 +133,17 @@ export default () => {
             confirmButtonColor: 'rgb(209, 72, 81)',
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`${proxy()}${page.components?.[0]?.api_delete}`, {
+                fetch(`${proxy()}${newParams}`, {
                     method: 'DELETE',
                     headers: {
                         "content-type": "application/json",
                         Authorization: `${_token}`,
-                    },
-                    body: JSON.stringify(requestBody)
+                    }
                 })
                     .then(res => res.json())
                     .then((resp) => {
                         const { success, content, data, status } = resp;
-                        if (status === "0x52404") {
-                            Swal.fire({
-                                title: "Cảnh báo!",
-                                text: content,
-                                icon: "warning",
-                                showConfirmButton: false,
-                                timer: 1500,
-                            }).then(function () {
-                                window.location.reload();
-                            });
-                            return;
-                        }
+                        console.log(resp)
                         if (success) {
                             Swal.fire({
                                 title: "Thành công!",
@@ -252,7 +257,7 @@ export default () => {
                                                                 ))}
                                                                 <td class="align-center" style={{ minWidth: "80px" }}>
                                                                     <i class="fa fa-edit size pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
-                                                                    <i class="fa fa-trash-o size pointer icon-margin icon-delete" onClick={() => deleteData(row)} title={lang["delete"]}></i>
+                                                                    <i class="fa fa-trash-o size pointer icon-margin icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
                                                                 </td>
                                                             </tr>
                                                         ))}
