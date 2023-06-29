@@ -77,7 +77,7 @@ export default () => {
                <li class="active">
                   <a href="#dashboard" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                      <i class="fa fa-dashboard yellow_color"></i>
-                     <span>Dashboard</span>
+                     <span>Quản lý dữ liệu</span>
                   </a>
                   <ul class="collapse list-unstyled show nav-custom " id="dashboard">
                      {pages && pages.map(ui => (
