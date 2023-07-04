@@ -121,9 +121,9 @@ export default () => {
 
                 console.log(newData);
                 // Tạo chuỗi newParams bằng cách nối api_delete và ids
-                let newParams = `${api_delete}/${newData.join("/")}`;
+                newParams = `${api_delete}/${newData.join("/")}`;
 
-                console.log(newParams);
+                
             } else {
                 console.log('Không tìm thấy đối tượng nào có id trong primaryKeys');
             }
@@ -131,6 +131,8 @@ export default () => {
             console.log('Không tìm thấy primaryKeys');
         }
 
+        console.log(newParams);
+        
         Swal.fire({
             title: 'Xác nhận xóa',
             text: 'Bạn có chắc chắn muốn xóa trường này?',
@@ -155,7 +157,7 @@ export default () => {
                         if (success) {
                             Swal.fire({
                                 title: "Thành công!",
-                                text: content,
+                                text: "Xoá thành công",
                                 icon: "success",
                                 showConfirmButton: false,
                                 timer: 1500,

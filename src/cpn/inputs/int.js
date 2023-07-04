@@ -73,10 +73,12 @@ export default (props) => {
     }, [])
 
     const isFieldForeign = () => {
-        const { foreign_keys } = table;
-        const key = foreign_keys.find(key => key.field_id == field.id)
-        if (key) {
-            return key
+        if( table ){
+            const { foreign_keys } = table;
+            const key = foreign_keys.find(key => key.field_id == field.id)
+            if (key) {
+                return key
+            }
         }
         return false
     }

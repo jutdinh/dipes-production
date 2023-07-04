@@ -34,35 +34,35 @@ export default (props) => {
 
 
     return (
-        <div className="w-100-pct p-1 m-t-1">
-            <div>
-                <span className="block text-16-px">
-                    {/* {field.field_name} */}
-                    {field.field_name}{!field.nullable && <span style={{color: 'red'}}> *</span>}
-                    
-                </span>
-            </div>
-            <div className="m-t-0-5">
-                <input
-                    type="text"
-                    className={`p-t-0-5 p-b-0-5 p-l-1 text-16-px block w-100-pct border-1   ${phoneError ? 'border-red' : ''} `}
-                    value={current}
-                    placeholder=""
-                    onChange={fieldChangeData}
-                />
+        <div className="w-100-pct p-1 m-t-1"> 
+                 
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <form>
+                        <div class="form-group">
+                            <label for="name">{field.field_name}{!field.nullable && <span style={{color: 'red'}}> *</span> }</label>
+                            <input
+                                type="text"
+                                className={`form-control ${phoneError ? 'border-red' : ''} `}
+                                value={current}
+                                placeholder=""
+                                onChange={fieldChangeData}
+                            />
+                        </div>
 
-            </div>
-            {
+                    { phoneError && (
+                        <div className="rel">
+                            <div className="abs">
+                                <span className="block crimson p-0-5 text-14-px">
+                                    Số điện thoại không hợp lệ
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                    </form>
+                </div>
+            </div>          
 
-                <div className="rel">
-                    <div className="abs">
-                        {phoneError && (
-                            <span className="block crimson p-0-5 text-14-px">
-                                Số điện thoại không hợp lệ
-                            </span>
-                        )}
-                    </div>
-                </div>}
         </div>
     );
 };
