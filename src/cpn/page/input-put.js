@@ -2,68 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
-
+import Swal from 'sweetalert2';
 import {
     Varchar, Char, Text, Int,
     DateInput, TimeInput, DateTimeInput,
-    Decimal, Bool, DataPhone, DataEmail
+    Decimal, Bool, DataEmail, DataPhone
+
 } from '../inputs';
 
 export default () => {
     const dispatch = useDispatch();
-
     const { id_str } = useParams()
-
+    const { project_id, version_id, url } = useParams();
     let navigate = useNavigate();
- 
-    const {  proxy,  pages } = useSelector(state => state);
-
-    const [initialData, setInitData] = useState({})
-    const [page, setPage] = useState({})
+    const { proxy, pages, lang } = useSelector(state => state);
     const [api, setApi] = useState({})
     const [tables, setTables] = useState([])
-    const [keyFields, setKeyFields] = useState([]);
     const [fields, setFields] = useState([]);
+    const [errors, setErrors] = useState({});
     const [data, setData] = useState({});
     const [relatedTables, setRelatedTables] = useState([])
-
-    const [params, setParams] = useState([]);
-
+    const [page, setPage] = useState(null);
 
 
-
-    useEffect(() => {
-        const page = pages.filter(pag => {
-            const post = pag.apis.put;
-            const page_id_str = post.split('/')[4];
-            return page_id_str == id_str;
-        })[0];
-        // console.log(page)
-        if (page != undefined) {
-            setPage(page)
-            const { param } = page;
-            // modifyPageParam(param)
-        }
-    }, [pages])
-
-    // const handleClick = () => {
-    //     history.back();
-    // };
-    const nullCheck = () => {
-        console.log(data)
-        let valid = true;
-        for (let i = 0; i < fields.length; i++) {
-            const field = fields[i];
-            const { nullable, field_alias, field_name } = field;
-            if (!nullable) {
-                console.log( field_name, data[field_alias] )
-                if (data[field_alias] === null || data[field_alias] === undefined || data[field_alias] === "") {
-                    valid = false
-                }
-            }
-        }
-        return valid;
-    }
     const [phoneError, setPhoneError] = useState(false);
     const handlePhoneError = (error) => {
         setPhoneError(error);
@@ -72,268 +33,286 @@ export default () => {
     const handleEmailError = (error) => {
         setEmailError(error);
     };
+    console.log(pages)
+
     useEffect(() => {
-        const url = window.location;
-        const rawParams = url.pathname.split(`/${id_str}/`)[1];
-        const paramsList = rawParams.split('/');
-      
-        fetch(`${proxy()}/api/apis/api/input/info/${id_str}`).then(res => res.json())
+
+        fetch(`${proxy()}/apis/api/${id_str}/input_info`).then(res => res.json())
             .then(res => {
-                const { success, api, relatedTables, fields } = res;
+                const { success, api, relatedTables, data } = res;
                 if (success) {
-                    const { tables } = api;
-                    const apiFields = api.fields;
-                    delete api.fields;
-                    delete api.tables;
-
-                    const serializeParams = api.params.map((param, index) => {
-                        const { field_alias } = param;
-                        return { field_alias, value: paramsList[index] }
-                    })
-
-                    const keyFields = serializeParams.map(par => {
-                        const field = fields.filter(f => f.field_alias == par.field_alias)[0]
-                        return field;
-                    })
-
-                    setKeyFields(keyFields)
-                    setParams(serializeParams);
-                    setApi(api)
-                    setFields(apiFields)
-                    setTables(tables)
-                    setRelatedTables(relatedTables)
-
-                    fetch(`${proxy()}/api/apis/retrive/put/data/${id_str}`)
-                        .then(res => res.json()).then(res => {
-                            const { data } = res;
-                            
-                            let initData = data;
-                            // console.log(serializeParams)
-                            for (let i = 0; i < serializeParams.length; i++) {
-                                const { field_alias, value } = serializeParams[i]
-                                const decodedString = decodeURIComponent(value);
-                                initData = initData.filter(row => {
-                                    return row[field_alias] == decodedString
-                                })
-                            }
-                            
-                            if (initData[0]) {
-                                const data = {};
-                                apiFields.map(field => {
-                                    const { field_alias } = field;
-                                    data[field_alias] = initData[0][field_alias];
-                                })
-                                setInitData(initData[0] ? initData[0] : {});
-                                setData(data)
-                            }
-                        })
-
+                    console.log(data)
+                    setFields(data.body)
+                    setTables(data.tables)
                 } else {
-                    // al.failure("Lỗi", "API này không tồn tại hoặc đã bị vô hiệu")
+                    // al.failure("Lỗi", "Không thực hiện được chức năng này")
                 }
             })
-    }, [])
+    }, [pages])
+
+    const result = pages?.find(item => {
+        // Lấy id từ api_get
+        const api_get_id = item.components?.[0]?.api_post.split('/')[2];
+        // console.log(api_get_id)
+        // So sánh với id_str
+        return api_get_id === id_str;
+    });
+    // console.log (result)
 
     const changeTrigger = (field, value) => {
         const newData = data;
-        newData[field.field_alias] = value;
-        setData(newData)
+        if (value === "true") {
+            newData[field.fomular_alias] = true;
+        } else if (value === "false") {
+            newData[field.fomular_alias] = false;
+        } else {
+            newData[field.fomular_alias] = value;
+        }
+        setData(newData);
+    }
+    const nullCheck = () => {
+        let valid = true;
+        // for (let i = 0; i < fields.length; i++) {
+        //     const field = fields[i];
+        //     const { nullable, fomular_alias } = field;
+        //     if (!nullable) {
+        //         if (data[fomular_alias] == null || data[fomular_alias] == undefined || data[fomular_alias] == "") {
+        //             valid = false
+        //         }
+        //     }
+        // }
+        return valid;
     }
 
-    const paramsConcat = () => {
-        const values = params.map(par => {
-            const { field_name, value } = par;
-            if (value) {
-                return value
-            }
-            else {
-                return field_name.replaceAll(' ', '_')
-            }
-        })
-        return values.join('/')
-    }
 
     const submit = () => {
+
+        console.log(data)
         if (!emailError && !phoneError && nullCheck(data)) {
-            fetch(`${proxy()}${api.url.url}${window.location.pathname.split(`/${id_str}/`)[1]}`, {
-                method: "PUT",
+            fetch(`${proxy()}${result?.components?.[0]?.api_post}`, {
+                method: "POST",
                 headers: {
                     "content-type": "application/json"
                 },
-                body: JSON.stringify({ data })
+
+                body: JSON.stringify({ ...data })
+
             }).then(res => res.json()).then(res => {
-                const { success, content } = res;
-                if (success) {
-                    // al.success("Thành công", "Cập nhật dữ liệu thành công")
-                } else {
-                    // al.failure("Oops!", data)
+                const { success, data, fk, content } = res;
+                console.log(res)
+                const errors = [
+                    "primaryConflict",
+                    "foreignConflict",
+                    "typeError"
+                ]
+
+                let valid = true;
+                for (let i = 0; i < errors.length; i++) {
+                    const isInValid = res[errors[i]]
+                    if (isInValid) {
+                        valid = false
+                    }
+                }
+                console.log(`VALID: ${valid}`)
+                if (valid) {
+                    Swal.fire({
+                        title: "Thành công!",
+                        text: content,
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(function () {
+                        // window.location.reload();
+                    });
+                }else{
+                    Swal.fire({
+                        title: "Thất bại!",
+                        text: content,
+                        icon: "error",
+                        showConfirmButton: true,
+
+                    }).then(function () {
+                        // Không cần reload trang
+                    });
                 }
             })
-        }
-        else {
+
+
+
+        } else {
             if (emailError) {
-                // al.failure("Thất bại", "Địa chỉ email không hợp lệ");
+                // al.failure("Lỗi", "Địa chỉ email không hợp lệ");
             } else if (phoneError) {
-                // al.failure("Thất bại", "Số điện thoại không hợp lệ");
+                // al.failure("Lỗi", "Số điện thoại không hợp lệ");
             } else {
-                // al.failure("Thất bại", "Một số trường vi phạm ràng buộc NOT NULL");
+                // al.failure("Lỗi", "Một số trường vi phạm ràng buộc NOT NULL");
             }
         }
-    }
-    return (
-        <div className="fixed-default fullscreen main-bg overflow flex flex-no-wrap">
-           
+    };
 
-            <div id="app-container" className={`app fixed-default overflow `} style={{ height: "100vh" }}>
-               
-                <div className="p-1" id="app-scrollBox">
-                    <div className="p-1 min-height-full-screen column">
-                        <div className="w-100-pct">
-                            <div className="flex flex-no-wrap bg-white shadow-blur">
-                                <div className="fill-available p-1">
-                                <span> {page.title} &gt;&gt; Cập nhật</span>
-                                </div>
-                                <div className="w-48-px flex flex-middle">
-                                    <div className="w-72-px pointer order-0">
-                                        {/* <div className="block p-1" onClick={() => { navTrigger() }}> */}
-                                        <div className="block p-1">
-                                            <span className="block w-24-px border-3-top" style={{ marginTop: "4px" }} />
-                                            <span className="block w-24-px border-3-top" style={{ marginTop: "4px" }} />
-                                            <span className="block w-24-px border-3-top" style={{ marginTop: "4px" }} />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+
+    return (
+
+        <div class="midde_cont">
+            <div class="container-fluid">
+                <div class="row column_title">
+                    <div class="col-md-12">
+                        <div class="page_title">
+                            <h4>Quản lý dữ liệu</h4>
                         </div>
-                        <div className="m-t-0-5 fill-available bg-white shadow-blur">
-                            <div className="w-100-pct h-fit column p-1">
-                                <div className="flex flex-no-wrap border-1-bottom">
-                                    <span className="p-0-5 text-16-px block fill-available no-border"></span>
-                                    <div className="flex flex-no-wrap flex-aligned">
-                                        <div className=" w-48-px">
-                                            <img className="w-28-px block mg-auto" src="/assets/icon/viewmode/grid.png" />
-                                        </div>
-                                    </div>
+                    </div>
+                </div>
+                {/* List table */}
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="white_shd full margin_bottom_30">
+                            <div class="full graph_head d-flex">
+                                <div class="heading1 margin_0 ">
+                                    {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
+
+                                    <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{result?.title} &gt;&gt; Thêm mới</h5>
                                 </div>
-                                <div className="w-100-pct m-t-1">
-                                    {/* VERSION INFO */}
-                                    {tables.length > 0 ?
+                                {/* <div class="ml-auto">
+                                <i class="fa fa-newspaper-o icon-ui"></i>
+                            </div> */}
+                            </div>
+                            <div class="table_section padding_infor_info">
+                                <div class="row column1">
+                                    <div class="form-group col-lg-4">
+                                        {/* <label class="font-weight-bold">Tên bảng <span className='red_star'>*</span></label>
+                                            <input type="text" class="form-control" 
+                                             placeholder="" /> */}
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div class="d-flex align-items-center mb-1">
+                                            {/* <p class="font-weight-bold">Danh sách bảng </p> */}
+                                            {/* <button type="button" class="btn btn-primary custom-buttonadd ml-auto" data-toggle="modal" data-target="#addTable">
+                                            <i class="fa fa-plus"></i>
+                                        </button> */}
+
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-12">
                                         <div className="w-50-pct mg-auto p-1 bg-white">
-                                            {/* <span className="block text-32-px text-center p-0-5">{api.api_name}</span> */}
-                                            {keyFields.map(field =>
-                                                <div className="w-100-pct p-1 m-t-1">
-                                                    <div>
-                                                        <span className="block text-16-px">{field.field_name}</span>
-                                                    </div>
-                                                    <div className="m-t-0-5">
-                                                        <input type="text" value={initialData[field.field_alias]}
-                                                            className="p-t-0-5 p-b-0-5 p-l-1 text-16-px block w-100-pct border-1"
-                                                            placeholder=""
-                                                        />
-                                                    </div>
-                                                </div>
-                                            )}
+                                            <span className="block text-32-px text-center p-0-5">{api.api_name}</span>
                                             {fields.map(field =>
                                                 <div key={field.field_id}>
-                                                    {field.data_type == "PHONE" ?
+
+                                                    {field.DATATYPE == "PHONE" ?
                                                         <DataPhone
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} onPhoneError={handlePhoneError} defaultValue={initialData[field.field_alias]} /> : null
+                                                            changeTrigger={changeTrigger}
+                                                            onPhoneError={handlePhoneError}
+                                                        /> : null
                                                     }
-                                                    {field.data_type == "EMAIL" ?
-                                                        <DataEmail
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} onEmailError={handleEmailError} defaultValue={initialData[field.field_alias]} /> : null
-                                                    }
-                                                    {field.data_type == "VARCHAR" ?
+                                                    {field.DATATYPE == "VARCHAR" ?
                                                         <Varchar
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.field_alias]} /> : null
+                                                            changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.data_type == "CHAR" ?
+                                                    {field.DATATYPE == "CHAR" ?
                                                         <Char
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.field_alias]} /> : null
+                                                            changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.data_type == "TEXT" ?
+                                                    {field.DATATYPE == "TEXT" ?
                                                         <Text
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.field_alias]} /> : null
+                                                            changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.data_type == "INT" || field.data_type == "BIG INT" ?
+                                                    {field.DATATYPE == "INT" || field.data_type == "BIG INT" ?
                                                         <Int
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.field_alias]} /> : null
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                            field={field}
+                                                            changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.data_type == "INT UNSIGNED" || field.data_type == "BIG INT UNSIGNED" ?
+                                                    {field.DATATYPE == "INT UNSIGNED" || field.data_type == "BIG INT UNSIGNED" ?
                                                         <Int
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} unsigned={true} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.field_alias]} /> : null
+                                                            changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.data_type == "DATE" ?
+                                                    {field.DATATYPE == "DATE" ?
                                                         <DateInput
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.field_alias]} /> : null
+                                                            changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.data_type == "TIME" ?
+                                                    {field.DATATYPE == "EMAIL" ?
+                                                        <DataEmail
+                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            related={relatedTables} field={field}
+                                                            changeTrigger={changeTrigger}
+                                                            onEmailError={handleEmailError}
+                                                        /> : null
+                                                    }
+                                                    {field.DATATYPE == "TIME" ?
                                                         <TimeInput
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.field_alias]} /> : null
+                                                            changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.data_type == "DATETIME" ?
+                                                    {field.DATATYPE == "DATETIME" ?
                                                         <DateTimeInput
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.field_alias]} /> : null
+                                                            changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.data_type == "DECIMAL" ?
+                                                    {field.DATATYPE == "DECIMAL" ?
                                                         <Decimal
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.field_alias]} /> : null
+                                                            changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.data_type == "DECIMAL UNSIGNED" ?
+                                                    {field.DATATYPE == "DECIMAL UNSIGNED" ?
                                                         <Decimal
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} unsigned={true} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.field_alias]} /> : null
+                                                            changeTrigger={changeTrigger} /> : null
                                                     }
-                                                    {field.data_type == "BOOL" ?
+                                                    {field.DATATYPE == "BOOL" ?
                                                         <Bool
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.field_alias]} /> : null
+                                                            changeTrigger={changeTrigger} /> : null
                                                     }
                                                 </div>
                                             )}
-                                            <div className="m-t-1">
+                                            {/* <div className="m-t-1">
                                                 <div className="p-1">
                                                     <div className="button-wrapper">
                                                         <button onClick={submit} className="w-max-content p-0-5 p-l-1 p-r-1 shadow-blur shadow-hover bg-theme-color no-border block text-16-px white pointer shadow-blur shadow-hover">Lưu lại</button>
-                                                
                                                     </div>
                                                     <div className="button-wrapper">
                                                         <button  className="w-max-content p-0-5 p-l-1 p-r-1 shadow-blur shadow-hover bg-theme-color no-border block text-16-px white pointer shadow-blur shadow-hover">Quay về</button>
                                                     </div>
                                                 </div>
+                                            </div> */}
+
+
+                                            <div class="row justify-content-center">
+                                                <div class="col-md-6">
+                                                    <div class="mt-2 d-flex justify-content-end">
+                                                        <button type="button" onClick={submit} class="btn btn-success mr-2">{lang["btn.create"]}</button>
+                                                        <button type="button" onClick={() => navigate(-1)} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
+                                                    </div>
+                                                </div>
                                             </div>
+
+
                                         </div>
-                                        : null}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }

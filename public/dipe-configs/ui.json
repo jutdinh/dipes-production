@@ -1,1 +1,74 @@
-{"data":[{"id":5,"ui_id":5,"title":"Sản phẩm","version_id":5,"url":"/san-pham","status":true,"params":[],"create_by":{"username":"cong","fullname":"Huỳnh Văn Công","role":"ad","email":"cong.huynh@mylangroup.com","phone":"0368474601","avatar":"/image/avatar/cong.png","address":"Trà Vinh","create_by":"su","create_at":"08-06-2023 lúc 14:18"},"create_at":"04-07-2023 08:25:11","components":[{"id":5,"component_id":5,"component_name":"Sản phẩm","ui_id":5,"layout_id":0,"api_get":"/api/14EBA032522745649FEA16143F570413","api_post":"/api/D5EF2DED2CE44A829BB315B2CB539A2B","api_put":"/api/32B3D06A6CA94EE38314D2C979C9351A","api_delete":"/api/49C470BFEC86433D93E59EA05A12DE70"}]},{"id":6,"ui_id":6,"title":"Khách hàng","version_id":5,"url":"/khach-hang","status":true,"params":[],"create_by":{"username":"cong","fullname":"Huỳnh Văn Công","role":"ad","email":"cong.huynh@mylangroup.com","phone":"0368474601","avatar":"/image/avatar/cong.png","address":"Trà Vinh","create_by":"su","create_at":"08-06-2023 lúc 14:18"},"create_at":"04-07-2023 08:25:27","components":[{"id":6,"component_id":6,"component_name":"Khách hàng","ui_id":6,"layout_id":1,"api_get":"/api/577766C1ED85447EADA7F7CF8043E8F4","api_post":"/api/F919555FB27E48A5B6C9AD63E92EA1E3","api_put":"/api/AD7E57FF3CBF4A22B374F04D45431C88","api_delete":"/api/9F23F7B2E1AE4350BA85C24154D292D8"}]},{"id":7,"ui_id":7,"title":"Đơn hàng","version_id":5,"url":"/don-hang","status":true,"params":[],"create_by":{"username":"cong","fullname":"Huỳnh Văn Công","role":"ad","email":"cong.huynh@mylangroup.com","phone":"0368474601","avatar":"/image/avatar/cong.png","address":"Trà Vinh","create_by":"su","create_at":"08-06-2023 lúc 14:18"},"create_at":"04-07-2023 08:25:50","components":[{"id":7,"component_id":7,"component_name":"Đơn hàng","ui_id":7,"layout_id":0,"api_get":"/api/B4029069BC044F9FA0A6E2097EA8DF8A","api_post":"/api/6B3AA4ADE96741D69108DF5C1F9DA0C5","api_put":"/api/BB8B45D61B584571B72165952F30FF23","api_delete":"/api/81D420252A41402D99FF63CC5BD11ED0"}]},{"id":8,"ui_id":8,"title":"Chi tiết đơn hàng","version_id":5,"url":"/chi-tiet-don-hang","status":true,"params":[],"create_by":{"username":"cong","fullname":"Huỳnh Văn Công","role":"ad","email":"cong.huynh@mylangroup.com","phone":"0368474601","avatar":"/image/avatar/cong.png","address":"Trà Vinh","create_by":"su","create_at":"08-06-2023 lúc 14:18"},"create_at":"04-07-2023 08:26:18","components":[{"id":8,"component_id":8,"component_name":"Chi tiết đơn hàng","ui_id":8,"layout_id":0,"api_get":"/api/D1AAE45193624CBEB050FD9BB90AF928","api_post":"/api/76E7B60CFC41408C92D08CF0DAFBFA3B","api_put":"/api/274C0D4C62C04E108A6E278F88AB27BF","api_delete":"/api/4222E0595DFE4B63B2DEE57DA8129195"}]}]}
+{
+    "data": [
+        {
+            "id": 9,
+            "ui_id": 9,
+            "title": "Trang Mã Loại",
+            "version_id": 7,
+            "url": "/trang-ma-loai",
+            "status": true,
+            "params": [],
+            "create_by": {
+                "username": "nhan",
+                "fullname": "Tô Trọng Nhân",
+                "role": "ad",
+                "email": "nhan.to@mylangroup.com",
+                "phone": "012345678912",
+                "avatar": "/image/avatar/nhan.png",
+                "address": "Trà Vinh",
+                "note": "Không có ghi chú gì cả",
+                "create_by": "su",
+                "create_at": "19-06-2023 lúc 08:56"
+            },
+            "create_at": "04-07-2023 14:54:24",
+            "components": [
+                {
+                    "id": 9,
+                    "component_id": 9,
+                    "component_name": "Loại sản phẩm",
+                    "ui_id": 9,
+                    "layout_id": 0,
+                    "api_get": "/api/0A2EEEDD80AF4DC28B18B273369500FF",
+                    "api_post": "/api/F5D168AB263244B785D069FB413731F1",
+                    "api_put": "/api/61F11A6DBEDA4CDC83714EA46DB9DCB4",
+                    "api_delete": "/api/90F6E536B62842B09BA41DD507ECDFF2"
+                }
+            ]
+        },
+        {
+            "id": 10,
+            "ui_id": 10,
+            "title": "Trang sản phẩm",
+            "version_id": 7,
+            "url": "/trang-san-pham",
+            "status": true,
+            "params": [],
+            "create_by": {
+                "username": "nhan",
+                "fullname": "Tô Trọng Nhân",
+                "role": "ad",
+                "email": "nhan.to@mylangroup.com",
+                "phone": "012345678912",
+                "avatar": "/image/avatar/nhan.png",
+                "address": "Trà Vinh",
+                "note": "Không có ghi chú gì cả",
+                "create_by": "su",
+                "create_at": "19-06-2023 lúc 08:56"
+            },
+            "create_at": "04-07-2023 14:54:38",
+            "components": [
+                {
+                    "id": 10,
+                    "component_id": 10,
+                    "component_name": "Sản phẩm",
+                    "ui_id": 10,
+                    "layout_id": 0,
+                    "api_get": "/api/E4595954F0EC49AF8891F24E51FA1195",
+                    "api_post": "/api/C1735E635DA14E9CB328D6F94AD2A3E2",
+                    "api_put": "/api/88FC15164A41457D87EBAD01381651DA",
+                    "api_delete": "/api/01940007B3E5433384DB41F2AAEC017E"
+                }
+            ]
+        }
+    ]
+}
