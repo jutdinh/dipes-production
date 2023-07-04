@@ -9,7 +9,8 @@ import Swal from 'sweetalert2';
 import { version } from "react-dom";
 
 export default () => {
-    const { lang, proxy, auth, pages } = useSelector(state => state);
+    const { lang, proxy, auth, pages, functions } = useSelector(state => state);
+    const { openTab } = functions
     const _token = localStorage.getItem("_token");
     const { project_id, version_id, url } = useParams();
     let navigate = useNavigate();
@@ -26,30 +27,30 @@ export default () => {
         if (result) {
             setPage(result);
         } else {
-            console.log('Không tìm thấy trang với URL: ' + url);
+            // console.log('Không tìm thấy trang với URL: ' + url);
         }
 
     }, [pages, url]);
-    console.log(page)
+    // console.log(page)
     useEffect(() => {
         if (page && page.components) {
             const id_str = page.components?.[0]?.api_post.split('/')[2];
-            console.log(id_str)
+            // console.log(id_str)
             fetch(`${proxy()}/apis/api/${id_str}/input_info`)
                 .then(res => res.json())
                 .then(res => {
                     const { data, success, content } = res;
                     if (success) {
-                        console.log("succcess", data)
+                        // console.log("succcess", data)
                         setDataTables(data.tables)
                         setDataFields(data.body)
                     }
                     // setApi(api);
                     callApi()
                 })
-        }
+            }
     }, [page])
-    console.log(dataFields)
+    // console.log(dataFields)
 
 
 
@@ -99,7 +100,7 @@ export default () => {
         })
     }
     const handleDelete = (data) => {
-        console.log(data)
+        // console.log(data)
 
 
         let api_delete = page.components[0].api_delete;
@@ -112,14 +113,14 @@ export default () => {
             if (foundObjects.length > 0) {
                 // Lấy ra mảng các id từ foundObjects
                 let fomular_alias = foundObjects.map(obj => obj.fomular_alias);
-                console.log(fomular_alias)
+                // console.log(fomular_alias)
 
                 const newData = [];
                 if (data.hasOwnProperty(fomular_alias)) {
                     newData.push(data[fomular_alias]);
                 }
 
-                console.log(newData);
+                // console.log(newData);
                 // Tạo chuỗi newParams bằng cách nối api_delete và ids
                 newParams = `${api_delete}/${newData.join("/")}`;
 
@@ -131,7 +132,7 @@ export default () => {
             console.log('Không tìm thấy primaryKeys');
         }
 
-        console.log(newParams);
+        // console.log(newParams);
         
         Swal.fire({
             title: 'Xác nhận xóa',
@@ -179,10 +180,44 @@ export default () => {
             }
         });
     }
-    const redirectToInputPUT = (data) => {
-        console.log(data)
-        // const id_str = page.components?.[0]?.api_post.split('/')[2];
-        // window.location.href = `apis/api/${id_str}/input_info`;
+    const redirectToInputPUT = async ( record )  => {       
+        
+        const { components } = page;
+        const cpn = components[0]
+        const { api_put } = cpn;
+        if( api_put != undefined ){
+            const id_str = api_put.split('/')[2]
+
+            const response = await new Promise((resolve, reject) => {
+                fetch(`${proxy()}/apis/api/${id_str}/input_info`)
+                .then(res => res.json())
+                .then(res => {
+                    const { data, success, content } = res;
+                    if (success) {
+                        // console.log("succcess", data)
+                        setDataTables(data.tables)
+                        setDataFields(data.body)
+                    }
+                    resolve( res )
+                })
+            })
+            const { success, data } = response;
+            if( success ){
+                const { params } = data;
+                const stringifiedParams = params.map( param => {
+                    const { fomular_alias } = param
+                    return record[ fomular_alias ]
+                }).join('/')
+                openTab(`/put/api/${ id_str }/${ stringifiedParams }`)
+            }
+        }        
+        Swal.fire({
+            title: "Thất bại!",
+            text: "Không tìm thấy tính năng cập nhật",
+            icon: "error",
+            showConfirmButton: false,
+            timer: 2000,
+        })
     }
     // const redirectToInputPut = (data) => {
     //     const id_str_put = page.apis.put.split(`/`)[4];

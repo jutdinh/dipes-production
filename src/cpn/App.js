@@ -104,8 +104,8 @@ function App() {
 
 
         <Route exac path="/:url" element={ < Navigation Child={Fetch} /> } />
-        <Route exac path="apis/api/:id_str/input_info" element={ < Navigation Child={InputPost} /> } />
-        <Route exac path="apis/api/:id_str/input_info" element={ < Navigation Child={InputPut} /> } />
+        <Route exac path="/apis/api/:id_str/input_info" element={ < Navigation Child={InputPost} /> } />
+        <Route path="/put/api/:id_str/*" element={ < Navigation Child={InputPut} /> } />
 
       </Routes>
     </Router>
