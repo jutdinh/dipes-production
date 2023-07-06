@@ -117,7 +117,7 @@ export default () => {
                 if (valid) {
                     Swal.fire({
                         title: "Thành công!",
-                        text: content,
+                        text: "Thêm thành công",
                         icon: "success",
                         showConfirmButton: false,
                         timer: 1500
@@ -127,7 +127,7 @@ export default () => {
                 }else{
                     Swal.fire({
                         title: "Thất bại!",
-                        text: content,
+                        text: "Thêm thất bại",
                         icon: "error",
                         showConfirmButton: true,
 

@@ -18,12 +18,17 @@ export default () => {
     const { proxy, pages, lang } = useSelector(state => state);
     const [api, setApi] = useState({})
     const [tables, setTables] = useState([])
+    const [keyFields, setKeyFields] = useState([]);
+    const [params, setParams] = useState([]);
     const [fields, setFields] = useState([]);
     const [errors, setErrors] = useState({});
     const [data, setData] = useState({});
     const [relatedTables, setRelatedTables] = useState([])
     const [page, setPage] = useState(null);
-
+    const [initialData, setInitData] = useState({})
+    const [dataFields, setDataFields] = useState([]);
+    const [apiData, setApiData] = useState([])
+    const [apiDataName, setApiDataName] = useState([])
 
     const [phoneError, setPhoneError] = useState(false);
     const handlePhoneError = (error) => {
@@ -35,29 +40,15 @@ export default () => {
     };
     console.log(pages)
 
-    useEffect(() => {
 
-        fetch(`${proxy()}/apis/api/${id_str}/input_info`).then(res => res.json())
-            .then(res => {
-                const { success, api, relatedTables, data } = res;
-                if (success) {
-                    console.log(data)
-                    setFields(data.body)
-                    setTables(data.tables)
-                } else {
-                    // al.failure("Lỗi", "Không thực hiện được chức năng này")
-                }
-            })
-    }, [pages])
 
     const result = pages?.find(item => {
-        // Lấy id từ api_get
-        const api_get_id = item.components?.[0]?.api_post.split('/')[2];
-        // console.log(api_get_id)
-        // So sánh với id_str
+      
+        const api_get_id = item.components?.[0]?.api_put.split('/')[2];
+   
         return api_get_id === id_str;
     });
-    // console.log (result)
+    console.log (result)
 
     const changeTrigger = (field, value) => {
         const newData = data;
@@ -85,12 +76,82 @@ export default () => {
     }
 
 
-    const submit = () => {
+    useEffect(() => {
+        const url = window.location;
+        const rawParams = url.pathname.split(`/${id_str}/`)[1];
+        const paramsList = rawParams.split('/');
+        console.log(rawParams)
+        fetch(`${proxy()}/apis/api/${id_str}/input_info`).then(res => res.json())
+            .then(res => {
+                const { success, data } = res;
+                console.log(res)
+                if (success) {
+                    // const { tables } = data.tables;
+                    const apiFields = data.params;
 
-        console.log(data)
+                    apiFields.push(... data.body)
+     
+
+                   const serializeParams = apiFields.map((param, index) => {
+                        const { fomular_alias } = param;    
+                        return { fomular_alias, value: paramsList[index] }
+                    })
+                  
+                    const keyFields = serializeParams.map(par => {
+                        const field = apiFields.filter(f => f.fomular_alias == par.fomular_alias)[0]
+                        return field;
+                    })
+
+                    setKeyFields(keyFields)
+                    setParams(serializeParams);
+                    setApi(data)
+                    setFields(apiFields)
+                    setTables(data.tables)
+                    setRelatedTables(relatedTables)
+
+
+                    fetch(`${proxy()}/apis/retrieve/${id_str}/${rawParams}`)
+                        .then(res => res.json()).then(res => {
+                            console.log(res);
+
+                            const { data } = res;
+
+                            let initData = data;
+                            console.log(serializeParams)
+                            for (let i = 0; i < params.length; i++) {
+                                const { fomular_alias, value } = params[i]
+                                const decodedString = decodeURIComponent(value);
+                                initData = initData.filter(row => {
+                                    return row[fomular_alias] == decodedString
+                                })
+                            }
+
+                            if (initData[0]) {
+                                const data = {};
+                                apiFields.map(field => {
+                                    const { fomular_alias } = field;
+                                    data[fomular_alias] = initData[0][fomular_alias];
+                                })
+                                setInitData(initData[0] ? initData[0] : {});
+                                
+                                setData(data)
+                            }
+                        })
+                } else {
+                    // al.failure("Lỗi", "API này không tồn tại hoặc đã bị vô hiệu")
+                }
+            })
+    }, [])
+
+    console.log(fields)
+    const submit = () => {
+        const url = window.location;
+        const rawParams = url.pathname.split(`/${id_str}/`)[1];
+        const paramsList = rawParams.split('/');
+
         if (!emailError && !phoneError && nullCheck(data)) {
-            fetch(`${proxy()}${result?.components?.[0]?.api_post}`, {
-                method: "POST",
+            fetch(`${proxy()}/api/${id_str}/${paramsList}`, {
+                method: "PUT",
                 headers: {
                     "content-type": "application/json"
                 },
@@ -124,7 +185,7 @@ export default () => {
                     }).then(function () {
                         // window.location.reload();
                     });
-                }else{
+                } else {
                     Swal.fire({
                         title: "Thất bại!",
                         text: content,
@@ -170,7 +231,7 @@ export default () => {
                                 <div class="heading1 margin_0 ">
                                     {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
 
-                                    <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{result?.title} &gt;&gt; Thêm mới</h5>
+                                    <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{result?.title} &gt;&gt; Cập nhật</h5>
                                 </div>
                                 {/* <div class="ml-auto">
                                 <i class="fa fa-newspaper-o icon-ui"></i>
@@ -204,82 +265,93 @@ export default () => {
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger}
-                                                            onPhoneError={handlePhoneError}
+                                                            onPhoneError={handlePhoneError} defaultValue={initialData[field.fomular_alias]}
                                                         /> : null
                                                     }
                                                     {field.DATATYPE == "VARCHAR" ?
                                                         <Varchar
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
+                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                        /> : null
                                                     }
                                                     {field.DATATYPE == "CHAR" ?
                                                         <Char
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
+                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                        /> : null
                                                     }
                                                     {field.DATATYPE == "TEXT" ?
                                                         <Text
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
+                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                        /> : null
                                                     }
                                                     {field.DATATYPE == "INT" || field.data_type == "BIG INT" ?
                                                         <Int
                                                             table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             field={field}
-                                                            changeTrigger={changeTrigger} /> : null
+                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                        /> : null
                                                     }
                                                     {field.DATATYPE == "INT UNSIGNED" || field.data_type == "BIG INT UNSIGNED" ?
                                                         <Int
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} unsigned={true} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
+                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                        /> : null
                                                     }
                                                     {field.DATATYPE == "DATE" ?
                                                         <DateInput
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
+                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                        /> : null
                                                     }
                                                     {field.DATATYPE == "EMAIL" ?
                                                         <DataEmail
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger}
-                                                            onEmailError={handleEmailError}
+                                                            onEmailError={handleEmailError} defaultValue={initialData[field.fomular_alias]}
                                                         /> : null
                                                     }
                                                     {field.DATATYPE == "TIME" ?
                                                         <TimeInput
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
+                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                        /> : null
                                                     }
                                                     {field.DATATYPE == "DATETIME" ?
                                                         <DateTimeInput
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
+                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                        /> : null
                                                     }
                                                     {field.DATATYPE == "DECIMAL" ?
                                                         <Decimal
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
+                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                        /> : null
                                                     }
                                                     {field.DATATYPE == "DECIMAL UNSIGNED" ?
                                                         <Decimal
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} unsigned={true} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
+                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                        /> : null
                                                     }
                                                     {field.DATATYPE == "BOOL" ?
                                                         <Bool
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
+                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                        /> : null
                                                     }
                                                 </div>
                                             )}
@@ -298,7 +370,7 @@ export default () => {
                                             <div class="row justify-content-center">
                                                 <div class="col-md-6">
                                                     <div class="mt-2 d-flex justify-content-end">
-                                                        <button type="button" onClick={submit} class="btn btn-success mr-2">{lang["btn.create"]}</button>
+                                                        <button type="button" onClick={submit} class="btn btn-success mr-2">{lang["btn.update"]}</button>
                                                         <button type="button" onClick={() => navigate(-1)} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
                                                     </div>
                                                 </div>

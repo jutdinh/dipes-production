@@ -3,6 +3,9 @@ import { useSelector } from 'react-redux';
 
 export default (props) => {
     const { field, changeTrigger, related, table, defaultValue } = props;
+
+
+
     const [current, setCurrent] = useState(defaultValue ? defaultValue : "")
     const [fields, setFields] = useState([])
     const [height, setHeight] = useState(0)
@@ -21,10 +24,10 @@ export default (props) => {
 
                 // fetch(`${proxy()}/apis/apis/table/data/${table_alias}`).then(res => res.json()).then(res => {/table/:table_id/data
                 fetch(`${proxy()}/apis/table/${key.table_id}/data`).then(res => res.json()).then(res => {
-                    const { success, data, fields } = res;
-                    console.log(data)
-                    setForeignData(data.data)
-                    setFields(data.fields)
+                    const { success, data, fields } = res.data;
+                    console.log( res.data )
+                    setForeignData(data)
+                    setFields(fields)
 
                     const { ref_field_id } = key;
                     const primaryField = fields.find(field => field.id == ref_field_id);
@@ -73,9 +76,20 @@ export default (props) => {
     }, [])
 
     const isFieldForeign = () => {
-        if( table ){
+        if (table) {
             const { foreign_keys } = table;
             const key = foreign_keys.find(key => key.field_id == field.id)
+            if (key) {
+                return key
+            }
+        }
+        return false
+    }
+
+    const isPrimaryKey = () => {
+        if (table) {
+            const { primary_key } = table;
+            const key = primary_key.find( key => key == field.id )
             if (key) {
                 return key
             }
@@ -128,43 +142,101 @@ export default (props) => {
     //     changeTrigger(field, data[pk])
     // }
 
-    if (!isFieldForeign()) {
-        return (
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <form>
-                        <div class="form-group">
-                            <label for="name">{field.field_name}{!field.nullable && <span style={{ color: 'red' }}> *</span>}</label>
-                            <input type={field.AUTO_INCREMENT ? "text" : "number"}
-                                className="form-control"
-                                placeholder="" onChange={fieldChangeData} value={current}
-                            />
-                        </div>
-                    </form>
+    if( isPrimaryKey () ){
+
+        if( !isFieldForeign() ){
+            
+            return (
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <form>
+                            <div class="form-group">
+                                <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
+                                <input
+                                    type={field.AUTO_INCREMENT ? "text" : "number"}
+                                    className="form-control"
+                                    placeholder=""
+                                    
+                                    defaultValue={ defaultValue == undefined ? current : defaultValue }
+                                    readOnly={true}
+                                />
+    
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
-        )
-    } else {
-        return (
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <form>
-                        <div class="form-group">
-                            <label for="name">{field.field_name}{!field.nullable && <span style={{ color: 'red' }}> *</span>}</label>
-                            <select className="form-control" name="role" onChange={fieldChangeData} value={generateData(current)}>
-                                <option value={""} >Chọn</option>
-                                {foreignData.length > 0 && foreignData.map((d, index) =>
-                                    <option value={JSON.stringify(d)} >
-                                        <div key={index} className="form-control" >
-                                            <span>{generateData(d)}</span>
-                                        </div>
-                                    </option>
-                                )}
-                            </select>
-                        </div>
-                    </form>
+            )
+        }
+        else{
+            return (
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <form>
+                            <div class="form-group">
+                                <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
+                                <select className="form-control" name="role" onChange={fieldChangeData} value={generateData(current)}>
+                                    {/* <option value={""} >Chọn</option> */}
+                                    {foreignData && foreignData.length > 0 && foreignData.map((d, index) =>
+                                        <option value={JSON.stringify(d)}  selected={ d[pk] == defaultValue ? true: false } >
+                                            <div key={index} className="form-control" >
+                                                <span>{generateData(d)}</span>
+                                            </div>
+                                        </option>
+                                    )}
+                                </select>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
-        )
+            )
+        }
+        
+    }else{
+
+        if (!isFieldForeign()) {
+            return (
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <form>
+                            <div class="form-group">
+                                <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
+                                <input
+                                    type={field.AUTO_INCREMENT ? "text" : "number"}
+                                    className="form-control"
+                                    placeholder=""
+                                    onChange={fieldChangeData}
+                                    value={current}
+                                    readOnly={field.AUTO_INCREMENT ? true : false}
+                                />
+    
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )
+        } else {
+            return (
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <form>
+                            <div class="form-group">
+                                <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
+                                <select className="form-control" name="role" onChange={fieldChangeData} value={generateData(current)}>
+                                    {/* <option value={""} >Chọn</option> */}
+                                    {foreignData && foreignData.length > 0 && foreignData.map((d, index) =>
+                                        <option value={JSON.stringify(d)}  selected={ d[pk] == defaultValue ? true: false } >
+                                            <div key={index} className="form-control" >
+                                                <span>{generateData(d)}</span>
+                                            </div>
+                                        </option>
+                                    )}
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )
+        }
     }
+
 }

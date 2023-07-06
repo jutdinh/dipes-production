@@ -22,7 +22,7 @@ import { Tables, Field, UpdateField } from './tables';
 import { Apis, CreateApi, UpdateAi,StatisticalField} from './api';
 import { UI, CreateUi} from './ui'
 import updateApi from './api/update-api';
-
+import { Diagram } from './diagram';
 
 import { Fetch, InputPost, InputPut  } from './page';
 
@@ -106,6 +106,8 @@ function App() {
         <Route exac path="/:url" element={ < Navigation Child={Fetch} /> } />
         <Route exac path="/apis/api/:id_str/input_info" element={ < Navigation Child={InputPost} /> } />
         <Route path="/put/api/:id_str/*" element={ < Navigation Child={InputPut} /> } />
+        <Route exac path="/diagram" element={ < Navigation Child={Diagram} /> } />
+
 
       </Routes>
     </Router>

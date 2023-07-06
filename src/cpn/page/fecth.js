@@ -10,7 +10,8 @@ import { version } from "react-dom";
 
 export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
-    const { openTab } = functions
+    
+    const { openTab, renderDateTimeByFormat } = functions
     const _token = localStorage.getItem("_token");
     const { project_id, version_id, url } = useParams();
     let navigate = useNavigate();
@@ -59,7 +60,7 @@ export default () => {
         /* this must be fixed */
         fetch(`${proxy()}${page.components?.[0]?.api_get}`).then(res => res.json()).then(res => {
             const { success, content, data, fields } = res;
-            // console.log(data)
+            console.log(data)
             // console.log(fields)
             //  al.failure("Lỗi", "Đọc dữ liệu thất bại ")
 
@@ -210,14 +211,15 @@ export default () => {
                 }).join('/')
                 openTab(`/put/api/${ id_str }/${ stringifiedParams }`)
             }
-        }        
-        Swal.fire({
-            title: "Thất bại!",
-            text: "Không tìm thấy tính năng cập nhật",
-            icon: "error",
-            showConfirmButton: false,
-            timer: 2000,
-        })
+        }else{
+            Swal.fire({
+                title: "Thất bại!",
+                text: "Không tìm thấy tính năng cập nhật",
+                icon: "error",
+                showConfirmButton: false,
+                timer: 2000,
+            })
+        }    
     }
     // const redirectToInputPut = (data) => {
     //     const id_str_put = page.apis.put.split(`/`)[4];
@@ -231,7 +233,35 @@ export default () => {
     //     openTab(`/su/api/put/input/${id_str_put}/${rawParams}`)
     // }
 
-
+    const renderBoolData = (data, field) => {
+        const IF_TRUE = field.DEFAULT_TRUE;
+        const IF_FALSE = field.DEFAULT_FALSE
+        if (data != undefined) {
+            if (data) {
+                return IF_TRUE ? IF_TRUE : "true"
+            }
+            return IF_FALSE ? IF_FALSE : "false"
+        } else {
+            return IF_FALSE ? IF_FALSE : "false"
+        }
+    }
+    const renderData = (field, data) => {
+        console.log(field)
+        switch (field.DATATYPE) {
+            case "DATE":
+            case "DATETIME":
+                return renderDateTimeByFormat(data[field.fomular_alias], field.FORMAT);
+            // case "DECIMAL":
+            // case "DECIMAL UNSIGNED":
+            //     const { DELIMITER } = field.props;
+            //     const decimalNumber = parseFloat(data[field.field_alias]);
+            //     return decimalNumber.toFixed(DELIMITER)
+            case "BOOL":
+                return renderBoolData(data[field.fomular_alias], field)
+            default:
+                return data[field.fomular_alias];
+        }
+    };
 
     const [currentPage, setCurrentPage] = useState(1);
     const rowsPerPage = 15;
@@ -298,7 +328,7 @@ export default () => {
                                                         {current.map((row) => (
                                                             <tr key={row._id}>
                                                                 {apiDataName.map((header) => (
-                                                                    <td key={header.fomular_alias}>{row[header.fomular_alias]}</td>
+                                                                    <td key={header.fomular_alias}>{renderData(header, row)}</td>
                                                                 ))}
                                                                 <td class="align-center" style={{ minWidth: "80px" }}>
                                                                     <i class="fa fa-edit size pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>

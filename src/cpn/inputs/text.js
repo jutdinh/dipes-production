@@ -21,7 +21,7 @@ export default (props) => {
             <div class="form-group col-md-6">
                 <form>
                     <div class="form-group">
-                        <label for="name">{field.field_name}{!field.nullable && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
+                        <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
                         <textarea type="text"
                             className="form-control"
                             value={current}

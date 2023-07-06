@@ -38,7 +38,7 @@ export default (props) => {
             <div class="col-md-6">
                 <form>
                     <div class="form-group">
-                        <label for="name">{field.field_name}{!field.nullable && <span style={{ color: 'red' }}> *</span>}</label>
+                        <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
                         <input type="number" step={2}
                             className={`form-control`}
                             placeholder="" onChange={fieldChangeData} value={current}
