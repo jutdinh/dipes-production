@@ -87,7 +87,7 @@ function App() {
         <Route path="/projects/:project_id" element={<Navigation Child={ProjectsCard} />} />
         <Route path="/projects/detail/:project_id" element={<Navigation Child={ProjectDetail} />} />
         <Route path="/projects/task/:project_id" element={<Navigation Child={Tasks} />} />
-        <Route path="/projects/:version_id/tables" element={<Navigation Child={Tables} />} />
+        <Route path="/diagram" element={<Navigation Child={Tables} />} />
         <Route path="/projects/:version_id/tables/field" element={<Navigation Child={Field} />} />
         <Route path="/projects/:version_id/table/:table_id" element={<Navigation Child={UpdateField} />} />
         <Route path="/projects/:version_id/apis" element={<Navigation Child={Apis} />} />
