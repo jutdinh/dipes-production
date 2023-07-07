@@ -227,6 +227,7 @@ export default () => {
                                                     }
                                                     {field.DATATYPE == "INT" || field.data_type == "BIG INT" ?
                                                         <Int
+                                                            selectOption = {true}
                                                             table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             field={field}
                                                             changeTrigger={changeTrigger} /> : null

@@ -54,6 +54,7 @@ export default {
     "description": "Description",
     "project.info":"Project Information",
     "project.deploy":"Deployment website information",
+    "data management": "Data management",
     //Project
     "projects": "Projects",
     "projects.title": "Projects",

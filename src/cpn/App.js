@@ -87,7 +87,7 @@ function App() {
         <Route path="/projects/:project_id" element={<Navigation Child={ProjectsCard} />} />
         <Route path="/projects/detail/:project_id" element={<Navigation Child={ProjectDetail} />} />
         <Route path="/projects/task/:project_id" element={<Navigation Child={Tasks} />} />
-        <Route path="/diagram" element={<Navigation Child={Tables} />} />
+        <Route path="/diagram_db" element={<Navigation Child={Tables} />} />
         <Route path="/projects/:version_id/tables/field" element={<Navigation Child={Field} />} />
         <Route path="/projects/:version_id/table/:table_id" element={<Navigation Child={UpdateField} />} />
         <Route path="/projects/:version_id/apis" element={<Navigation Child={Apis} />} />
@@ -106,7 +106,7 @@ function App() {
         <Route exac path="/:url" element={ < Navigation Child={Fetch} /> } />
         <Route exac path="/apis/api/:id_str/input_info" element={ < Navigation Child={InputPost} /> } />
         <Route path="/put/api/:id_str/*" element={ < Navigation Child={InputPut} /> } />
-        <Route exac path="/diagram" element={ < Navigation Child={Diagram} /> } />
+        {/* <Route exac path="/diagram" element={ < Navigation Child={Diagram} /> } /> */}
 
 
       </Routes>

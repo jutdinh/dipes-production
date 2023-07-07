@@ -67,7 +67,7 @@ export default () => {
                
                {user.role === "uad" ? (
                   <li className="navbar-item">
-                     <NavLink to="/diagram" activeClassName="nav-active">
+                     <NavLink to="/diagram_db" activeClassName="nav-active">
                         <i class="fa fa-database pointer icon-database"></i>
                         <span>{lang["diagram"]}</span>
                      </NavLink>
@@ -77,7 +77,7 @@ export default () => {
                <li class="active">
                   <a href="#dashboard" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                      <i class="fa fa-dashboard yellow_color"></i>
-                     <span>Quản lý dữ liệu</span>
+                     <span>{lang["data management"]}</span>
                   </a>
                   <ul class="collapse list-unstyled show nav-custom " id="dashboard">
                      {pages && pages.map(ui => (

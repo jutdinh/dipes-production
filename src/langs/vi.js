@@ -44,6 +44,7 @@ export default {
     "settings.color button": "Thay đổi",
     //description
     "description": "Mô tả",
+    "data management": "Quản lý dữ liệu",
 
 "project.info":"Thông tin dự án",
 "project.deploy":"Thông tin website triển khai",

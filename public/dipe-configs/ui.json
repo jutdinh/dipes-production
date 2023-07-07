@@ -1,115 +1,10 @@
 {
     "data": [
         {
-            "id": 14,
-            "ui_id": 14,
-            "title": "Khách hàng",
-            "version_id": 37,
-            "url": "/khach-hang",
-            "status": true,
-            "params": [],
-            "create_by": {
-                "username": "nhan",
-                "fullname": "Tô Trọng Nhân",
-                "role": "ad",
-                "email": "totrongnhan@gmail.com",
-                "phone": "0359695554",
-                "avatar": "/image/avatar/nhan.png",
-                "address": "Trà Vinh",
-                "note": "Ghi chú",
-                "create_by": "su",
-                "create_at": "06-06-2023 lúc 10:53"
-            },
-            "create_at": "29-06-2023 14:56:23",
-            "components": [
-                {
-                    "id": 14,
-                    "component_id": 14,
-                    "component_name": "Bảng Khách Hàng",
-                    "ui_id": 14,
-                    "layout_id": 0,
-                    "api_get": "/api/07ADAD82B8F44764B61BE31F1581018F",
-                    "api_post": "/api/91EC7A8D30FC449694273677E4D74E67",
-                    "api_put": "/api/A2176CCCF7F24141BBE85927466AF603",
-                    "api_delete": "/api/6294D9BDC1F347FDB9E5E6483FF59AEE"
-                }
-            ]
-        },
-        {
-            "id": 15,
-            "ui_id": 15,
-            "title": "Đơn hàng",
-            "version_id": 37,
-            "url": "/don-hang",
-            "status": true,
-            "params": [],
-            "create_by": {
-                "username": "nhan",
-                "fullname": "Tô Trọng Nhân",
-                "role": "ad",
-                "email": "totrongnhan@gmail.com",
-                "phone": "0359695554",
-                "avatar": "/image/avatar/nhan.png",
-                "address": "Trà Vinh",
-                "note": "Ghi chú",
-                "create_by": "su",
-                "create_at": "06-06-2023 lúc 10:53"
-            },
-            "create_at": "29-06-2023 14:56:58",
-            "components": [
-                {
-                    "id": 15,
-                    "component_id": 15,
-                    "component_name": "Bảng Đơn Hàng",
-                    "ui_id": 15,
-                    "layout_id": 0,
-                    "api_get": "/api/290C43F462BB4161B964C9960B3DE9D7",
-                    "api_post": "/api/7449D38B872E47659CB5188EAF8FF1F3",
-                    "api_put": "/api/0FDC044C1990427C80544BB68ABCE004",
-                    "api_delete": "/api/AE7E4B627CA54F64BEB0FEB8F4BCDB27"
-                }
-            ]
-        },
-        {
-            "id": 16,
-            "ui_id": 16,
-            "title": "Sản phẩm",
-            "version_id": 37,
-            "url": "/san-pham",
-            "status": true,
-            "params": [],
-            "create_by": {
-                "username": "nhan",
-                "fullname": "Tô Trọng Nhân",
-                "role": "ad",
-                "email": "totrongnhan@gmail.com",
-                "phone": "0359695554",
-                "avatar": "/image/avatar/nhan.png",
-                "address": "Trà Vinh",
-                "note": "Ghi chú",
-                "create_by": "su",
-                "create_at": "06-06-2023 lúc 10:53"
-            },
-            "create_at": "06-07-2023 09:02:10",
-            "components": [
-                {
-                    "id": 16,
-                    "component_id": 16,
-                    "component_name": "Bảng Sản Phẩm",
-                    "ui_id": 16,
-                    "layout_id": 0,
-                    "api_get": "/api/D1CA3D28989945C489AB290FDEE3F0FF",
-                    "api_post": "/api/89A4221D86B34A74824186B77498E4BA",
-                    "api_put": "/api/7E9FFE1F02AD43BD8473074FA04A1DDE",
-                    "api_delete": "/api/59649C290A3D4A5C93C282B17013EBED"
-                }
-            ]
-        },
-        {
-            "id": 17,
-            "ui_id": 17,
+            "id": 11,
+            "ui_id": 11,
             "title": "Loại sản phẩm",
-            "version_id": 37,
+            "version_id": 7,
             "url": "/loai-san-pham",
             "status": true,
             "params": [],
@@ -117,131 +12,131 @@
                 "username": "nhan",
                 "fullname": "Tô Trọng Nhân",
                 "role": "ad",
-                "email": "totrongnhan@gmail.com",
-                "phone": "0359695554",
+                "email": "nhan.to@mylangroup.com",
+                "phone": "012345678912",
                 "avatar": "/image/avatar/nhan.png",
                 "address": "Trà Vinh",
-                "note": "Ghi chú",
+                "note": "Không có ghi chú gì cả",
                 "create_by": "su",
-                "create_at": "06-06-2023 lúc 10:53"
+                "create_at": "19-06-2023 lúc 08:56"
             },
-            "create_at": "06-07-2023 11:20:38",
+            "create_at": "07-07-2023 13:31:26",
             "components": [
                 {
-                    "id": 17,
-                    "component_id": 17,
-                    "component_name": "Loại",
-                    "ui_id": 17,
+                    "id": 11,
+                    "component_id": 11,
+                    "component_name": "Loại sản phẩm",
+                    "ui_id": 11,
                     "layout_id": 0,
-                    "api_get": "/api/7CBCEBAD610D4A55BEA145ECF8C07A98",
-                    "api_post": "/api/C2ED93AF9D154F32928C3E7AC1CD251A",
-                    "api_put": "/api/254C7C9F230A48A39D8A0577AAA59633",
-                    "api_delete": "/api/04FC5FF0E2EE4029ABEDD92F062EE280"
+                    "api_get": "/api/861989BCEBCC462CAE447DD1E6DFC722",
+                    "api_post": "/api/6330BE01308D46C194DC43188C7F8F67",
+                    "api_put": "/api/A04E7E458393430388063687A1167C61",
+                    "api_delete": "/api/A3960E2B2D2945EC973AD244C63FB766"
                 }
             ]
         },
         {
-            "id": 18,
-            "ui_id": 18,
-            "title": "Chi tiết đơn hàng",
-            "version_id": 37,
-            "url": "/chi-tiet-don-hang",
+            "id": 12,
+            "ui_id": 12,
+            "title": "Sản phẩm",
+            "version_id": 7,
+            "url": "/san-pham",
             "status": true,
             "params": [],
             "create_by": {
                 "username": "nhan",
                 "fullname": "Tô Trọng Nhân",
                 "role": "ad",
-                "email": "totrongnhan@gmail.com",
-                "phone": "0359695554",
+                "email": "nhan.to@mylangroup.com",
+                "phone": "012345678912",
                 "avatar": "/image/avatar/nhan.png",
                 "address": "Trà Vinh",
-                "note": "Ghi chú",
+                "note": "Không có ghi chú gì cả",
                 "create_by": "su",
-                "create_at": "06-06-2023 lúc 10:53"
+                "create_at": "19-06-2023 lúc 08:56"
             },
-            "create_at": "06-07-2023 11:20:59",
+            "create_at": "07-07-2023 13:31:38",
             "components": [
                 {
-                    "id": 18,
-                    "component_id": 18,
-                    "component_name": "Bảng Chi Tiết Đơn Hàng",
-                    "ui_id": 18,
+                    "id": 12,
+                    "component_id": 12,
+                    "component_name": "Sản phẩm",
+                    "ui_id": 12,
                     "layout_id": 0,
-                    "api_get": "/api/8477EBB5D089449C80D8C688B32A899D",
-                    "api_post": "/api/1A2A9DF170274252929C9DCA41D9E0E5",
-                    "api_put": "/api/D07799BCC86148F790977D7F516D1C8E",
-                    "api_delete": "/api/9C946DE760D2458AAEDE301CA483AA6F"
+                    "api_get": "/api/4E25DB0F5D894344AAEE1441FED0B9E5",
+                    "api_post": "/api/76A062E225184E67B12FD01AFC35DA4E",
+                    "api_put": "/api/81CC524B9CE74327A0EF9F5EBB2C10A8",
+                    "api_delete": "/api/A5D78502C6C54F6495B627EF5595E041"
                 }
             ]
         },
         {
-            "id": 19,
-            "ui_id": 19,
-            "title": "UI TEST",
-            "version_id": 37,
-            "url": "/ui-test",
+            "id": 13,
+            "ui_id": 13,
+            "title": "Khách hàng",
+            "version_id": 7,
+            "url": "/khach-hang",
             "status": true,
             "params": [],
             "create_by": {
                 "username": "nhan",
                 "fullname": "Tô Trọng Nhân",
                 "role": "ad",
-                "email": "totrongnhan@gmail.com",
-                "phone": "0359695554",
+                "email": "nhan.to@mylangroup.com",
+                "phone": "012345678912",
                 "avatar": "/image/avatar/nhan.png",
                 "address": "Trà Vinh",
-                "note": "Ghi chú",
+                "note": "Không có ghi chú gì cả",
                 "create_by": "su",
-                "create_at": "06-06-2023 lúc 10:53"
+                "create_at": "19-06-2023 lúc 08:56"
             },
-            "create_at": "06-07-2023 13:02:47",
+            "create_at": "07-07-2023 13:31:50",
             "components": [
                 {
-                    "id": 19,
-                    "component_id": 19,
-                    "component_name": "bảng test",
-                    "ui_id": 19,
+                    "id": 13,
+                    "component_id": 13,
+                    "component_name": "Khách hàng",
+                    "ui_id": 13,
                     "layout_id": 0,
-                    "api_get": "/api/4AB0F0CF8BFE4DB98EE906C85FA8AE94",
-                    "api_post": "/api/9AF9A7A906BF43D58E438DE77C234418",
-                    "api_put": "/api/BDC6E716A85D48F29C24C8ADA3095B15",
-                    "api_delete": "/api/550E8F56827E4ACABCA3D69B202FD116"
+                    "api_get": "/api/48D7DBE7AF8443BCAB5366BDFD127990",
+                    "api_post": "/api/514DF812367E43B3B6933A23A37F6BD3",
+                    "api_put": "/api/678ECEB1C3E64DF6AE45485A792C8E2F",
+                    "api_delete": "/api/EB3FB9BEC0F1441CBD013863CF07BD3E"
                 }
             ]
         },
         {
-            "id": 20,
-            "ui_id": 20,
-            "title": "UI TEST 1",
-            "version_id": 37,
-            "url": "/ui-test-1",
+            "id": 14,
+            "ui_id": 14,
+            "title": "Bảng email",
+            "version_id": 7,
+            "url": "/bang-email",
             "status": true,
             "params": [],
             "create_by": {
                 "username": "nhan",
                 "fullname": "Tô Trọng Nhân",
                 "role": "ad",
-                "email": "totrongnhan@gmail.com",
-                "phone": "0359695554",
+                "email": "nhan.to@mylangroup.com",
+                "phone": "012345678912",
                 "avatar": "/image/avatar/nhan.png",
                 "address": "Trà Vinh",
-                "note": "Ghi chú",
+                "note": "Không có ghi chú gì cả",
                 "create_by": "su",
-                "create_at": "06-06-2023 lúc 10:53"
+                "create_at": "19-06-2023 lúc 08:56"
             },
-            "create_at": "06-07-2023 13:02:58",
+            "create_at": "07-07-2023 13:32:52",
             "components": [
                 {
-                    "id": 20,
-                    "component_id": 20,
-                    "component_name": "bảng test1",
-                    "ui_id": 20,
+                    "id": 14,
+                    "component_id": 14,
+                    "component_name": "Bảng email",
+                    "ui_id": 14,
                     "layout_id": 0,
-                    "api_get": "/api/48FB9FC4B162449C9D63AFC5C004F02E",
-                    "api_post": "/api/46246F93FB7D40CCABF78F2320BAC1DF",
-                    "api_put": "/api/C92AFCFB482B47A8BD4F3F9E8DB5208D",
-                    "api_delete": "/api/32B367381341439E82B9497DA87EF104"
+                    "api_get": "/api/9EB0CB33F82B453B81F13E431D3E6CF4",
+                    "api_post": "/api/7FD25A00470A4F3DB5F934BD29BC7CBA",
+                    "api_put": "/api/57212203B0084E7486920120B64F2F76",
+                    "api_delete": "/api/88BAC1222A4D4AD4BD618725777DF46A"
                 }
             ]
         }

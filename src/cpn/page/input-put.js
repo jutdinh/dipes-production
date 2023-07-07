@@ -43,12 +43,12 @@ export default () => {
 
 
     const result = pages?.find(item => {
-      
+
         const api_get_id = item.components?.[0]?.api_put.split('/')[2];
-   
+
         return api_get_id === id_str;
     });
-    console.log (result)
+    console.log(result)
 
     const changeTrigger = (field, value) => {
         const newData = data;
@@ -89,14 +89,14 @@ export default () => {
                     // const { tables } = data.tables;
                     const apiFields = data.params;
 
-                    apiFields.push(... data.body)
-     
+                    apiFields.push(...data.body)
 
-                   const serializeParams = apiFields.map((param, index) => {
-                        const { fomular_alias } = param;    
+
+                    const serializeParams = apiFields.map((param, index) => {
+                        const { fomular_alias } = param;
                         return { fomular_alias, value: paramsList[index] }
                     })
-                  
+
                     const keyFields = serializeParams.map(par => {
                         const field = apiFields.filter(f => f.fomular_alias == par.fomular_alias)[0]
                         return field;
@@ -133,7 +133,7 @@ export default () => {
                                     data[fomular_alias] = initData[0][fomular_alias];
                                 })
                                 setInitData(initData[0] ? initData[0] : {});
-                                
+
                                 setData(data)
                             }
                         })
@@ -148,7 +148,7 @@ export default () => {
         const url = window.location;
         const rawParams = url.pathname.split(`/${id_str}/`)[1];
         const paramsList = rawParams.split('/');
-
+        console.log("body", data)
         if (!emailError && !phoneError && nullCheck(data)) {
             fetch(`${proxy()}/api/${id_str}/${paramsList}`, {
                 method: "PUT",
@@ -157,7 +157,6 @@ export default () => {
                 },
 
                 body: JSON.stringify({ ...data })
-
             }).then(res => res.json()).then(res => {
                 const { success, data, fk, content } = res;
                 console.log(res)
@@ -166,7 +165,6 @@ export default () => {
                     "foreignConflict",
                     "typeError"
                 ]
-
                 let valid = true;
                 for (let i = 0; i < errors.length; i++) {
                     const isInValid = res[errors[i]]
@@ -290,7 +288,8 @@ export default () => {
                                                         /> : null
                                                     }
                                                     {field.DATATYPE == "INT" || field.data_type == "BIG INT" ?
-                                                        <Int
+                                                        <Int 
+                                                            selectOption= {false}
                                                             table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             field={field}
                                                             changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}

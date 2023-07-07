@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 export default (props) => {
-    const { field, changeTrigger, related, table, defaultValue } = props;
+    const { field, changeTrigger, related, table, defaultValue, selectOption } = props;
 
 
 
@@ -25,7 +25,7 @@ export default (props) => {
                 // fetch(`${proxy()}/apis/apis/table/data/${table_alias}`).then(res => res.json()).then(res => {/table/:table_id/data
                 fetch(`${proxy()}/apis/table/${key.table_id}/data`).then(res => res.json()).then(res => {
                     const { success, data, fields } = res.data;
-                    console.log( res.data )
+                    console.log(res.data)
                     setForeignData(data)
                     setFields(fields)
 
@@ -89,7 +89,7 @@ export default (props) => {
     const isPrimaryKey = () => {
         if (table) {
             const { primary_key } = table;
-            const key = primary_key.find( key => key == field.id )
+            const key = primary_key.find(key => key == field.id)
             if (key) {
                 return key
             }
@@ -103,6 +103,12 @@ export default (props) => {
 
         setCurrent(value[pk])
         changeTrigger(field, value[pk])
+    }
+
+    const changeRawData = (e) => {
+        const { value } = e.target
+        setCurrent(value)
+        changeTrigger(field, value)
     }
 
     const blurTrigger = (e) => {
@@ -142,10 +148,10 @@ export default (props) => {
     //     changeTrigger(field, data[pk])
     // }
 
-    if( isPrimaryKey () ){
+    if (isPrimaryKey()) {
 
-        if( !isFieldForeign() ){
-            
+        if (!isFieldForeign()) {
+
             return (
                 <div class="row justify-content-center">
                     <div class="col-md-6">
@@ -156,18 +162,18 @@ export default (props) => {
                                     type={field.AUTO_INCREMENT ? "text" : "number"}
                                     className="form-control"
                                     placeholder=""
-                                    
-                                    defaultValue={ defaultValue == undefined ? current : defaultValue }
+                                    onChange={changeRawData}
+                                    defaultValue={defaultValue == undefined ? current : defaultValue}
                                     readOnly={true}
                                 />
-    
+
                             </div>
                         </form>
                     </div>
                 </div>
             )
         }
-        else{
+        else {
             return (
                 <div class="row justify-content-center">
                     <div class="col-md-6">
@@ -175,9 +181,13 @@ export default (props) => {
                             <div class="form-group">
                                 <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
                                 <select className="form-control" name="role" onChange={fieldChangeData} value={generateData(current)}>
-                                    {/* <option value={""} >Chọn</option> */}
+                                    {selectOption ? (
+                                        <option value={""} >Chọn</option>
+                                    ) : null
+                                    }
+
                                     {foreignData && foreignData.length > 0 && foreignData.map((d, index) =>
-                                        <option value={JSON.stringify(d)}  selected={ d[pk] == defaultValue ? true: false } >
+                                        <option value={JSON.stringify(d)} selected={d[pk] == defaultValue ? true : false} >
                                             <div key={index} className="form-control" >
                                                 <span>{generateData(d)}</span>
                                             </div>
@@ -190,8 +200,8 @@ export default (props) => {
                 </div>
             )
         }
-        
-    }else{
+
+    } else {
 
         if (!isFieldForeign()) {
             return (
@@ -204,11 +214,11 @@ export default (props) => {
                                     type={field.AUTO_INCREMENT ? "text" : "number"}
                                     className="form-control"
                                     placeholder=""
-                                    onChange={fieldChangeData}
+                                    onChange={changeRawData}
                                     value={current}
                                     readOnly={field.AUTO_INCREMENT ? true : false}
                                 />
-    
+
                             </div>
                         </form>
                     </div>
@@ -222,9 +232,12 @@ export default (props) => {
                             <div class="form-group">
                                 <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
                                 <select className="form-control" name="role" onChange={fieldChangeData} value={generateData(current)}>
-                                    {/* <option value={""} >Chọn</option> */}
+                                    {selectOption ? (
+                                        <option value={""} >Chọn</option>
+                                    ) : null
+                                    }
                                     {foreignData && foreignData.length > 0 && foreignData.map((d, index) =>
-                                        <option value={JSON.stringify(d)}  selected={ d[pk] == defaultValue ? true: false } >
+                                        <option value={JSON.stringify(d)} selected={d[pk] == defaultValue ? true : false} >
                                             <div key={index} className="form-control" >
                                                 <span>{generateData(d)}</span>
                                             </div>
