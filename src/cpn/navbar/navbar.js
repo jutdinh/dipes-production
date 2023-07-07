@@ -64,7 +64,7 @@ export default () => {
                   </li>
                ) : null}
 
-               
+
                {user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/diagram_db" activeClassName="nav-active">
@@ -73,8 +73,8 @@ export default () => {
                      </NavLink>
                   </li>
                ) : null}
-
-               <li class="active">
+              
+               <li>
                   <a href="#dashboard" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                      <i class="fa fa-dashboard yellow_color"></i>
                      <span>{lang["data management"]}</span>

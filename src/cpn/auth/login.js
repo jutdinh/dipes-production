@@ -67,7 +67,21 @@ export default () => {
 
                 //      window.location = "/projects";
                 // });
-                window.location = "/";
+                if(data.data.role=== "ad" || data.data.role=== "uad" ){
+                    if(data.imported)
+                    {
+                          window.location = "/users";
+                    }
+                    else
+                    {
+                        window.location = "/import";
+                    }
+                  
+                } else if (data.data.role==="pm")
+                {
+                    window.location = "/users";
+                }
+                
 
             } else {
                 setAuthError(content);

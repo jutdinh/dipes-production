@@ -4,8 +4,6 @@ import { useSelector } from 'react-redux';
 export default (props) => {
     const { field, changeTrigger, related, table, defaultValue, selectOption } = props;
 
-
-
     const [current, setCurrent] = useState(defaultValue ? defaultValue : "")
     const [fields, setFields] = useState([])
     const [height, setHeight] = useState(0)
@@ -111,13 +109,6 @@ export default (props) => {
         changeTrigger(field, value)
     }
 
-    const blurTrigger = (e) => {
-        e.preventDefault();
-        setTimeout(() => {
-            setHeight(0)
-        }, 135)
-    }
-
     const focusTrigger = () => {
         setHeight(250);
     }
@@ -135,8 +126,7 @@ export default (props) => {
 
         // }else{
         //     return null
-        // }c
-        console.log(data)
+        // }c        
         if (data) {
             return data[pk]
         }
@@ -166,7 +156,6 @@ export default (props) => {
                                     defaultValue={defaultValue == undefined ? current : defaultValue}
                                     readOnly={true}
                                 />
-
                             </div>
                         </form>
                     </div>

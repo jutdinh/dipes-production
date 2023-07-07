@@ -10,7 +10,7 @@ import { version } from "react-dom";
 
 export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
-    
+
     const { openTab, renderDateTimeByFormat } = functions
     const _token = localStorage.getItem("_token");
     const { project_id, version_id, url } = useParams();
@@ -19,18 +19,20 @@ export default () => {
     const [dataFields, setDataFields] = useState([]);
     const [apiData, setApiData] = useState([])
     const [apiDataName, setApiDataName] = useState([])
+    const [dataStatis, setDataStatis] = useState({})
 
     const [page, setPage] = useState([]);
 
     useEffect(() => {
-        const result = pages?.find(page => page.url === `/${url}`);
-
-        if (result) {
-            setPage(result);
-        } else {
-            // console.log('Không tìm thấy trang với URL: ' + url);
+        if( pages && pages.length > 0){
+            const result = pages.find(page => page.url === `/${url}`);
+            console.log( result )
+            if (result) {
+                setPage(result);
+            } else {
+                // openTab('/page/not/found')
+            }
         }
-
     }, [pages, url]);
     // console.log(page)
     useEffect(() => {
@@ -42,14 +44,14 @@ export default () => {
                 .then(res => {
                     const { data, success, content } = res;
                     if (success) {
-                        // console.log("succcess", data)
+                        console.log("succcess", data)
                         setDataTables(data.tables)
                         setDataFields(data.body)
                     }
                     // setApi(api);
                     callApi()
                 })
-            }
+        }
     }, [page])
     // console.log(dataFields)
 
@@ -59,15 +61,18 @@ export default () => {
     const callApi = (api) => {
         /* this must be fixed */
         fetch(`${proxy()}${page.components?.[0]?.api_get}`).then(res => res.json()).then(res => {
-            const { success, content, data, fields } = res;
-            console.log(data)
+            const { success, content, data, fields, statistic } = res;
+            console.log(res)
             // console.log(fields)
             //  al.failure("Lỗi", "Đọc dữ liệu thất bại ")
+            const statisticValues = res.statistic.values;
 
             setApiData(data)
             setApiDataName(fields)
+            setDataStatis(statisticValues)
         })
     }
+    console.log(dataStatis)
 
     const redirectToInput = () => {
         // console.log(page)
@@ -125,7 +130,7 @@ export default () => {
                 // Tạo chuỗi newParams bằng cách nối api_delete và ids
                 newParams = `${api_delete}/${newData.join("/")}`;
 
-                
+
             } else {
                 console.log('Không tìm thấy đối tượng nào có id trong primaryKeys');
             }
@@ -134,7 +139,7 @@ export default () => {
         }
 
         // console.log(newParams);
-        
+
         Swal.fire({
             title: 'Xác nhận xóa',
             text: 'Bạn có chắc chắn muốn xóa trường này?',
@@ -181,37 +186,37 @@ export default () => {
             }
         });
     }
-    const redirectToInputPUT = async ( record )  => {       
-        
+    const redirectToInputPUT = async (record) => {
+
         const { components } = page;
         const cpn = components[0]
         const { api_put } = cpn;
-        if( api_put != undefined ){
+        if (api_put != undefined) {
             const id_str = api_put.split('/')[2]
 
             const response = await new Promise((resolve, reject) => {
                 fetch(`${proxy()}/apis/api/${id_str}/input_info`)
-                .then(res => res.json())
-                .then(res => {
-                    const { data, success, content } = res;
-                    if (success) {
-                        // console.log("succcess", data)
-                        setDataTables(data.tables)
-                        setDataFields(data.body)
-                    }
-                    resolve( res )
-                })
+                    .then(res => res.json())
+                    .then(res => {
+                        const { data, success, content } = res;
+                        if (success) {
+                            // console.log("succcess", data)
+                            setDataTables(data.tables)
+                            setDataFields(data.body)
+                        }
+                        resolve(res)
+                    })
             })
             const { success, data } = response;
-            if( success ){
+            if (success) {
                 const { params } = data;
-                const stringifiedParams = params.map( param => {
+                const stringifiedParams = params.map(param => {
                     const { fomular_alias } = param
-                    return record[ fomular_alias ]
+                    return record[fomular_alias]
                 }).join('/')
-                openTab(`/put/api/${ id_str }/${ stringifiedParams }`)
+                openTab(`/put/api/${id_str}/${stringifiedParams}`)
             }
-        }else{
+        } else {
             Swal.fire({
                 title: "Thất bại!",
                 text: "Không tìm thấy tính năng cập nhật",
@@ -219,7 +224,7 @@ export default () => {
                 showConfirmButton: false,
                 timer: 2000,
             })
-        }    
+        }
     }
     // const redirectToInputPut = (data) => {
     //     const id_str_put = page.apis.put.split(`/`)[4];
@@ -251,18 +256,93 @@ export default () => {
             case "DATE":
             case "DATETIME":
                 return renderDateTimeByFormat(data[field.fomular_alias], field.FORMAT);
-            // case "DECIMAL":
-            // case "DECIMAL UNSIGNED":
-            //     const { DELIMITER } = field.props;
-            //     const decimalNumber = parseFloat(data[field.field_alias]);
-            //     return decimalNumber.toFixed(DELIMITER)
+            case "DECIMAL":
+            case "DECIMAL UNSIGNED":
+                const { DECIMAL_PLACE } = field;
+                const decimalNumber = parseFloat(data[field.fomular_alias]);
+                return decimalNumber.toFixed(DECIMAL_PLACE)
             case "BOOL":
                 return renderBoolData(data[field.fomular_alias], field)
             default:
                 return data[field.fomular_alias];
         }
     };
-
+    const downloadAPI = () => {
+        console.log(apiData);
+      
+        // const header = ["API ID", "Tên API", "Phương thức API", "Ngày tạo"];
+      
+        // const reportData = apis.map(item => {
+        //   return [
+        //     item.api_id,
+        //     item.api_name,
+        //     item.api_method,
+        //     item.create_at,
+        //   ];
+        // });
+      
+        // const now = new Date();
+        // const date = now.toLocaleDateString("vi-VN", {
+        //   day: "numeric",
+        //   month: "numeric",
+        //   year: "numeric"
+        // });
+      
+        // const title = ["THÔNG TIN MÔ TẢ API"];
+        // const projectMasterInfo = [`Nhân viên xuất: ${auth.fullname}`];
+        // const datex = [`Ngày xuất: ${date}`];
+        // const formattedData = [
+        //   title,
+        //   projectMasterInfo,
+        //   datex,
+        //   header,
+        //   ...reportData
+        // ];
+      
+        // const ws = XLSX.utils.aoa_to_sheet(formattedData);
+      
+        // const mergeTitle = { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } };
+        // const mergeInfo = { s: { r: 1, c: 0 }, e: { r: 1, c: 3 } }; // gộp hàng từ A2 đến D2
+        // const mareDate = { s: { r: 2, c: 0 }, e: { r: 2, c: 3 } };
+        //  // gộp hàng từ A1 đến D1
+        //  ws["!merges"] = [mergeTitle, mergeInfo, mareDate];
+      
+        // const titleStyle = {
+        //   font: { bold: true, color: { rgb: "FFFFFF" } },
+        //   fill: { fgColor: { rgb: "008000" } },
+        //   alignment: { horizontal: "center", vertical: "center" },
+        // };
+        // const infoStyle = {
+        //   alignment: { horizontal: "center", vertical: "center" },
+        // };
+        // const headerStyle = {
+        //   font: { bold: true, color: { rgb: "FFFFFF" } },
+        //   fill: { fgColor: { rgb: "008000" } },
+        //   alignment: { horizontal: "center", vertical: "center" },
+        // };
+      
+        // // Thêm định dạng cho tiêu đề
+        // ws["A1"].s = titleStyle;
+      
+        // // Thêm định dạng cho thông tin
+        // // ws["A2"].s = infoStyle;
+        // // ws["A3"].s = infoStyle;
+      
+        // // Thêm định dạng cho header
+        // ws["A4"].s = headerStyle;
+        // ws["B4"].s = headerStyle;
+        // ws["C4"].s = headerStyle;
+        // ws["D4"].s = headerStyle;
+      
+        // ws["!cols"] = [{ width: 45}, { width: 60 }, { width: 20 }, { width: 35 }, { width: 20 }, { width: 40 }];
+        // ws["!rows"] = [{ height: 40 }, { height: 30 }, { height: 30 }, { height: 40 }];
+        // // Tạo một Workbook mới và thêm Worksheet vào Workbook
+        // const wb = XLSX.utils.book_new();
+        // XLSX.utils.book_append_sheet(wb, ws, "APIs");
+      
+        // // Ghi Workbook ra file Excel
+        // XLSX.writeFile(wb, "APIs.xlsx");
+      };
     const [currentPage, setCurrentPage] = useState(1);
     const rowsPerPage = 15;
 
@@ -272,7 +352,7 @@ export default () => {
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const totalPages = Math.ceil(apiData.length / rowsPerPage);
-
+    
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -294,6 +374,9 @@ export default () => {
                                 {/* <div class="ml-auto">
                                     <i class="fa fa-newspaper-o icon-ui"></i>
                                 </div> */}
+                                  <div class="ml-auto" onClick={downloadAPI}>
+                                    <i class="fa fa-download icon-ui"></i>
+                                </div>
                             </div>
                             <div class="table_section padding_infor_info">
                                 <div class="row column1">
@@ -334,6 +417,12 @@ export default () => {
                                                                     <i class="fa fa-edit size pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
                                                                     <i class="fa fa-trash-o size pointer icon-margin icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
                                                                 </td>
+                                                            </tr>
+                                                        ))}
+                                                        {dataStatis.map((data) => (
+                                                            <tr>
+                                                                <td class="font-weight-bold" colspan={`${apiDataName.length + 1}`} style={{ textAlign: 'right' }}>{data.display_name}: {data.result} </td>
+
                                                             </tr>
                                                         ))}
                                                     </tbody>

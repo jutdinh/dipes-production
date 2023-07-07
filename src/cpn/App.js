@@ -23,7 +23,7 @@ import { Apis, CreateApi, UpdateAi,StatisticalField} from './api';
 import { UI, CreateUi} from './ui'
 import updateApi from './api/update-api';
 import { Diagram } from './diagram';
-
+import  Active_Key from "./active_key/active";
 import { Fetch, InputPost, InputPut  } from './page';
 
 import "../css/index.scss";
@@ -100,14 +100,18 @@ function App() {
         <Route path="/users" element={<Navigation Child={ListUser} />} />
         <Route path="/users/profile" element={<Navigation Child={Profile} />} />
         <Route path="/settings" element={<Navigation Child={Settings} />} />
-        <Route path="*" element={<PageNotFound />} />
+        <Route path="/active" element={<Navigation Child={Active_Key} />} />
+       
 
 
-        <Route exac path="/:url" element={ < Navigation Child={Fetch} /> } />
         <Route exac path="/apis/api/:id_str/input_info" element={ < Navigation Child={InputPost} /> } />
         <Route path="/put/api/:id_str/*" element={ < Navigation Child={InputPut} /> } />
+        <Route exac path="/:url" element={ < Navigation Child={Fetch} /> } />
         {/* <Route exac path="/diagram" element={ < Navigation Child={Diagram} /> } /> */}
+        <Route path="*" element={<PageNotFound />} />
 
+        {/* <Route path="/:url" element={ < Navigation Child={Fetch} /> } />        
+        <Route exac path="/page/not/found" element={<PageNotFound />} /> */}
 
       </Routes>
     </Router>

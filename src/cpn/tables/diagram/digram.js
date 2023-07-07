@@ -123,7 +123,7 @@ export default () => {
             <div className="_abs _t-0 _l-0 _z-index-0" style={{ width, height }}>
                 <svg width={width} height={height}>
                     {offsets.map((point, index) =>
-                        <path style={{ opacity: "0.5" }} key={index} d={pathGenerator(index, point)} stroke={autoColoring()} strokeWidth={3}></path>
+                        <path style={{ opacity: "0.8" }} key={index} d={pathGenerator(index, point)} stroke={autoColoring()} strokeWidth={3}></path>
                     )}
                 </svg>
             </div>

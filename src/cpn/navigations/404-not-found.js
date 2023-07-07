@@ -12,7 +12,7 @@ export default () => {
                <div class="error_page">
                   <div class="center">
                      <div class="error_icon">
-                        <img class="img-responsive" src="images/layout_img/error.png" alt="#"/>
+                        <img class="img-responsive" src="/images/layout_img/error.png" alt="#"/>
                      </div>
                   </div>
                   <br/>

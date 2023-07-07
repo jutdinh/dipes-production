@@ -12,20 +12,27 @@ export default ( props ) => {
     }
 
     useEffect(() => {
-        setCurrent(defaultValue)
+        if(defaultValue){
+            let date = new Date(defaultValue);
+            let localISOTime = date.toISOString().slice(0,19);
+            setCurrent(localISOTime);
+        }
     }, [defaultValue])
+    
 
     return(
-        <div className="w-100-pct p-1 m-t-1">
-            <div>
-            {field.field_name}{!field.NULL && <span style={{color: 'red'}}> *</span>}
-            </div>
-            <div className="m-t-0-5">
-                <input type="datetime-local"
-                    className="p-t-0-5 p-b-0-5 p-l-1 text-16-px block w-100-pct border-1"
-                    placeholder="" onChange={ fieldChangeData } value={ current }
+        <div className="row justify-content-center">
+        <div className="col-md-6">
+            <form>
+                <div className="form-group">
+                    <label htmlFor="name"> {field.field_name}{!field.NULL && <span style={{color: 'red'}}> *</span>}</label>
+                    <input type="datetime-local"
+                        className="form-control"
+                        placeholder="" onChange={fieldChangeData} value={current}
                     />
-            </div>
+                </div>
+            </form>
         </div>
+    </div>
     )
 }

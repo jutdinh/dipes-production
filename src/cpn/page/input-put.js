@@ -288,8 +288,8 @@ export default () => {
                                                         /> : null
                                                     }
                                                     {field.DATATYPE == "INT" || field.data_type == "BIG INT" ?
-                                                        <Int 
-                                                            selectOption= {false}
+                                                        <Int
+                                                            selectOption={false}
                                                             table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             field={field}
                                                             changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
@@ -311,6 +311,8 @@ export default () => {
                                                     }
                                                     {field.DATATYPE == "EMAIL" ?
                                                         <DataEmail
+                                                            selectOption={true}
+                                                            readOnly={true}
                                                             table={tables.filter(tb => tb.table_id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger}

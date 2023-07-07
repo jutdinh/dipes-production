@@ -40,8 +40,7 @@ export default () => {
         fetch(`${proxy()}/apis/api/${id_str}/input_info`).then(res => res.json())
             .then(res => {
                 const { success, api, relatedTables, data } = res;
-                if (success) {
-                    console.log(data)
+                if (success) {                    
                     setFields(data.body)
                     setTables(data.tables)
                 } else {
@@ -201,7 +200,7 @@ export default () => {
 
                                                     {field.DATATYPE == "PHONE" ?
                                                         <DataPhone
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger}
                                                             onPhoneError={handlePhoneError}
@@ -209,19 +208,19 @@ export default () => {
                                                     }
                                                     {field.DATATYPE == "VARCHAR" ?
                                                         <Varchar
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
                                                     {field.DATATYPE == "CHAR" ?
                                                         <Char
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
                                                     {field.DATATYPE == "TEXT" ?
                                                         <Text
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
@@ -234,19 +233,22 @@ export default () => {
                                                     }
                                                     {field.DATATYPE == "INT UNSIGNED" || field.data_type == "BIG INT UNSIGNED" ?
                                                         <Int
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                             selectOption = {true}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             related={relatedTables} unsigned={true} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
                                                     {field.DATATYPE == "DATE" ?
                                                         <DateInput
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
                                                     {field.DATATYPE == "EMAIL" ?
                                                         <DataEmail
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            selectOption = {true}
+                                                            readOnly = {false}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger}
                                                             onEmailError={handleEmailError}
@@ -254,31 +256,31 @@ export default () => {
                                                     }
                                                     {field.DATATYPE == "TIME" ?
                                                         <TimeInput
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
                                                     {field.DATATYPE == "DATETIME" ?
                                                         <DateTimeInput
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
                                                     {field.DATATYPE == "DECIMAL" ?
                                                         <Decimal
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
                                                     {field.DATATYPE == "DECIMAL UNSIGNED" ?
                                                         <Decimal
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             related={relatedTables} unsigned={true} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
                                                     {field.DATATYPE == "BOOL" ?
                                                         <Bool
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }

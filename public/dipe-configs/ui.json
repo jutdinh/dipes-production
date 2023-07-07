@@ -36,41 +36,6 @@
             ]
         },
         {
-            "id": 12,
-            "ui_id": 12,
-            "title": "Sản phẩm",
-            "version_id": 7,
-            "url": "/san-pham",
-            "status": true,
-            "params": [],
-            "create_by": {
-                "username": "nhan",
-                "fullname": "Tô Trọng Nhân",
-                "role": "ad",
-                "email": "nhan.to@mylangroup.com",
-                "phone": "012345678912",
-                "avatar": "/image/avatar/nhan.png",
-                "address": "Trà Vinh",
-                "note": "Không có ghi chú gì cả",
-                "create_by": "su",
-                "create_at": "19-06-2023 lúc 08:56"
-            },
-            "create_at": "07-07-2023 13:31:38",
-            "components": [
-                {
-                    "id": 12,
-                    "component_id": 12,
-                    "component_name": "Sản phẩm",
-                    "ui_id": 12,
-                    "layout_id": 0,
-                    "api_get": "/api/4E25DB0F5D894344AAEE1441FED0B9E5",
-                    "api_post": "/api/76A062E225184E67B12FD01AFC35DA4E",
-                    "api_put": "/api/81CC524B9CE74327A0EF9F5EBB2C10A8",
-                    "api_delete": "/api/A5D78502C6C54F6495B627EF5595E041"
-                }
-            ]
-        },
-        {
             "id": 13,
             "ui_id": 13,
             "title": "Khách hàng",
@@ -137,6 +102,41 @@
                     "api_post": "/api/7FD25A00470A4F3DB5F934BD29BC7CBA",
                     "api_put": "/api/57212203B0084E7486920120B64F2F76",
                     "api_delete": "/api/88BAC1222A4D4AD4BD618725777DF46A"
+                }
+            ]
+        },
+        {
+            "id": 15,
+            "ui_id": 15,
+            "title": "Sản phẩm",
+            "version_id": 7,
+            "url": "/san-pham",
+            "status": true,
+            "params": [],
+            "create_by": {
+                "username": "nhan",
+                "fullname": "Tô Trọng Nhân",
+                "role": "ad",
+                "email": "nhan.to@mylangroup.com",
+                "phone": "012345678912",
+                "avatar": "/image/avatar/nhan.png",
+                "address": "Trà Vinh",
+                "note": "Không có ghi chú gì cả",
+                "create_by": "su",
+                "create_at": "19-06-2023 lúc 08:56"
+            },
+            "create_at": "07-07-2023 15:22:51",
+            "components": [
+                {
+                    "id": 15,
+                    "component_id": 15,
+                    "component_name": "Sản phẩm",
+                    "ui_id": 15,
+                    "layout_id": 0,
+                    "api_get": "/api/D3E96BB0C8704BB3B2C86057356BCE7F",
+                    "api_post": "/api/CC5E9B3ECDA549659D69E5CDC87B2ACF",
+                    "api_put": "/api/9F7B975AC7D544D4AAD62939232982DA",
+                    "api_delete": "/api/C1FF1458B4DA4CF495058394B97B73DA"
                 }
             ]
         }
