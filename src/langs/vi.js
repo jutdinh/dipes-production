@@ -46,8 +46,8 @@ export default {
     "description": "Mô tả",
     "data management": "Quản lý dữ liệu",
 
-"project.info":"Thông tin dự án",
-"project.deploy":"Thông tin website triển khai",
+    "project.info": "Thông tin dự án",
+    "project.deploy": "Thông tin website triển khai",
     //Project
     "projects": "Dự án",
     "projects.title": "Quản lý dự án",
@@ -93,11 +93,11 @@ export default {
     "task_priority": "Mức độ ưu tiên",
     "taskmember": "Thành viên",
     "p.description": "Mô tả yêu cầu",
-    "updatestatus":"Cập nhật trạng thái",
-    "viewdetail":"Xem chi tiết",
+    "updatestatus": "Cập nhật trạng thái",
+    "viewdetail": "Xem chi tiết",
     "delete": "Xóa",
-    "edit":"Chỉnh sửa",
-    "edittask":"Chỉnh sửa yêu cầu",
+    "edit": "Chỉnh sửa",
+    "edittask": "Chỉnh sửa yêu cầu",
 
 
     //Managers
@@ -118,8 +118,8 @@ export default {
     "p.versiondescription": "Nhập mô tả",
     //Task
     "task": "Yêu cầu",
-    "duty":"Chức vụ",
-    "confirm":"Xác nhận",
+    "duty": "Chức vụ",
+    "confirm": "Xác nhận",
     //User
     "users.title": "Quản lý người dùng",
     //Group user
@@ -176,38 +176,40 @@ export default {
     "log.information": "Thông tin",
     "log.warning": "Cảnh báo",
     "log.error": "Lỗi",
-    "log.title":"Lịch sử",
+    "log.title": "Lịch sử",
     "log.statis": "Thống kê",
     "log.type": "Loại",
-    "log.selecttype":"Chọn loại",
-    "log.daystart":"Ngày bắt đầu",
+    "log.selecttype": "Chọn loại",
+    "log.daystart": "Ngày bắt đầu",
     "log.dayend": "Ngày kết thúc",
-    "log.listlog":"Danh sách lịch sử",
-    "log.no":"STT",
-    "log.id":"ID",
-    "log.listtitle":"Tiêu đề",
-    "log.dayupdate":"Ngày cập nhật",
+    "log.listlog": "Danh sách lịch sử",
+    "log.no": "STT",
+    "log.id": "ID",
+    "log.listtitle": "Tiêu đề",
+    "log.dayupdate": "Ngày cập nhật",
     "log.action": "Thao tác",
-    "btn.ok":"Lọc",
-    "btn.clear":"Xóa",
-    "btn.viewdetail":"Xem chi tiết",
-    "detaillog":"Chi tiết lịch sử",
-    "log.create_user":"Người thực hiện",
-    "log.create_at":"Ngày tạo",
+    "btn.ok": "Lọc",
+    "btn.clear": "Xóa",
+    "btn.viewdetail": "Xem chi tiết",
+    "detaillog": "Chi tiết lịch sử",
+    "log.create_user": "Người thực hiện",
+    "log.create_at": "Ngày tạo",
 
-//page
+    //page
 
-"show":"Hiển thị",
-"of": "của",
-"results":"kết quả",
-
-
-"supervisor":"Giám sát",
-"deployers": "Triển khai",
+    "show": "Hiển thị",
+    "of": "của",
+    "results": "kết quả",
 
 
+    "supervisor": "Giám sát",
+    "deployers": "Triển khai",
 
-"btn.cancel":"Hủy",
-"btn.addfield":"Thêm mới trường"
+
+
+    "btn.cancel": "Hủy",
+    "btn.addfield": "Thêm mới trường",
+    "export": "Xuất",
+    "export-to-excel": "Xuất sang Excel"
 
 }

@@ -678,7 +678,31 @@ h5 {
 .add-option:hover {
     background-color: #0056b3;
 }
-
+.excel-preview {
+    border-collapse: collapse;
+  }
+  
+  .excel-preview th,
+  .excel-preview td {
+    border: 1px solid #000;
+    padding: 5px;
+  }
+  
+  .excel-preview th {
+    background-color: #008000;
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  .excel-preview td {
+    text-align: left;
+  }
+  
+.icon-export{
+    color: #269c1b;
+    font-size: 24px;
+}
 .icon-ui{
     color: #0056b3;
     font-size: 24px;

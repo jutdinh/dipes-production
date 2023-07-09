@@ -214,7 +214,9 @@ export default {
 "supervisor":"Supervisor",
 "deployers": "Deployers",
 "btn.cancel":"Cancel",
-"btn.addfield":"Add new field"
+"btn.addfield":"Add new field",
+"export": "Export",
+"export-to-excel": "Export to Excel"
 }
 
 

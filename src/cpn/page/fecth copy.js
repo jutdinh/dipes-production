@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { version } from "react-dom";
 import XLSX from 'xlsx-js-style';
-
 export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
 
@@ -272,60 +271,31 @@ export default () => {
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const totalPages = Math.ceil(apiData.length / rowsPerPage);
     const [selectedFields, setSelectedFields] = useState([]);
-    // Handle field change
-    const handleFieldChange = (event) => {
-        const { value } = event.target;
-        setSelectedFields(prevFields =>
-            prevFields.includes(value)
-                ? prevFields.filter(field => field !== value)
-                : [...prevFields, value]
-        );
-    }
-
-
+    const handleFieldChange = (event) => { // Xử lý sự kiện thay đổi trường
+        if (event.target.checked) {
+          setSelectedFields(prevState => [...prevState, event.target.value]);
+        } else {
+          setSelectedFields(prevState => prevState.filter(field => field !== event.target.value));
+        }
+      }
     const exportToCSV = (csvData, fileName) => {
-        const selectedHeaders = apiDataName.filter(({ fomular_alias }) => selectedFields.includes(fomular_alias));
-        const titleRow = { [selectedHeaders[0].fomular_alias]: 'Tiêu đề xuất excel' };
-        const emptyRow = {};
-        const headerRow = selectedHeaders.reduce((obj, header) => ({ ...obj, [header.fomular_alias]: header.display_name }), {});
+        const newCsvData = csvData.map(row =>
+            Object.keys(row)
+                .filter(key => selectedFields.includes(key))
+                .reduce((obj, key) => {
+                    obj[key] = row[key];
+                    return obj;
+                }, {})
+        );
 
-        const newCsvData = [
-            titleRow,
-            emptyRow,
-            headerRow,
-            ...csvData.map(row =>
-                selectedHeaders.map(({ fomular_alias }) => ({ [fomular_alias]: row[fomular_alias] })).reduce((obj, cur) => ({ ...obj, ...cur }), {})
-            )
-        ];
-
-        const ws = XLSX.utils.json_to_sheet(newCsvData, { skipHeader: true });
+        const ws = XLSX.utils.json_to_sheet(newCsvData);
+        // Ví dụ về thêm style
+        // ws['A1'].s = { font: { bold: true }, fill: { bgColor: { rgb: "FFFFAA00" } } };
 
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-
-        // Adding the cell styles
-        const wscols = selectedFields.map(() => ({ wch: 15 }));
-        ws['!cols'] = wscols;
-        ws['!merges'] = [
-            { s: { r: 0, c: 0 }, e: { r: 0, c: selectedFields.length - 1 } }, // Merge cells for title row
-        ];
-
-        ws[XLSX.utils.encode_cell({ c: 0, r: 0 })].s = {  // Title Row style
-            fill: { fgColor: { rgb: "008000" } },
-            font: { color: { rgb: "FFFFFF" }, sz: 14, bold: true },
-            alignment: { horizontal: "center" }
-        };
-
-        for (let i = 0; i < selectedFields.length; i++) { // Header Row style
-            ws[XLSX.utils.encode_cell({ c: i, r: 2 })].s = {
-                fill: { fgColor: { rgb: "008000" } },
-                font: { color: { rgb: "FFFFFF" }, sz: 12, bold: true },
-            };
-        }
-
-        XLSX.writeFile(wb, `${fileName}.xlsx`);
+        XLSX.writeFile(wb, fileName + ".xlsx");
     }
-
 
     return (
         <div class="midde_cont">
@@ -339,59 +309,19 @@ export default () => {
                 </div>
                 {/* List table */}
                 <div class="row">
-
-
-                    <div class={`modal `} id="exportExcel">
-                        <div class="modal-dialog modal-dialog-center">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title">{lang["export-to-excel"]}</h4>
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                </div>
-                                <div class="modal-body">
-  <form>
-    {apiDataName.map((header, index) => (
-      <div key={index}>
-        <input
-          type="checkbox"
-          value={header.fomular_alias}
-          checked={selectedFields.includes(header.fomular_alias)}
-          onChange={handleFieldChange}
-        />
-        <label>{header.display_name}</label>
-      </div>
-    ))}
-    <h5>Excel data preview:</h5>
-    <table class="table table-striped excel-preview">
-      <thead>
-        {selectedFields.map((field) => {
-          const header = apiDataName.find(
-            (header) => header.fomular_alias === field
-          );
-          return <th key={field}>{header ? header.display_name : field}</th>;
-        })}
-      </thead>
-      <tbody>
-        {current.slice(0, 5).map((row, rowIndex) => (
-          <tr key={rowIndex}>
-            {selectedFields.map((field) => (
-              <td key={field}>{row[field]}</td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </form>
-</div>
-
-                                <div class="modal-footer">
-                                    <button type="button" onClick={() => exportToCSV(current, 'myFile')} class="btn btn-success ">{lang["export"]}</button>
-                                    <button type="button" data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
-                                </div>
-                            </div>
+                    {apiDataName.map((header, index) =>
+                        <div key={index}>
+                            <input
+                                type="checkbox"
+                                value={header.display_name}
+                                checked={selectedFields.includes(header.display_name)}
+                                onChange={handleFieldChange}
+                            />
+                            <label>{header.display_name}</label>
                         </div>
-                    </div>
+                    )}
 
+                    <button onClick={() => exportToCSV(apiData, 'myFile')}>Export</button>
                     <div class="col-md-12">
                         <div class="white_shd full margin_bottom_30">
                             <div class="full graph_head d-flex">
@@ -401,20 +331,9 @@ export default () => {
                                 {/* <div class="ml-auto">
                                     <i class="fa fa-newspaper-o icon-ui"></i>
                                 </div> */}
-                                <div class="ml-auto" onClick={() => redirectToInput()} data-toggle="modal" data-target="#exportExcel">
-                                    <i class="fa fa-plus-circle icon-ui"></i>
+                                <div class="ml-auto" onClick={downloadAPI}>
+                                    <i class="fa fa-download icon-ui"></i>
                                 </div>
-                                {
-                                    current && current.length > 0 ? (
-                                        <div class="ml-4" onClick={downloadAPI} data-toggle="modal" data-target="#exportExcel">
-                                            <i class="fa fa-download icon-export"></i>
-                                        </div>
-                                    ) : null
-                                }
-
-                                {/* <button type="button" class="btn btn-primary custom-buttonadd" onClick={() => redirectToInput()}>
-                                    <i class="fa fa-plus"></i>
-                                </button> */}
                             </div>
                             <div class="table_section padding_infor_info">
                                 <div class="row column1">
@@ -424,19 +343,20 @@ export default () => {
                                                  placeholder="" /> */}
                                     </div>
                                     <div class="col-md-12 col-lg-12">
-                                        {/* <div class="d-flex align-items-center mb-1">
-                                            <p class="font-weight-bold">Danh sách bảng </p>
-                                           
+                                        <div class="d-flex align-items-center mb-1">
+                                            {/* <p class="font-weight-bold">Danh sách bảng </p> */}
+                                            {/* <button type="button" class="btn btn-primary custom-buttonadd ml-auto" data-toggle="modal" data-target="#addTable">
+                                                <i class="fa fa-plus"></i>
+                                            </button> */}
                                             <button type="button" class="btn btn-primary custom-buttonadd ml-auto" onClick={() => redirectToInput()}>
                                                 <i class="fa fa-plus"></i>
                                             </button>
-                                        </div> */}
+                                        </div>
                                     </div>
-                                    {
-                                            current && current.length > 0 ? (
-                                                <>
+
                                     <div class="table-responsive">
-                                     
+                                        {
+                                            current && current.length > 0 ? (
                                                 <table class="table table-striped">
                                                     <thead>
                                                         {apiDataName.map((header, index) => (
@@ -464,7 +384,12 @@ export default () => {
                                                         ))}
                                                     </tbody>
                                                 </table>
-                                           
+                                            ) : (
+                                                <div class="list_cont ">
+                                                    <p>Chưa có dữ liệu</p>
+                                                </div>
+                                            )
+                                        }
 
                                         <div className="d-flex justify-content-between align-items-center">
                                             <p>{lang["show"]} {indexOfFirst + 1}-{Math.min(indexOfLast, apiData.length)} {lang["of"]} {apiData.length} {lang["results"]}</p>
@@ -491,13 +416,6 @@ export default () => {
                                             </nav>
                                         </div>
                                     </div>
-                                    </>
-                                    ) : (
-                                                <div class="list_cont ">
-                                                    <p>Chưa có dữ liệu</p>
-                                                </div>
-                                            )
-                                        }
                                 </div>
                             </div>
                         </div>
