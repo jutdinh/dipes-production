@@ -672,12 +672,22 @@ h5 {
 .disabled {
     pointer-events: none;
     opacity: 0.5;
-    /* Các thuộc tính khác cho giao diện bị ảnh hưởng khi disabled */
+
 }
 
 .add-option:hover {
     background-color: #0056b3;
 }
+
+.checkboxes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    grid-auto-rows: minmax(20px, auto); /* Điều chỉnh kích thước hàng tối thiểu nếu cần */
+    grid-gap: 10px; /* Khoảng cách giữa các hàng/cột */
+    max-height: 100%; /* Điều chỉnh chiều cao tối đa */
+    overflow-y: auto; /* Cuộn nếu nội dung vượt quá chiều cao tối đa */
+}
+
 .excel-preview {
     border-collapse: collapse;
   }

@@ -114,7 +114,7 @@ export default () => {
                             <ul>
                                 {/* <li><a href="#"><i class="fa fa-question-circle"></i></a></li>
                                 <li><a href="#"><i class="fa fa-bell-o"></i><span class="badge">2</span></a></li> */}
-                                <li><a href="#"><i class="fa fa-envelope-o"></i><span class="badge">1</span></a></li>
+                                {/* <li><a href="#"><i class="fa fa-envelope-o"></i><span class="badge">1</span></a></li> */}
                             </ul>
                             <ul class="user_profile_dd ">
                                 <li>
@@ -124,10 +124,10 @@ export default () => {
                                     </a>
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="/users/profile">{lang["my profile"]}</a>
-                                        <a class="dropdown-item" href="settings.html">{lang["settings"]}</a>
-                                        <a class="dropdown-item" href="help.html">{lang["help"]}</a>
+                                        {/* <a class="dropdown-item" href="settings.html">{lang["settings"]}</a>
+                                        <a class="dropdown-item" href="help.html">{lang["help"]}</a> */}
 
-                                        <a class="dropdown-item" href="#" onClick={signOut}><span>{lang["signout"]}</span> <i class="fa fa-sign-out"></i></a>
+                                        <a class="dropdown-item" href="#" onClick={signOut}>{lang["signout"]}</a>
                                     </div>
                                 </li>
                             </ul>

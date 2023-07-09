@@ -35,7 +35,10 @@ export default () => {
             }
         }
     }, [pages, url]);
-    // console.log(page)
+    const layoutId = page.components?.[0].layout_id;
+
+    const tableClassName = layoutId === 0 ? "table table-striped" : "table";
+    console.log(page.components?.[0].layout_id)
     useEffect(() => {
         if (page && page.components) {
             const id_str = page.components?.[0]?.api_post.split('/')[2];
@@ -215,7 +218,7 @@ export default () => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                openTab(`/put/api/${id_str}/${stringifiedParams}`)
+                openTab(`/page/put/api/${id_str}/${stringifiedParams}`)
             }
         } else {
             Swal.fire({
@@ -283,10 +286,13 @@ export default () => {
     }
 
 
-    const exportToCSV = (csvData, fileName) => {
+    const exportToCSV = (csvData) => {
+
         const selectedHeaders = apiDataName.filter(({ fomular_alias }) => selectedFields.includes(fomular_alias));
         const titleRow = { [selectedHeaders[0].fomular_alias]: 'Tiêu đề xuất excel' };
-        const emptyRow = {};
+
+        const emptyRow = { [selectedHeaders[0].fomular_alias]: `Nhân viên xuất: ${auth.fullname}` };
+
         const headerRow = selectedHeaders.reduce((obj, header) => ({ ...obj, [header.fomular_alias]: header.display_name }), {});
 
         const newCsvData = [
@@ -294,7 +300,9 @@ export default () => {
             emptyRow,
             headerRow,
             ...csvData.map(row =>
-                selectedHeaders.map(({ fomular_alias }) => ({ [fomular_alias]: row[fomular_alias] })).reduce((obj, cur) => ({ ...obj, ...cur }), {})
+                selectedHeaders.map((header) => ({ 
+                    [header.fomular_alias]: renderData(header, row) 
+                })).reduce((obj, cur) => ({ ...obj, ...cur }), {})
             )
         ];
 
@@ -323,9 +331,13 @@ export default () => {
             };
         }
 
-        XLSX.writeFile(wb, `${fileName}.xlsx`);
+        XLSX.writeFile(wb, `Project-${(new Date()).getTime()}.xlsx`);
+        setSelectedFields([]);
     }
+    const half = Math.ceil(apiDataName.length / 2);
 
+    const firstHalf = apiDataName.slice(0, half);
+    const secondHalf = apiDataName.slice(half);
 
     return (
         <div class="midde_cont">
@@ -339,8 +351,7 @@ export default () => {
                 </div>
                 {/* List table */}
                 <div class="row">
-
-
+                    {/* modal export excel */}
                     <div class={`modal `} id="exportExcel">
                         <div class="modal-dialog modal-dialog-center">
                             <div class="modal-content">
@@ -350,17 +361,20 @@ export default () => {
                                 </div>
                                 <div class="modal-body">
                                     <form>
-                                        {apiDataName.map((header, index) => (
-                                            <div key={index}>
-                                                <input
-                                                    type="checkbox"
-                                                    value={header.fomular_alias}
-                                                    checked={selectedFields.includes(header.fomular_alias)}
-                                                    onChange={handleFieldChange}
-                                                />
-                                                <label>{header.display_name}</label>
-                                            </div>
-                                        ))}
+                                        <div className="checkboxes-grid">
+
+                                            {apiDataName.map((header, index) => (
+                                                <label key={index}>
+                                                    <input
+                                                        type="checkbox"
+                                                        value={header.fomular_alias}
+                                                        checked={selectedFields.includes(header.fomular_alias)}
+                                                        onChange={handleFieldChange}
+                                                    />
+                                                    <span className="ml-2">{header.display_name}</span>
+                                                </label>
+                                            ))}
+                                        </div>
                                         <h5>Excel data preview:</h5>
                                         <table class="table table-striped excel-preview">
                                             <thead>
@@ -385,13 +399,26 @@ export default () => {
                                 </div>
 
                                 <div class="modal-footer">
-                                    <button type="button" onClick={() => exportToCSV(current, 'myFile')} class="btn btn-success ">{lang["export"]}</button>
+
+                                    <button type="button" onClick={() => {
+                                        if (selectedFields.length === 0) {
+                                            Swal.fire({
+                                                title: "Thất bại!",
+                                                text: 'Vui lòng chọn ít nhất một trường trước khi xuất.',
+                                                icon: "error",
+                                                showConfirmButton: true,
+
+                                            })
+
+                                        } else {
+                                            exportToCSV(current);
+                                        }
+                                    }} class="btn btn-success " data-dismiss="modal">{lang["export"]} </button>
                                     <button type="button" data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-12">
                         <div class="white_shd full margin_bottom_30">
                             <div class="full graph_head d-flex">
@@ -401,7 +428,7 @@ export default () => {
                                 {/* <div class="ml-auto">
                                     <i class="fa fa-newspaper-o icon-ui"></i>
                                 </div> */}
-                                <div class="ml-auto" onClick={() => redirectToInput()} data-toggle="modal" data-target="#exportExcel">
+                                <div class="ml-auto" onClick={() => redirectToInput()} data-toggle="modal">
                                     <i class="fa fa-plus-circle icon-ui"></i>
                                 </div>
                                 {
@@ -437,7 +464,7 @@ export default () => {
                                             <>
                                                 <div class="table-responsive">
 
-                                                    <table class="table table-striped">
+                                                    <table className={tableClassName}>
                                                         <thead>
                                                             {apiDataName.map((header, index) => (
                                                                 <th class="font-weight-bold">{header.display_name}</th>

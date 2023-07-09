@@ -250,19 +250,19 @@ export default (props) => {
                                                 <div class="contact_inner">
                                                     <h3>{profile.fullname || "Administrator"}</h3>
                                                     <ul class="list-unstyled">
-                                                        <li>{lang["username"]}: {profile.username}</li>
-                                                        <li>{lang["permission"]}: {profile.role === "ad" ? "Quản trị viên" :
+                                                        <li class= "mt-2">{lang["username"]}: {profile.username}</li>
+                                                        <li class= "mt-2">{lang["permission"]}: {profile.role === "ad" ? "Quản trị viên" :
                                                             profile.role === "pm" ? "Quản lý dự án" :
                                                                 profile.role === "pd" ? "Người triển khai" :
                                                                     profile.role === "ps" ? "Người theo dõi dự án" :
                                                                         profile.role}</li>
-                                                        <li><i class="fa fa-envelope-o"></i> : {profile.email || "nhan.to@mylangroup.com"}</li>
-                                                        <li> <i class="fa fa-phone"></i> : {profile.phone || "0359695554"}</li>
-                                                        <li>{lang["address"]}: {profile.address || "Phong Thạnh, Cầu Kè, Trà Vinh"}</li>
-                                                        <li>{lang["note"]}: {profile.note || lang["note"]}</li>
+                                                        <li class= "mt-2"><i class="fa fa-envelope-o"></i> : {profile.email || "nhan.to@mylangroup.com"}</li>
+                                                        <li class= "mt-2"> <i class="fa fa-phone"></i> : {profile.phone || "0359695554"}</li>
+                                                        <li class= "mt-2">{lang["address"]}: {profile.address || "Phong Thạnh, Cầu Kè, Trà Vinh"}</li>
+                                                        <li class= "mt-2">{lang["note"]}: {profile.note || lang["note"]}</li>
                                                     </ul>
                                                 </div>
-                                                <div class="user_progress_bar">
+                                                {/* <div class="user_progress_bar">
                                                     <div class="progress_bar">
                                                         <span class="skill" style={{ width: 500 }}>Web Applications <span class="info_valume">85%</span></span>
                                                         <div class="progress skill-bar ">
@@ -270,53 +270,10 @@ export default (props) => {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                </div> */}
                                             </div>
                                         </div>
-                                        <div class="full inner_elements margin_top_30">
-                                            <div class="tab_style2">
-                                                <div class="tabbar">
-                                                    <nav>
-                                                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                                            <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#recent_activity" role="tab" aria-selected="true">{lang["tasks"]}</a>
-                                                            <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#project_worked" role="tab" aria-selected="false">{lang["projects worked"]}</a>
-                                                        </div>
-                                                    </nav>
-                                                    <div class="tab-content" id="nav-tabContent">
-                                                        <div class="tab-pane fade show active" id="recent_activity" role="tabpanel" aria-labelledby="nav-home-tab">
-                                                            <div class="msg_list_main">
-                                                                <ul class="msg_list">
-                                                                    <li>
-                                                                        {/* <span><img src="images/layout_img/msg2.png" class="img-responsive" alt="#" /></span> */}
-                                                                        <span>
-                                                                            <span class="name_user">Yêu cầu 1</span>
-                                                                            <span class="msg_user">Mô tả</span>< br />
-                                                                            <span class="msg_user">Dự án: Tên dự án</span>
-                                                                            <span class="time_ago">12 {lang["min ago"]}</span>
-                                                                        </span>
-                                                                    </li>
-                                                                    <li>
-                                                                        {/* <span><img src="images/layout_img/msg2.png" class="img-responsive" alt="#" /></span> */}
-                                                                        <span>
-                                                                            <span class="name_user">Yêu cầu 2</span>
-                                                                            <span class="msg_user">Mô tả</span>< br />
-                                                                            <span class="msg_user">Dự án: Tên dự án</span>
-                                                                            <span class="time_ago">12 {lang["min ago"]}</span>
-                                                                        </span>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                        <div class="tab-pane fade" id="project_worked" role="tabpanel" aria-labelledby="nav-profile-tab">
-                                                            <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et
-                                                                quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos
-                                                                qui ratione voluptatem sequi nesciunt.
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                      
                                     </div>
 
 

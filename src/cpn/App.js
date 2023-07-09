@@ -105,8 +105,8 @@ function App() {
        
         <Route path="/sitemap" element={<Navigation Child={SiteMap} />} />
 
-        <Route exac path="/apis/api/:id_str/input_info" element={ < Navigation Child={InputPost} /> } />
-        <Route path="/put/api/:id_str/*" element={ < Navigation Child={InputPut} /> } />
+        <Route exac path="/page/apis/api/:id_str/input_info" element={ < Navigation Child={InputPost} /> } />
+        <Route path="/page/put/api/:id_str/*" element={ < Navigation Child={InputPut} /> } />
         <Route exac path="/page/:url" element={ < Navigation Child={Fetch} /> } />
         {/* <Route exac path="/diagram" element={ < Navigation Child={Diagram} /> } /> */}
         <Route path="*" element={<PageNotFound />} />

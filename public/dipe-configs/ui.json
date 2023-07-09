@@ -62,7 +62,7 @@
                     "component_id": 12,
                     "component_name": "Sản phẩm",
                     "ui_id": 12,
-                    "layout_id": 0,
+                    "layout_id": 1,
                     "api_get": "/api/4E25DB0F5D894344AAEE1441FED0B9E5",
                     "api_post": "/api/76A062E225184E67B12FD01AFC35DA4E",
                     "api_put": "/api/81CC524B9CE74327A0EF9F5EBB2C10A8",
