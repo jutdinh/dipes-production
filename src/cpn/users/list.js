@@ -66,7 +66,7 @@ export default (props) => {
                         // console.log(data)
                     }
                 } else {
-                    window.location = "/404-not-found"
+                    window.location = "/login"
                 }
             })
     }, [])

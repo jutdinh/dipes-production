@@ -349,40 +349,40 @@ export default () => {
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                                 </div>
                                 <div class="modal-body">
-  <form>
-    {apiDataName.map((header, index) => (
-      <div key={index}>
-        <input
-          type="checkbox"
-          value={header.fomular_alias}
-          checked={selectedFields.includes(header.fomular_alias)}
-          onChange={handleFieldChange}
-        />
-        <label>{header.display_name}</label>
-      </div>
-    ))}
-    <h5>Excel data preview:</h5>
-    <table class="table table-striped excel-preview">
-      <thead>
-        {selectedFields.map((field) => {
-          const header = apiDataName.find(
-            (header) => header.fomular_alias === field
-          );
-          return <th key={field}>{header ? header.display_name : field}</th>;
-        })}
-      </thead>
-      <tbody>
-        {current.slice(0, 5).map((row, rowIndex) => (
-          <tr key={rowIndex}>
-            {selectedFields.map((field) => (
-              <td key={field}>{row[field]}</td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </form>
-</div>
+                                    <form>
+                                        {apiDataName.map((header, index) => (
+                                            <div key={index}>
+                                                <input
+                                                    type="checkbox"
+                                                    value={header.fomular_alias}
+                                                    checked={selectedFields.includes(header.fomular_alias)}
+                                                    onChange={handleFieldChange}
+                                                />
+                                                <label>{header.display_name}</label>
+                                            </div>
+                                        ))}
+                                        <h5>Excel data preview:</h5>
+                                        <table class="table table-striped excel-preview">
+                                            <thead>
+                                                {selectedFields.map((field) => {
+                                                    const header = apiDataName.find(
+                                                        (header) => header.fomular_alias === field
+                                                    );
+                                                    return <th key={field}>{header ? header.display_name : field}</th>;
+                                                })}
+                                            </thead>
+                                            <tbody>
+                                                {current.slice(0, 5).map((row, rowIndex) => (
+                                                    <tr key={rowIndex}>
+                                                        {selectedFields.map((field) => (
+                                                            <td key={field}>{row[field]}</td>
+                                                        ))}
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </form>
+                                </div>
 
                                 <div class="modal-footer">
                                     <button type="button" onClick={() => exportToCSV(current, 'myFile')} class="btn btn-success ">{lang["export"]}</button>
@@ -433,71 +433,71 @@ export default () => {
                                         </div> */}
                                     </div>
                                     {
-                                            current && current.length > 0 ? (
-                                                <>
-                                    <div class="table-responsive">
-                                     
-                                                <table class="table table-striped">
-                                                    <thead>
-                                                        {apiDataName.map((header, index) => (
-                                                            <th class="font-weight-bold">{header.display_name}</th>
-                                                        ))}
-                                                        <th class=" font-weight-bold align-center">Thao tác</th>
-                                                    </thead>
-                                                    <tbody>
-                                                        {current.map((row) => (
-                                                            <tr key={row._id}>
-                                                                {apiDataName.map((header) => (
-                                                                    <td key={header.fomular_alias}>{renderData(header, row)}</td>
+                                        current && current.length > 0 ? (
+                                            <>
+                                                <div class="table-responsive">
+
+                                                    <table class="table table-striped">
+                                                        <thead>
+                                                            {apiDataName.map((header, index) => (
+                                                                <th class="font-weight-bold">{header.display_name}</th>
+                                                            ))}
+                                                            <th class=" font-weight-bold align-center">Thao tác</th>
+                                                        </thead>
+                                                        <tbody>
+                                                            {current.map((row) => (
+                                                                <tr key={row._id}>
+                                                                    {apiDataName.map((header) => (
+                                                                        <td key={header.fomular_alias}>{renderData(header, row)}</td>
+                                                                    ))}
+                                                                    <td class="align-center" style={{ minWidth: "80px" }}>
+                                                                        <i class="fa fa-edit size pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
+                                                                        <i class="fa fa-trash-o size pointer icon-margin icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                            {dataStatis.map((data) => (
+                                                                <tr>
+                                                                    <td class="font-weight-bold" colspan={`${apiDataName.length + 1}`} style={{ textAlign: 'right' }}>{data.display_name}: {data.result} </td>
+
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+
+
+                                                    <div className="d-flex justify-content-between align-items-center">
+                                                        <p>{lang["show"]} {indexOfFirst + 1}-{Math.min(indexOfLast, apiData.length)} {lang["of"]} {apiData.length} {lang["results"]}</p>
+                                                        <nav aria-label="Page navigation example">
+                                                            <ul className="pagination mb-0">
+                                                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                                    <button className="page-link" onClick={() => paginate(currentPage - 1)}>
+                                                                        &laquo;
+                                                                    </button>
+                                                                </li>
+                                                                {Array(totalPages).fill().map((_, index) => (
+                                                                    <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                                        <button className="page-link" onClick={() => paginate(index + 1)}>
+                                                                            {index + 1}
+                                                                        </button>
+                                                                    </li>
                                                                 ))}
-                                                                <td class="align-center" style={{ minWidth: "80px" }}>
-                                                                    <i class="fa fa-edit size pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
-                                                                    <i class="fa fa-trash-o size pointer icon-margin icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                        {dataStatis.map((data) => (
-                                                            <tr>
-                                                                <td class="font-weight-bold" colspan={`${apiDataName.length + 1}`} style={{ textAlign: 'right' }}>{data.display_name}: {data.result} </td>
-
-                                                            </tr>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
-                                           
-
-                                        <div className="d-flex justify-content-between align-items-center">
-                                            <p>{lang["show"]} {indexOfFirst + 1}-{Math.min(indexOfLast, apiData.length)} {lang["of"]} {apiData.length} {lang["results"]}</p>
-                                            <nav aria-label="Page navigation example">
-                                                <ul className="pagination mb-0">
-                                                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                        <button className="page-link" onClick={() => paginate(currentPage - 1)}>
-                                                            &laquo;
-                                                        </button>
-                                                    </li>
-                                                    {Array(totalPages).fill().map((_, index) => (
-                                                        <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                                                            <button className="page-link" onClick={() => paginate(index + 1)}>
-                                                                {index + 1}
-                                                            </button>
-                                                        </li>
-                                                    ))}
-                                                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                                                        <button className="page-link" onClick={() => paginate(currentPage + 1)}>
-                                                            &raquo;
-                                                        </button>
-                                                    </li>
-                                                </ul>
-                                            </nav>
-                                        </div>
-                                    </div>
-                                    </>
-                                    ) : (
-                                                <div class="list_cont ">
-                                                    <p>Chưa có dữ liệu</p>
+                                                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                                    <button className="page-link" onClick={() => paginate(currentPage + 1)}>
+                                                                        &raquo;
+                                                                    </button>
+                                                                </li>
+                                                            </ul>
+                                                        </nav>
+                                                    </div>
                                                 </div>
-                                            )
-                                        }
+                                            </>
+                                        ) : (
+                                            <div class="list_cont ">
+                                                <p>Chưa có dữ liệu</p>
+                                            </div>
+                                        )
+                                    }
                                 </div>
                             </div>
                         </div>

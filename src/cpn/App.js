@@ -27,6 +27,7 @@ import  Active_Key from "./active_key/active";
 import { Fetch, InputPost, InputPut  } from './page';
 
 import "../css/index.scss";
+import { SiteMap } from './site-map';
 
 function App() {
 
@@ -102,11 +103,11 @@ function App() {
         <Route path="/settings" element={<Navigation Child={Settings} />} />
         <Route path="/active" element={<Navigation Child={Active_Key} />} />
        
-
+        <Route path="/sitemap" element={<Navigation Child={SiteMap} />} />
 
         <Route exac path="/apis/api/:id_str/input_info" element={ < Navigation Child={InputPost} /> } />
         <Route path="/put/api/:id_str/*" element={ < Navigation Child={InputPut} /> } />
-        <Route exac path="/:url" element={ < Navigation Child={Fetch} /> } />
+        <Route exac path="/page/:url" element={ < Navigation Child={Fetch} /> } />
         {/* <Route exac path="/diagram" element={ < Navigation Child={Diagram} /> } /> */}
         <Route path="*" element={<PageNotFound />} />
 

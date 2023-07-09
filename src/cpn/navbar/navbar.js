@@ -83,7 +83,7 @@ export default () => {
                      {pages && pages.map(ui => (
                         ui.status ? (
                            <li className="navbar-item">
-                              <NavLink to={ui.url} activeClassName="nav-active">
+                              <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
                                  <i class="fa fa-newspaper-o"></i>
                                  <span>{ui.title}</span>
                               </NavLink>
@@ -92,6 +92,14 @@ export default () => {
                      ))}
                   </ul>
                </li>
+             
+                  <li className="navbar-item">
+                     <NavLink to="/sitemap" activeClassName="nav-active">
+                        <i class="fa fa-sitemap"></i>
+                        <span>Site map</span>
+                     </NavLink>
+                  </li>
+             
                {user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/logs" activeClassName="nav-active">
