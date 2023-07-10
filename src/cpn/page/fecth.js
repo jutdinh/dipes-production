@@ -1,17 +1,13 @@
 
 import { useParams } from "react-router-dom";
-import Header from "../common/header"
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { StatusEnum, StatusTask } from '../enum/status';
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
-import { version } from "react-dom";
 import XLSX from 'xlsx-js-style';
 
 export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
-
     const { openTab, renderDateTimeByFormat } = functions
     const _token = localStorage.getItem("_token");
     const { project_id, version_id, url } = useParams();
@@ -169,27 +165,29 @@ export default () => {
                     .then((resp) => {
                         const { success, content, data, status } = resp;
                         console.log(resp)
-                        if (success) {
-                            Swal.fire({
-                                title: "Thành công!",
-                                text: "Xoá thành công",
-                                icon: "success",
-                                showConfirmButton: false,
-                                timer: 1500,
-                            }).then(function () {
-                                window.location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: "Thất bại!",
-                                text: content,
-                                icon: "error",
-                                showConfirmButton: false,
-                                timer: 2000,
-                            }).then(function () {
-                                // Không cần reload trang
-                            });
-                        }
+                        functions.showApiResponseMessage(status)
+
+                        // if (success) {
+                        //     Swal.fire({
+                        //         title: "Thành công!",
+                        //         text: "Xoá thành công",
+                        //         icon: "success",
+                        //         showConfirmButton: false,
+                        //         timer: 1500,
+                        //     }).then(function () {
+                        //         window.location.reload();
+                        //     });
+                        // } else {
+                        //     Swal.fire({
+                        //         title: "Thất bại!",
+                        //         text: content,
+                        //         icon: "error",
+                        //         showConfirmButton: false,
+                        //         timer: 2000,
+                        //     }).then(function () {
+                        //         // Không cần reload trang
+                        //     });
+                        // }
                     });
             }
         });
@@ -411,7 +409,7 @@ export default () => {
                 <div class="row column_title">
                     <div class="col-md-12">
                         <div class="page_title">
-                            <h4>Quản lý dữ liệu</h4>
+                            <h4>{lang["manage data"]}</h4>
                         </div>
                     </div>
                 </div>
@@ -427,7 +425,7 @@ export default () => {
                                 </div>
                                 <div class="modal-body">
                                     <form>
-                                        <h5 class="mt-2 mb-2">Select fields:</h5>
+                                        <h5 class="mt-2 mb-2">{lang["select fields"]}:</h5>
                                         <div className="checkboxes-grid ml-4">
 
                                             {apiDataName.map((header, index) => (
@@ -446,7 +444,7 @@ export default () => {
                                         {
                                             dataStatis && dataStatis.length > 0 ? (
                                                 <>
-                                                    <h5 class="mt-4 mb-2">Select statistics fields:</h5>
+                                                    <h5 class="mt-4 mb-2">{lang["select statistic fields "]}:</h5>
                                                     <div className="ml-4">
                                                         {
                                                             current && current.length > 0 ? (
@@ -465,7 +463,7 @@ export default () => {
                                                                 </div>
                                                             ) : (
                                                                 <div class="list_cont ">
-                                                                    <p>Chưa có dữ liệu</p>
+                                                                    <p>Not found</p>
                                                                 </div>
                                                             )
                                                         }
@@ -475,7 +473,7 @@ export default () => {
                                                null
                                             )
                                         }
-                                        <h5 class="mt-4 mb-2">Excel data preview:</h5>
+                                        <h5 class="mt-4 mb-2">{lang["preview data"]}:</h5>
                                         <div class="table-responsive">
                                             <table class="table table-striped excel-preview">
                                                 <thead>
@@ -508,7 +506,6 @@ export default () => {
                                                             })}
                                                         </tr>
                                                     ) : null
-
                                                     }
                                                 </tbody>
                                             </table>

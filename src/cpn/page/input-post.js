@@ -15,7 +15,7 @@ export default () => {
     const { id_str } = useParams()
     const { project_id, version_id, url } = useParams();
     let navigate = useNavigate();
-    const { proxy, pages, lang } = useSelector(state => state);
+    const { proxy, pages, lang, functions} = useSelector(state => state);
     const [api, setApi] = useState({})
     const [tables, setTables] = useState([])
     const [fields, setFields] = useState([]);

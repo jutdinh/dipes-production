@@ -44,14 +44,14 @@ export default () => {
          <div class="sidebar_blog_2">
             <h4>{lang["general"]}</h4>
             <ul class="list-unstyled components">
-               <li className="navbar-item">
+               {/* <li className="navbar-item">
                   <NavLink to="/" activeClassName="nav-active">
                      <i class="fa fa-home icon-home"></i>
                      <span>{lang["home"]}</span>
                   </NavLink>
-               </li>
+               </li> */}
                <li className="navbar-item">
-                  <NavLink to="/import" activeClassName="nav-active">
+                  <NavLink to="/" activeClassName="nav-active">
                      <i class="fa fa-upload icon-import"></i>
                      <span>Import</span>
                   </NavLink>
@@ -111,14 +111,14 @@ export default () => {
                      </NavLink>
                   </li>
                   
-               {user.role === "uad" ? (
+               {/* {user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/logs" activeClassName="nav-active">
                         <i class="fa fa-shield"></i>
                         <span>{lang["log.title"]}</span>
                      </NavLink>
                   </li>
-               ) : null}
+               ) : null} */}
             </ul>
          </div>
          <div class="footer-custom">

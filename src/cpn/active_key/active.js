@@ -46,7 +46,7 @@ function ActivationForm() {
                 <div class="row column_title">
                     <div class="col-md-12">
                         <div class="page_title">
-                            <h4>Activation</h4>
+                            <h4>{lang["activation"]}</h4>
                         </div>
                     </div>
                 </div>
@@ -56,7 +56,7 @@ function ActivationForm() {
                         <div class="white_shd full ">
                             <div class="full graph_head">
                                 <div class="heading1 margin_0">
-                                    <h5><a><i class="fa fa-chevron-circle-left mr-3 mb-2"></i></a> ACTIVATION</h5>
+                                    <h5><a><i class="fa fa-chevron-circle-left mr-3 mb-2"></i></a> {lang["activation"]}</h5>
                                 </div>
                             </div>                           
                           
@@ -64,7 +64,7 @@ function ActivationForm() {
                                 <form>
                                   <div class="row" style={{ marginBottom: 'auto' }}>
                                     <div class="form-group col-lg-12">
-                                      <label>This server MAC address</label>
+                                      <label>{lang["MAC"]}</label>
                                       <input type="text" class="form-control" value={key.MAC}  />
                                     </div>
                                     <div class="form-group col-lg-12">
@@ -77,7 +77,7 @@ function ActivationForm() {
                                         />
                                       </div>      
                                         <div class="form-group col-lg-12">
-                                            <button type="button" onClick={ submitKey } class="btn btn-success ">Active now</button>                                        
+                                            <button type="button" onClick={ submitKey } class="btn btn-success ">{lang["active now"]}</button>                                        
                                         </div>                                                             
                                   </div>
                                 </form>

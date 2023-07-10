@@ -74,7 +74,7 @@ export default () => {
                     }
                     else
                     {
-                        window.location = "/import";
+                        window.location = "/";
                     }
                   
                 } else if (data.data.role==="pm")

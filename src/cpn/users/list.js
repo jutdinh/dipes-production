@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 export default (props) => {
-    const { lang, proxy, auth } = useSelector(state => state);
+    const { lang, proxy, auth, functions } = useSelector(state => state);
 
     const [showModal, setShowModal] = useState(false);
     const _token = localStorage.getItem("_token");
@@ -141,30 +141,7 @@ export default (props) => {
                 .then((res) => res.json())
                 .then((resp) => {
                     const { success, content, data, status } = resp;
-                    if (success) {
-                        Swal.fire({
-                            title: "Thành công!",
-                            text: content,
-                            icon: "success",
-                            showConfirmButton: false,
-                            timer: 1500,
-                        }).then(function () {
-                            window.location.reload();
-                        });
-                        setUser({});
-                        setShowModal(false);
-                        setIsDataAdded(true);
-                    } else {
-                        Swal.fire({
-                            title: "Thất bại!",
-                            text: content,
-                            icon: "error",
-                            showConfirmButton: false,
-                            timer: 2000,
-                        }).then(function () {
-
-                        });
-                    }
+                    functions.showApiResponseMessage(status)
                 });
         }
     };
@@ -196,39 +173,7 @@ export default (props) => {
                     .then(res => res.json())
                     .then((resp) => {
                         const { success, content, data, status } = resp;
-                        if (status === "0x52404") {
-                            Swal.fire({
-                                title: "Cảnh báo!",
-                                text: content,
-                                icon: "warning",
-                                showConfirmButton: false,
-                                timer: 1500,
-                            }).then(function () {
-                                window.location.reload();
-                            });
-                            return;
-                        }
-                        if (success) {
-                            Swal.fire({
-                                title: "Thành công!",
-                                text: content,
-                                icon: "success",
-                                showConfirmButton: false,
-                                timer: 1500,
-                            }).then(function () {
-                                window.location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: "Thất bại!",
-                                text: content,
-                                icon: "error",
-                                showConfirmButton: false,
-                                timer: 2000,
-                            }).then(function () {
-                                // Không cần reload trang
-                            });
-                        }
+                        functions.showApiResponseMessage(status)
                     });
             }
         });
@@ -263,7 +208,7 @@ export default (props) => {
         })
             .then(res => res.json())
             .then((resp) => {
-                const { success, content } = resp;
+                const { success, content, status } = resp;
 
                 const newProfiles = profiles.map( user => {
                     if( user.username == editUser.username ){
@@ -275,27 +220,7 @@ export default (props) => {
                 setProfile( newProfiles )
                 // close modal
                 // console.log(resp)
-                if (success) {
-                    Swal.fire({
-                        title: "Thành công!",
-                        text: content,
-                        icon: "success",
-                        showConfirmButton: false,
-                        timer: 1500,
-                    }).then(function () {
-                        // window.location.reload();
-                    });
-                } else {
-                    Swal.fire({
-                        title: "Error!",
-                        text: "Image is not selected",
-                        icon: "error",
-                        confirmButtonText: "OK",
-                        showCloseButton:true,
-                      }).then(function () {
-                        // Không cần reload trang
-                    });
-                }
+                functions.showApiResponseMessage(status)
             });
     }
     const handleUpdateUser = (editUser) => {

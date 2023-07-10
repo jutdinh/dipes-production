@@ -213,4 +213,26 @@ export default {
     "export-to-excel": "Xuất sang Excel",
 
     "activation": "Kích hoạt bản quyền",
+
+    "success": "Thành công",
+    "success.content":"Import dữ liệu thành công",
+    "faild": "Thất bại",
+    "faild.content": "Import dữ liệu thất bại",
+    "format": "Định dạng tệp không hợp lệ",
+    "error": "Lỗi",
+    "faild.format": "Không đúng định dạng, vui lòng chọn lại!",
+    "select file": "Chọn tệp",
+    "file name": "Tên tệp",
+    "type file": "Dạng tệp",
+    "create account": "Tạo tài khoản",
+    "manage data": "Quản lý dữ liệu",
+    "create": "Tạo mới",
+    "MAC":"Địa chỉ MAC máy chủ",
+    "active now": "Kích hoạt ngay",
+    "select fields": "Chọn trường",
+    "select statistic fields ": "Chọn trường thống kê",
+    "preview data": "Bản xem trước dữ liệu Excel"
+
+
+
 }

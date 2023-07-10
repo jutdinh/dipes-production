@@ -8,7 +8,8 @@ import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { Tables } from ".";
 export default () => {
-    const { lang, proxy, auth } = useSelector(state => state);
+    const { lang, proxy, auth, functions } = useSelector(state => state);
+
     const _token = localStorage.getItem("_token");
     const { project_id, version_id } = useParams();
     let navigate = useNavigate();
@@ -32,8 +33,8 @@ export default () => {
                     setUploadedJson(json);
                 } catch (error) {
                     Swal.fire({
-                        title: "Thất bại!",
-                        text: "Định dạng tệp không hợp lệ",
+                        title: lang["faild"],
+                        text: lang["format"],
                         icon: "error",
                         showConfirmButton: true,
 
@@ -59,11 +60,11 @@ export default () => {
                 },
                 body: JSON.stringify(uploadedJson),
             });
-
+        
             if (response.ok) {
                 Swal.fire({
-                    title: "Thành công!",
-                    text: "Import dữ liệu thành công",
+                    title: lang["success"],
+                    text: lang["success.content"],
                     icon: "success",
                     showConfirmButton: false,
                     timer: 1500,
@@ -74,8 +75,8 @@ export default () => {
                 }, 1600);
             } else {
                 Swal.fire({
-                    title: "Thất bại!",
-                    text: "Import dữ liệu thất bại",
+                    title: lang["faild"],
+                    text: lang["faild.content"],
                     icon: "error",
                     showConfirmButton: true,
                 })
@@ -83,11 +84,10 @@ export default () => {
         } catch (error) {
             // console.error(error);
             Swal.fire({
-                title: "Thất bại!",
-                text: "Import dữ liệu thất bại",
+                title: lang["faild"],
+                text: lang["faild.content"],
                 icon: "error",
                 showConfirmButton: true,
-
             })
         }
     };
@@ -108,8 +108,8 @@ export default () => {
 
             if (response.ok) {
                 Swal.fire({
-                    title: "Thành công!",
-                    text: "Import dữ liệu thành công",
+                    title: lang["success"],
+                    text: lang["success.content"],
                     icon: "success",
                     showConfirmButton: false,
                     timer: 1500,
@@ -120,8 +120,8 @@ export default () => {
                 }, 1600);
             } else {
                 Swal.fire({
-                    title: "Thất bại!",
-                    text: "Import dữ liệu thất bại",
+                    title: lang["faild"],
+                    text: lang["faild.content"],
                     icon: "error",
                     showConfirmButton: true,
 
@@ -130,8 +130,8 @@ export default () => {
         } catch (error) {
             // console.error(error);
             Swal.fire({
-                title: "Thất bại!",
-                text: "Import dữ liệu thất bại",
+                title: lang["faild"],
+                text: lang["faild.content"],
                 icon: "error",
                 showConfirmButton: true,
 
@@ -151,7 +151,7 @@ export default () => {
             if (isDatabase) {
                 return "Database"
             } else {
-                return "Không đúng định dạng, vui lòng chọn lại !"
+                return lang["faild.format"]
             }
         }
     }
@@ -175,7 +175,7 @@ export default () => {
                     onChange={handleFileChange}
                     {...props}
                 />
-                <button onClick={handleButtonClick} className="btn btn-primary ml-2 mr-2">Chọn tệp</button>
+                <button onClick={handleButtonClick} className="btn btn-primary ml-2 mr-2">{lang["select file"]}</button>
             </div>
         );
     };
@@ -242,10 +242,10 @@ export default () => {
                             <div class="full price_table padding_infor_info" style={{ display: 'flex', flexDirection: 'column', minHeight: '40vh' }}>
                                 <div class="row" style={{ marginBottom: 'auto' }}>
                                     <div class="col-md-12 mt-4">
-                                        <label>Tên Tệp: {file.name} </label>
+                                        <label>{lang["file name"]}: {file.name} </label>
                                     </div>
                                     <div class="col-md-12 mt-4">
-                                        <label>Dạng Tệp:
+                                        <label>{lang["type file"]}:
                                             {uploadedJson ? (
                                                 getFileType() === "Không đúng định dạng, vui lòng chọn lại !" ? (
                                                     <span className="text-red"> {getFileType()}</span>

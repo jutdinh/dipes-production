@@ -82,8 +82,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signout" element={<SignOut />} />
-        <Route path="/" element={<Navigation Child={Home} />} />
-        <Route path="/import" element={<Navigation Child={Import} />} />
+        {/* <Route path="/" element={<Navigation Child={Home} />} /> */}
+        <Route path="/" element={<Navigation Child={Import} />} />
         <Route path="/projects" element={<Navigation Child={Projects} />} />
         <Route path="/projects/:project_id" element={<Navigation Child={ProjectsCard} />} />
         <Route path="/projects/detail/:project_id" element={<Navigation Child={ProjectDetail} />} />
@@ -97,7 +97,7 @@ function App() {
 
         <Route path="/projects/:version_id/uis" element={<Navigation Child={UI} />} />
         <Route path="/projects/:version_id/uis/create" element={<Navigation Child={CreateUi} />} />
-        <Route path="/logs" element={<Navigation Child={Logs} />} />
+        {/* <Route path="/logs" element={<Navigation Child={Logs} />} /> */}
         <Route path="/users" element={<Navigation Child={ListUser} />} />
         <Route path="/users/profile" element={<Navigation Child={Profile} />} />
         <Route path="/settings" element={<Navigation Child={Settings} />} />

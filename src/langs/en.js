@@ -52,8 +52,8 @@ export default {
     "pause": "Pause",
     //description
     "description": "Description",
-    "project.info":"Project Information",
-    "project.deploy":"Deployment website information",
+    "project.info": "Project Information",
+    "project.deploy": "Deployment website information",
     "data management": "Data management",
     //Project
     "projects": "Projects",
@@ -95,14 +95,14 @@ export default {
     "task_priority": "Priority",
     "taskmember": "Members",
     "p.description": "Description of the task",
-    "updatestatus":"Status updates",
-    "viewdetail":"View detail",
+    "updatestatus": "Status updates",
+    "viewdetail": "View detail",
     "delete": "Delete",
     "edit": "Edit",
-    "edittask":"Edit task",
+    "edittask": "Edit task",
 
-"duty":"Duty",
-"confirm":"Confirm",
+    "duty": "Duty",
+    "confirm": "Confirm",
 
 
 
@@ -198,9 +198,9 @@ export default {
     "btn.ok": "Filter",
     "btn.clear": "Clear",
     "btn.viewdetail": "View details",
-    "detaillog":"Log details",
+    "detaillog": "Log details",
     "log.create_user": "Executor",
-    "log.create_at":"Creation date",
+    "log.create_at": "Creation date",
 
 
     //page
@@ -210,17 +210,37 @@ export default {
     "results": "results",
 
 
-//
-"supervisor":"Supervisor",
-"deployers": "Deployers",
-"btn.cancel":"Cancel",
-"btn.addfield":"Add new field",
-"export": "Export",
-"export-to-excel": "Export to Excel",
+    //
+    "supervisor": "Supervisor",
+    "deployers": "Deployers",
+    "btn.cancel": "Cancel",
+    "btn.addfield": "Add new field",
+    "export": "Export",
+    "export-to-excel": "Export to Excel",
 
 
     "activation": "Activation",
-    
+
+    "success": "Success",
+    "success.content": "Successful data import",
+    "faild": "Fail",
+    "faild.content": "Data import failure",
+    "format": "Invalid file format",
+    "error": "Error",
+    "faild.format": "Incorrect formatting, please select again!",
+    "select file": "Choose File",
+    "file name": "Filename",
+    "type file": "File format",
+    "create account": "Create account",
+    "manage data": "Manage Data",
+    "create": "Create",
+    "MAC": "This server MAC address",
+    "active now": "Active now",
+    "select fields": "Select fields",
+
+    "select statistic fields ": "Select statistic fields",
+    "preview data": "Excel data preview"
+
 }
 
 
