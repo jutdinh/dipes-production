@@ -36,26 +36,26 @@ export default (props) => {
                 setCurrent(defaultValue)
             }
         } else {
-         
-                const key = isFieldForeign()
-                if (key) {
-                    if (foreignData.length == 0) {
-                        fetch(`${proxy()}/apis/table/${key.table_id}/data`).then(res => res.json()).then(res => {
-                            const { success, data, fields } = res;
-                            console.log(data)
-                            setForeignData(data.data)
-                            setFields(data.fields)
 
-                            const { ref_field_id } = key;
-                            const primaryField = data.fields.find(field => field.id == ref_field_id);
-                            if (primaryField) {
-                                setPK(primaryField.fomular_alias)
-                            }
-                        })
-                    }
+            const key = isFieldForeign()
+            if (key) {
+                if (foreignData.length == 0) {
+                    fetch(`${proxy()}/apis/table/${key.table_id}/data`).then(res => res.json()).then(res => {
+                        const { success, data, fields } = res;
+                        console.log(data)
+                        setForeignData(data.data)
+                        setFields(data.fields)
+
+                        const { ref_field_id } = key;
+                        const primaryField = data.fields.find(field => field.id == ref_field_id);
+                        if (primaryField) {
+                            setPK(primaryField.fomular_alias)
+                        }
+                    })
                 }
+            }
 
-            
+
         }
 
     }, [])
@@ -136,44 +136,21 @@ export default (props) => {
         )
     } else {
         return (
-            <div className="w-100-pct p-1 m-t-1">
-                <div>
-                    <div class="row justify-content-center">
-                        <div class="col-md-6">
-                            <form>
-                                <div class="form-group">
-                                    <label for="name"> {field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
-                                    <input type="text"
-                                        className="p-t-0-5 p-b-0-5 p-l-1 text-16-px block w-100-pct border-1"
-                                        placeholder="" onChange={fieldChangeData} defaultValue={generateData(current)}
-                                        onFocus={focusTrigger}
-                                        onBlur={blurTrigger}
-                                    />
-                                </div>
-                            </form>
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <form>
+                        <div class="form-group">
+                            <label for="name"> {field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
+                            <input type="text"
+                                className="p-t-0-5 p-b-0-5 p-l-1 text-16-px block w-100-pct border-1"
+                                placeholder="" onChange={fieldChangeData} defaultValue={generateData(current)}
+                                onFocus={focusTrigger}
+                                onBlur={blurTrigger}
+                            />
                         </div>
-                    </div>
-                    <div className="rel">
-                        <div className="abs-default w-100-pct no-overflow bg-white shadow" style={{ height: `${height}px` }}>
-                            <div className="block w-100-pct p-0-5 overflow" style={{ height: `${height}px` }}>
-                                {foreignData.map((d, index) =>
-                                    <div key={index} className="flex flex-no-wrap hover pointer" onClick={() => { dataClickedTrigger(d) }}>
-                                        {fields ? fields.map(field =>
-                                            <div key={field.field_id} className="div p-0-5 w-max-content">
-                                                <span>{d[field.field_alias]}</span>
-                                            </div>
-                                        ) : null}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
-
-
-
         )
     }
-
 }

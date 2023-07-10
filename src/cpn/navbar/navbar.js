@@ -4,7 +4,8 @@ import { NavLink } from "react-router-dom";
 import $ from 'jquery'
 
 export default () => {
-   const { proxy, lang, pages } = useSelector(state => state)
+   const { proxy, lang, pages, functions } = useSelector(state => state)
+   const { openTab } = functions
    const stringifiedUser = localStorage.getItem("user");
    const user = JSON.parse(stringifiedUser) || {}
    const [activeLink, setActiveLink] = useState("/");
@@ -94,12 +95,12 @@ export default () => {
                </li>
              
                   <li className="navbar-item">
-                     <NavLink to="/sitemap" activeClassName="nav-active">
+                  <NavLink to="/sitemap" onClick={ () => { openTab('/sitemap') } } activeClassName="nav-active">        
                         <i class="fa fa-sitemap"></i>
                         <span>Site map</span>
                      </NavLink>
                   </li>
-             
+                  
                {user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/logs" activeClassName="nav-active">

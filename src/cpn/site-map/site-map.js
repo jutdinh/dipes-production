@@ -8,12 +8,12 @@ export default () => {
     const _token = localStorage.getItem("_token");
     const [ isLoaded, setLoaded ] = useState(false)
     const [ tree, setTree ] = useState({ 
-        leaf: "DIPES",
+        leaf: "DIPES PRODUCTON",
         background: "#ff6655",
         foreground: "#ffffff",  
         vine: "red",
         children: [
-            { leaf: "Dashboard", link: "/", },
+            { leaf: "Import", link: "/", },
             { 
                 leaf: "Account",
                 link: "/users",

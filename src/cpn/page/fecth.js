@@ -37,7 +37,7 @@ export default () => {
     }, [pages, url]);
     const layoutId = page.components?.[0].layout_id;
 
-    const tableClassName = layoutId === 0 ? "table table-striped" : "table";
+    const tableClassName = layoutId === 0 ? "table table-striped" : "table table-primary";
     console.log(page.components?.[0].layout_id)
     useEffect(() => {
         if (page && page.components) {
@@ -59,6 +59,10 @@ export default () => {
     }, [page])
     // console.log(dataFields)
 
+    const handleCloseModal = () => {
+        setSelectedFields([]);
+        setSelectedStats([]);
+    }
 
 
 
@@ -245,7 +249,7 @@ export default () => {
         }
     }
     const renderData = (field, data) => {
-        console.log(field)
+        // console.log(field)
         switch (field.DATATYPE) {
             case "DATE":
             case "DATETIME":
@@ -274,8 +278,20 @@ export default () => {
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const totalPages = Math.ceil(apiData.length / rowsPerPage);
-    const [selectedFields, setSelectedFields] = useState([]);
-    // Handle field change
+
+    const [selectedFields, setSelectedFields] = useState([]);/// fields
+    const [selectedStats, setSelectedStats] = useState([]);
+    // statis fields
+    const handleStatsChange = (event) => {
+        const { value } = event.target;
+        setSelectedStats(prevStats =>
+            prevStats.includes(value)
+                ? prevStats.filter(stat => stat !== value)
+                : [...prevStats, value]
+        );
+    }
+    console.log(selectedStats)
+    //fields
     const handleFieldChange = (event) => {
         const { value } = event.target;
         setSelectedFields(prevFields =>
@@ -285,38 +301,84 @@ export default () => {
         );
     }
 
-
     const exportToCSV = (csvData) => {
-
         const selectedHeaders = apiDataName.filter(({ fomular_alias }) => selectedFields.includes(fomular_alias));
         const titleRow = { [selectedHeaders[0].fomular_alias]: 'Tiêu đề xuất excel' };
-
-        const emptyRow = { [selectedHeaders[0].fomular_alias]: `Nhân viên xuất: ${auth.fullname}` };
-
+        const emptyRow = selectedHeaders.reduce((obj, header, i) => {
+            if (i === 0) {
+                obj[header.fomular_alias] = `Nhân viên xuất: ${auth.fullname}`;
+            } else {
+                obj[header.fomular_alias] = '';
+            }
+            return obj;
+        }, {});
         const headerRow = selectedHeaders.reduce((obj, header) => ({ ...obj, [header.fomular_alias]: header.display_name }), {});
+        const timeRow = selectedHeaders.reduce((obj, header, i) => {
+            if (i === selectedHeaders.length - 1) {
+                const currentDate = new Date();
+                const formattedDate = `${currentDate.getDate()}/${currentDate.getMonth() + 1}/${currentDate.getFullYear()}`;
+                obj[header.fomular_alias] = `Ngày xuất (dd/MM/yyyy): ${formattedDate}`;
+            } else {
+                obj[header.fomular_alias] = '';
+            }
+            return obj;
+        }, {});
+
+
+        // const statsRow = selectedHeaders.reduce((obj, header, i) => {     //phần thống kê ở cột cuối cùng bên phải của file Excel
+        //     obj[header.fomular_alias] = i === selectedHeaders.length - 1
+        //         ? dataStatis.map(data => `${data.display_name}: ${data.result}`).join(', ')
+        //         : '';
+        //     return obj;
+        // }, {});
+
+        const selectedStatsData = dataStatis.filter(stat => selectedStats.includes(stat.fomular_alias));
+        const statsRow = selectedHeaders.reduce((obj, header, i) => {     //phần thống kê ở cột cuối cùng bên phải của file Excel
+            obj[header.fomular_alias] = i === selectedHeaders.length - 1
+                ? selectedStatsData.map(data => `${data.display_name}: ${data.result}`).join(', ')
+                : '';
+            return obj;
+        }, {});
 
         const newCsvData = [
             titleRow,
             emptyRow,
+            timeRow,
             headerRow,
             ...csvData.map(row =>
-                selectedHeaders.map((header) => ({ 
-                    [header.fomular_alias]: renderData(header, row) 
+                selectedHeaders.map((header) => ({
+                    [header.fomular_alias]: renderData(header, row)
                 })).reduce((obj, cur) => ({ ...obj, ...cur }), {})
-            )
+            ),
+            statsRow
         ];
-
         const ws = XLSX.utils.json_to_sheet(newCsvData, { skipHeader: true });
-
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+        const fieldLengths = newCsvData.reduce((lengths, row) => {
+            for (let field in row) {
+                const valueLength = row[field] ? row[field].toString().length : 0;
+                lengths[field] = lengths[field] ? Math.max(lengths[field], valueLength) : valueLength;
+            }
+            return lengths;
+        }, {});
+        // 
+        selectedHeaders.forEach(header => {
+            const headerLength = header.display_name.length;
+            fieldLengths[header.fomular_alias] = Math.max(fieldLengths[header.fomular_alias] || 0, headerLength);
+        });
 
-        // Adding the cell styles
-        const wscols = selectedFields.map(() => ({ wch: 15 }));
+
+        //  Tạo wscols dựa trên độ dài tối đa
+        const wscols = selectedHeaders.map(header => ({ wch: fieldLengths[header.fomular_alias] + 2 || 10 }));
+
         ws['!cols'] = wscols;
         ws['!merges'] = [
             { s: { r: 0, c: 0 }, e: { r: 0, c: selectedFields.length - 1 } }, // Merge cells for title row
+            { s: { r: 1, c: 0 }, e: { r: 1, c: selectedFields.length - 1 } }, // Merge cells for the 'emptyRow'
+            { s: { r: 2, c: 0 }, e: { r: 2, c: selectedFields.length - 2 } }, // Merge cells for the 'timeRow'
         ];
+
 
         ws[XLSX.utils.encode_cell({ c: 0, r: 0 })].s = {  // Title Row style
             fill: { fgColor: { rgb: "008000" } },
@@ -325,7 +387,7 @@ export default () => {
         };
 
         for (let i = 0; i < selectedFields.length; i++) { // Header Row style
-            ws[XLSX.utils.encode_cell({ c: i, r: 2 })].s = {
+            ws[XLSX.utils.encode_cell({ c: i, r: 3 })].s = {
                 fill: { fgColor: { rgb: "008000" } },
                 font: { color: { rgb: "FFFFFF" }, sz: 12, bold: true },
             };
@@ -333,12 +395,16 @@ export default () => {
 
         XLSX.writeFile(wb, `Project-${(new Date()).getTime()}.xlsx`);
         setSelectedFields([]);
+        setSelectedStats([]);
     }
-    const half = Math.ceil(apiDataName.length / 2);
+    // const half = Math.ceil(apiDataName.length / 2);
 
-    const firstHalf = apiDataName.slice(0, half);
-    const secondHalf = apiDataName.slice(half);
-
+    // const firstHalf = apiDataName.slice(0, half);
+    // const secondHalf = apiDataName.slice(half);
+    // console.log("header", apiDataName)
+    // console.log("data", apiData)
+    // console.log(dataStatis)
+    // console.log(selectedFields)
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -357,11 +423,12 @@ export default () => {
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h4 class="modal-title">{lang["export-to-excel"]}</h4>
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <button type="button" class="close" onClick={handleCloseModal} data-dismiss="modal">&times;</button>
                                 </div>
                                 <div class="modal-body">
                                     <form>
-                                        <div className="checkboxes-grid">
+                                        <h5 class="mt-2 mb-2">Select fields:</h5>
+                                        <div className="checkboxes-grid ml-4">
 
                                             {apiDataName.map((header, index) => (
                                                 <label key={index}>
@@ -375,31 +442,80 @@ export default () => {
                                                 </label>
                                             ))}
                                         </div>
-                                        <h5>Excel data preview:</h5>
-                                        <table class="table table-striped excel-preview">
-                                            <thead>
-                                                {selectedFields.map((field) => {
-                                                    const header = apiDataName.find(
-                                                        (header) => header.fomular_alias === field
-                                                    );
-                                                    return <th key={field}>{header ? header.display_name : field}</th>;
-                                                })}
-                                            </thead>
-                                            <tbody>
-                                                {current.slice(0, 5).map((row, rowIndex) => (
-                                                    <tr key={rowIndex}>
-                                                        {selectedFields.map((field) => (
-                                                            <td key={field}>{row[field]}</td>
-                                                        ))}
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+
+                                        {
+                                            dataStatis && dataStatis.length > 0 ? (
+                                                <>
+                                                    <h5 class="mt-4 mb-2">Select statistics fields:</h5>
+                                                    <div className="ml-4">
+                                                        {
+                                                            current && current.length > 0 ? (
+                                                                <div className="checkboxes-grid">
+                                                                    {dataStatis.map((stat, index) => (
+                                                                        <label key={index}>
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                value={stat.fomular_alias}
+                                                                                checked={selectedStats.includes(stat.fomular_alias)}
+                                                                                onChange={handleStatsChange}
+                                                                            />
+                                                                            <span className="ml-2">{stat.display_name}</span>
+                                                                        </label>
+                                                                    ))}
+                                                                </div>
+                                                            ) : (
+                                                                <div class="list_cont ">
+                                                                    <p>Chưa có dữ liệu</p>
+                                                                </div>
+                                                            )
+                                                        }
+                                                    </div>
+                                                </>
+                                            ) : (
+                                               null
+                                            )
+                                        }
+                                        <h5 class="mt-4 mb-2">Excel data preview:</h5>
+                                        <div class="table-responsive">
+                                            <table class="table table-striped excel-preview">
+                                                <thead>
+                                                    {selectedFields.map((field) => {
+                                                        const header = apiDataName.find(
+                                                            (header) => header.fomular_alias === field
+                                                        );
+                                                        return <th key={field}>{header ? header.display_name : field}</th>;
+                                                    })}
+                                                </thead>
+                                                <tbody>
+                                                    {current.slice(0, 5).map((row, rowIndex) => (
+                                                        <tr key={rowIndex}>
+                                                            {selectedFields.map((field) => (
+                                                                <td key={field}>{row[field]}</td>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                    {dataStatis && dataStatis.length > 0 ? (
+                                                        <tr >
+                                                            {selectedStats.map((statAlias, index) => {
+                                                                const stat = dataStatis.find(
+                                                                    (stat) => stat.fomular_alias === statAlias
+                                                                );
+                                                                return (
+                                                                    <td key={index} class="font-weight-bold" colspan={`${selectedFields.length + 1}`} style={{ textAlign: 'right' }}>
+                                                                        {stat ? `${stat.display_name}: ${stat.result}` : ''}
+                                                                    </td>
+                                                                );
+                                                            })}
+                                                        </tr>
+                                                    ) : null
+
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </form>
                                 </div>
-
                                 <div class="modal-footer">
-
                                     <button type="button" onClick={() => {
                                         if (selectedFields.length === 0) {
                                             Swal.fire({
@@ -407,14 +523,12 @@ export default () => {
                                                 text: 'Vui lòng chọn ít nhất một trường trước khi xuất.',
                                                 icon: "error",
                                                 showConfirmButton: true,
-
                                             })
-
                                         } else {
                                             exportToCSV(current);
                                         }
                                     }} class="btn btn-success " data-dismiss="modal">{lang["export"]} </button>
-                                    <button type="button" data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
+                                    <button type="button" data-dismiss="modal" onClick={handleCloseModal} class="btn btn-danger">{lang["btn.close"]}</button>
                                 </div>
                             </div>
                         </div>
@@ -425,9 +539,6 @@ export default () => {
                                 <div class="heading1 margin_0 ">
                                     <h5>{page?.components?.[0]?.component_name}</h5>
                                 </div>
-                                {/* <div class="ml-auto">
-                                    <i class="fa fa-newspaper-o icon-ui"></i>
-                                </div> */}
                                 <div class="ml-auto" onClick={() => redirectToInput()} data-toggle="modal">
                                     <i class="fa fa-plus-circle icon-ui"></i>
                                 </div>
@@ -438,27 +549,12 @@ export default () => {
                                         </div>
                                     ) : null
                                 }
-
                                 {/* <button type="button" class="btn btn-primary custom-buttonadd" onClick={() => redirectToInput()}>
                                     <i class="fa fa-plus"></i>
                                 </button> */}
                             </div>
                             <div class="table_section padding_infor_info">
                                 <div class="row column1">
-                                    <div class="form-group col-lg-4">
-                                        {/* <label class="font-weight-bold">Tên bảng <span className='red_star'>*</span></label>
-                                                <input type="text" class="form-control" 
-                                                 placeholder="" /> */}
-                                    </div>
-                                    <div class="col-md-12 col-lg-12">
-                                        {/* <div class="d-flex align-items-center mb-1">
-                                            <p class="font-weight-bold">Danh sách bảng </p>
-                                           
-                                            <button type="button" class="btn btn-primary custom-buttonadd ml-auto" onClick={() => redirectToInput()}>
-                                                <i class="fa fa-plus"></i>
-                                            </button>
-                                        </div> */}
-                                    </div>
                                     {
                                         current && current.length > 0 ? (
                                             <>
@@ -486,13 +582,10 @@ export default () => {
                                                             {dataStatis.map((data) => (
                                                                 <tr>
                                                                     <td class="font-weight-bold" colspan={`${apiDataName.length + 1}`} style={{ textAlign: 'right' }}>{data.display_name}: {data.result} </td>
-
                                                                 </tr>
                                                             ))}
                                                         </tbody>
                                                     </table>
-
-
                                                     <div className="d-flex justify-content-between align-items-center">
                                                         <p>{lang["show"]} {indexOfFirst + 1}-{Math.min(indexOfLast, apiData.length)} {lang["of"]} {apiData.length} {lang["results"]}</p>
                                                         <nav aria-label="Page navigation example">

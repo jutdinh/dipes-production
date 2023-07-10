@@ -3442,3 +3442,47 @@ table.projects tr td:first-child {
     height: 100%;
     min-height: 720px;
 }
+
+.pot{
+    position: relative;    
+}
+
+.pot *{
+    user-select: none;
+}
+
+.root {
+    position: relative;
+    z-index: 1;
+}
+
+.root > .branch{
+    overflow: hidden;
+}
+
+.branch {
+    margin-left: 5em;  
+    position: relative;  
+}
+
+.vines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    /* height: 100vh; */
+    z-index: 0;
+}
+
+.leaf{
+    position: relative;
+    z-index: 1;
+    width: fit-content;
+    display: block;
+    padding: 8px 16px;
+    background: #fff;
+    color: #555;    
+    margin: 1em;
+    border-radius: 16px;
+    box-shadow: 2px 1px 10px 0px #ccc;
+}
