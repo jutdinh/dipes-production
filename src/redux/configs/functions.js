@@ -1,4 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
+import responseMessages from "../../cpn/enum/response-code"
+import Swal from 'sweetalert2';
 
 const dateGenerator = ( dateString ) => {
     const date = new Date( dateString );
@@ -73,6 +75,30 @@ const renderDateTimeByFormat = ( dateString, format ) => {
     }
     return dateString
 }
+
+const showApiResponseMessage = (status) => {
+    const langItem = (localStorage.getItem("lang") || "Vi").toLowerCase(); // fallback to English if no language is set
+    const message = responseMessages[status];
+
+    const title = message?.[langItem]?.type || "Unknown error";
+    const description = message?.[langItem]?.description || "Unknown error";
+    const icon = (message?.[langItem]?.type === "Thành công" || message?.[langItem]?.type === "Success") ? "success" : "error";
+
+    Swal.fire({
+        title,
+        text: description,
+        icon,
+        showConfirmButton: false,
+        timer: 1500,
+    }).then(() => {
+        if (icon === "success") {
+            window.location.reload();
+
+        }
+    });
+};
+
 export default {
-    uid, removeDuplicate, titleCase, openTab, dateGenerator, renderDateTimeByFormat
+    uid, removeDuplicate, titleCase, openTab, dateGenerator, renderDateTimeByFormat,
+    showApiResponseMessage
 }

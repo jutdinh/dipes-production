@@ -210,6 +210,7 @@ export default {
     "btn.cancel": "Hủy",
     "btn.addfield": "Thêm mới trường",
     "export": "Xuất",
-    "export-to-excel": "Xuất sang Excel"
+    "export-to-excel": "Xuất sang Excel",
 
+    "activation": "Kích hoạt bản quyền",
 }

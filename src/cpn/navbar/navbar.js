@@ -56,6 +56,16 @@ export default () => {
                      <span>Import</span>
                   </NavLink>
                </li>
+
+               {user.role === "ad" || user.role === "uad" ? (
+                  <li className="navbar-item">
+                     <NavLink to="/active" activeClassName="nav-active">
+                        <i class="fa fa-key purple_color3"></i>
+                        <span>{lang["activation"]}</span>
+                     </NavLink>
+                  </li>
+               ) : null}
+               
                {user.role === "ad" || user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/users" activeClassName="nav-active">

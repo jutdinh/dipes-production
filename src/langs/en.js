@@ -216,7 +216,11 @@ export default {
 "btn.cancel":"Cancel",
 "btn.addfield":"Add new field",
 "export": "Export",
-"export-to-excel": "Export to Excel"
+"export-to-excel": "Export to Excel",
+
+
+    "activation": "Activation",
+    
 }
 
 
