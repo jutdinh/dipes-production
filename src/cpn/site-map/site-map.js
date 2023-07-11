@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react"
 import { useSelector } from "react-redux"
-
+import Swal from 'sweetalert2';
 export default () => {
     const rootRef = useRef()
     let id = 0;
     const { lang, proxy, pages } = useSelector(state => state)
     const _token = localStorage.getItem("_token");
     const [isLoaded, setLoaded] = useState(false)
+    const [statusActive, setStatusActive] = useState(false);
     const [tree, setTree] = useState({
         leaf: "DIPES PRODUCTON",
         background: "#ff6655",
@@ -69,58 +70,86 @@ export default () => {
     }
     console.log(pages)
     useEffect(() => {
-        if(pages){
 
-            const branch = {
-                leaf: lang["manage data"],
-                background: "purple",
-                foreground: "#ffffff",
-                vine: "blue",
-                children: []
+        fetch(`${proxy()}/auth/activation/check`, {
+            headers: {
+                Authorization: _token
             }
-             pages.map(ui => {
-                    const child = {
-                        leaf: ui.title,
-                        link: `/page${ui.url}`,
-                        children: [
-                            { leaf: lang["create"], link: `/page/apis${ui.components[0]?.api_post}/input_info` },
-                            // { leaf: "Sửa", link: `/projects/${ project.versions[0]?.version_id }/apis` },
-                            // { leaf: "UI", link: `/projects/${ project.versions[0]?.version_id }/uis` },
-                        ]
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success, data, activated, status, content } = resp;
+                console.log(resp)
+                if (activated) {
+
+                    if (pages) {
+                        const branch = {
+                            leaf: lang["manage data"],
+                            background: "purple",
+                            foreground: "#ffffff",
+                            vine: "blue",
+                            children: []
+                        }
+                        pages.map(ui => {
+                            const child = {
+                                leaf: ui.title,
+                                link: `/page${ui.url}`,
+                                children: [
+                                    { leaf: lang["create"], link: `/page/apis${ui.components[0]?.api_post}/input_info` },
+                                    // { leaf: "Sửa", link: `/projects/${ project.versions[0]?.version_id }/apis` },
+                                    // { leaf: "UI", link: `/projects/${ project.versions[0]?.version_id }/uis` },
+                                ]
+                            }
+                            branch.children.push(child)
+                        })
+                        const newTree = tree;
+                        newTree.children.push(branch)
+                        newTree.children.push({ leaf: "Site map", link: "/sitemap", })
+
+                        setTree({ ...newTree })
                     }
-                    branch.children.push(child)
-                })
-               
-    
-    
-            
-    
-            const newTree = tree;
-            newTree.children.push(branch)
-            newTree.children.push( { leaf: "Site map", link: "/sitemap", })
-    
-    
-            setTree({ ...newTree })
-        }
+                } else {
+                    Swal.fire({
+                        title: lang["faild"],
+                        text: lang["fail.active"],
+                        icon: "error",
+                        showConfirmButton: true,
+
+                    }).then(function () {
+                        // window.location.reload();
+                    });
+                    setStatusActive(false)
+                    // setTree({})
+                }
+            })
 
 
 
 
-
-    }, [ pages])
+    }, [pages])
     return (
         <div class="midde_cont">
             <div class="container-fluid">
                 <div class="row column_title">
                     <div class="col-md-12">
                         <div class="page_title d-flex align-items-center">
-                            <h4>{lang["site-map"]}</h4>
+                            <h4>Site map</h4>
                         </div>
                     </div>
                 </div>
-                <div className="pot">
-                    <div className="root" ref={rootRef}>
-                        {RenderBranch(rootRef, tree, 0)}
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="white_shd full margin_bottom_30">
+                          
+                                {statusActive ? (
+                                    <div className="pot">
+                                        <div className="root" ref={rootRef}>
+                                            {RenderBranch(rootRef, tree, 0)}
+                                        </div>
+                                    </div>
+                                ) : null}
+                            
+                        </div>
                     </div>
                 </div>
             </div>

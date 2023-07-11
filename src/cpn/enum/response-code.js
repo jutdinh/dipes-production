@@ -2439,6 +2439,16 @@ const responseMessages =
             "description": "Invalid activation key",
             "type": "Error"
         }
+    },
+    "0x4501244": {
+        "vi": {
+            "description": "Kích hoạt khóa thành công",
+            "type": "Thành công"
+        },
+        "en": {
+            "description": "Key activation successful",
+            "type": "Success"
+        }
     }
 }
   

@@ -245,8 +245,8 @@ export default {
     "btn.cencel": "Hủy",
     "success.delete": "Xoá thành công",
     "fail.delete": "Xoá thất bại",
-    "fail.null": "Có một số trường không được bỏ trống"
-
+    "fail.null": "Có một số trường không được bỏ trống",
+    "fail.active": "Sản phẩm chưa được kích hoạt"
 
 
 

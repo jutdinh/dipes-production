@@ -12,6 +12,7 @@ export default (props) => {
     const [errorMessagesadd, setErrorMessagesadd] = useState({});
     const [errorMessagesedit, setErrorMessagesedit] = useState({});
     const [isDataAdded, setIsDataAdded] = useState(false);
+    const [statusActive, setStatusActive] = useState(false);
     const roles = [
         { id: 0, label: "Administrator", value: "ad" },
         { id: 1, label: "Operator", value: "pm" },
@@ -51,24 +52,52 @@ export default (props) => {
     // Get all user
     const [profiles, setProfile] = useState([]);
     useEffect(() => {
-        fetch(`${proxy()}/auth/all/accounts`, {
+
+        fetch(`${proxy()}/auth/activation/check`, {
             headers: {
                 Authorization: _token
             }
         })
             .then(res => res.json())
             .then(resp => {
-                const { success, data, status, content } = resp;
-                 console.log(resp)
-                if (success) {
-                    if (data != undefined && data.length > 0) {
-                        setProfile(data);
-                        // console.log(data)
-                    }
-                } else {
-                    window.location = "/login"
+                const { success, data, activated,status, content } = resp;
+                console.log(resp)
+                if (activated) {
+                    fetch(`${proxy()}/auth/all/accounts`, {
+                        headers: {
+                            Authorization: _token
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(resp => {
+                            const { success, data, status, content } = resp;
+                            console.log(resp)
+                            if (success) {
+                                if (data != undefined && data.length > 0) {
+                                    setProfile(data);
+                                    // console.log(data)
+                                }
+                            } else {
+                                window.location = "/login"
+                            }
+                        })
+                    setStatusActive(true)
                 }
+                else {
+                    Swal.fire({
+                        title: lang["faild"],
+                        text: lang["fail.active"],
+                        icon: "error",
+                        showConfirmButton: true,
+
+                    }).then(function () {
+                        // window.location.reload();
+                    });
+                    setStatusActive(false)
+                }
+
             })
+
     }, [])
 
     const handleChange = (e) => {
@@ -210,14 +239,14 @@ export default (props) => {
             .then((resp) => {
                 const { success, content, status } = resp;
 
-                const newProfiles = profiles.map( user => {
-                    if( user.username == editUser.username ){
+                const newProfiles = profiles.map(user => {
+                    if (user.username == editUser.username) {
                         return editUser
-                    }else{
+                    } else {
                         return user;
                     }
                 })
-                setProfile( newProfiles )
+                setProfile(newProfiles)
                 // close modal
                 // console.log(resp)
                 functions.showApiResponseMessage(status)
@@ -232,7 +261,7 @@ export default (props) => {
         //         text: "Không có quyền thực hiện thao tác",
         //         icon: "error",
         //         // showConfirmButton: false,
-                
+
         //     }).then(function () {
         //          window.location.reload();
         //         $('.modal-backdrop').remove()
@@ -258,9 +287,13 @@ export default (props) => {
                     <div class="col-md-12">
                         <div class="page_title d-flex align-items-center">
                             <h4>{lang["accounts manager"]}</h4>
-                            <button type="button" class="btn btn-primary custom-buttonadd ml-auto" data-toggle="modal" data-target="#quoteForm">
-                                <i class="fa fa-plus"></i>
-                            </button>
+
+                            {statusActive ? (
+                                <button type="button" class="btn btn-primary custom-buttonadd ml-auto" data-toggle="modal" data-target="#quoteForm">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            ) : null}
+
                         </div>
                     </div>
                 </div>
@@ -411,7 +444,7 @@ export default (props) => {
                                                     <div class="form-group col-lg-6">
                                                         <label htmlFor="sel1">{lang["permission"]} <span className='red_star'>*</span></label>
                                                         <select className="form-control" name="role" value={editUser.role} onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}>
-                                                            
+
                                                             {users.role === "ad" ? (
                                                                 roles.slice(1, 4).map(role => (
                                                                     <option key={role.id} value={role.value}>{role.label}</option>
@@ -462,14 +495,14 @@ export default (props) => {
                                                     <div class="contact_blog">
                                                         <div class="contact_inner">
                                                             <div class="left-cus">
-                                                            <p><strong>{item.fullname}</strong></p>
+                                                                <p><strong>{item.fullname}</strong></p>
                                                                 <p>{lang["username"]}: {item.username} </p>
                                                                 <p>{lang["permission"]}:
-                                                                     { item.role === "ad" ? lang["administrator"] :
+                                                                    {item.role === "ad" ? lang["administrator"] :
                                                                         item.role === "pm" ? lang["uprojectmanager"] :
                                                                             item.role === "pd" ? lang["normal"] :
-                                                                              
-                                                                                    item.role}</p>
+
+                                                                                item.role}</p>
                                                                 <ul class="list-unstyled">
                                                                     <li><i class="fa fa-envelope-o"></i> {item.email}</li>
                                                                     <li><i class="fa fa-phone"></i> {item.phone}</li>
@@ -490,16 +523,16 @@ export default (props) => {
                                                                 </div>
                                                             </div>
                                                             {/* {item.username !== auth.username && item.role !== auth.role && ( */}
-                                                                <div class="bottom_list">
-                                                                    <div class="right_button">
-                                                                        <button type="button" class="btn btn-primary" onClick={() => handleUpdateUser(item)} data-toggle="modal" data-target="#myEditmodal">
-                                                                            <i class="fa fa-edit"></i>
-                                                                        </button>
-                                                                        <button type="button" class="btn btn-danger" onClick={() => handleDeleteUser(item)}>
-                                                                            <i class="fa fa-trash-o"></i>
-                                                                        </button>
-                                                                    </div>
+                                                            <div class="bottom_list">
+                                                                <div class="right_button">
+                                                                    <button type="button" class="btn btn-primary" onClick={() => handleUpdateUser(item)} data-toggle="modal" data-target="#myEditmodal">
+                                                                        <i class="fa fa-edit"></i>
+                                                                    </button>
+                                                                    <button type="button" class="btn btn-danger" onClick={() => handleDeleteUser(item)}>
+                                                                        <i class="fa fa-trash-o"></i>
+                                                                    </button>
                                                                 </div>
+                                                            </div>
                                                             {/* )} */}
                                                         </div>
                                                     </div>
@@ -515,14 +548,14 @@ export default (props) => {
                                                     <div class="contact_blog">
                                                         <div class="contact_inner">
                                                             <div class="left-cus">
-                                                            <p><strong>{item.fullname}</strong></p>
+                                                                <p><strong>{item.fullname}</strong></p>
                                                                 <p>{lang["username"]}:{item.username} </p>
                                                                 <p>{lang["permission"]}:
-                                                                     { item.role === "ad" ? lang["administrator"] :
+                                                                    {item.role === "ad" ? lang["administrator"] :
                                                                         item.role === "pm" ? lang["uprojectmanager"] :
                                                                             item.role === "pd" ? lang["normal"] :
-                                                                              
-                                                                                    item.role}</p>
+
+                                                                                item.role}</p>
                                                                 <ul class="list-unstyled">
                                                                     <li><i class="fa fa-envelope-o"></i> {item.email}</li>
                                                                     <li><i class="fa fa-phone"></i> {item.phone}</li>
@@ -566,14 +599,14 @@ export default (props) => {
                                                     <div class="contact_blog">
                                                         <div class="contact_inner">
                                                             <div class="left-cus">
-                                                            <p><strong>{item.fullname}</strong></p>
+                                                                <p><strong>{item.fullname}</strong></p>
                                                                 <p>{lang["username"]}: {item.username} </p>
                                                                 <p>{lang["permission"]}:
-                                                                     { item.role === "ad" ? lang["administrator"] :
+                                                                    {item.role === "ad" ? lang["administrator"] :
                                                                         item.role === "pm" ? lang["uprojectmanager"] :
                                                                             item.role === "pd" ? lang["normal"] :
-                                                                              
-                                                                                    item.role}</p>
+
+                                                                                item.role}</p>
                                                                 <ul class="list-unstyled">
                                                                     <li><i class="fa fa-envelope-o"></i> {item.email}</li>
                                                                     <li><i class="fa fa-phone"></i> {item.phone}</li>

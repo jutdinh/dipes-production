@@ -17,6 +17,7 @@ export default () => {
     const [apiData, setApiData] = useState([])
     const [apiDataName, setApiDataName] = useState([])
     const [dataStatis, setDataStatis] = useState({})
+    const [statusActive, setStatusActive] = useState(false);
 
     const [page, setPage] = useState([]);
 
@@ -67,13 +68,29 @@ export default () => {
         fetch(`${proxy()}${page.components?.[0]?.api_get}`).then(res => res.json()).then(res => {
             const { success, content, data, fields, statistic } = res;
             console.log(res)
-            // console.log(fields)
-            //  al.failure("Lỗi", "Đọc dữ liệu thất bại ")
-            const statisticValues = res.statistic.values;
+            if(success)
+            {
+              const statisticValues = res.statistic.values;
 
             setApiData(data)
             setApiDataName(fields)
-            setDataStatis(statisticValues)
+            setDataStatis(statisticValues)  
+            setStatusActive(true)
+            } 
+            else{
+                Swal.fire({
+                    title: lang["faild"],
+                    text: lang["fail.active"],
+                    icon: "error",
+                    showConfirmButton: true,
+                   
+                }).then(function () {
+                    // window.location.reload();
+                }); 
+                setStatusActive(false)
+            }
+           
+            
         })
     }
     console.log(dataStatis)
@@ -536,9 +553,11 @@ export default () => {
                                 <div class="heading1 margin_0 ">
                                     <h5>{page?.components?.[0]?.component_name}</h5>
                                 </div>
+                                {statusActive ? (
                                 <div class="ml-auto" onClick={() => redirectToInput()} data-toggle="modal">
                                     <i class="fa fa-plus-circle icon-ui"></i>
                                 </div>
+                                 ) : null}
                                 {
                                     current && current.length > 0 ? (
                                         <div class="ml-4" onClick={downloadAPI} data-toggle="modal" data-target="#exportExcel">

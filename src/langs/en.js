@@ -252,7 +252,8 @@ export default {
     "btn.cencel": "Remove",
     "success.delete": "Successful deletion",
     "fail.delete": "Deletion failure",
-    "fail.null": "There are some fields that are not left blank"
+    "fail.null": "There are some fields that are not left blank",
+    "fail.active": "Product has not been activated yet",
 
 }
 

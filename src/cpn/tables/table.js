@@ -55,7 +55,15 @@ export default () => {
                        
                     }
                 } else {
-                    // window.location = "/404-not-found"
+                    Swal.fire({
+                        title: lang["faild"],
+                        text: lang["fail.active"],
+                        icon: "error",
+                        showConfirmButton: true,
+                       
+                    }).then(function () {
+                        // window.location.reload();
+                    });
                 }
             })
     }, [])

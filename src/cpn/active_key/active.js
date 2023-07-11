@@ -36,6 +36,7 @@ function ActivationForm() {
       body: JSON.stringify({ key: key.activation_key })
     }).then( res => res.json() ).then( res => {
       const { status } = res;
+      console.log(status)
       functions.showApiResponseMessage(status)
     })
   }
