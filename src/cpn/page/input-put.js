@@ -63,15 +63,15 @@ export default () => {
     }
     const nullCheck = () => {
         let valid = true;
-        // for (let i = 0; i < fields.length; i++) {
-        //     const field = fields[i];
-        //     const { nullable, fomular_alias } = field;
-        //     if (!nullable) {
-        //         if (data[fomular_alias] == null || data[fomular_alias] == undefined || data[fomular_alias] == "") {
-        //             valid = false
-        //         }
-        //     }
-        // }
+        for (let i = 0; i < fields.length; i++) {
+            const field = fields[i];
+            const { nullable, fomular_alias } = field;
+            if (!nullable) {
+                if (data[fomular_alias] == null || data[fomular_alias] == undefined || data[fomular_alias] == "") {
+                    valid = false
+                }
+            }
+        }
         return valid;
     }
 
@@ -145,12 +145,13 @@ export default () => {
 
     console.log(fields)
     const submit = () => {
+
         const url = window.location;
         const rawParams = url.pathname.split(`/${id_str}/`)[1];
         const paramsList = rawParams.split('/');
         console.log("body", data)
         if (!emailError && !phoneError && nullCheck(data)) {
-            fetch(`${proxy()}/api/${id_str}/${paramsList}`, {
+            fetch(`${proxy()}/api/${id_str}/${paramsList.join('/')}`, {
                 method: "PUT",
                 headers: {
                     "content-type": "application/json"
@@ -175,18 +176,18 @@ export default () => {
                 console.log(`VALID: ${valid}`)
                 if (valid) {
                     Swal.fire({
-                        title: "Thành công!",
-                        text: content,
+                        title: lang["success"],
+                        text: lang["success.update"],
                         icon: "success",
                         showConfirmButton: false,
                         timer: 1500
                     }).then(function () {
-                        // window.location.reload();
+                        window.location.reload();
                     });
                 } else {
                     Swal.fire({
-                        title: "Thất bại!",
-                        text: content,
+                        title: lang["faild"],
+                        text: lang["fail.update"],
                         icon: "error",
                         showConfirmButton: true,
 
@@ -195,16 +196,21 @@ export default () => {
                     });
                 }
             })
-
-
-
         } else {
             if (emailError) {
                 // al.failure("Lỗi", "Địa chỉ email không hợp lệ");
             } else if (phoneError) {
                 // al.failure("Lỗi", "Số điện thoại không hợp lệ");
             } else {
-                // al.failure("Lỗi", "Một số trường vi phạm ràng buộc NOT NULL");
+                Swal.fire({
+                    title: lang["faild"],
+                    text: lang["fail.null"],
+                    icon: "error",
+                    showConfirmButton: true,
+
+                }).then(function () {
+                    // Không cần reload trang
+                });
             }
         }
     };

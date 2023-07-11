@@ -231,7 +231,22 @@ export default {
     "active now": "Kích hoạt ngay",
     "select fields": "Chọn trường",
     "select statistic fields ": "Chọn trường thống kê",
-    "preview data": "Bản xem trước dữ liệu Excel"
+    "preview data": "Bản xem trước dữ liệu Excel",
+
+
+    "success.add": "Thêm thành công",
+    "fail.add": "Thêm thất bại",
+    "success.update": "Cập nhật thành công",
+    "fail.update": "Cập nhật thất bại",
+    
+    "confirm": "Xác nhận xóa",
+    "confirm.content": "Bạn có chắc chắn muốn xóa trường này?",
+    "btn.delete": "Xóa",
+    "btn.cencel": "Hủy",
+    "success.delete": "Xoá thành công",
+    "fail.delete": "Xoá thất bại",
+    "fail.null": "Có một số trường không được bỏ trống"
+
 
 
 

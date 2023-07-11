@@ -145,12 +145,12 @@ export default () => {
         // console.log(newParams);
 
         Swal.fire({
-            title: 'Xác nhận xóa',
-            text: 'Bạn có chắc chắn muốn xóa trường này?',
+            title:  lang["confirm"],
+            text: lang["confirm.content"],
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Xóa',
-            cancelButtonText: 'Hủy',
+            confirmButtonText: lang["btn.delete"],
+            cancelButtonText: lang["btn.cancel"],
             confirmButtonColor: 'rgb(209, 72, 81)',
         }).then((result) => {
             if (result.isConfirmed) {
@@ -165,29 +165,29 @@ export default () => {
                     .then((resp) => {
                         const { success, content, data, status } = resp;
                         console.log(resp)
-                        functions.showApiResponseMessage(status)
+                        // functions.showApiResponseMessage(status)
 
-                        // if (success) {
-                        //     Swal.fire({
-                        //         title: "Thành công!",
-                        //         text: "Xoá thành công",
-                        //         icon: "success",
-                        //         showConfirmButton: false,
-                        //         timer: 1500,
-                        //     }).then(function () {
-                        //         window.location.reload();
-                        //     });
-                        // } else {
-                        //     Swal.fire({
-                        //         title: "Thất bại!",
-                        //         text: content,
-                        //         icon: "error",
-                        //         showConfirmButton: false,
-                        //         timer: 2000,
-                        //     }).then(function () {
-                        //         // Không cần reload trang
-                        //     });
-                        // }
+                        if (success) {
+                            Swal.fire({
+                                title: lang["success"],
+                                text: lang["success.delete"],
+                                icon: "success",
+                                showConfirmButton: false,
+                                timer: 1500,
+                            }).then(function () {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: lang["faild"],
+                                text: lang["fail.delete"],
+                                icon: "error",
+                                showConfirmButton: false,
+                                timer: 2000,
+                            }).then(function () {
+                                // Không cần reload trang
+                            });
+                        }
                     });
             }
         });
@@ -301,7 +301,7 @@ export default () => {
 
     const exportToCSV = (csvData) => {
         const selectedHeaders = apiDataName.filter(({ fomular_alias }) => selectedFields.includes(fomular_alias));
-        const titleRow = { [selectedHeaders[0].fomular_alias]: 'Tiêu đề xuất excel' };
+        const titleRow = { [selectedHeaders[0].fomular_alias]: 'DIPES PRODUCTION' };
         const emptyRow = selectedHeaders.reduce((obj, header, i) => {
             if (i === 0) {
                 obj[header.fomular_alias] = `Nhân viên xuất: ${auth.fullname}`;

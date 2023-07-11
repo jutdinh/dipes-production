@@ -71,15 +71,15 @@ export default () => {
     }
     const nullCheck = () => {
         let valid = true;
-        // for (let i = 0; i < fields.length; i++) {
-        //     const field = fields[i];
-        //     const { nullable, fomular_alias } = field;
-        //     if (!nullable) {
-        //         if (data[fomular_alias] == null || data[fomular_alias] == undefined || data[fomular_alias] == "") {
-        //             valid = false
-        //         }
-        //     }
-        // }
+        for (let i = 0; i < fields.length; i++) {
+            const field = fields[i];
+            const { nullable, fomular_alias } = field;
+            if (!nullable) {
+                if (data[fomular_alias] == null || data[fomular_alias] == undefined || data[fomular_alias] == "") {
+                    valid = false
+                }
+            }
+        }
         return valid;
     }
 
@@ -115,18 +115,18 @@ export default () => {
                 console.log(`VALID: ${valid}`)
                 if (valid) {
                     Swal.fire({
-                        title: "Thành công!",
-                        text: "Thêm thành công",
+                        title: lang["success"],
+                        text: lang["success.add"],
                         icon: "success",
                         showConfirmButton: false,
                         timer: 1500
                     }).then(function () {
-                        // window.location.reload();
+                        window.location.reload();
                     });
                 }else{
                     Swal.fire({
-                        title: "Thất bại!",
-                        text: "Thêm thất bại",
+                        title: lang["faild"],
+                        text: lang["fail.add"],
                         icon: "error",
                         showConfirmButton: true,
 
@@ -144,7 +144,15 @@ export default () => {
             } else if (phoneError) {
                 // al.failure("Lỗi", "Số điện thoại không hợp lệ");
             } else {
-                // al.failure("Lỗi", "Một số trường vi phạm ràng buộc NOT NULL");
+                Swal.fire({
+                    title: lang["faild"],
+                    text: lang["fail.null"],
+                    icon: "error",
+                    showConfirmButton: true,
+
+                }).then(function () {
+                    // Không cần reload trang
+                });
             }
         }
     };

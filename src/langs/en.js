@@ -239,7 +239,20 @@ export default {
     "select fields": "Select fields",
 
     "select statistic fields ": "Select statistic fields",
-    "preview data": "Excel data preview"
+    "preview data": "Excel data preview",
+
+    "success.add": "Add success data",
+    "fail.add": "Add data failures",
+    "success.update": "Successful update",
+    "fail.update": "Update failed",
+    
+    "confirm": "Confirm",
+    "confirm.content": "Are you sure you want to delete this field?",
+    "btn.delete": "Delete",
+    "btn.cencel": "Remove",
+    "success.delete": "Successful deletion",
+    "fail.delete": "Deletion failure",
+    "fail.null": "There are some fields that are not left blank"
 
 }
 
