@@ -8,6 +8,39 @@ export default () => {
     const _token = localStorage.getItem("_token");
     const [isLoaded, setLoaded] = useState(false)
     const [statusActive, setStatusActive] = useState(false);
+    useEffect(() => {
+
+        fetch(`${proxy()}/auth/activation/check`, {
+            headers: {
+                Authorization: _token
+            }
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success, data, activated, status, content } = resp;
+                console.log(resp)
+                if (activated) {
+                    setStatusActive(true)
+
+                } else {
+                    Swal.fire({
+                        title: lang["faild"],
+                        text: lang["fail.active"],
+                        icon: "error",
+                        showConfirmButton: true,
+
+                    }).then(function () {
+                        // window.location.reload();
+                    });
+                    setStatusActive(false)
+                    // setTree({})
+                }
+            })
+
+
+
+
+    }, [statusActive])
     const [tree, setTree] = useState({
         leaf: "DIPES PRODUCTON",
         background: "#ff6655",
@@ -71,62 +104,35 @@ export default () => {
     console.log(pages)
     useEffect(() => {
 
-        fetch(`${proxy()}/auth/activation/check`, {
-            headers: {
-                Authorization: _token
-            }
-        })
-            .then(res => res.json())
-            .then(resp => {
-                const { success, data, activated, status, content } = resp;
-                console.log(resp)
-                if (activated) {
-
-                    if (pages) {
-                        const branch = {
-                            leaf: lang["manage data"],
-                            background: "purple",
-                            foreground: "#ffffff",
-                            vine: "blue",
-                            children: []
-                        }
-                        pages.map(ui => {
-                            const child = {
-                                leaf: ui.title,
-                                link: `/page${ui.url}`,
-                                children: [
-                                    { leaf: lang["create"], link: `/page/apis${ui.components[0]?.api_post}/input_info` },
-                                    // { leaf: "Sửa", link: `/projects/${ project.versions[0]?.version_id }/apis` },
-                                    // { leaf: "UI", link: `/projects/${ project.versions[0]?.version_id }/uis` },
-                                ]
-                            }
-                            branch.children.push(child)
-                        })
-                        const newTree = tree;
-                        newTree.children.push(branch)
-                        newTree.children.push({ leaf: "Site map", link: "/sitemap", })
-
-                        setTree({ ...newTree })
-                    }
-                } else {
-                    Swal.fire({
-                        title: lang["faild"],
-                        text: lang["fail.active"],
-                        icon: "error",
-                        showConfirmButton: true,
-
-                    }).then(function () {
-                        // window.location.reload();
-                    });
-                    setStatusActive(false)
-                    // setTree({})
+        if (statusActive) {
+            if (pages) {
+                const branch = {
+                    leaf: lang["manage data"],
+                    background: "purple",
+                    foreground: "#ffffff",
+                    vine: "blue",
+                    children: []
                 }
-            })
-
-
-
-
-    }, [pages])
+                pages.map(ui => {
+                    const child = {
+                        leaf: ui.title,
+                        link: `/page${ui.url}`,
+                        children: [
+                            { leaf: lang["create"], link: `/page/apis${ui.components[0]?.api_post}/input_info` },
+                            // { leaf: "Sửa", link: `/projects/${ project.versions[0]?.version_id }/apis` },
+                            // { leaf: "UI", link: `/projects/${ project.versions[0]?.version_id }/uis` },
+                        ]
+                    }
+                    branch.children.push(child)
+                })
+                const newTree = tree;
+                newTree.children.push(branch)
+                newTree.children.push({ leaf: "Site map", link: "/sitemap", })
+    
+                setTree({ ...newTree })
+            }
+        }
+    }, [statusActive])
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -140,15 +146,15 @@ export default () => {
                 <div class="row">
                     <div class="col-md-12">
                         <div class="white_shd full margin_bottom_30">
-                          
-                                {statusActive ? (
-                                    <div className="pot">
-                                        <div className="root" ref={rootRef}>
-                                            {RenderBranch(rootRef, tree, 0)}
-                                        </div>
+
+                            {statusActive ? (
+                                <div className="pot">
+                                    <div className="root" ref={rootRef}>
+                                        {RenderBranch(rootRef, tree, 0)}
                                     </div>
-                                ) : null}
-                            
+                                </div>
+                            ) : null}
+
                         </div>
                     </div>
                 </div>

@@ -20,7 +20,37 @@ export default () => {
     const [statusActive, setStatusActive] = useState(false);
 
     const [page, setPage] = useState([]);
+    useEffect(() => {
 
+        fetch(`${proxy()}/auth/activation/check`, {
+            headers: {
+                Authorization: _token
+            }
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success, data, activated, status, content } = resp;
+                console.log(resp)
+                if (activated) {
+
+                    setStatusActive(true)
+                }
+                else {
+                    Swal.fire({
+                        title: lang["faild"],
+                        text: lang["fail.active"],
+                        icon: "error",
+                        showConfirmButton: true,
+
+                    }).then(function () {
+                        // window.location.reload();
+                    });
+                    setStatusActive(false)
+                }
+
+            })
+
+    }, [])
     useEffect(() => {
         if (pages && pages.length > 0) {
             const result = pages.find(page => page.url === `/${url}`);
@@ -50,7 +80,10 @@ export default () => {
                         setDataFields(data.body)
                     }
                     // setApi(api);
-                    callApi()
+                    if (statusActive) {
+                        callApi()
+                    }
+
                 })
         }
     }, [page])
@@ -68,29 +101,16 @@ export default () => {
         fetch(`${proxy()}${page.components?.[0]?.api_get}`).then(res => res.json()).then(res => {
             const { success, content, data, fields, statistic } = res;
             console.log(res)
-            if(success)
-            {
-              const statisticValues = res.statistic.values;
+
+            const statisticValues = res.statistic.values;
 
             setApiData(data)
             setApiDataName(fields)
-            setDataStatis(statisticValues)  
-            setStatusActive(true)
-            } 
-            else{
-                Swal.fire({
-                    title: lang["faild"],
-                    text: lang["fail.active"],
-                    icon: "error",
-                    showConfirmButton: true,
-                   
-                }).then(function () {
-                    // window.location.reload();
-                }); 
-                setStatusActive(false)
-            }
-           
-            
+            setDataStatis(statisticValues)
+
+
+
+
         })
     }
     console.log(dataStatis)
@@ -162,7 +182,7 @@ export default () => {
         // console.log(newParams);
 
         Swal.fire({
-            title:  lang["confirm"],
+            title: lang["confirm"],
             text: lang["confirm.content"],
             icon: 'warning',
             showCancelButton: true,
@@ -487,7 +507,7 @@ export default () => {
                                                     </div>
                                                 </>
                                             ) : (
-                                               null
+                                                null
                                             )
                                         }
                                         <h5 class="mt-4 mb-2">{lang["preview data"]}:</h5>
@@ -554,10 +574,10 @@ export default () => {
                                     <h5>{page?.components?.[0]?.component_name}</h5>
                                 </div>
                                 {statusActive ? (
-                                <div class="ml-auto" onClick={() => redirectToInput()} data-toggle="modal">
-                                    <i class="fa fa-plus-circle icon-ui"></i>
-                                </div>
-                                 ) : null}
+                                    <div class="ml-auto" onClick={() => redirectToInput()} data-toggle="modal">
+                                        <i class="fa fa-plus-circle icon-ui"></i>
+                                    </div>
+                                ) : null}
                                 {
                                     current && current.length > 0 ? (
                                         <div class="ml-4" onClick={downloadAPI} data-toggle="modal" data-target="#exportExcel">

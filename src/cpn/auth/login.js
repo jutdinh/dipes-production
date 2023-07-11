@@ -7,12 +7,14 @@ export default () => {
     const { lang, proxy } = useSelector(state => state);
     const [rememberMe, setRememberMe] = useState(false);
     const [authError, setAuthError] = useState(null);
+
     const enterTriggered = (e) => {
         if (e.keyCode === 13) {
             submit(e)
         }
     }
-
+    const [statusActive, setStatusActive] = useState(false);
+   
     useEffect(() => {
         const storedAccountString = localStorage.getItem("username");
         const storedPwdString = localStorage.getItem("password");
@@ -67,7 +69,30 @@ export default () => {
 
                 //      window.location = "/projects";
                 // });
-                if(data.data.role=== "ad" || data.data.role=== "uad" ){
+
+                fetch(`${proxy()}/auth/activation/check`, {
+                    headers: {
+                        Authorization: data.token
+                    }
+                })
+                    .then(res => res.json())
+                    .then(resp => {
+                        const { success, data, activated, status, content } = resp;
+                        console.log(resp)
+                        if (activated) {
+                            setStatusActive(true)
+        
+                        } else {
+                           
+                               
+            
+                            setStatusActive(false)
+                            window.location.href = `active`;
+                        }
+                    })
+        if(statusActive)
+        {
+            if(data.data.role=== "ad" || data.data.role=== "uad" ){
                     if(data.imported)
                     {
                           window.location = "/users";
@@ -81,6 +106,10 @@ export default () => {
                 {
                     window.location = "/users";
                 }
+        }else{
+            window.location = "/active";
+        }
+               
                 
 
             } else {
@@ -89,6 +118,7 @@ export default () => {
             }
         })
     }
+   
     return (
         <div classNameName="inner_page login">
             <div className="full_container">
