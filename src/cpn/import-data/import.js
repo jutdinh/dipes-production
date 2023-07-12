@@ -29,7 +29,7 @@ export default () => {
                 try {
                     const json = JSON.parse(e.target.result);
                     setFile(file)
-                    setUploadedJson(json);
+                    setUploadedJson(json);                    
                 } catch (error) {
                     Swal.fire({
                         title: "Thất bại!",
@@ -47,6 +47,7 @@ export default () => {
     };
 
     const importData = async () => {
+        
         if (!uploadedJson) {
             // al.failure("Thất bại", "Vui lòng tải lên một file JSON trước khi import");
             return;
@@ -147,7 +148,7 @@ export default () => {
         if (isApi) {
             return "Api"
         } else {
-            const isDatabase = keys.filter(key => key == "tables")[0];
+            const isDatabase = keys.filter(key => key == "database")[0];
             if (isDatabase) {
                 return "Database"
             } else {
