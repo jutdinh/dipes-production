@@ -53,27 +53,44 @@ export default () => {
                 leaf: lang["accounts manager"],
                 link: "/users",
                 vine: "blue",
-                children: [
-                    { leaf: lang["create account"], link: "/users?action=create" }
-                ]
+                // children: [
+                //     { leaf: lang["create account"], link: "/users?action=create" }
+                // ]
             },
             { leaf: lang["diagram"], link: "/diagram_db", },
+            { leaf: "Site map", link: "/sitemap", }
             // { leaf: "Report", link: "/report", },
             // { leaf: "About Us", link: "/about", }
         ]
     })
 
-    const RenderVines = (branch, depth, vine = "cyan") => {
-        if (depth != 0) {
-            const branchLeft = branch.offsetLeft // ? ( branch.offsetLeft * depth ) : 0;
-            const branchTop = branch.offsetTop;
-
-            return (
-                <svg className="vines" style={{ top: `-${branchTop}px`, left: -25 }}>
-                    <path d={` M ${branchLeft} ${branchTop + 20} L ${0} ${branchTop + 20} M ${0} ${branchTop + 20} L ${0} ${0}`} stroke={vine} strokeWidth="2" fill="none" />
+    const RenderVines = ( branch, depth, id, vine="cyan" ) => {
+        if( depth != 0 ){
+            const branchLeft    = branch.offsetLeft // ? ( branch.offsetLeft * depth ) : 0;
+            const branchTop     = branch.offsetTop;
+            const brachBottom   = document.getElementById("branch" + id)!=null? document.getElementById("branch" + id).offsetHeight: 35;//Linh.Tran_230711: 35 default one node
+            //const brachName     = document.getElementById("branch" + id)!=null? document.getElementById("branch" + id).offsetHeight:"";
+    
+            return ( 
+                /*       
+                <svg className="vines" style={{ top: `-${ branchTop }px`, left: -25 }}>
+                    <path d={` M ${ branchLeft } ${ branchTop + 20 } L ${ 0 } ${ branchTop + 20 } M ${ 0 } ${ branchTop + 20 } L ${ 0 } ${ 0 }`} stroke={vine} strokeWidth="2" fill="none" />        
                 </svg>
+                */
+                <svg className="vines" style={{ top: `-${ branchTop + 45 }px`, left: -30 }}>
+                    <path d={`  M ${ 0 + 5 } ${ 0 + 30 } 
+                                L ${ 0 + 5 } ${ branchTop + 10 + 45}
+                                c ${0} ${ 0 + 10 } ${0 + 10} ${ 0 + 10 } 10 10
+                                L ${ branchLeft  + 5 } ${ branchTop + 10 + 45 + 10}
+                                M ${ 0 + 5 } ${ 0 } 
+                                L ${ 0  + 5 } ${ brachBottom + 15 }
+                            `} stroke={vine} strokeWidth="2" fill="none" />
+                            
+                    <b>{brachBottom}</b>
+                </svg>
+                
             );
-        } else {
+        }else{
             return null
         }
     }
@@ -117,17 +134,17 @@ export default () => {
                     const child = {
                         leaf: ui.title,
                         link: `/page${ui.url}`,
-                        children: [
-                            { leaf: lang["create"], link: `/page/apis${ui.components[0]?.api_post}/input_info` },
-                            // { leaf: "Sửa", link: `/projects/${ project.versions[0]?.version_id }/apis` },
-                            // { leaf: "UI", link: `/projects/${ project.versions[0]?.version_id }/uis` },
-                        ]
+                        // children: [
+                        //     { leaf: lang["create"], link: `/page/apis${ui.components[0]?.api_post}/input_info` },
+                        //     // { leaf: "Sửa", link: `/projects/${ project.versions[0]?.version_id }/apis` },
+                        //     // { leaf: "UI", link: `/projects/${ project.versions[0]?.version_id }/uis` },
+                        // ]
                     }
                     branch.children.push(child)
                 })
                 const newTree = tree;
                 newTree.children.push(branch)
-                newTree.children.push({ leaf: "Site map", link: "/sitemap", })
+                // newTree.children.push({ leaf: "Site map", link: "/sitemap", })
     
                 setTree({ ...newTree })
             }
