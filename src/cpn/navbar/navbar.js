@@ -50,13 +50,14 @@ export default () => {
                      <span>{lang["home"]}</span>
                   </NavLink>
                </li> */}
-               <li className="navbar-item">
-                  <NavLink to="/" activeClassName="nav-active">
-                     <i class="fa fa-upload icon-import"></i>
-                     <span>Import</span>
-                  </NavLink>
-               </li>
-
+               {user.role === "ad" || user.role === "uad" ? (
+                  <li className="navbar-item">
+                     <NavLink to="/" activeClassName="nav-active">
+                        <i class="fa fa-upload icon-import"></i>
+                        <span>Import</span>
+                     </NavLink>
+                  </li>
+               ) : null}
                {user.role === "ad" || user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/active" activeClassName="nav-active">
@@ -65,7 +66,7 @@ export default () => {
                      </NavLink>
                   </li>
                ) : null}
-               
+
                {user.role === "ad" || user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/users" activeClassName="nav-active">
@@ -76,15 +77,15 @@ export default () => {
                ) : null}
 
 
-               {user.role === "uad" ? (
+             
                   <li className="navbar-item">
                      <NavLink to="/diagram_db" activeClassName="nav-active">
                         <i class="fa fa-database pointer icon-database"></i>
                         <span>{lang["diagram"]}</span>
                      </NavLink>
                   </li>
-               ) : null}
-              
+           
+
                <li>
                   <a href="#dashboard" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                      <i class="fa fa-dashboard yellow_color"></i>
@@ -105,12 +106,12 @@ export default () => {
                </li>
              
                   <li className="navbar-item">
-                  <NavLink to="/sitemap" onClick={ () => { openTab('/sitemap') } } activeClassName="nav-active">        
+                     <NavLink to="/sitemap" onClick={() => { openTab('/sitemap') }} activeClassName="nav-active">
                         <i class="fa fa-sitemap"></i>
                         <span>Site map</span>
                      </NavLink>
                   </li>
-                  
+             
                {/* {user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/logs" activeClassName="nav-active">

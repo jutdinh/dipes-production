@@ -4,10 +4,11 @@ import Swal from 'sweetalert2';
 export default () => {
     const rootRef = useRef()
     let id = 0;
-    const { lang, proxy, pages } = useSelector(state => state)
+    const { lang, proxy, pages, auth } = useSelector(state => state)
     const _token = localStorage.getItem("_token");
     const [isLoaded, setLoaded] = useState(false)
     const [statusActive, setStatusActive] = useState(false);
+    console.log(auth)
     useEffect(() => {
 
         fetch(`${proxy()}/auth/activation/check`, {
@@ -39,7 +40,6 @@ export default () => {
 
 
 
-
     }, [statusActive])
     const [tree, setTree] = useState({
         leaf: "DIPES PRODUCTON",
@@ -63,6 +63,19 @@ export default () => {
             // { leaf: "About Us", link: "/about", }
         ]
     })
+    useEffect(() => {
+        // assuming auth is defined somewhere in this component
+        if (auth.role === 'pd') {
+            setTree(prevTree => ({
+                ...prevTree,
+                children: prevTree.children.filter(item => 
+                    item.leaf !== "Import" && 
+                    item.leaf !== lang["activation"] && 
+                    item.leaf !== lang["accounts manager"]
+                )
+            }));
+        }
+    }, [auth.role]);
 
     const RenderVines = ( branch, depth, id, vine="cyan" ) => {
         if( depth != 0 ){

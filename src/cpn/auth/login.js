@@ -14,7 +14,7 @@ export default () => {
         }
     }
     const [statusActive, setStatusActive] = useState(false);
-   
+
     useEffect(() => {
         const storedAccountString = localStorage.getItem("username");
         const storedPwdString = localStorage.getItem("password");
@@ -40,6 +40,7 @@ export default () => {
             body: JSON.stringify({ account: auth })
         }).then(res => res.json()).then((resp) => {
             const { success, content, data } = resp;
+            const credential = data
             console.log(resp)
 
             if (success) {
@@ -81,44 +82,46 @@ export default () => {
                         console.log(resp)
                         if (activated) {
                             setStatusActive(true)
-        
+
                         } else {
-                           
-                               
-            
+
+
+
                             setStatusActive(false)
-                            window.location.href = `active`;
+                            window.location.href = `/active`;
+                        }
+                        if (activated) {
+                            if (credential.data.role === "ad" || credential.data.role === "uad") {
+                                if (credential.imported) {
+                                    window.location = "/users";
+                                }
+                                else {
+                                    window.location = "/";
+                                }
+
+                            } else if (credential.data.role === "pd") {
+                                window.location = "/diagram_db";
+                            }
+                        } else {
+                            if (credential.data.role === "pd" || credential.data.role === "ad" || credential.data.role === "uad") {
+                                window.location = "/active";
+                            }
+                            else{
+                                window.location = "/diagram_db";
+                            }
+
                         }
                     })
-        if(statusActive)
-        {
-            if(data.data.role=== "ad" || data.data.role=== "uad" ){
-                    if(data.imported)
-                    {
-                          window.location = "/users";
-                    }
-                    else
-                    {
-                        window.location = "/";
-                    }
-                  
-                } else if (data.data.role==="pm")
-                {
-                    window.location = "/users";
-                }
-        }else{
-            window.location = "/active";
-        }
-               
-                
+
+
 
             } else {
                 setAuthError(content);
-               
+
             }
         })
     }
-   
+
     return (
         <div classNameName="inner_page login">
             <div className="full_container">
@@ -137,21 +140,21 @@ export default () => {
 
                                             <div class="row">
                                                 <div class="col-md-4">
-                                                   
+
                                                 </div>
-                                               
+
                                                 <div class="col-md-8">
-                                                {authError && <span class="error-message error-login">{authError}</span>}
-                                                    
+                                                    {authError && <span class="error-message error-login">{authError}</span>}
+
                                                 </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <label className="label_field">{lang["account"]}</label>
                                                 </div>
-                                               
+
                                                 <div class="col-md-8">
-                                               
+
                                                     <input type="text" onKeyUp={enterTriggered}
                                                         onChange={
                                                             (e) => {
@@ -159,15 +162,15 @@ export default () => {
                                                                 setAuth({ ...auth, username: e.target.value });
                                                             }
                                                         } value={auth.username || ""} placeholder={lang["account"]} />
-                                                 
-                                                   
+
+
                                                 </div>
                                             </div>
 
 
 
                                         </div>
-                                        
+
                                         <div className="field">
                                             <label className="label_field">{lang["password"]}</label>
                                             <input type="password" onKeyUp={enterTriggered} onChange={(e) => { setAuth({ ...auth, password: e.target.value }) }} value={auth.password || ""} placeholder={lang["password"]} />

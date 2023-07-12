@@ -66,7 +66,7 @@ function ActivationForm() {
                                   <div class="row" style={{ marginBottom: 'auto' }}>
                                     <div class="form-group col-lg-12">
                                       <label>{lang["MAC"]}</label>
-                                      <input type="text" class="form-control" value={key.MAC.toLocaleUpperCase()}  />
+                                      <input type="text" class="form-control" value={key.MAC}  />
                                     </div>
                                     <div class="form-group col-lg-12">
                                         <label>{lang["activate.key"]}</label>

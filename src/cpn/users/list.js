@@ -15,7 +15,7 @@ export default (props) => {
     const [statusActive, setStatusActive] = useState(false);
     const roles = [
         { id: 0, label: "Administrator", value: "ad" },
-        { id: 1, label: "Operator", value: "pm" },
+        // { id: 1, label: "Operator", value: "pm" },
         { id: 2, label: "Normal", value: "pd" },
         // { id: 3, label: "Người theo dõi dự án ( Monitor Staff )", value: "ps" },
     ]
