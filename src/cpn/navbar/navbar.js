@@ -25,7 +25,7 @@ export default () => {
    // }, [window.location.href])
 
    return (
-      <nav id="sidebar" class>
+      <nav id="sidebar" class="">
          <div class="sidebar_blog_1">
             <div class="sidebar-header">
                <div class="logo_section">
