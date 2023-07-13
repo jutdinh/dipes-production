@@ -82,11 +82,7 @@ export default () => {
                         console.log(resp)
                         if (activated) {
                             setStatusActive(true)
-
                         } else {
-
-
-
                             setStatusActive(false)
                             window.location.href = `/active`;
                         }

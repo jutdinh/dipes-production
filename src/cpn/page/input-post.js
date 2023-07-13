@@ -75,7 +75,7 @@ export default () => {
             const field = fields[i];
             const { nullable, fomular_alias } = field;
             if (!nullable) {
-                if (data[fomular_alias] == null || data[fomular_alias] == undefined || data[fomular_alias] == "") {
+                if (data[fomular_alias] == null || data[fomular_alias] == undefined || data[fomular_alias] === "") {
                     valid = false
                 }
             }

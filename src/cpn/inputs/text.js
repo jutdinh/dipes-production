@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 export default (props) => {
     const { field, changeTrigger, defaultValue } = props;
     const [current, setCurrent] = useState('')
-
+// console.log(field)
     const fieldChangeData = (e) => {
         const { value } = e.target
         setCurrent(value)
