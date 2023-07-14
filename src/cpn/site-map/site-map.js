@@ -71,7 +71,8 @@ export default () => {
                 children: prevTree.children.filter(item => 
                     item.leaf !== "Import" && 
                     item.leaf !== lang["activation"] && 
-                    item.leaf !== lang["accounts manager"]
+                    item.leaf !== lang["accounts manager"]&&
+                    item.leaf !== lang["diagram"]
                 )
             }));
         }

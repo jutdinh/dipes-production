@@ -78,12 +78,7 @@ export default () => {
 
 
              
-                  <li className="navbar-item">
-                     <NavLink to="/diagram_db" activeClassName="nav-active">
-                        <i class="fa fa-database pointer icon-database"></i>
-                        <span>{lang["diagram"]}</span>
-                     </NavLink>
-                  </li>
+                 
            
 
                <li>
@@ -104,6 +99,16 @@ export default () => {
                      ))}
                   </ul>
                </li>
+
+               {user.role === "ad" || user.role === "uad" ? (
+                    <li className="navbar-item">
+                    <NavLink to="/diagram_db" activeClassName="nav-active">
+                       <i class="fa fa-database pointer icon-database"></i>
+                       <span>{lang["diagram"]}</span>
+                    </NavLink>
+                 </li>
+               ) : null}
+
              
                   <li className="navbar-item">
                      <NavLink to="/sitemap" onClick={() => { openTab('/sitemap') }} activeClassName="nav-active">

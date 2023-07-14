@@ -374,7 +374,7 @@ export default (props) => {
                                                         <select className="form-control" name="role" value={user.role} onChange={handleChange} >
                                                             <option value="">{lang["p.permission"]}</option>
                                                             {users.role === "ad" ? (
-                                                                roles.slice(1, 4).map(role => (
+                                                                roles.slice(0, 4).map(role => (
                                                                     <option key={role.id} value={role.value}>{role.label}</option>
                                                                 ))
                                                             ) : (

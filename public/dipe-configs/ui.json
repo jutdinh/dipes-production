@@ -1,1 +1,179 @@
-{"data":[{"id":32,"ui_id":32,"title":"Loại sản phẩm","version_id":37,"url":"/loai-san-pham","status":true,"params":[],"create_by":{"username":"nhan","fullname":"Tô Trọng Nhân","role":"ad","email":"totrongnhan@gmail.com","phone":"0359695554","avatar":"/image/avatar/nhan.png","address":"Trà Vinh","note":"Ghi chú","create_by":"su","create_at":"06-06-2023 lúc 10:53"},"create_at":"13-07-2023 13:29:57","components":[{"id":32,"component_id":32,"component_name":"Loại sản phẩm","ui_id":32,"layout_id":0,"api_get":"/api/0242E08C83334931B2FFB4035C281F6F","api_post":"/api/2E09B03D4B554C85A7E6E01A9B32D527","api_put":"/api/336C02DC25134A21BC3A7FD0E9212BB5","api_delete":"/api/88F2EAD5F6BA4651AAD363947B939621"}]},{"id":33,"ui_id":33,"title":"Sản phẩm","version_id":37,"url":"/san-pham","status":true,"params":[],"create_by":{"username":"nhan","fullname":"Tô Trọng Nhân","role":"ad","email":"totrongnhan@gmail.com","phone":"0359695554","avatar":"/image/avatar/nhan.png","address":"Trà Vinh","note":"Ghi chú","create_by":"su","create_at":"06-06-2023 lúc 10:53"},"create_at":"13-07-2023 13:30:30","components":[{"id":33,"component_id":33,"component_name":"Sản phẩm","ui_id":33,"layout_id":0,"api_get":"/api/FA39FB5F05EA4DF18FC6A2511598AD6C","api_post":"/api/C7F006E4C94C4E18B4CCCA069E4A26D1","api_put":"/api/F2270D84C7E6436C87917FDA1EEABF30","api_delete":"/api/9FF6062D5F93425B8C0603A4C5D3C612"}]},{"id":34,"ui_id":34,"title":"Khách hàng","version_id":37,"url":"/khach-hang","status":true,"params":[],"create_by":{"username":"nhan","fullname":"Tô Trọng Nhân","role":"ad","email":"totrongnhan@gmail.com","phone":"0359695554","avatar":"/image/avatar/nhan.png","address":"Trà Vinh","note":"Ghi chú","create_by":"su","create_at":"06-06-2023 lúc 10:53"},"create_at":"13-07-2023 13:31:00","components":[{"id":34,"component_id":34,"component_name":"Khách hàng","ui_id":34,"layout_id":0,"api_get":"/api/5DDD57F925D34C67B5D98A8C48600602","api_post":"/api/AE2AAB29FFFE4C7B804A1FE990EF1C09","api_put":"/api/6CB9F537DFD74650BE48579410FC1665","api_delete":"/api/E129A58719324E8085531BEE35694080"}]},{"id":35,"ui_id":35,"title":"Đơn hàng","version_id":37,"url":"/don-hang","status":true,"params":[],"create_by":{"username":"nhan","fullname":"Tô Trọng Nhân","role":"ad","email":"totrongnhan@gmail.com","phone":"0359695554","avatar":"/image/avatar/nhan.png","address":"Trà Vinh","note":"Ghi chú","create_by":"su","create_at":"06-06-2023 lúc 10:53"},"create_at":"13-07-2023 13:31:20","components":[{"id":35,"component_id":35,"component_name":"Đơn hàng","ui_id":35,"layout_id":0,"api_get":"/api/77E5C10CD0D24F109EA9A1CDBC3A08B0","api_post":"/api/B81ED630691A4FF389B714C14B076B60","api_put":"/api/B383D15ACB7147A99DAB05385856C1E3","api_delete":"/api/2F837DB1226242729D66B188FAE58ADF"}]},{"id":36,"ui_id":36,"title":"Chi tiết đơn hàng","version_id":37,"url":"/chi-tiet-don-hang","status":true,"params":[],"create_by":{"username":"nhan","fullname":"Tô Trọng Nhân","role":"ad","email":"totrongnhan@gmail.com","phone":"0359695554","avatar":"/image/avatar/nhan.png","address":"Trà Vinh","note":"Ghi chú","create_by":"su","create_at":"06-06-2023 lúc 10:53"},"create_at":"13-07-2023 13:32:04","components":[{"id":36,"component_id":36,"component_name":"Chi tiết đơn hàng","ui_id":36,"layout_id":0,"api_get":"/api/24045D52CC8B4E76B7D1AC3E981DF1C2","api_post":"/api/C184C62294F4467795DC91C863B5CE79","api_put":"/api/E4795F004E474893BA2F8F798BEE9C0E","api_delete":"/api/4FCD3B13302346D7A26E1DF897DA3181"}]}]}
+{
+    "data": [
+        {
+            "id": 32,
+            "ui_id": 32,
+            "title": "Loại sản phẩm",
+            "version_id": 37,
+            "url": "/loai-san-pham",
+            "status": true,
+            "params": [],
+            "create_by": {
+                "username": "nhan",
+                "fullname": "Tô Trọng Nhân",
+                "role": "ad",
+                "email": "totrongnhan@gmail.com",
+                "phone": "0359695554",
+                "avatar": "/image/avatar/nhan.png",
+                "address": "Trà Vinh",
+                "note": "Ghi chú",
+                "create_by": "su",
+                "create_at": "06-06-2023 lúc 10:53"
+            },
+            "create_at": "13-07-2023 13:29:57",
+            "components": [
+                {
+                    "id": 32,
+                    "component_id": 32,
+                    "component_name": "Loại sản phẩm",
+                    "ui_id": 32,
+                    "layout_id": 0,
+                    "api_get": "/api/0242E08C83334931B2FFB4035C281F6F",
+                    "api_post": "/api/2E09B03D4B554C85A7E6E01A9B32D527",
+                    "api_put": "/api/336C02DC25134A21BC3A7FD0E9212BB5",
+                    "api_delete": "/api/88F2EAD5F6BA4651AAD363947B939621"
+                }
+            ]
+        },
+        {
+            "id": 33,
+            "ui_id": 33,
+            "title": "Sản phẩm",
+            "version_id": 37,
+            "url": "/san-pham",
+            "status": true,
+            "params": [],
+            "create_by": {
+                "username": "nhan",
+                "fullname": "Tô Trọng Nhân",
+                "role": "ad",
+                "email": "totrongnhan@gmail.com",
+                "phone": "0359695554",
+                "avatar": "/image/avatar/nhan.png",
+                "address": "Trà Vinh",
+                "note": "Ghi chú",
+                "create_by": "su",
+                "create_at": "06-06-2023 lúc 10:53"
+            },
+            "create_at": "13-07-2023 13:30:30",
+            "components": [
+                {
+                    "id": 33,
+                    "component_id": 33,
+                    "component_name": "Sản phẩm",
+                    "ui_id": 33,
+                    "layout_id": 0,
+                    "api_get": "/api/FA39FB5F05EA4DF18FC6A2511598AD6C",
+                    "api_post": "/api/C7F006E4C94C4E18B4CCCA069E4A26D1",
+                    "api_put": "/api/F2270D84C7E6436C87917FDA1EEABF30",
+                    "api_delete": "/api/9FF6062D5F93425B8C0603A4C5D3C612"
+                }
+            ]
+        },
+        {
+            "id": 34,
+            "ui_id": 34,
+            "title": "Khách hàng",
+            "version_id": 37,
+            "url": "/khach-hang",
+            "status": true,
+            "params": [],
+            "create_by": {
+                "username": "nhan",
+                "fullname": "Tô Trọng Nhân",
+                "role": "ad",
+                "email": "totrongnhan@gmail.com",
+                "phone": "0359695554",
+                "avatar": "/image/avatar/nhan.png",
+                "address": "Trà Vinh",
+                "note": "Ghi chú",
+                "create_by": "su",
+                "create_at": "06-06-2023 lúc 10:53"
+            },
+            "create_at": "13-07-2023 13:31:00",
+            "components": [
+                {
+                    "id": 34,
+                    "component_id": 34,
+                    "component_name": "Khách hàng",
+                    "ui_id": 34,
+                    "layout_id": 0,
+                    "api_get": "/api/5DDD57F925D34C67B5D98A8C48600602",
+                    "api_post": "/api/AE2AAB29FFFE4C7B804A1FE990EF1C09",
+                    "api_put": "/api/6CB9F537DFD74650BE48579410FC1665",
+                    "api_delete": "/api/E129A58719324E8085531BEE35694080"
+                }
+            ]
+        },
+        {
+            "id": 35,
+            "ui_id": 35,
+            "title": "Đơn hàng",
+            "version_id": 37,
+            "url": "/don-hang",
+            "status": true,
+            "params": [],
+            "create_by": {
+                "username": "nhan",
+                "fullname": "Tô Trọng Nhân",
+                "role": "ad",
+                "email": "totrongnhan@gmail.com",
+                "phone": "0359695554",
+                "avatar": "/image/avatar/nhan.png",
+                "address": "Trà Vinh",
+                "note": "Ghi chú",
+                "create_by": "su",
+                "create_at": "06-06-2023 lúc 10:53"
+            },
+            "create_at": "13-07-2023 13:31:20",
+            "components": [
+                {
+                    "id": 35,
+                    "component_id": 35,
+                    "component_name": "Đơn hàng",
+                    "ui_id": 35,
+                    "layout_id": 0,
+                    "api_get": "/api/77E5C10CD0D24F109EA9A1CDBC3A08B0",
+                    "api_post": "/api/B81ED630691A4FF389B714C14B076B60",
+                    "api_put": "/api/B383D15ACB7147A99DAB05385856C1E3",
+                    "api_delete": "/api/2F837DB1226242729D66B188FAE58ADF"
+                }
+            ]
+        },
+        {
+            "id": 36,
+            "ui_id": 36,
+            "title": "Chi tiết đơn hàng",
+            "version_id": 37,
+            "url": "/chi-tiet-don-hang",
+            "status": true,
+            "params": [],
+            "create_by": {
+                "username": "nhan",
+                "fullname": "Tô Trọng Nhân",
+                "role": "ad",
+                "email": "totrongnhan@gmail.com",
+                "phone": "0359695554",
+                "avatar": "/image/avatar/nhan.png",
+                "address": "Trà Vinh",
+                "note": "Ghi chú",
+                "create_by": "su",
+                "create_at": "06-06-2023 lúc 10:53"
+            },
+            "create_at": "13-07-2023 13:32:04",
+            "components": [
+                {
+                    "id": 36,
+                    "component_id": 36,
+                    "component_name": "Chi tiết đơn hàng",
+                    "ui_id": 36,
+                    "layout_id": 1,
+                    "api_get": "/api/24045D52CC8B4E76B7D1AC3E981DF1C2",
+                    "api_post": "/api/C184C62294F4467795DC91C863B5CE79",
+                    "api_put": "/api/E4795F004E474893BA2F8F798BEE9C0E",
+                    "api_delete": "/api/4FCD3B13302346D7A26E1DF897DA3181"
+                }
+            ]
+        }
+    ]
+}

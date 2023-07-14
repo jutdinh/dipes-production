@@ -96,7 +96,7 @@ export default () => {
                                 }
 
                             } else if (credential.data.role === "pd") {
-                                window.location = "/diagram_db";
+                                window.location = "/sitemap";
                             }
                         } else {
                             if (credential.data.role === "pd" || credential.data.role === "ad" || credential.data.role === "uad") {

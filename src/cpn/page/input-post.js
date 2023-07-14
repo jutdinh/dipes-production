@@ -73,8 +73,8 @@ export default () => {
         let valid = true;
         for (let i = 0; i < fields.length; i++) {
             const field = fields[i];
-            const { nullable, fomular_alias } = field;
-            if (!nullable) {
+            const { NULL, fomular_alias } = field;
+            if (!NULL) {
                 if (data[fomular_alias] == null || data[fomular_alias] == undefined || data[fomular_alias] === "") {
                     valid = false
                 }

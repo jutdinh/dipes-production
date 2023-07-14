@@ -246,8 +246,8 @@ export default {
     "success.delete": "Xoá thành công",
     "fail.delete": "Xoá thất bại",
     "fail.null": "Có một số trường không được bỏ trống",
-    "fail.active": "Sản phẩm chưa được kích hoạt"
+    "fail.active": "Sản phẩm chưa được kích hoạt",
 
-
+    "preview.content": "Vui lòng chọn ít nhất một trường để xem dữ liệu mẫu"
 
 }

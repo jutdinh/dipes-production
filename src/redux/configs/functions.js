@@ -98,7 +98,43 @@ const showApiResponseMessage = (status) => {
     });
 };
 
+function formatNumberWithCommas(number) {
+	if( floatValidate( number ) ){
+		let numberString = number.toString();
+		const parts = numberString.split(".");
+		let integerPart = parts[0];
+		let decimalPart = parts[1];
+
+		integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+		if (decimalPart) {
+		  	numberString = integerPart + "." + decimalPart;
+		} else {
+		  	numberString = integerPart;
+		}
+		return numberString;
+	}
+	return "INVALID VALUE"  
+}
+
+const floatValidate = ( number ) => {
+    if( number != undefined){
+        const numberString = number.toString()
+        const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.']
+        let valid = true
+        for( let i = 0; i < numberString.length ; i++ ){
+            const char = numberString[i]
+            if( numbers.indexOf( char ) === -1 ){
+                valid = false
+            }
+        }
+        return valid;
+    }else{
+        return false
+    }
+}
+
 export default {
     uid, removeDuplicate, titleCase, openTab, dateGenerator, renderDateTimeByFormat,
-    showApiResponseMessage
+    showApiResponseMessage, formatNumberWithCommas
 }

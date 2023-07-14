@@ -53,7 +53,7 @@ export default (props) => {
                     { phoneError && (
                         <div className="rel">
                             <div className="abs">
-                                <span className="block crimson p-0-5 text-14-px">
+                                <span  className="block crimson mb-2 text-14-px " style={{color: 'red'}}>
                                     Số điện thoại không hợp lệ
                                 </span>
                             </div>

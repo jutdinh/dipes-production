@@ -8,6 +8,9 @@ import XLSX from 'xlsx-js-style';
 
 export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
+
+    const { formatNumberWithCommas } = functions
+
     const { openTab, renderDateTimeByFormat } = functions
     const _token = localStorage.getItem("_token");
     const { project_id, version_id, url } = useParams();
@@ -64,7 +67,7 @@ export default () => {
     }, [pages, url]);
     const layoutId = page.components?.[0].layout_id;
 
-    const tableClassName = layoutId === 0 ? "table table-striped" : "table table-primary";
+    const tableClassName = layoutId === 0 ? "table table-striped" : "table table-hover";
     console.log(page.components?.[0].layout_id)
     useEffect(() => {
         if (page && page.components) {
@@ -510,43 +513,54 @@ export default () => {
                                                 null
                                             )
                                         }
-                                        <h5 class="mt-4 mb-2">{lang["preview data"]}:</h5>
-                                        <div class="table-responsive">
-                                            <table class="table table-striped excel-preview">
-                                                <thead>
-                                                    {selectedFields.map((field) => {
-                                                        const header = apiDataName.find(
-                                                            (header) => header.fomular_alias === field
-                                                        );
-                                                        return <th key={field}>{header ? header.display_name : field}</th>;
-                                                    })}
-                                                </thead>
-                                                <tbody>
-                                                    {current.slice(0, 5).map((row, rowIndex) => (
-                                                        <tr key={rowIndex}>
-                                                            {selectedFields.map((field) => (
-                                                                <td key={field}>{row[field]}</td>
-                                                            ))}
-                                                        </tr>
-                                                    ))}
-                                                    {dataStatis && dataStatis.length > 0 ? (
-                                                        <tr >
-                                                            {selectedStats.map((statAlias, index) => {
-                                                                const stat = dataStatis.find(
-                                                                    (stat) => stat.fomular_alias === statAlias
-                                                                );
-                                                                return (
-                                                                    <td key={index} class="font-weight-bold" colspan={`${selectedFields.length + 1}`} style={{ textAlign: 'right' }}>
-                                                                        {stat ? `${stat.display_name}: ${stat.result}` : ''}
-                                                                    </td>
-                                                                );
-                                                            })}
-                                                        </tr>
-                                                    ) : null
-                                                    }
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                        <h5 class="mt-4 mb-2">{lang["preview data"]}: </h5>
+                                        {selectedFields && selectedFields.length > 0 ?
+                                            (
+                                                <>
+                                                </>
+
+                                            ) : <>  {lang["preview.content"]}
+                                            </>}
+
+                                        {selectedFields && selectedFields.length > 0 || current & current.length > 0 || dataStatis && dataStatis.length > 0 ? (
+                                            <div class="table-responsive">
+                                                <table class="table table-striped excel-preview">
+                                                    <thead>
+                                                        {selectedFields.map((field) => {
+                                                            const header = apiDataName.find(
+                                                                (header) => header.fomular_alias === field
+                                                            );
+                                                            return <th key={field}>{header ? header.display_name : field}</th>;
+                                                        })}
+                                                    </thead>
+                                                    <tbody>
+                                                        {current.slice(0, 5).map((row, rowIndex) => (
+                                                            <tr key={rowIndex}>
+                                                                {selectedFields.map((field) => (
+                                                                    <td key={field}>{row[field]}</td>
+                                                                ))}
+                                                            </tr>
+                                                        ))}
+                                                        {dataStatis && dataStatis.length > 0 ? (
+                                                            <tr >
+                                                                {selectedStats.map((statAlias, index) => {
+                                                                    const stat = dataStatis.find(
+                                                                        (stat) => stat.fomular_alias === statAlias
+                                                                    );
+                                                                    return (
+                                                                        <td key={index} class="font-weight-bold" colspan={`${selectedFields.length + 1}`} style={{ textAlign: 'right' }}>
+                                                                            {stat ? `${stat.display_name}: ${stat.result}` : ''}
+                                                                        </td>
+                                                                    );
+                                                                })}
+                                                            </tr>
+                                                        ) : null
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        ) : null}
+
                                     </form>
                                 </div>
                                 <div class="modal-footer">
@@ -617,7 +631,7 @@ export default () => {
                                                             ))}
                                                             {dataStatis.map((data) => (
                                                                 <tr>
-                                                                    <td class="font-weight-bold" colspan={`${apiDataName.length + 1}`} style={{ textAlign: 'right' }}>{data.display_name}: {data.result} </td>
+                                                                    <td class="font-weight-bold" colspan={`${apiDataName.length + 1}`} style={{ textAlign: 'right' }}>{data.display_name}: {formatNumberWithCommas(data.result)} </td>
                                                                 </tr>
                                                             ))}
                                                         </tbody>

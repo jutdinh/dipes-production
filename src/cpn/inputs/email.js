@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 export default (props) => {
 
-    const { field, changeTrigger, related, table, defaultValue, selectOption, onEmailError , readOnly } = props;
+    const { field, changeTrigger, related, table, defaultValue, selectOption, onEmailError, readOnly } = props;
 
     const [current, setCurrent] = useState(defaultValue ? defaultValue : "")
     const [fields, setFields] = useState([])
@@ -13,29 +13,41 @@ export default (props) => {
     const { proxy, unique_string } = useSelector(state => state);
     const [relatedTable, setRelatedTable] = useState({})
     const [pk, setPK] = useState("");
-    
-    
+
+
     const [emailError, setEmailError] = useState(false);
     const validateEmail = (email) => {
         const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return emailRegex.test(email);
     };
 
-  
+
     const fieldChangeData = (e) => {
         const { value } = e.target;
         setCurrent(value);
-        const isValidEmail = validateEmail(value) || value === '';  
+        const isValidEmail = validateEmail(value) || value === '';
         onEmailError(!isValidEmail);
         if (isValidEmail) {
-          changeTrigger(field, value);
-          setEmailError(false);
+            changeTrigger(field, value);
+            setEmailError(false);
         }
-        else{
+        else {
             setEmailError(true);
         }
-      };
-
+    };
+    const changeRawData = (e) => {
+        const { value } = e.target;
+        setCurrent(value);
+        const isValidEmail = validateEmail(value) || value === '';
+        onEmailError(!isValidEmail);
+        if (isValidEmail) {
+            changeTrigger(field, value);
+            setEmailError(false);
+        }
+        else {
+            setEmailError(true);
+        }
+    }
 
     useEffect(() => {
         if (defaultValue !== undefined) {
@@ -59,9 +71,9 @@ export default (props) => {
                 setCurrent(defaultValue)
             }
         } else {
-            
+
             if (!isFieldForeign()) {
-                
+
             } else {
 
                 const key = isFieldForeign()
@@ -87,8 +99,8 @@ export default (props) => {
     }, [defaultValue]);
 
     const isFieldForeign = () => {
-        console.log( table )
-        console.log( field )
+        console.log(table)
+        console.log(field)
         if (table) {
             const { foreign_keys } = table;
             const key = foreign_keys.find(key => key.field_id == field.id)
@@ -110,11 +122,7 @@ export default (props) => {
         return false
     }
 
-    const changeRawData = (e) => {
-        const { value } = e.target
-        setCurrent(value)
-        changeTrigger(field, value)
-    }
+
 
     const focusTrigger = () => {
         setHeight(250);
@@ -157,9 +165,17 @@ export default (props) => {
                                     placeholder=""
                                     onChange={changeRawData}
                                     defaultValue={defaultValue == undefined ? current : defaultValue}
-                                    readOnly = { readOnly ? true : false }                         
+                                    readOnly={readOnly ? true : false}
                                 />
-                                
+                                <div className="rel">
+                                    <div className="abs">
+                                        {emailError && (
+                                            <span className="block text-red text-14-px mb-2" style={{color: 'red'}}>
+                                                Địa chỉ email không hợp lệ
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -189,6 +205,15 @@ export default (props) => {
                                 </select>
                             </div>
                         </form>
+                        {emailError && (
+                            <div className="rel">
+                                <div className="abs">
+                                    <span className="block crimson p-0-5 text-14-px mb-2" style={{color: 'red'}}>
+                                        Email không hợp lệ
+                                    </span>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             )
@@ -209,11 +234,20 @@ export default (props) => {
                                     placeholder=""
                                     onChange={changeRawData}
                                     value={current}
-                                    readOnly = { readOnly ? true : false }   
+                                    readOnly={readOnly ? true : false}
                                 />
 
                             </div>
                         </form>
+                        {emailError && (
+                            <div className="rel">
+                                <div className="abs">
+                                    <span className="block crimson p-0-5 text-14-px mb-2" style={{color: 'red'}}>
+                                        Email không hợp lệ
+                                    </span>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             )
@@ -237,11 +271,23 @@ export default (props) => {
                                         </option>
                                     )}
                                 </select>
+                                {emailError && (
+                                    <div className="rel">
+                                        <div className="abs">
+                                            <span className="block crimson p-0-5 text-14-px mb-2" style={{color: 'red'}}>
+                                                Email không hợp lệ
+                                            </span>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
+
                         </form>
                     </div>
                 </div>
             )
         }
+
     };
+
 };
