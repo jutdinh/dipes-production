@@ -61,7 +61,7 @@ export default (props) => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated,status, content } = resp;
-                console.log(resp)
+                // console.log(resp)
                 if (activated) {
                     fetch(`${proxy()}/auth/all/accounts`, {
                         headers: {
@@ -71,7 +71,7 @@ export default (props) => {
                         .then(res => res.json())
                         .then(resp => {
                             const { success, data, status, content } = resp;
-                            console.log(resp)
+                            // console.log(resp)
                             if (success) {
                                 if (data != undefined && data.length > 0) {
                                     setProfile(data);
@@ -253,7 +253,7 @@ export default (props) => {
             });
     }
     const handleUpdateUser = (editUser) => {
-        console.log("Thông tin người dùng:", editUser.role);
+        // console.log("Thông tin người dùng:", editUser.role);
         setEditUser(editUser)
         // if (editUser.role === users.role) {
         //     Swal.fire({

@@ -11,6 +11,7 @@
     "canvasjs": "^1.8.3",
     "chart.js": "^4.3.0",
     "clipboard-copy": "^4.0.1",
+    "copy-to-clipboard": "^3.3.3",
     "dagre": "^0.8.5",
     "file-saver": "^2.0.5",
     "jquery": "^3.6.1",

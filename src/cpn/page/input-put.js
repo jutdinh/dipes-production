@@ -38,7 +38,7 @@ export default () => {
     const handleEmailError = (error) => {
         setEmailError(error);
     };
-    console.log(pages)
+    // console.log(pages)
 
 
 
@@ -48,7 +48,7 @@ export default () => {
 
         return api_get_id === id_str;
     });
-    console.log(result)
+    // console.log(result)
 
     const changeTrigger = (field, value) => {
         const newData = data;
@@ -80,11 +80,11 @@ export default () => {
         const url = window.location;
         const rawParams = url.pathname.split(`/${id_str}/`)[1];
         const paramsList = rawParams.split('/');
-        console.log(rawParams)
+        // console.log(rawParams)
         fetch(`${proxy()}/apis/api/${id_str}/input_info`).then(res => res.json())
             .then(res => {
                 const { success, data } = res;
-                console.log(res)
+                // console.log(res)
                 if (success) {
                     // const { tables } = data.tables;
                     const apiFields = data.params;
@@ -112,12 +112,12 @@ export default () => {
 
                     fetch(`${proxy()}/apis/retrieve/${id_str}/${rawParams}`)
                         .then(res => res.json()).then(res => {
-                            console.log(res);
+                            // console.log(res);
 
                             const { data } = res;
 
                             let initData = data;
-                            console.log(serializeParams)
+                            // console.log(serializeParams)
                             for (let i = 0; i < params.length; i++) {
                                 const { fomular_alias, value } = params[i]
                                 const decodedString = decodeURIComponent(value);
@@ -143,13 +143,13 @@ export default () => {
             })
     }, [])
 
-    console.log(fields)
+    // console.log(fields)
     const submit = () => {
 
         const url = window.location;
         const rawParams = url.pathname.split(`/${id_str}/`)[1];
         const paramsList = rawParams.split('/');
-        console.log("body", data)
+        // console.log("body", data)
         if (!emailError && !phoneError && nullCheck(data)) {
             fetch(`${proxy()}/api/${id_str}/${paramsList.join('/')}`, {
                 method: "PUT",
@@ -160,7 +160,7 @@ export default () => {
                 body: JSON.stringify({ ...data })
             }).then(res => res.json()).then(res => {
                 const { success, data, fk, content } = res;
-                console.log(res)
+                // console.log(res)
                 const errors = [
                     "primaryConflict",
                     "foreignConflict",
@@ -173,7 +173,7 @@ export default () => {
                         valid = false
                     }
                 }
-                console.log(`VALID: ${valid}`)
+                // console.log(`VALID: ${valid}`)
                 if (valid) {
                     Swal.fire({
                         title: lang["success"],

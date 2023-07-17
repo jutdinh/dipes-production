@@ -232,7 +232,7 @@ export default {
     "select fields": "Chọn trường",
     "select statistic fields ": "Chọn trường thống kê",
     "preview data": "Bản xem trước dữ liệu Excel",
-
+"export.content.error": "Vui lòng chọn ít nhất một trường trước khi xuất.",
 
     "success.add": "Thêm thành công",
     "fail.add": "Thêm thất bại",
@@ -248,6 +248,7 @@ export default {
     "fail.null": "Có một số trường không được bỏ trống",
     "fail.active": "Sản phẩm chưa được kích hoạt",
 
-    "preview.content": "Vui lòng chọn ít nhất một trường để xem dữ liệu mẫu"
+    "preview.content": "Vui lòng chọn ít nhất một trường để xem dữ liệu mẫu",
+    "site map": "Sơ đồ website"
 
 }

@@ -50,7 +50,7 @@ export default (props) => {
     // }
     const changeValue = (e) => {
         const value = e.target.value;
-        console.log(value);
+        // console.log(value);
 
         setData(values[value === 'true' ? 0 : 1]);
         changeTrigger(field, value);

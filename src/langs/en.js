@@ -240,7 +240,7 @@ export default {
 
     "select statistic fields ": "Select statistic fields",
     "preview data": "Excel data preview",
-
+    "export.content.error": "Please select at least one field before exporting.",
     "success.add": "Add success data",
     "fail.add": "Add data failures",
     "success.update": "Successful update",
@@ -254,7 +254,8 @@ export default {
     "fail.delete": "Deletion failure",
     "fail.null": "There are some fields that are not left blank",
     "fail.active": "Product has not been activated yet",
-    "preview.content": "Please select at least one field to view sample data"
+    "preview.content": "Please select at least one field to view sample data",
+    "site map": "Sitemap"
 
 }
 

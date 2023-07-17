@@ -56,7 +56,7 @@ export default (props) => {
                 // fetch(`${proxy()}/apis/apis/table/data/${table_alias}`).then(res => res.json()).then(res => {/table/:table_id/data
                 fetch(`${proxy()}/apis/table/${key.table_id}/data`).then(res => res.json()).then(res => {
                     const { success, data, fields } = res.data;
-                    console.log(res.data)
+                    // console.log(res.data)
                     setForeignData(data)
                     setFields(fields)
 
@@ -81,7 +81,7 @@ export default (props) => {
                     if (foreignData.length == 0) {
                         fetch(`${proxy()}/apis/table/${key.table_id}/data`).then(res => res.json()).then(res => {
                             const { success, data, fields } = res;
-                            console.log(data)
+                            // console.log(data)
                             setForeignData(data.data)
                             setFields(data.fields)
 
@@ -99,8 +99,8 @@ export default (props) => {
     }, [defaultValue]);
 
     const isFieldForeign = () => {
-        console.log(table)
-        console.log(field)
+        // console.log(table)
+        // console.log(field)
         if (table) {
             const { foreign_keys } = table;
             const key = foreign_keys.find(key => key.field_id == field.id)

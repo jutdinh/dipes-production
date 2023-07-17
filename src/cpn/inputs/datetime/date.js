@@ -17,7 +17,7 @@ export default (props) => {
         }
     }, [defaultValue])
 
-    console.log(current)
+    // console.log(current)
 
     return (
         <div className="row justify-content-center">

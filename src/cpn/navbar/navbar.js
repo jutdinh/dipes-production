@@ -113,7 +113,7 @@ export default () => {
                   <li className="navbar-item">
                      <NavLink to="/sitemap" onClick={() => { openTab('/sitemap') }} activeClassName="nav-active">
                         <i class="fa fa-sitemap"></i>
-                        <span>Site map</span>
+                        <span>{lang["site map"]}</span>
                      </NavLink>
                   </li>
              

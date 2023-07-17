@@ -8,7 +8,7 @@ export default () => {
     const _token = localStorage.getItem("_token");
     const [isLoaded, setLoaded] = useState(false)
     const [statusActive, setStatusActive] = useState(false);
-    console.log(auth)
+    // console.log(auth)
     useEffect(() => {
 
         fetch(`${proxy()}/auth/activation/check`, {
@@ -19,7 +19,7 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                console.log(resp)
+                // console.log(resp)
                 if (activated) {
                     setStatusActive(true)
 
@@ -132,7 +132,7 @@ export default () => {
             )
         }
     }
-    console.log(pages)
+    // console.log(pages)
     useEffect(() => {
 
         if (statusActive) {
@@ -170,7 +170,7 @@ export default () => {
                 <div class="row column_title">
                     <div class="col-md-12">
                         <div class="page_title d-flex align-items-center">
-                            <h4>Site map</h4>
+                            <h4>{lang["site map"]}</h4>
                         </div>
                     </div>
                 </div>

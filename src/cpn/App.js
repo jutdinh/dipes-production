@@ -32,7 +32,8 @@ import { SiteMap } from './site-map';
 function App() {
 
   const dispatch = useDispatch()
-
+  const _token = localStorage.getItem("_token");
+  const { lang, proxy, auth } = useSelector(state => state);
 
   useEffect(() => {
     const specialURLs = ["/login", "/signup", "/signout"]
@@ -74,6 +75,31 @@ function App() {
     fetchData();
 
   }, [])  
+
+  useEffect(() => {
+
+    if(_token != undefined){
+
+      fetch(`${proxy()}/auth/token/check`, {
+        headers: {
+          Authorization: _token
+        }
+      })
+        .then(res => res.json())
+        .then(resp => {
+          const { success } = resp;
+          // console.log(resp)
+          if (success) {
+  
+          } else {
+            window.location = "/signout"
+          }
+        })
+    }else
+    {
+      // console.log("a")
+    }
+  }, [_token])
 
   return (
 

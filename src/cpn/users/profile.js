@@ -29,7 +29,7 @@ export default (props) => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                console.log(resp)
+                // console.log(resp)
                 if (activated) {
 
                     setStatusActive(true)
@@ -59,7 +59,7 @@ export default (props) => {
             .then(res => res.json())
             .then(resp => {
                 const { data } = resp;
-                console.log(resp)
+                // console.log(resp)
                 if (data != undefined) {
                     setProfile(data);
                     setEditUser(data)
@@ -68,7 +68,7 @@ export default (props) => {
             })
     }, [])
     useEffect(() => {
-        console.log(profile)
+        // console.log(profile)
     }, [profile])
     const fileInputRef = useRef(null);
     const handleClick = () => {
@@ -136,7 +136,7 @@ export default (props) => {
                 ...editUser
             }
         };
-        console.log(requestBody)
+        // console.log(requestBody)
         fetch(`${proxy()}/auth/self/info`, {
             method: 'PUT',
             headers: {
@@ -149,7 +149,7 @@ export default (props) => {
             .then(res => res.json())
             .then((resp) => {
                 const { success, content } = resp;
-                console.log(resp)
+                // console.log(resp)
                 if (success) {
                     const stringifiedUser = JSON.stringify(requestBody.account)
                     localStorage.setItem("user", stringifiedUser)

@@ -41,7 +41,7 @@ export default () => {
         }).then(res => res.json()).then((resp) => {
             const { success, content, data } = resp;
             const credential = data
-            console.log(resp)
+            // console.log(resp)
 
             if (success) {
                 if (rememberMe) {
@@ -79,7 +79,7 @@ export default () => {
                     .then(res => res.json())
                     .then(resp => {
                         const { success, data, activated, status, content } = resp;
-                        console.log(resp)
+                        // console.log(resp)
                         if (activated) {
                             setStatusActive(true)
                         } else {

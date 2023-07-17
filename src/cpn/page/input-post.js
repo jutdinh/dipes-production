@@ -33,7 +33,7 @@ export default () => {
     const handleEmailError = (error) => {
         setEmailError(error);
     };
-    console.log(pages)
+    // console.log(pages)
 
     useEffect(() => {
 
@@ -86,7 +86,7 @@ export default () => {
 
     const submit = () => {
 
-        console.log(data)
+        // console.log(data)
         if (!emailError && !phoneError && nullCheck(data)) {
             fetch(`${proxy()}${result?.components?.[0]?.api_post}`, {
                 method: "POST",
@@ -98,7 +98,7 @@ export default () => {
 
             }).then(res => res.json()).then(res => {
                 const { success, data, fk, content } = res;
-                console.log(res)
+                // console.log(res)
                 const errors = [
                     "primaryConflict",
                     "foreignConflict",
@@ -112,7 +112,7 @@ export default () => {
                         valid = false
                     }
                 }
-                console.log(`VALID: ${valid}`)
+                // console.log(`VALID: ${valid}`)
                 if (valid) {
                     Swal.fire({
                         title: lang["success"],
