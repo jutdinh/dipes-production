@@ -255,7 +255,11 @@ export default {
     "fail.null": "There are some fields that are not left blank",
     "fail.active": "Product has not been activated yet",
     "preview.content": "Please select at least one field to view sample data",
-    "site map": "Sitemap"
+    "site map": "Sitemap",
+    "not found user": "No users yet",
+    "not found data": "No data yet",
+    "activate.key": "Activation key",
+    "profile.empty": "Please fill in the information"
 
 }
 

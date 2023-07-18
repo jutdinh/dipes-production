@@ -4,7 +4,7 @@ import { useRef } from "react";
 import Swal from 'sweetalert2';
 import { Profile } from '.';
 export default (props) => {
-    const { lang, proxy } = useSelector(state => state);
+    const { lang, proxy, functions } = useSelector(state => state);
 
     const _token = localStorage.getItem("_token");
     const stringifiedUser = localStorage.getItem("user");
@@ -95,8 +95,8 @@ export default (props) => {
 
                         if (success) {
                             Swal.fire({
-                                title: "Thành công!",
-                                text: content,
+                                title: lang["success"],
+                                text: lang["success.update"],
                                 icon: "success",
                                 showConfirmButton: false,
                                 timer: 1500,
@@ -105,8 +105,8 @@ export default (props) => {
                             });
                         } else {
                             Swal.fire({
-                                title: "Thất bại!",
-                                text: content,
+                                title: lang["faild"],
+                                text: lang["fail.update"],
                                 icon: "error",
                                 showConfirmButton: false,
                                 timer: 2000,
@@ -123,8 +123,8 @@ export default (props) => {
         e.preventDefault();
         if (!editUser.fullname || !editUser.role || !editUser.email || !editUser.phone || !editUser.address) {
             Swal.fire({
-                title: "Lỗi!",
-                text: "Vui lòng điền đầy đủ thông tin",
+                title: lang["log.error"],
+                text: lang["profile.empty"],
                 icon: "error",
                 showConfirmButton: false,
                 timer: 2000,
@@ -148,30 +148,14 @@ export default (props) => {
         })
             .then(res => res.json())
             .then((resp) => {
-                const { success, content } = resp;
+                const { success, content, status } = resp;
                 // console.log(resp)
                 if (success) {
                     const stringifiedUser = JSON.stringify(requestBody.account)
                     localStorage.setItem("user", stringifiedUser)
-                    Swal.fire({
-                        title: "Thành công!",
-                        text: content,
-                        icon: "success",
-                        showConfirmButton: false,
-                        timer: 1500,
-                    }).then(function () {
-                        window.location.reload();
-                    });
+                    functions.showApiResponseMessage(status);
                 } else {
-                    Swal.fire({
-                        title: "Thất bại!",
-                        text: content,
-                        icon: "error",
-                        showConfirmButton: false,
-                        timer: 2000,
-                    }).then(function () {
-                        // Không cần reload trang
-                    });
+                    functions.showApiResponseMessage(status);
                 }
             });
     }
@@ -284,11 +268,11 @@ export default (props) => {
                                                         <h3>{profile.fullname || "Administrator"}</h3>
                                                         <ul class="list-unstyled">
                                                             <li class="mt-2">{lang["username"]}: {profile.username}</li>
-                                                            <li class="mt-2">{lang["permission"]}: {profile.role === "ad" ? "Quản trị viên" :
-                                                                profile.role === "pm" ? "Quản lý dự án" :
-                                                                    profile.role === "pd" ? "Người triển khai" :
-                                                                        profile.role === "ps" ? "Người theo dõi dự án" :
-                                                                            profile.role}</li>
+                                                            <li class="mt-2">{lang["permission"]}: {profile.role === "ad" ? lang["administrator"] :
+                                                            profile.role === "pm" ? lang["uprojectmanager"] :
+                                                                profile.role === "pd" ? lang["normal"] :
+                                                                   
+                                                                        profile.role}</li>
                                                             <li class="mt-2"><i class="fa fa-envelope-o"></i> : {profile.email || "nhan.to@mylangroup.com"}</li>
                                                             <li class="mt-2"> <i class="fa fa-phone"></i> : {profile.phone || "0359695554"}</li>
                                                             <li class="mt-2">{lang["address"]}: {profile.address || "Phong Thạnh, Cầu Kè, Trà Vinh"}</li>

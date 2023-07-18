@@ -21,7 +21,7 @@ export default () => {
     const [apiDataName, setApiDataName] = useState([])
     const [dataStatis, setDataStatis] = useState({})
     const [statusActive, setStatusActive] = useState(false);
-
+    const [errorLoadConfig, setErrorLoadConfig] = useState(false);
     const [effectOneCompleted, setEffectOneCompleted] = useState(false);
     const [page, setPage] = useState([]);
 
@@ -38,7 +38,7 @@ export default () => {
                 // console.log(resp)
                 if (activated) {
                     setStatusActive(true)
-                    
+
                 }
                 else {
                     Swal.fire({
@@ -71,10 +71,10 @@ export default () => {
     const layoutId = page.components?.[0].layout_id;
 
     const tableClassName = layoutId === 0 ? "table table-striped" : "table table-hover";
-    console.log(statusActive)
-  
-         useEffect(() => {
-        if ( page && page.components) {
+
+
+    useEffect(() => {
+        if (page && page.components) {
             const id_str = page.components?.[0]?.api_post.split('/')[2];
             // console.log(id_str)
             fetch(`${proxy()}/apis/api/${id_str}/input_info`)
@@ -86,19 +86,18 @@ export default () => {
                         console.log("succcess", data)
                         setDataTables(data.tables)
                         setDataFields(data.body)
-                    }
-                    // setApi(api);
-                
-                      callApi()
-                  
-                   
-                    
+                        setLoaded(true)
 
+                    } 
+
+
+                    // setApi(api);
+                    callApi()
                 })
         }
     }, [page])
-    
-   
+
+
     // console.log(dataFields)
 
     const handleCloseModal = () => {
@@ -111,8 +110,9 @@ export default () => {
     const callApi = (api) => {
         /* this must be fixed */
         fetch(`${proxy()}${page.components?.[0]?.api_get}`).then(res => res.json()).then(res => {
+
             const { success, content, data, fields, statistic } = res;
-            // console.log(res)
+            console.log(res)
             if (success) {
                 const statisticValues = res.statistic.values;
 
@@ -120,8 +120,20 @@ export default () => {
                 setApiDataName(fields)
                 setDataStatis(statisticValues)
                 setLoaded(true)
-            }else {
-                console.log("a")
+            } 
+            else  {
+                setLoaded()
+                Swal.fire({
+                    title: "Thất bại!",
+                    text: "Không tìm thấy cấu hình database và api",
+                    icon: "error",
+                    showConfirmButton: false,
+                    timer: 2000,
+                })
+             
+                setErrorLoadConfig(true)
+
+
             }
 
         })
@@ -129,6 +141,16 @@ export default () => {
     // console.log(dataStatis)
 
     const redirectToInput = () => {
+        if (errorLoadConfig) {
+            Swal.fire({
+                title: "Thất bại!",
+                text: "Không tìm thấy cấu hình database và api",
+                icon: "error",
+                showConfirmButton: false,
+                timer: 2000,
+            })
+            return;
+        }
         // console.log(page)
         const id_str = page.components?.[0]?.api_post.split('/')[2];
         window.location.href = `apis/api/${id_str}/input_info`;
@@ -453,6 +475,9 @@ export default () => {
     // console.log("data", apiData)
     // console.log(dataStatis)
     // console.log(selectedFields)
+console.log(loaded)
+
+console.log("active",statusActive)
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -598,6 +623,7 @@ export default () => {
                                     <h5>{page?.components?.[0]?.component_name}</h5>
                                 </div>
                                 {statusActive ? (
+
                                     <div class="ml-auto" onClick={() => redirectToInput()} data-toggle="modal">
                                         <i class="fa fa-plus-circle icon-ui"></i>
                                     </div>
@@ -616,83 +642,84 @@ export default () => {
                             <div class="table_section padding_infor_info">
                                 <div class="row column1">
                                     {statusActive ? (<>
-                                    {
-                                        loaded ? (
-                                            current && current.length > 0 ? (
-                                                <>
-                                                    <div class="table-responsive">
+                                        {
+                                            loaded ? (
+                                                current && current.length > 0 ? (
+                                                    <>
+                                                        <div class="table-responsive">
 
-                                                        <table className={tableClassName}>
-                                                            <thead>
-                                                                {apiDataName.map((header, index) => (
-                                                                    <th class="font-weight-bold">{header.display_name}</th>
-                                                                ))}
-                                                                <th class=" font-weight-bold align-center">Thao tác</th>
-                                                            </thead>
-                                                            <tbody>
-                                                                {current.map((row) => (
-                                                                    <tr key={row._id}>
-                                                                        {apiDataName.map((header) => (
-                                                                            <td key={header.fomular_alias}>{renderData(header, row)}</td>
-                                                                        ))}
-                                                                        <td class="align-center" style={{ minWidth: "80px" }}>
-                                                                            <i class="fa fa-edit size pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
-                                                                            <i class="fa fa-trash-o size pointer icon-margin icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
-                                                                        </td>
-                                                                    </tr>
-                                                                ))}
-                                                                {dataStatis.map((data) => (
-                                                                    <tr>
-                                                                        <td class="font-weight-bold" colspan={`${apiDataName.length + 1}`} style={{ textAlign: 'right' }}>{data.display_name}: {formatNumberWithCommas(data.result)} </td>
-                                                                    </tr>
-                                                                ))}
-                                                            </tbody>
-                                                        </table>
-                                                        <div className="d-flex justify-content-between align-items-center">
-                                                            <p>{lang["show"]} {indexOfFirst + 1}-{Math.min(indexOfLast, apiData.length)} {lang["of"]} {apiData.length} {lang["results"]}</p>
-                                                            <nav aria-label="Page navigation example">
-                                                                <ul className="pagination mb-0">
-                                                                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                                        <button className="page-link" onClick={() => paginate(currentPage - 1)}>
-                                                                            &laquo;
-                                                                        </button>
-                                                                    </li>
-                                                                    {Array(totalPages).fill().map((_, index) => (
-                                                                        <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                                                                            <button className="page-link" onClick={() => paginate(index + 1)}>
-                                                                                {index + 1}
+                                                            <table className={tableClassName}>
+                                                                <thead>
+                                                                    {apiDataName.map((header, index) => (
+                                                                        <th class="font-weight-bold">{header.display_name}</th>
+                                                                    ))}
+                                                                    <th class=" font-weight-bold align-center">Thao tác</th>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {current.map((row) => (
+                                                                        <tr key={row._id}>
+                                                                            {apiDataName.map((header) => (
+                                                                                <td key={header.fomular_alias}>{renderData(header, row)}</td>
+                                                                            ))}
+                                                                            <td class="align-center" style={{ minWidth: "80px" }}>
+                                                                                <i class="fa fa-edit size pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
+                                                                                <i class="fa fa-trash-o size pointer icon-margin icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                    {dataStatis.map((data) => (
+                                                                        <tr>
+                                                                            <td class="font-weight-bold" colspan={`${apiDataName.length + 1}`} style={{ textAlign: 'right' }}>{data.display_name}: {formatNumberWithCommas(data.result)} </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                            <div className="d-flex justify-content-between align-items-center">
+                                                                <p>{lang["show"]} {indexOfFirst + 1}-{Math.min(indexOfLast, apiData.length)} {lang["of"]} {apiData.length} {lang["results"]}</p>
+                                                                <nav aria-label="Page navigation example">
+                                                                    <ul className="pagination mb-0">
+                                                                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                                            <button className="page-link" onClick={() => paginate(currentPage - 1)}>
+                                                                                &laquo;
                                                                             </button>
                                                                         </li>
-                                                                    ))}
-                                                                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                                                                        <button className="page-link" onClick={() => paginate(currentPage + 1)}>
-                                                                            &raquo;
-                                                                        </button>
-                                                                    </li>
-                                                                </ul>
-                                                            </nav>
+                                                                        {Array(totalPages).fill().map((_, index) => (
+                                                                            <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                                                <button className="page-link" onClick={() => paginate(index + 1)}>
+                                                                                    {index + 1}
+                                                                                </button>
+                                                                            </li>
+                                                                        ))}
+                                                                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                                            <button className="page-link" onClick={() => paginate(currentPage + 1)}>
+                                                                                &raquo;
+                                                                            </button>
+                                                                        </li>
+                                                                    </ul>
+                                                                </nav>
+                                                            </div>
                                                         </div>
+                                                    </>
+                                                ) : (
+                                                    <div class="list_cont ">
+                                                        <p>Chưa có dữ liệu</p>
                                                     </div>
-                                                </>
+                                                )
                                             ) : (
-                                                <div class="list_cont ">
-                                                    <p>Chưa có dữ liệu</p>
-                                                </div>
+                                                // <div class="d-flex justify-content-center align-items-center w-100 responsive-div" >
+                                                //     {/* {lang["projects.noprojectfound"]} */}
+                                                //     <img width={350} className="scaled-hover-target" src="/images/icon/loading.gif" ></img>
+
+                                                // </div>
+                                                <div>{lang["not found data"]}</div>
                                             )
-                                        ) : (
-                                            <div class="d-flex justify-content-center align-items-center w-100 responsive-div" >
-                                                {/* {lang["projects.noprojectfound"]} */}
-                                                <img width={350} className="scaled-hover-target" src="/images/icon/loading.gif" ></img>
-
-                                            </div>
-                                        )
-                                    }
+                                        }
                                     </>
-                                    ): null}
-                                    
-                                    
+                                    ) : null}
 
-                            
+
+
+
                                 </div>
                             </div>
                         </div>

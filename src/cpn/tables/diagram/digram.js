@@ -2,18 +2,51 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useState, useEffect } from "react";
 import DiagramTable from './diagram-table';
 import $ from 'jquery';
-
+import Swal from 'sweetalert2';
 
 
 export default () => {
 
     const { tables, fields, offsetPoints, tableOffsets } = useSelector(state => state.database);
-
+    const _token = localStorage.getItem("_token");
+    const { lang, proxy, auth } = useSelector(state => state);
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
     const [tbOffsets, setTableOffsets] = useState([]);
     const [offsets, setOffsets] = useState([])
+    const [statusActive, setStatusActive] = useState(false);
+    useEffect(() => {
 
+        fetch(`${proxy()}/auth/activation/check`, {
+            headers: {
+                Authorization: _token
+            }
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success, data, activated, status, content } = resp;
+                // console.log(resp)
+                if (activated) {
+                    setStatusActive(true)
+
+                }
+                else {
+                    Swal.fire({
+                        title: lang["faild"],
+                        text: lang["fail.active"],
+                        icon: "error",
+                        showConfirmButton: true,
+
+                    }).then(function () {
+                        // window.location.reload();
+                    });
+                    setStatusActive(false)
+                }
+
+
+            })
+
+    }, [])
     const serializeData = () => {
         const serializedTables = tables.map(table => {
             const tableFields = fields.filter(field => field.table_id == table.table_id);
@@ -111,14 +144,25 @@ export default () => {
         return [];
     }
     return (
+
         <div className="_rel">
             <div className="_rel _z-index-1">
                 <span className="_block _text-left _text-16-px d-none">Diagram {offsets.length}</span>
-                <div className="_flex _flex-wrap" id="hdxjhdksrhkhg">
-                    {serializeData().map(table =>
-                        <DiagramTable table={table} fields={getTableFields(table)} />
-                    )}
-                </div>
+                {statusActive ? (
+                    <>
+                        {tables && tables.length > 0 ? (
+                            <>
+                                <div className="_flex _flex-wrap" id="hdxjhdksrhkhg">
+                                    {serializeData().map(table =>
+                                        <DiagramTable table={table} fields={getTableFields(table)} />
+                                    )}
+                                </div>
+                            </>
+                        ) : <div>{lang["not found data"]}</div>}
+                    </>
+                ) : null}
+
+
             </div>
             <div className="_abs _t-0 _l-0 _z-index-0" style={{ width, height }}>
                 <svg width={width} height={height}>

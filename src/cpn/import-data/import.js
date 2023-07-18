@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import { Tables } from ".";
 export default () => {
     const { lang, proxy, auth, functions } = useSelector(state => state);
-
+    const [statusActive, setStatusActive] = useState(false);
     const _token = localStorage.getItem("_token");
     const { project_id, version_id } = useParams();
     let navigate = useNavigate();
@@ -30,7 +30,7 @@ export default () => {
                 try {
                     const json = JSON.parse(e.target.result);
                     setFile(file)
-                    setUploadedJson(json);                    
+                    setUploadedJson(json);
                 } catch (error) {
                     Swal.fire({
                         title: lang["faild"],
@@ -48,7 +48,7 @@ export default () => {
     };
 
     const importData = async () => {
-        
+
         if (!uploadedJson) {
             // al.failure("Thất bại", "Vui lòng tải lên một file JSON trước khi import");
             return;
@@ -61,7 +61,7 @@ export default () => {
                 },
                 body: JSON.stringify(uploadedJson),
             });
-        
+
             if (response.ok) {
                 Swal.fire({
                     title: lang["success"],
@@ -180,6 +180,39 @@ export default () => {
             </div>
         );
     };
+
+    useEffect(() => {
+
+        fetch(`${proxy()}/auth/activation/check`, {
+            headers: {
+                Authorization: _token
+            }
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success, data, activated, status, content } = resp;
+                // console.log(resp)
+                if (activated) {
+                    setStatusActive(true)
+
+                }
+                else {
+                    Swal.fire({
+                        title: lang["faild"],
+                        text: lang["fail.active"],
+                        icon: "error",
+                        showConfirmButton: true,
+
+                    }).then(function () {
+                        // window.location.reload();
+                    });
+                    setStatusActive(false)
+                }
+
+
+            })
+
+    }, [])
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -190,16 +223,18 @@ export default () => {
                         </div>
                     </div>
                 </div>
-                <div class="row margin_top_30">
-                    <div class="col-md-2"></div>
-                    <div class="col-md-8">
-                        <div class="white_shd full ">
-                            <div class="full graph_head">
-                                <div class="heading1 margin_0">
-                                    <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3 mb-2"></i></a>Import</h5>
-                                </div>
-                            </div>
-                            {/* <div class="full price_table padding_infor_info" style={{ display: 'flex', flexDirection: 'column', minHeight: '40vh' }}>
+                {statusActive ? (
+                    <>
+                        <div class="row margin_top_30">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8">
+                                <div class="white_shd full ">
+                                    <div class="full graph_head">
+                                        <div class="heading1 margin_0">
+                                            <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3 mb-2"></i></a>Import</h5>
+                                        </div>
+                                    </div>
+                                    {/* <div class="full price_table padding_infor_info" style={{ display: 'flex', flexDirection: 'column', minHeight: '40vh' }}>
                                 <div class="row" style={{ marginBottom: 'auto' }}>
                                     <div class="col-md-12 mt-4">
                                         <label>Tên Tệp: {file.name} </label>
@@ -240,50 +275,53 @@ export default () => {
                                     </div>
                                 </div>
                             </div> */}
-                            <div class="full price_table padding_infor_info" style={{ display: 'flex', flexDirection: 'column', minHeight: '40vh' }}>
-                                <div class="row" style={{ marginBottom: 'auto' }}>
-                                    <div class="col-md-12 mt-4">
-                                        <label>{lang["file name"]}: {file.name} </label>
-                                    </div>
-                                    <div class="col-md-12 mt-4">
-                                        <label>{lang["type file"]}:
-                                            {uploadedJson ? (
-                                                getFileType() === "Không đúng định dạng, vui lòng chọn lại !" ? (
-                                                    <span className="text-red"> {getFileType()}</span>
+                                    <div class="full price_table padding_infor_info" style={{ display: 'flex', flexDirection: 'column', minHeight: '40vh' }}>
+                                        <div class="row" style={{ marginBottom: 'auto' }}>
+                                            <div class="col-md-12 mt-4">
+                                                <label>{lang["file name"]}: {file.name} </label>
+                                            </div>
+                                            <div class="col-md-12 mt-4">
+                                                <label>{lang["type file"]}:
+                                                    {uploadedJson ? (
+                                                        getFileType() === "Không đúng định dạng, vui lòng chọn lại !" ? (
+                                                            <span className="text-red"> {getFileType()}</span>
+                                                        ) : (
+                                                            getFileType()
+                                                        )
+                                                    ) : null}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12" style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'auto' }}>
+                                            <CustomFileInput onChange={handleFileUpload} />
+                                            {uploadedJson && (
+                                                getFileType() == "Api" ? (
+                                                    <button
+                                                        onClick={importAPI}
+                                                        className="btn btn-primary ml-1"
+                                                    >
+                                                        Import API
+                                                    </button>
+                                                ) : getFileType() == "Database" ? (
+                                                    <button
+                                                        onClick={importData}
+                                                        className="btn btn-primary"
+                                                    >
+                                                        Import Database
+                                                    </button>
                                                 ) : (
-                                                    getFileType()
+                                                    <p className="text-red-500">
+                                                    </p>
                                                 )
-                                            ) : null}
-                                        </label>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-12" style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'auto' }}>
-                                    <CustomFileInput onChange={handleFileUpload} />
-                                    {uploadedJson && (
-                                        getFileType() == "Api" ? (
-                                            <button
-                                                onClick={importAPI}
-                                                className="btn btn-primary ml-1"
-                                            >
-                                                Import API
-                                            </button>
-                                        ) : getFileType() == "Database" ? (
-                                            <button
-                                                onClick={importData}
-                                                className="btn btn-primary"
-                                            >
-                                                Import Database
-                                            </button>
-                                        ) : (
-                                            <p className="text-red-500">
-                                            </p>
-                                        )
-                                    )}
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </>
+                ) : null}
+
             </div>
         </div>
     )

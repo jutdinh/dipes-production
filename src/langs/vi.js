@@ -249,6 +249,9 @@ export default {
     "fail.active": "Sản phẩm chưa được kích hoạt",
 
     "preview.content": "Vui lòng chọn ít nhất một trường để xem dữ liệu mẫu",
-    "site map": "Sơ đồ website"
-
+    "site map": "Sơ đồ website",
+    "not found user": "Chưa có người dùng",
+    "not found data": "Chưa có dữ liệu",
+    "activate.key": "Khóa kích hoạt",
+    "profile.empty": "Vui lòng điền đầy đủ thông tin"
 }
