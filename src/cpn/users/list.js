@@ -89,6 +89,9 @@ export default (props) => {
                         text: lang["fail.active"],
                         icon: "error",
                         showConfirmButton: true,
+                        customClass: {
+                            confirmButton: 'swal2-confirm my-confirm-button-class'
+                        }
 
                     }).then(function () {
                         // window.location.reload();
@@ -212,14 +215,37 @@ export default (props) => {
     // Update user
     const submitUpdate = (e) => {
         e.preventDefault();
-        if (!editUser.fullname || !editUser.role || !editUser.email || !editUser.phone || !editUser.address) {
-            Swal.fire({
-                title: "Lỗi!",
-                text: "Vui lòng điền đầy đủ thông tin",
-                icon: "error",
-                showConfirmButton: false,
-                timer: 2000,
-            });
+    
+
+        
+        const errors = {};
+        
+        
+        if (!editUser.fullname) {
+            errors.fullname = lang["error.fullname"];
+        }
+        if (!editUser.role) {
+            errors.role = lang["error.permission"];
+        }
+
+        if (!editUser.email) {
+            errors.email = lang["error.email"];
+        } else if (!isValidEmail(editUser.email)) {
+            errors.email = lang["error.vaildemail"];
+        }
+        if (!editUser.phone) {
+            errors.phone = lang["error.phone"];
+        }
+        else if (!isValidPhone(editUser.phone)) {
+            errors.phone = lang["error.vaildphone"];
+        }
+        if (!editUser.address) {
+            errors.address = lang["error.address"];
+        }
+        
+
+        if (Object.keys(errors).length > 0) {
+            setErrorMessagesedit(errors);
             return;
         }
         const requestBody = {
@@ -326,7 +352,7 @@ export default (props) => {
                                                         <input type="text" class="form-control" value={user.fullname} onChange={
                                                             (e) => { setUser({ ...user, fullname: e.target.value }) }
                                                         } placeholder={lang["p.fullname"]} />
-                                                        {errorMessagesadd.username && <span class="error-message">{errorMessagesadd.fullname}</span>}
+                                                        {errorMessagesadd.fullname && <span class="error-message">{errorMessagesadd.fullname}</span>}
                                                     </div>
                                                     <div class="form-group col-lg-6">
                                                         <label class="font-weight-bold text-small" for="firstname">{lang["username"]}<span className='red_star ml-1'>*</span></label>
@@ -425,7 +451,7 @@ export default (props) => {
                                                         <input type="text" class="form-control" value={editUser.fullname} onChange={
                                                             (e) => { setEditUser({ ...editUser, fullname: e.target.value }) }
                                                         } placeholder={lang["p.fullname"]} />
-                                                        {errorMessagesedit.username && <span class="error-message">{errorMessagesedit.fullname}</span>}
+                                                        {errorMessagesedit.fullname && <span class="error-message">{errorMessagesedit.fullname}</span>}
                                                     </div>
                                                     <div class="form-group col-lg-12">
                                                         <label class="font-weight-bold text-small" for="email">{lang["email"]}<span class="red_star ml-1">*</span></label>

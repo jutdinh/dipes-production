@@ -19,6 +19,14 @@ export default (props) => {
         { id: 2, label: "Người triển khai ( Implementation Staff )", value: "pd" },
         { id: 3, label: "Người theo dõi dự án ( Monitor Staff )", value: "ps" },
     ]
+    const isValidEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+    const isValidPhone = (phone) => {
+        const phoneRegex = /^[0-9]{10}$/;
+        return phoneRegex.test(phone);
+    };
     useEffect(() => {
 
         fetch(`${proxy()}/auth/activation/check`, {
@@ -121,14 +129,34 @@ export default (props) => {
     };
     const submitUpdate = (e) => {
         e.preventDefault();
-        if (!editUser.fullname || !editUser.role || !editUser.email || !editUser.phone || !editUser.address) {
-            Swal.fire({
-                title: lang["log.error"],
-                text: lang["profile.empty"],
-                icon: "error",
-                showConfirmButton: false,
-                timer: 2000,
-            });
+        const errors = {};
+
+
+        if (!editUser.fullname) {
+            errors.fullname = lang["error.fullname"];
+        }
+        if (!editUser.role) {
+            errors.role = lang["error.permission"];
+        }
+
+        if (!editUser.email) {
+            errors.email = lang["error.email"];
+        } else if (!isValidEmail(editUser.email)) {
+            errors.email = lang["error.vaildemail"];
+        }
+        if (!editUser.phone) {
+            errors.phone = lang["error.phone"];
+        }
+        else if (!isValidPhone(editUser.phone)) {
+            errors.phone = lang["error.vaildphone"];
+        }
+        if (!editUser.address) {
+            errors.address = lang["error.address"];
+        }
+
+
+        if (Object.keys(errors).length > 0) {
+            setErrorMessagesedit(errors);
             return;
         }
         const requestBody = {
@@ -179,7 +207,10 @@ export default (props) => {
                                         <div className="heading1 margin_0">
                                             <h5>{lang["profile user"]}</h5>
                                         </div>
-                                        <i className="fa fa-edit size pointer" data-toggle="modal" data-target="#editMember"></i>
+                                        {user.role !== "uad" ? (
+                                            <i className="fa fa-edit size pointer" data-toggle="modal" data-target="#editMember"></i>
+                                        ) : null}
+
                                     </div>
                                     <div class="modal fade" tabindex="-1" role="dialog" id="editMember" aria-labelledby="edit" aria-hidden="true">
                                         <div class="modal-dialog modal-lg modal-dialog-center" role="document">
@@ -197,7 +228,7 @@ export default (props) => {
                                                                 <input type="text" class="form-control" value={editUser.fullname} onChange={
                                                                     (e) => { setEditUser({ ...editUser, fullname: e.target.value }) }
                                                                 } placeholder={lang["p.fullname"]} />
-                                                                {errorMessagesedit.username && <span class="error-message">{errorMessagesedit.fullname}</span>}
+                                                                {errorMessagesedit.fullname && <span class="error-message">{errorMessagesedit.fullname}</span>}
                                                             </div>
 
 
@@ -243,10 +274,6 @@ export default (props) => {
                                             </div>
                                         </div>
                                     </div>
-
-
-
-
                                 </div>
                                 <div class="full price_table padding_infor_info">
                                     <div class="row">
@@ -269,9 +296,8 @@ export default (props) => {
                                                         <ul class="list-unstyled">
                                                             <li class="mt-2">{lang["username"]}: {profile.username}</li>
                                                             <li class="mt-2">{lang["permission"]}: {profile.role === "ad" ? lang["administrator"] :
-                                                            profile.role === "pm" ? lang["uprojectmanager"] :
-                                                                profile.role === "pd" ? lang["normal"] :
-                                                                   
+                                                                profile.role === "pm" ? lang["uprojectmanager"] :
+                                                                    profile.role === "pd" ? lang["normal"] :
                                                                         profile.role}</li>
                                                             <li class="mt-2"><i class="fa fa-envelope-o"></i> : {profile.email || "nhan.to@mylangroup.com"}</li>
                                                             <li class="mt-2"> <i class="fa fa-phone"></i> : {profile.phone || "0359695554"}</li>

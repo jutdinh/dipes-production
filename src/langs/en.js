@@ -227,7 +227,7 @@ export default {
     "faild.content": "Data import failure",
     "format": "Invalid file format",
     "error": "Error",
-    "faild.format": "Incorrect formatting, please select again!",
+    "faild.format": " Incorrect formatting, please select again!",
     "select file": "Choose File",
     "file name": "Filename",
     "type file": "File format",
@@ -259,7 +259,13 @@ export default {
     "not found user": "No users yet",
     "not found data": "No data yet",
     "activate.key": "Activation key",
-    "profile.empty": "Please fill in the information"
+    "profile.empty": "Please fill in the information",
+    "create": "Add",
+    "update": "Update",
+    "not found config": "No Database and Api configuration found",
+    "not found update": "No update features found",
+    "api": " Api Configuration",
+    "database": " Database Configuration"
 
 }
 

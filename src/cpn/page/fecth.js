@@ -46,6 +46,9 @@ export default () => {
                         text: lang["fail.active"],
                         icon: "error",
                         showConfirmButton: true,
+                        customClass: {
+                            confirmButton: 'swal2-confirm my-confirm-button-class'
+                        }
 
                     }).then(function () {
                         // window.location.reload();
@@ -81,9 +84,9 @@ export default () => {
                 .then(res => res.json())
                 .then(res => {
                     const { data, success, content } = res;
-                    console.log(res)
+                    // console.log(res)
                     if (success) {
-                        console.log("succcess", data)
+                        // console.log("succcess", data)
                         setDataTables(data.tables)
                         setDataFields(data.body)
                         setLoaded(true)
@@ -112,7 +115,7 @@ export default () => {
         fetch(`${proxy()}${page.components?.[0]?.api_get}`).then(res => res.json()).then(res => {
 
             const { success, content, data, fields, statistic } = res;
-            console.log(res)
+            // console.log(res)
             if (success) {
                 const statisticValues = res.statistic.values;
 
@@ -123,13 +126,21 @@ export default () => {
             } 
             else  {
                 setLoaded()
-                Swal.fire({
-                    title: "Thất bại!",
-                    text: "Không tìm thấy cấu hình database và api",
-                    icon: "error",
-                    showConfirmButton: false,
-                    timer: 2000,
-                })
+                if(statusActive)
+                {
+                    Swal.fire({
+                        title: lang["faild"],
+                        text: lang["not found config"],
+                        icon: "error",
+                        showConfirmButton: true,
+                        customClass: {
+                            confirmButton: 'swal2-confirm my-confirm-button-class'
+                        }
+                    })
+                    return;
+                }
+                
+                
              
                 setErrorLoadConfig(true)
 
@@ -143,11 +154,13 @@ export default () => {
     const redirectToInput = () => {
         if (errorLoadConfig) {
             Swal.fire({
-                title: "Thất bại!",
-                text: "Không tìm thấy cấu hình database và api",
+                title: lang["faild"],
+                text: lang["not found config"],
                 icon: "error",
-                showConfirmButton: false,
-                timer: 2000,
+                showConfirmButton: true,
+                customClass: {
+                    confirmButton: 'swal2-confirm my-confirm-button-class'
+                }
             })
             return;
         }
@@ -208,10 +221,10 @@ export default () => {
 
 
             } else {
-                console.log('Không tìm thấy đối tượng nào có id trong primaryKeys');
+                // console.log('Không tìm thấy đối tượng nào có id trong primaryKeys');
             }
         } else {
-            console.log('Không tìm thấy primaryKeys');
+            // console.log('Không tìm thấy primaryKeys');
         }
 
         // console.log(newParams);
@@ -296,8 +309,8 @@ export default () => {
             }
         } else {
             Swal.fire({
-                title: "Thất bại!",
-                text: "Không tìm thấy tính năng cập nhật",
+                title: lang["faild"],
+                text: lang["not found update"],
                 icon: "error",
                 showConfirmButton: false,
                 timer: 2000,
@@ -372,6 +385,7 @@ export default () => {
     }
 
     const exportToCSV = (csvData) => {
+        
         const selectedHeaders = apiDataName.filter(({ fomular_alias }) => selectedFields.includes(fomular_alias));
         const titleRow = { [selectedHeaders[0].fomular_alias]: 'DIPES PRODUCTION' };
         const emptyRow = selectedHeaders.reduce((obj, header, i) => {
@@ -463,7 +477,7 @@ export default () => {
             };
         }
 
-        XLSX.writeFile(wb, `Project-${(new Date()).getTime()}.xlsx`);
+        XLSX.writeFile(wb, `DIPES-PRODUCTION-${(new Date()).getTime()}-Export.xlsx`);
         setSelectedFields([]);
         setSelectedStats([]);
     }
@@ -475,9 +489,9 @@ export default () => {
     // console.log("data", apiData)
     // console.log(dataStatis)
     // console.log(selectedFields)
-console.log(loaded)
+// console.log(loaded)
 
-console.log("active",statusActive)
+// console.log("active",statusActive)
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -606,6 +620,9 @@ console.log("active",statusActive)
                                                 text: lang["export.content.error"],
                                                 icon: "error",
                                                 showConfirmButton: true,
+                                                customClass: {
+                                                    confirmButton: 'swal2-confirm my-confirm-button-class'
+                                                }
                                             })
                                         } else {
                                             exportToCSV(current);
@@ -716,10 +733,6 @@ console.log("active",statusActive)
                                         }
                                     </>
                                     ) : null}
-
-
-
-
                                 </div>
                             </div>
                         </div>

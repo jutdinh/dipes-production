@@ -37,6 +37,9 @@ export default () => {
                         text: lang["format"],
                         icon: "error",
                         showConfirmButton: true,
+                        customClass: {
+                            confirmButton: 'swal2-confirm my-confirm-button-class'
+                        }
 
                     })
 
@@ -80,6 +83,9 @@ export default () => {
                     text: lang["faild.content"],
                     icon: "error",
                     showConfirmButton: true,
+                    customClass: {
+                        confirmButton: 'swal2-confirm my-confirm-button-class'
+                    }
                 })
             }
         } catch (error) {
@@ -89,6 +95,9 @@ export default () => {
                 text: lang["faild.content"],
                 icon: "error",
                 showConfirmButton: true,
+                customClass: {
+                    confirmButton: 'swal2-confirm my-confirm-button-class'
+                }
             })
         }
     };
@@ -125,6 +134,9 @@ export default () => {
                     text: lang["faild.content"],
                     icon: "error",
                     showConfirmButton: true,
+                    customClass: {
+                        confirmButton: 'swal2-confirm my-confirm-button-class'
+                    }
 
                 })
             }
@@ -135,6 +147,9 @@ export default () => {
                 text: lang["faild.content"],
                 icon: "error",
                 showConfirmButton: true,
+                customClass: {
+                    confirmButton: 'swal2-confirm my-confirm-button-class'
+                }
 
             })
         }
@@ -146,11 +161,11 @@ export default () => {
 
         const isApi = keys.filter(key => key == "apis")[0];
         if (isApi) {
-            return "Api"
+            return lang["api"]
         } else {
             const isDatabase = keys.filter(key => key == "database")[0];
             if (isDatabase) {
-                return "Database"
+                return lang["database"]
             } else {
                 return lang["faild.format"]
             }
@@ -202,6 +217,9 @@ export default () => {
                         text: lang["fail.active"],
                         icon: "error",
                         showConfirmButton: true,
+                        customClass: {
+                            confirmButton: 'swal2-confirm my-confirm-button-class'
+                        }
 
                     }).then(function () {
                         // window.location.reload();
@@ -278,13 +296,13 @@ export default () => {
                                     <div class="full price_table padding_infor_info" style={{ display: 'flex', flexDirection: 'column', minHeight: '40vh' }}>
                                         <div class="row" style={{ marginBottom: 'auto' }}>
                                             <div class="col-md-12 mt-4">
-                                                <label>{lang["file name"]}: {file.name} </label>
+                                                <label><b class="font-weight-bold">{lang["file name"]}:</b> {file.name} </label>
                                             </div>
                                             <div class="col-md-12 mt-4">
-                                                <label>{lang["type file"]}:
+                                                <label><b class="font-weight-bold">{lang["type file"]}:</b>
                                                     {uploadedJson ? (
-                                                        getFileType() === "Không đúng định dạng, vui lòng chọn lại !" ? (
-                                                            <span className="text-red"> {getFileType()}</span>
+                                                        getFileType() === " Không đúng định dạng, vui lòng chọn lại !" ? (
+                                                            <span className="text-red"> { getFileType()}</span>
                                                         ) : (
                                                             getFileType()
                                                         )
@@ -295,14 +313,14 @@ export default () => {
                                         <div class="col-md-12" style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'auto' }}>
                                             <CustomFileInput onChange={handleFileUpload} />
                                             {uploadedJson && (
-                                                getFileType() == "Api" ? (
+                                                getFileType() === lang["api"] ? (
                                                     <button
                                                         onClick={importAPI}
                                                         className="btn btn-primary ml-1"
                                                     >
                                                         Import API
                                                     </button>
-                                                ) : getFileType() == "Database" ? (
+                                                ) : getFileType() === lang["database"] ? (
                                                     <button
                                                         onClick={importData}
                                                         className="btn btn-primary"

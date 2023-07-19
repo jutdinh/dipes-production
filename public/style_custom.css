@@ -1,3 +1,22 @@
+.my-confirm-button-class{
+    background-color: rgb(209, 72, 81);
+} 
+.swal2-styled.swal2-confirm {
+    border: 0;
+    border-radius: .25em;
+    background: initial;
+    background-color: rgb(209, 72, 81);
+    color: #fff;
+    font-size: 1em;
+}
+.swal2-styled.swal2-confirm.my-confirm-button-class {
+    border: 0;
+    border-radius: .25em;
+    background: initial;
+    background-color: rgb(209, 72, 81);
+    color: #fff;
+    font-size: 1em;
+}
 .sidebar_user_info_custom {
     padding: 5px 15px;
     padding-top: 6px;

@@ -220,7 +220,7 @@ export default {
     "faild.content": "Import dữ liệu thất bại",
     "format": "Định dạng tệp không hợp lệ",
     "error": "Lỗi",
-    "faild.format": "Không đúng định dạng, vui lòng chọn lại!",
+    "faild.format": " Không đúng định dạng, vui lòng chọn lại!",
     "select file": "Chọn tệp",
     "file name": "Tên tệp",
     "type file": "Dạng tệp",
@@ -253,5 +253,11 @@ export default {
     "not found user": "Chưa có người dùng",
     "not found data": "Chưa có dữ liệu",
     "activate.key": "Khóa kích hoạt",
-    "profile.empty": "Vui lòng điền đầy đủ thông tin"
+    "profile.empty": "Vui lòng điền đầy đủ thông tin",
+    "create": "Thêm mới",
+    "update": "Cập nhật",
+    "not found config": "Không tìm thấy cấu hình Database và Api",
+    "not found update": "Không tìm thấy tính năng cập nhật",
+    "api": " Cấu hình Api",
+    "database": " Cấu hình Database"
 }

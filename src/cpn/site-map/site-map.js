@@ -29,6 +29,9 @@ export default () => {
                         text: lang["fail.active"],
                         icon: "error",
                         showConfirmButton: true,
+                        customClass: {
+                            confirmButton: 'swal2-confirm my-confirm-button-class'
+                        }
 
                     }).then(function () {
                         // window.location.reload();

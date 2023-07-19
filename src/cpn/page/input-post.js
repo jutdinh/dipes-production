@@ -165,7 +165,7 @@ export default () => {
                 <div class="row column_title">
                     <div class="col-md-12">
                         <div class="page_title">
-                            <h4>Quản lý dữ liệu</h4>
+                            <h4>{lang["data management"]}</h4>
                         </div>
                     </div>
                 </div>
@@ -177,7 +177,7 @@ export default () => {
                                 <div class="heading1 margin_0 ">
                                     {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
 
-                                    <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{result?.title} &gt;&gt; Thêm mới</h5>
+                                    <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{result?.title} <i class="fa fa-chevron-right"></i> {lang["create"]}</h5>
                                 </div>
                                 {/* <div class="ml-auto">
                                 <i class="fa fa-newspaper-o icon-ui"></i>
