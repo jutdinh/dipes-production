@@ -229,7 +229,7 @@ export default {
     "error": "Error",
     "faild.format": " Incorrect formatting, please select again!",
     "select file": "Choose File",
-    "file name": "Filename",
+    "file name": "File name",
     "type file": "File format",
     "create account": "Create account",
     "manage data": "Manage Data",

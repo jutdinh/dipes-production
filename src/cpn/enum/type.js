@@ -1,18 +1,4 @@
-// export const ValidTypeEnum = Object.freeze({
-//     INT: { value: "INT", label: "INT" },
-//     INT_UNSIGNED: { value: "INT UNSIGNED", label: "INT UNSIGNED" },
-//     BIGINT: { value: "BIGINT", label: "BIGINT" },
-//     BIGINT_UNSIGNED: { value: "BIGINT UNSIGNED", label: "BIGINT UNSIGNED" },
-//     BOOL: { value: "BOOL", label: "BOOL" },
-//     DECIMAL: { value: "DECIMAL", label: "DECIMAL" },
-//     DECIMAL_UNSIGNED: { value: "DECIMAL UNSIGNED", label: "DECIMAL UNSIGNED" },
-//     DATE: { value: "DATE", label: "DATE" },
-//     DATETIME: { value: "DATETIME", label: "DATETIME" },
-//     TEXT: { value: "TEXT", label: "TEXT" },
-//     CHAR: { value: "CHAR", label: "CHAR" },
-//     EMAIL: { value: "EMAIL", label: "EMAIL" },
-//     PHONE: { value: "PHONE", label: "PHONE" },
-// });
+
 
 export const ValidTypeEnum = Object.freeze({
     INT: { id: 1, name: "INT", type: "int", limit: {

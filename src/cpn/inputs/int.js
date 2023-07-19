@@ -154,7 +154,7 @@ export default (props) => {
                                     placeholder=""
                                     onChange={changeRawData}
                                     defaultValue={defaultValue == undefined ? current : defaultValue}
-                                    readOnly={true}
+                                    readOnly={field.AUTO_INCREMENT ? true : false}
                                 />
                             </div>
                         </form>
