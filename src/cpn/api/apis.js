@@ -33,22 +33,22 @@ export default () => {
                 }
             })
     }, [])
-    console.log(apis)
+    // console.log(apis)
 
     const handleGetApi = (apiid) => {
-        console.log("api", apiid)
+        // console.log("api", apiid)
     }
 
 
     const handleUpdateStatus = (apiid) => {
-        console.log("api", apiid)
+        // console.log("api", apiid)
         const newStatus = !apiid.status;
         const requestBody = {
             version_id: version_id,
             api: { ...apiid, status: newStatus }
         };
 
-        console.log(requestBody)
+        // console.log(requestBody)
         fetch(`${proxy}/apis/api`, {
             method: 'PUT',
             headers: {
@@ -86,12 +86,12 @@ export default () => {
 
     }
     const handleDeleteApi = (apiid) => {
-        console.log(apiid)
+        // console.log(apiid)
         const requestBody = {
             version_id: version_id,
             api_id: apiid.api_id
         };
-        console.log(requestBody)
+        // console.log(requestBody)
         Swal.fire({
             title: 'Xác nhận xóa',
             text: 'Bạn có chắc chắn muốn xóa api này?',
@@ -166,7 +166,7 @@ export default () => {
         // window.location.href = `tables`;
     };
     const updateApi = (apiData) => {
-        console.log(apiData)
+        // console.log(apiData)
         window.location.href = `/projects/${version_id}/apis/update/${apiData.api_id}`;
         // window.location.href = `tables`;
     };
