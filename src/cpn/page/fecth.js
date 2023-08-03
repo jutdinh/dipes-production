@@ -91,7 +91,7 @@ export default () => {
                         setDataFields(data.body)
                         setLoaded(true)
 
-                    } 
+                    }
 
 
                     // setApi(api);
@@ -123,11 +123,10 @@ export default () => {
                 setApiDataName(fields)
                 setDataStatis(statisticValues)
                 setLoaded(true)
-            } 
-            else  {
+            }
+            else {
                 setLoaded()
-                if(statusActive)
-                {
+                if (statusActive) {
                     Swal.fire({
                         title: lang["faild"],
                         text: lang["not found config"],
@@ -139,9 +138,9 @@ export default () => {
                     })
                     return;
                 }
-                
-                
-             
+
+
+
                 setErrorLoadConfig(true)
 
 
@@ -353,7 +352,7 @@ export default () => {
 
     };
     const [currentPage, setCurrentPage] = useState(1);
-    const rowsPerPage = 15;
+    const rowsPerPage = 17;
 
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
@@ -385,7 +384,7 @@ export default () => {
     }
 
     const exportToCSV = (csvData) => {
-        
+
         const selectedHeaders = apiDataName.filter(({ fomular_alias }) => selectedFields.includes(fomular_alias));
         const titleRow = { [selectedHeaders[0].fomular_alias]: 'DIPES PRODUCTION' };
         const emptyRow = selectedHeaders.reduce((obj, header, i) => {
@@ -489,9 +488,9 @@ export default () => {
     // console.log("data", apiData)
     // console.log(dataStatis)
     // console.log(selectedFields)
-// console.log(loaded)
+    // console.log(loaded)
 
-// console.log("active",statusActive)
+    // console.log("active",statusActive)
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -667,14 +666,16 @@ export default () => {
 
                                                             <table className={tableClassName}>
                                                                 <thead>
+                                                                    <th class="font-weight-bold" scope="col">{lang["log.no"]}</th>
                                                                     {apiDataName.map((header, index) => (
                                                                         <th class="font-weight-bold">{header.display_name}</th>
                                                                     ))}
                                                                     <th class=" font-weight-bold align-center">Thao tác</th>
                                                                 </thead>
                                                                 <tbody>
-                                                                    {current.map((row) => (
+                                                                    {current.map((row, index) => (
                                                                         <tr key={row._id}>
+                                                                             <td scope="row">{indexOfFirst + index + 1}</td>
                                                                             {apiDataName.map((header) => (
                                                                                 <td key={header.fomular_alias}>{renderData(header, row)}</td>
                                                                             ))}
@@ -686,7 +687,7 @@ export default () => {
                                                                     ))}
                                                                     {dataStatis.map((data) => (
                                                                         <tr>
-                                                                            <td class="font-weight-bold" colspan={`${apiDataName.length + 1}`} style={{ textAlign: 'right' }}>{data.display_name}: {formatNumberWithCommas(data.result)} </td>
+                                                                            <td class="font-weight-bold" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'right' }}>{data.display_name}: {formatNumberWithCommas(data.result)} </td>
                                                                         </tr>
                                                                     ))}
                                                                 </tbody>
@@ -696,20 +697,39 @@ export default () => {
                                                                 <nav aria-label="Page navigation example">
                                                                     <ul className="pagination mb-0">
                                                                         <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                                            <button className="page-link" onClick={() => paginate(currentPage - 1)}>
-                                                                                &laquo;
+                                                                            <button className="page-link" onClick={() => paginate(1)}>
+                                                                                &#8810;
                                                                             </button>
                                                                         </li>
-                                                                        {Array(totalPages).fill().map((_, index) => (
-                                                                            <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                                                                                <button className="page-link" onClick={() => paginate(index + 1)}>
-                                                                                    {index + 1}
-                                                                                </button>
-                                                                            </li>
-                                                                        ))}
+                                                                        {/* <li className={`page-item ${currentPageApi === 1 ? 'disabled' : ''}`}>
+                                                                    <button className="page-link" onClick={() => paginate(currentPageApi - 1)}>
+                                                                        &laquo;
+                                                                    </button>
+                                                                </li> */}
+                                                                        {currentPage > 1 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                                        {Array(totalPages).fill().map((_, index) => {
+                                                                            if (
+                                                                                index + 1 === currentPage ||
+                                                                                (index + 1 >= currentPage - 1 && index + 1 <= currentPage + 1)
+                                                                            ) {
+                                                                                return (
+                                                                                    <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                                                        <button className="page-link" onClick={() => paginate(index + 1)}>
+                                                                                            {index + 1}
+                                                                                        </button>
+                                                                                    </li>
+                                                                                )
+                                                                            }
+                                                                        })}
+                                                                        {currentPage < totalPages - 1 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                                        {/* <li className={`page-item ${currentPageApi === totalPages ? 'disabled' : ''}`}>
+                                                                    <button className="page-link" onClick={() => paginate(currentPageApi + 1)}>
+                                                                        &raquo;
+                                                                    </button>
+                                                                </li> */}
                                                                         <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                                                                            <button className="page-link" onClick={() => paginate(currentPage + 1)}>
-                                                                                &raquo;
+                                                                            <button className="page-link" onClick={() => paginate(totalPages)}>
+                                                                                &#8811;
                                                                             </button>
                                                                         </li>
                                                                     </ul>

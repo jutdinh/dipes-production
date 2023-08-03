@@ -1,1 +1,148 @@
-{"data":[{"ui_id":67,"title":"Loại","url":"/loai","status":true,"params":[],"create_at":"2023-08-02T02:26:31.280Z","create_by":{"username":"administrator","fullname":"Administrator"},"components":[{"component_id":68,"component_name":"","layout_id":0,"table_id":56,"api_get":"/api/7B8D97C31DC447918E69CE2193E17BAB","api_post":"/api/3F65EF8578CC4EDBB63AA2F5E973AC64","api_put":"/api/D25EFF70A04E4B04AEE141B7D433A3A5","api_delete":"/api/3728E38C8E954DE0A029605E7F37CCB9"}]},{"ui_id":73,"title":"Sản phẩm","url":"/san-pham","status":true,"params":[],"create_at":"2023-08-02T02:27:04.824Z","create_by":{"username":"administrator","fullname":"Administrator"},"components":[{"component_id":74,"component_name":"","layout_id":"1","table_id":59,"api_get":"/api/AC0B0B07379E421C87A8D59A79D2A9F2","api_post":"/api/A5A89D34E37D471D8C84CBC8585E9686","api_put":"/api/FBE453EAC6AB49EAA0143AB50B53D4A4","api_delete":"/api/7A345CFF76D4426BB7146A57E91EA2B4"}]}]}
+{
+    "data": [
+        {
+            "ui_id": 242,
+            "title": "Loại sản phẩm",
+            "url": "/loai-san-pham",
+            "status": true,
+            "params": [],
+            "create_at": "2023-08-03T03:59:46.829Z",
+            "create_by": {
+                "username": "administrator",
+                "fullname": "Administrator"
+            },
+            "components": [
+                {
+                    "component_id": 243,
+                    "component_name": "",
+                    "layout_id": 0,
+                    "table_id": 207,
+                    "api_get": "/api/2E2A755368D649DCAF0A52C552DEE77A",
+                    "api_post": "/api/99C97320580C4F8FBC1FDDBD190C2A96",
+                    "api_put": "/api/07863DF3499847C59DA91E4E72A9FB69",
+                    "api_delete": "/api/1CB017CEEE1C4CE5985D61E55651E9BF"
+                }
+            ]
+        },
+        {
+            "ui_id": 248,
+            "title": "Sản phẩm",
+            "url": "/san-pham",
+            "status": true,
+            "params": [],
+            "create_at": "2023-08-03T04:00:15.650Z",
+            "create_by": {
+                "username": "administrator",
+                "fullname": "Administrator"
+            },
+            "components": [
+                {
+                    "component_id": 249,
+                    "component_name": "",
+                    "layout_id": 0,
+                    "table_id": 210,
+                    "api_get": "/api/82A314EBE39347D3829801A2540607F9",
+                    "api_post": "/api/6BCF5D8C389445B8920EEA463F96ADD2",
+                    "api_put": "/api/174B3BAA981A47069279C1A1C0261276",
+                    "api_delete": "/api/F790B2DCB89D42E6AACAA17CEB9ECA6F"
+                }
+            ]
+        },
+        {
+            "ui_id": 254,
+            "title": "Khách hàng",
+            "url": "/khach-hang",
+            "status": true,
+            "params": [],
+            "create_at": "2023-08-03T04:00:32.599Z",
+            "create_by": {
+                "username": "administrator",
+                "fullname": "Administrator"
+            },
+            "components": [
+                {
+                    "component_id": 255,
+                    "component_name": "",
+                    "layout_id": 0,
+                    "table_id": 214,
+                    "api_get": "/api/E694756735AB49EA84722A3A619E5B12",
+                    "api_post": "/api/63458B8F02514CBDB6DE3A5A6C74420A",
+                    "api_put": "/api/3BABF355622649DE9BF5E0690BF8440D",
+                    "api_delete": "/api/502B5B241F914E868AC2D76E2322CB24"
+                }
+            ]
+        },
+        {
+            "ui_id": 260,
+            "title": "Nhân viên",
+            "url": "/nhan-vien",
+            "status": true,
+            "params": [],
+            "create_at": "2023-08-03T04:01:03.533Z",
+            "create_by": {
+                "username": "administrator",
+                "fullname": "Administrator"
+            },
+            "components": [
+                {
+                    "component_id": 261,
+                    "component_name": "",
+                    "layout_id": "1",
+                    "table_id": 221,
+                    "api_get": "/api/7C6C8C3C231640308599335088402D88",
+                    "api_post": "/api/717886534E3B4497804129F47C3F1A0E",
+                    "api_put": "/api/CD7249FCF2074E5C991E4AB888C956EE",
+                    "api_delete": "/api/29614EC26F424F81B7390F29CBBFDC20"
+                }
+            ]
+        },
+        {
+            "ui_id": 266,
+            "title": "Đơn đặt hàng",
+            "url": "/don-dat-hang",
+            "status": true,
+            "params": [],
+            "create_at": "2023-08-03T04:01:25.198Z",
+            "create_by": {
+                "username": "administrator",
+                "fullname": "Administrator"
+            },
+            "components": [
+                {
+                    "component_id": 267,
+                    "component_name": "",
+                    "layout_id": 0,
+                    "table_id": 227,
+                    "api_get": "/api/D602348C6B4F4D87877FB3A0F1545D71",
+                    "api_post": "/api/32024DDDF28641BF922D6F47AFCC650B",
+                    "api_put": "/api/F1AAFF8375524007AECEFC1F5C938578",
+                    "api_delete": "/api/3D161D3F69234E40BE93B9C9F8A28BD9"
+                }
+            ]
+        },
+        {
+            "ui_id": 278,
+            "title": "Chi tiết đơn hàng",
+            "url": "/chi-tiet-don-hang",
+            "status": true,
+            "params": [],
+            "create_at": "2023-08-03T04:03:00.579Z",
+            "create_by": {
+                "username": "administrator",
+                "fullname": "Administrator"
+            },
+            "components": [
+                {
+                    "component_id": 279,
+                    "component_name": "",
+                    "layout_id": 0,
+                    "table_id": 232,
+                    "api_get": "/api/ED02C8ED7CDA4882AAD9D729D68ABC8C",
+                    "api_post": "/api/561BDAF5B2014E91B00FADFAFD4C3317",
+                    "api_put": "/api/53FA545E87B643D2B176D3387585049F",
+                    "api_delete": "/api/0372191A3C9E4BFD8ACA000BE59FACC4"
+                }
+            ]
+        }
+    ]
+}

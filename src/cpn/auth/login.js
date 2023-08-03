@@ -181,7 +181,7 @@ export default () => {
                                                     className="form-check-input"
                                                 />
                                                 {lang["remember me"]}</label>
-                                            <a className="forgot" href="">{lang["forgot password"]}</a>
+                                            {/* <a className="forgot" href="">{lang["forgot password"]}</a> */}
                                         </div>
                                         <div className="field margin_0">
                                             <label className="label_field hidden">hidden label</label>

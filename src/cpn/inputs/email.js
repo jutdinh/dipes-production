@@ -234,7 +234,7 @@ export default (props) => {
                                     placeholder=""
                                     onChange={changeRawData}
                                     value={current}
-                                    readOnly={readOnly ? true : false}
+                                    // readOnly={readOnly ? true : false}
                                 />
 
                             </div>

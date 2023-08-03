@@ -205,7 +205,7 @@ export default (props) => {
                                     placeholder=""
                                     onChange={changeRawData}
                                     value={current}
-                                    readOnly={field.AUTO_INCREMENT ? true : false}
+                                    // readOnly={field.AUTO_INCREMENT ? true : false}
                                 />
 
                             </div>

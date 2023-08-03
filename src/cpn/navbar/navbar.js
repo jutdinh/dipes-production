@@ -90,7 +90,7 @@ export default () => {
                      {pages && pages.map(ui => (
                         ui.status ? (
                            <li className="navbar-item">
-                              <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
+                              <NavLink to={ `/page${ui.url}` }  onClick={() => { openTab(`/page${ui.url}`) }} activeClassName="nav-active">
                                  <i class="fa fa-newspaper-o"></i>
                                  <span>{ui.title}</span>
                               </NavLink>

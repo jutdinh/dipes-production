@@ -82,11 +82,15 @@ export default () => {
         }
         return valid;
     }
-
+   
+   
+    
+    
+    
 
     const submit = () => {
 
-        // console.log(data)
+        // console.log({...data})
         if (!emailError && !phoneError && nullCheck(data)) {
             fetch(`${proxy()}${result?.components?.[0]?.api_post}`, {
                 method: "POST",
