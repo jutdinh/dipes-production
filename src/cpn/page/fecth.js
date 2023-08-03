@@ -384,7 +384,7 @@ export default () => {
     }
 
     const exportToCSV = (csvData) => {
-
+console.log(csvData)
         const selectedHeaders = apiDataName.filter(({ fomular_alias }) => selectedFields.includes(fomular_alias));
         const titleRow = { [selectedHeaders[0].fomular_alias]: 'DIPES PRODUCTION' };
         const emptyRow = selectedHeaders.reduce((obj, header, i) => {
@@ -624,7 +624,7 @@ export default () => {
                                                 }
                                             })
                                         } else {
-                                            exportToCSV(current);
+                                            exportToCSV(apiData);
                                         }
                                     }} class="btn btn-success " data-dismiss="modal">{lang["export"]} </button>
                                     <button type="button" data-dismiss="modal" onClick={handleCloseModal} class="btn btn-danger">{lang["btn.close"]}</button>
