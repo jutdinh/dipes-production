@@ -640,13 +640,13 @@ console.log(csvData)
                                 </div>
                                 {statusActive ? (
 
-                                    <div class="ml-auto" onClick={() => redirectToInput()} data-toggle="modal">
+                                    <div class="ml-auto pointer" onClick={() => redirectToInput()} data-toggle="modal">
                                         <i class="fa fa-plus-circle icon-ui"></i>
                                     </div>
                                 ) : null}
                                 {
                                     current && current.length > 0 ? (
-                                        <div class="ml-4" onClick={downloadAPI} data-toggle="modal" data-target="#exportExcel">
+                                        <div class="ml-4 pointer" onClick={downloadAPI} data-toggle="modal" data-target="#exportExcel">
                                             <i class="fa fa-download icon-export"></i>
                                         </div>
                                     ) : null
