@@ -7,7 +7,7 @@ import { StatusEnum, StatusTask } from '../enum/status';
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { Tables } from ".";
-import Diagram from './diagram/digram';
+import Diagram from './diagram/digram.js';
 
 const TABLES = "tables";
 const DIAGRAM = "diagram"
