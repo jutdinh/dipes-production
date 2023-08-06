@@ -25,6 +25,8 @@ export default () => {
     const [effectOneCompleted, setEffectOneCompleted] = useState(false);
     const [page, setPage] = useState([]);
 
+    const [sumerize, setSumerize] = useState(0)
+
     useEffect(() => {
 
         fetch(`${proxy()}/auth/activation/check`, {
@@ -38,7 +40,6 @@ export default () => {
                 // console.log(resp)
                 if (activated) {
                     setStatusActive(true)
-
                 }
                 else {
                     Swal.fire({
@@ -71,6 +72,11 @@ export default () => {
             }
         }
     }, [pages, url]);
+
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [page, url] )
+
     const layoutId = page.components?.[0].layout_id;
 
     const tableClassName = layoutId === 0 ? "table table-striped" : "table table-hover";
@@ -110,22 +116,28 @@ export default () => {
 
 
     const [loaded, setLoaded] = useState(false);
-    const callApi = (api) => {
-        /* this must be fixed */
-        fetch(`${proxy()}${page.components?.[0]?.api_get}`).then(res => res.json()).then(res => {
 
-            const { success, content, data, fields, statistic } = res;
-            // console.log(res)
+
+    const callApi = () => {
+        /* this must be fixed */        
+        fetch(`${proxy()}${ page.components?.[0]?.api_get }`, {
+            headers: {
+                fromIndex: currentPage - 1
+            }
+        }).then(res => res.json()).then(res => {
+
+            const { success, content, data, fields, statistic, sumerize } = res;
+            console.log(res)
             if (success) {
-                const statisticValues = res.statistic.values;
-
-                setApiData(data)
+                const statisticValues = res.statistic.values;                
+                setApiData(data.filter( record => record != undefined ))
                 setApiDataName(fields)
                 setDataStatis(statisticValues)
                 setLoaded(true)
+                setSumerize(sumerize)
             }
             else {
-                setLoaded()
+                setLoaded(true)
                 if (statusActive) {
                     Swal.fire({
                         title: lang["faild"],
@@ -139,8 +151,6 @@ export default () => {
                     return;
                 }
 
-
-
                 setErrorLoadConfig(true)
 
 
@@ -148,6 +158,8 @@ export default () => {
 
         })
     }
+
+
     // console.log(dataStatis)
 
     const redirectToInput = () => {
@@ -175,7 +187,7 @@ export default () => {
         //     const value = data[key];
         //     rawParams = rawParams.replaceAll(key, value);
         // })
-
+                
         fetch(`${proxy()}${rawParams}`, {
             method: "DELETE",
             headers: {
@@ -227,7 +239,7 @@ export default () => {
         }
 
         // console.log(newParams);
-
+        console.log(data)
         Swal.fire({
             title: lang["confirm"],
             text: lang["confirm.content"],
@@ -243,7 +255,8 @@ export default () => {
                     headers: {
                         "content-type": "application/json",
                         Authorization: `${_token}`,
-                    }
+                    },
+                    body: JSON.stringify({ position: data.__position__ })
                 })
                     .then(res => res.json())
                     .then((resp) => {
@@ -330,35 +343,47 @@ export default () => {
             return IF_FALSE ? IF_FALSE : "false"
         }
     }
-    const renderData = (field, data) => {
-        // console.log(field)
-        switch (field.DATATYPE) {
-            case "DATE":
-            case "DATETIME":
-                return renderDateTimeByFormat(data[field.fomular_alias], field.FORMAT);
-            case "DECIMAL":
-            case "DECIMAL UNSIGNED":
-                const { DECIMAL_PLACE } = field;
-                const decimalNumber = parseFloat(data[field.fomular_alias]);
-                return decimalNumber.toFixed(DECIMAL_PLACE)
-            case "BOOL":
-                return renderBoolData(data[field.fomular_alias], field)
-            default:
-                return data[field.fomular_alias];
+    const renderData = (field, data) => {        
+        if( data ){
+            switch (field.DATATYPE) {
+                case "DATE":
+                case "DATETIME":
+                    return renderDateTimeByFormat(data[field.fomular_alias], field.FORMAT);
+                case "DECIMAL":
+                case "DECIMAL UNSIGNED":
+                    const { DECIMAL_PLACE } = field;
+                    const decimalNumber = parseFloat(data[field.fomular_alias]);
+                    return decimalNumber.toFixed(DECIMAL_PLACE)
+                case "BOOL":
+                    return renderBoolData(data[field.fomular_alias], field)
+                default:
+                    return data[field.fomular_alias];
+            }
+        }else{
+            return "Invalid value"
         }
     };
     const downloadAPI = () => {
         // console.log(apiData);
 
     };
+    // const [currentPage, setCurrentPage] = useState(58823);
     const [currentPage, setCurrentPage] = useState(1);
+
+
+    useEffect(() => {
+        if( page.components?.[0]?.api_get != undefined ){
+            callApi()
+        }
+    }, [currentPage])
     const rowsPerPage = 17;
 
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
-    const current = apiData.slice(indexOfFirst, indexOfLast);
+    const current = apiData
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
     const totalPages = Math.ceil(apiData.length / rowsPerPage);
 
     const [selectedFields, setSelectedFields] = useState([]);/// fields
@@ -673,18 +698,25 @@ console.log(csvData)
                                                                     <th class=" font-weight-bold align-center">Thao tác</th>
                                                                 </thead>
                                                                 <tbody>
-                                                                    {current.map((row, index) => (
-                                                                        <tr key={row._id}>
-                                                                             <td scope="row">{indexOfFirst + index + 1}</td>
-                                                                            {apiDataName.map((header) => (
-                                                                                <td key={header.fomular_alias}>{renderData(header, row)}</td>
-                                                                            ))}
-                                                                            <td class="align-center" style={{ minWidth: "80px" }}>
-                                                                                <i class="fa fa-edit size pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
-                                                                                <i class="fa fa-trash-o size pointer icon-margin icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
-                                                                            </td>
-                                                                        </tr>
-                                                                    ))}
+                                                                    {current.map((row, index) => {
+
+                                                                        if( row ){
+
+                                                                        return (
+                                                                            <tr key={index}>
+                                                                                <td scope="row">{indexOfFirst + index + 1}</td>
+                                                                                {apiDataName.map((header) => (
+                                                                                    <td key={header.fomular_alias}>{renderData(header, row)}</td>
+                                                                                ))}
+                                                                                <td class="align-center" style={{ minWidth: "80px" }}>
+                                                                                    <i class="fa fa-edit size pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
+                                                                                    <i class="fa fa-trash-o size pointer icon-margin icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                </td>
+                                                                            </tr>)
+                                                                        }else{
+                                                                            return null
+                                                                        }
+                                                                    })}
                                                                     {dataStatis.map((data) => (
                                                                         <tr>
                                                                             <td class="font-weight-bold" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'right' }}>{data.display_name}: {formatNumberWithCommas(data.result)} </td>
@@ -693,45 +725,31 @@ console.log(csvData)
                                                                 </tbody>
                                                             </table>
                                                             <div className="d-flex justify-content-between align-items-center">
-                                                                <p>{lang["show"]} {indexOfFirst + 1}-{Math.min(indexOfLast, apiData.length)} {lang["of"]} {apiData.length} {lang["results"]}</p>
+                                                                <p>{lang["show"]} {indexOfFirst + 1}-{ apiData.length  } {lang["of"]} {sumerize} {lang["results"]}</p>
                                                                 <nav aria-label="Page navigation example">
                                                                     <ul className="pagination mb-0">
-                                                                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                                            <button className="page-link" onClick={() => paginate(1)}>
-                                                                                &#8810;
+                                                                        
+                                                                        { currentPage > 1 && 
+                                                                            <li className={`page-item`}>
+                                                                                <button className="page-link" onClick={() => paginate(currentPage - 1)}>
+                                                                                    { currentPage - 1 }
+                                                                                </button>
+                                                                            </li>
+                                                                        }
+
+                                                                        <li className={`page-item active`}>
+                                                                            <button className="page-link ">
+                                                                                { currentPage }
                                                                             </button>
                                                                         </li>
-                                                                        {/* <li className={`page-item ${currentPageApi === 1 ? 'disabled' : ''}`}>
-                                                                    <button className="page-link" onClick={() => paginate(currentPageApi - 1)}>
-                                                                        &laquo;
-                                                                    </button>
-                                                                </li> */}
-                                                                        {currentPage > 1 && <li className="page-item"><span className="page-link">...</span></li>}
-                                                                        {Array(totalPages).fill().map((_, index) => {
-                                                                            if (
-                                                                                index + 1 === currentPage ||
-                                                                                (index + 1 >= currentPage - 1 && index + 1 <= currentPage + 1)
-                                                                            ) {
-                                                                                return (
-                                                                                    <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                                                                                        <button className="page-link" onClick={() => paginate(index + 1)}>
-                                                                                            {index + 1}
-                                                                                        </button>
-                                                                                    </li>
-                                                                                )
-                                                                            }
-                                                                        })}
-                                                                        {currentPage < totalPages - 1 && <li className="page-item"><span className="page-link">...</span></li>}
-                                                                        {/* <li className={`page-item ${currentPageApi === totalPages ? 'disabled' : ''}`}>
-                                                                    <button className="page-link" onClick={() => paginate(currentPageApi + 1)}>
-                                                                        &raquo;
-                                                                    </button>
-                                                                </li> */}
-                                                                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                                                                            <button className="page-link" onClick={() => paginate(totalPages)}>
-                                                                                &#8811;
+
+                                                                        <li className={`page-item`}>
+                                                                            <button className="page-link" onClick={() => paginate(currentPage + 1)}>
+                                                                                { currentPage +1 }
                                                                             </button>
                                                                         </li>
+
+
                                                                     </ul>
                                                                 </nav>
                                                             </div>

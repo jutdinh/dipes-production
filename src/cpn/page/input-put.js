@@ -21,14 +21,13 @@ export default () => {
     const [keyFields, setKeyFields] = useState([]);
     const [params, setParams] = useState([]);
     const [fields, setFields] = useState([]);
-    const [errors, setErrors] = useState({});
     const [data, setData] = useState({});
     const [relatedTables, setRelatedTables] = useState([])
-    const [page, setPage] = useState(null);
+
     const [initialData, setInitData] = useState({})
-    const [dataFields, setDataFields] = useState([]);
-    const [apiData, setApiData] = useState([])
-    const [apiDataName, setApiDataName] = useState([])
+
+
+    const [ loaded, setLoaded ] = useState(false)
 
     const [phoneError, setPhoneError] = useState(false);
     const handlePhoneError = (error) => {
@@ -51,17 +50,19 @@ export default () => {
     // console.log(result)
 
     const changeTrigger = (field, value) => {
-        const newData = data;
-        if (value === "true") {
-            newData[field.fomular_alias] = true;
-        } else if (value === "false") {
-            newData[field.fomular_alias] = false;
-        } else {
-            newData[field.fomular_alias] = value;
+        if( loaded ){
+            const newData = data;
+            if (value === "true") {
+                newData[field.fomular_alias] = true;
+            } else if (value === "false") {
+                newData[field.fomular_alias] = false;
+            } else {
+                newData[field.fomular_alias] = value;
+            }
+            setData(newData);
         }
-        setData(newData);
     }
-    const nullCheck = () => {
+    const nullCheck = () => {        
         let valid = true;
         for (let i = 0; i < fields.length; i++) {
             const field = fields[i];
@@ -132,9 +133,9 @@ export default () => {
                                     const { fomular_alias } = field;
                                     data[fomular_alias] = initData[0][fomular_alias];
                                 })
-                                setInitData(initData[0] ? initData[0] : {});
-
-                                setData(data)
+                                setInitData(initData[0] ? initData[0] : {});                                
+                                setData({...data})
+                                setLoaded(true)
                             }
                         })
                 } else {
@@ -142,6 +143,10 @@ export default () => {
                 }
             })
     }, [])
+
+    useEffect(() => {
+        console.log(data)
+    }, [data])
 
     // console.log(fields)
     const submit = () => {
@@ -151,7 +156,7 @@ export default () => {
         const paramsList = rawParams.split('/');
         // console.log("body", data)
         if (!emailError && !phoneError && nullCheck(data)) {
-            fetch(`${proxy()}/api/${id_str}/${paramsList.join('/')}`, {
+            fetch(`${proxy()}/ui/${id_str}/${paramsList.join('/')}`, {
                 method: "PUT",
                 headers: {
                     "content-type": "application/json"
@@ -160,7 +165,7 @@ export default () => {
                 body: JSON.stringify({ ...data })
             }).then(res => res.json()).then(res => {
                 const { success, data, fk, content } = res;
-                // console.log(res)
+                console.log(res)
                 const errors = [
                     "primaryConflict",
                     "foreignConflict",
