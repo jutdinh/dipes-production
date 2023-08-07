@@ -15,7 +15,7 @@ export default () => {
     const { id_str } = useParams()
     const { project_id, version_id, url } = useParams();
     let navigate = useNavigate();
-    const { proxy, pages, lang, functions} = useSelector(state => state);
+    const { proxy, pages, lang, functions } = useSelector(state => state);
     const [api, setApi] = useState({})
     const [tables, setTables] = useState([])
     const [fields, setFields] = useState([]);
@@ -40,7 +40,8 @@ export default () => {
         fetch(`${proxy()}/apis/api/${id_str}/input_info`).then(res => res.json())
             .then(res => {
                 const { success, api, relatedTables, data } = res;
-                if (success) {                    
+
+                if (success) {
                     setFields(data.body)
                     setTables(data.tables)
                 } else {
@@ -48,7 +49,7 @@ export default () => {
                 }
             })
     }, [pages])
-
+    console.log(fields)
     const result = pages?.find(item => {
         // Lấy id từ api_get
         const api_get_id = item.components?.[0]?.api_post.split('/')[2];
@@ -82,15 +83,15 @@ export default () => {
         }
         return valid;
     }
-   
-   
-    
-    
-    
+
+
+
+
+
 
     const submit = () => {
 
-        // console.log({...data})
+        console.log({...data})
         if (!emailError && !phoneError && nullCheck(data)) {
             fetch(`${proxy()}${result?.components?.[0]?.api_post}`, {
                 method: "POST",
@@ -117,36 +118,43 @@ export default () => {
                     }
                 }
                 // console.log(`VALID: ${valid}`)
-                if (valid) {
-                    Swal.fire({
-                        title: lang["success"],
-                        text: lang["success.add"],
-                        icon: "success",
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(function () {
-                        window.location.reload();
-                    });
-                }else{
-                    Swal.fire({
-                        title: lang["faild"],
-                        text: lang["fail.add"],
-                        icon: "error",
-                        showConfirmButton: true,
+                // if (valid) {
+                //     Swal.fire({
+                //         title: lang["success"],
+                //         text: lang["success.add"],
+                //         icon: "success",
+                //         showConfirmButton: false,
+                //         timer: 1500
+                //     }).then(function () {
+                //         window.location.reload();
+                //     });
+                // } else {
+                //     Swal.fire({
+                //         title: lang["faild"],
+                //         text: lang["fail.add"],
+                //         icon: "error",
+                //         showConfirmButton: true,
 
-                    }).then(function () {
-                        // Không cần reload trang
-                    });
-                }
+                //     }).then(function () {
+                //         // Không cần reload trang
+                //     });
+                // }
             })
-
-
-
         } else {
             if (emailError) {
-                // al.failure("Lỗi", "Địa chỉ email không hợp lệ");
+                Swal.fire({
+                    title: lang["faild"],
+                    text: lang["error.email_invalid"],
+                    icon: "error",
+                    showConfirmButton: true,
+                })
             } else if (phoneError) {
-                // al.failure("Lỗi", "Số điện thoại không hợp lệ");
+                Swal.fire({
+                    title: lang["faild"],
+                    text: lang["error.phone_invalid"],
+                    icon: "error",
+                    showConfirmButton: true,
+                })
             } else {
                 Swal.fire({
                     title: lang["faild"],
@@ -154,9 +162,7 @@ export default () => {
                     icon: "error",
                     showConfirmButton: true,
 
-                }).then(function () {
-                    // Không cần reload trang
-                });
+                })
             }
         }
     };
@@ -238,14 +244,14 @@ export default () => {
                                                     }
                                                     {field.DATATYPE == "INT" || field.data_type == "BIG INT" ?
                                                         <Int
-                                                            selectOption = {true}
+                                                            selectOption={true}
                                                             table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             field={field}
                                                             changeTrigger={changeTrigger} /> : null
                                                     }
                                                     {field.DATATYPE == "INT UNSIGNED" || field.data_type == "BIG INT UNSIGNED" ?
                                                         <Int
-                                                             selectOption = {true}
+                                                            selectOption={true}
                                                             table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             related={relatedTables} unsigned={true} field={field}
                                                             changeTrigger={changeTrigger} /> : null
@@ -258,8 +264,8 @@ export default () => {
                                                     }
                                                     {field.DATATYPE == "EMAIL" ?
                                                         <DataEmail
-                                                            selectOption = {true}
-                                                            readOnly = {false}
+                                                            selectOption={true}
+                                                            readOnly={false}
                                                             table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger}

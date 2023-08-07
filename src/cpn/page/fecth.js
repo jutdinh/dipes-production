@@ -5,6 +5,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import XLSX from 'xlsx-js-style';
+import {
+    Varchar, Char, Text, Int,
+    DateInput, TimeInput, DateTimeInput,
+    Decimal, Bool, DataEmail, DataPhone
+
+} from '../inputs search';
 
 export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
@@ -24,6 +30,7 @@ export default () => {
     const [errorLoadConfig, setErrorLoadConfig] = useState(false);
     const [effectOneCompleted, setEffectOneCompleted] = useState(false);
     const [page, setPage] = useState([]);
+    const [data, setData] = useState({});
 
     const [sumerize, setSumerize] = useState(0)
 
@@ -73,9 +80,10 @@ export default () => {
         }
     }, [pages, url]);
 
+
     useEffect(() => {
         setCurrentPage(1)
-    }, [page, url] )
+    }, [page, url])
 
     const layoutId = page.components?.[0].layout_id;
 
@@ -90,16 +98,12 @@ export default () => {
                 .then(res => res.json())
                 .then(res => {
                     const { data, success, content } = res;
-                    // console.log(res)
+                    console.log(res)
                     if (success) {
-                        // console.log("succcess", data)
                         setDataTables(data.tables)
                         setDataFields(data.body)
                         setLoaded(true)
-
                     }
-
-
                     // setApi(api);
                     callApi()
                 })
@@ -119,8 +123,8 @@ export default () => {
 
 
     const callApi = () => {
-        /* this must be fixed */        
-        fetch(`${proxy()}${ page.components?.[0]?.api_get }`, {
+        /* this must be fixed */
+        fetch(`${proxy()}${page.components?.[0]?.api_get}`, {
             headers: {
                 fromIndex: currentPage - 1
             }
@@ -129,8 +133,8 @@ export default () => {
             const { success, content, data, fields, statistic, sumerize } = res;
             console.log(res)
             if (success) {
-                const statisticValues = res.statistic.values;                
-                setApiData(data.filter( record => record != undefined ))
+                const statisticValues = res.statistic.values;
+                setApiData(data.filter(record => record != undefined))
                 setApiDataName(fields)
                 setDataStatis(statisticValues)
                 setLoaded(true)
@@ -187,7 +191,7 @@ export default () => {
         //     const value = data[key];
         //     rawParams = rawParams.replaceAll(key, value);
         // })
-                
+
         fetch(`${proxy()}${rawParams}`, {
             method: "DELETE",
             headers: {
@@ -343,8 +347,8 @@ export default () => {
             return IF_FALSE ? IF_FALSE : "false"
         }
     }
-    const renderData = (field, data) => {        
-        if( data ){
+    const renderData = (field, data) => {
+        if (data) {
             switch (field.DATATYPE) {
                 case "DATE":
                 case "DATETIME":
@@ -359,7 +363,7 @@ export default () => {
                 default:
                     return data[field.fomular_alias];
             }
-        }else{
+        } else {
             return "Invalid value"
         }
     };
@@ -372,7 +376,7 @@ export default () => {
 
 
     useEffect(() => {
-        if( page.components?.[0]?.api_get != undefined ){
+        if (page.components?.[0]?.api_get != undefined) {
             callApi()
         }
     }, [currentPage])
@@ -384,7 +388,7 @@ export default () => {
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-    const totalPages = Math.ceil(apiData.length / rowsPerPage);
+    const totalPages = Math.ceil(sumerize / rowsPerPage);
 
     const [selectedFields, setSelectedFields] = useState([]);/// fields
     const [selectedStats, setSelectedStats] = useState([]);
@@ -409,7 +413,7 @@ export default () => {
     }
 
     const exportToCSV = (csvData) => {
-console.log(csvData)
+        console.log(csvData)
         const selectedHeaders = apiDataName.filter(({ fomular_alias }) => selectedFields.includes(fomular_alias));
         const titleRow = { [selectedHeaders[0].fomular_alias]: 'DIPES PRODUCTION' };
         const emptyRow = selectedHeaders.reduce((obj, header, i) => {
@@ -505,17 +509,23 @@ console.log(csvData)
         setSelectedFields([]);
         setSelectedStats([]);
     }
-    // const half = Math.ceil(apiDataName.length / 2);
 
-    // const firstHalf = apiDataName.slice(0, half);
-    // const secondHalf = apiDataName.slice(half);
-    // console.log("header", apiDataName)
-    // console.log("data", apiData)
-    // console.log(dataStatis)
-    // console.log(selectedFields)
-    // console.log(loaded)
+    const changeTrigger = (field, value) => {
+        const newData = data;
+        if (value === "true") {
+            newData[field.fomular_alias] = true;
+        } else if (value === "false") {
+            newData[field.fomular_alias] = false;
+        } else {
+            newData[field.fomular_alias] = value;
+        }
+        setData(newData);
+    }
 
-    // console.log("active",statusActive)
+    const searchData = () => { 
+        console.log(data)
+    }
+
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -553,7 +563,6 @@ console.log(csvData)
                                                 </label>
                                             ))}
                                         </div>
-
                                         {
                                             dataStatis && dataStatis.length > 0 ? (
                                                 <>
@@ -657,6 +666,7 @@ console.log(csvData)
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-12">
                         <div class="white_shd full margin_bottom_30">
                             <div class="full graph_head d-flex">
@@ -681,14 +691,129 @@ console.log(csvData)
                                 </button> */}
                             </div>
                             <div class="table_section padding_infor_info">
-                                <div class="row column1">
+                                <div class="col-md-12 mb-4 bordered">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <p class="font-weight-bold ml-2">{lang["search"]}</p>
+                                    </div>
+                                    <div className="row ml-4 mr-4">
+                                        <div class="col-md-12 col-sm-6">
+                                            <div class="input-group mb-3">
+                                                <div class="input-group-prepend">
+                                                    <button class="btn btn-outline-primary mr-15 " type="button">Basic Button</button>
+                                                </div>
+                                                <input type="text" class="form-control ml-15" placeholder="Some text" />
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div className="row ml-4 mr-4">
+                                        {
+                                            dataFields.map(field =>
+                                                <>
+                                                    {field.DATATYPE == "PHONE" ?
+                                                        <DataPhone
+                                                            table={dataTables.filter(tb => tb.id == field.table_id)[0]}
+                                                            field={field}
+                                                            changeTrigger={changeTrigger}
+
+                                                        /> : null
+                                                    }
+                                                    {field.DATATYPE == "VARCHAR" ?
+                                                        <Varchar
+                                                            table={dataTables.filter(tb => tb.id == field.table_id)[0]}
+                                                            field={field}
+                                                            changeTrigger={changeTrigger} /> : null
+                                                    }
+                                                    {field.DATATYPE == "CHAR" ?
+                                                        <Char
+                                                            table={dataTables.filter(tb => tb.id == field.table_id)[0]}
+                                                            field={field}
+                                                            changeTrigger={changeTrigger} /> : null
+                                                    }
+                                                    {field.DATATYPE == "TEXT" ?
+                                                        <Text
+                                                            table={dataTables.filter(tb => tb.id == field.table_id)[0]}
+                                                            field={field}
+                                                            changeTrigger={changeTrigger} /> : null
+                                                    }
+                                                    {field.DATATYPE == "INT" || field.data_type == "BIG INT" ?
+                                                        <Int
+                                                            selectOption={true}
+                                                            table={dataTables.filter(tb => tb.id == field.table_id)[0]}
+                                                            field={field}
+                                                            changeTrigger={changeTrigger} /> : null
+                                                    }
+                                                    {field.DATATYPE == "INT UNSIGNED" || field.data_type == "BIG INT UNSIGNED" ?
+                                                        <Int
+                                                            selectOption={true}
+                                                            table={dataTables.filter(tb => tb.id == field.table_id)[0]}
+                                                            unsigned={true} field={field}
+                                                            changeTrigger={changeTrigger} /> : null
+                                                    }
+                                                    {field.DATATYPE == "DATE" ?
+                                                        <DateInput
+                                                            table={dataTables.filter(tb => tb.id == field.table_id)[0]}
+                                                            field={field}
+                                                            changeTrigger={changeTrigger} /> : null
+                                                    }
+                                                    {field.DATATYPE == "EMAIL" ?
+                                                        <DataEmail
+                                                            selectOption={true}
+                                                            readOnly={false}
+                                                            table={dataTables.filter(tb => tb.id == field.table_id)[0]}
+                                                            field={field}
+                                                            changeTrigger={changeTrigger}
+
+                                                        /> : null
+                                                    }
+                                                    {field.DATATYPE == "TIME" ?
+                                                        <TimeInput
+                                                            table={dataTables.filter(tb => tb.id == field.table_id)[0]}
+                                                            field={field}
+                                                            changeTrigger={changeTrigger} /> : null
+                                                    }
+                                                    {field.DATATYPE == "DATETIME" ?
+                                                        <DateTimeInput
+                                                            table={dataTables.filter(tb => tb.id == field.table_id)[0]}
+                                                            field={field}
+                                                            changeTrigger={changeTrigger} /> : null
+                                                    }
+                                                    {field.DATATYPE == "DECIMAL" ?
+                                                        <Decimal
+                                                            table={dataTables.filter(tb => tb.id == field.table_id)[0]}
+                                                            field={field}
+                                                            changeTrigger={changeTrigger} /> : null
+                                                    }
+                                                    {field.DATATYPE == "DECIMAL UNSIGNED" ?
+                                                        <Decimal
+                                                            table={dataTables.filter(tb => tb.id == field.table_id)[0]}
+                                                            unsigned={true} field={field}
+                                                            changeTrigger={changeTrigger} /> : null
+                                                    }
+                                                    {field.DATATYPE == "BOOL" ?
+                                                        <Bool
+                                                            table={dataTables.filter(tb => tb.id == field.table_id)[0]}
+                                                            field={field}
+                                                            changeTrigger={changeTrigger} /> : null
+                                                    }
+                                                </>
+                                            )}
+                                    </div>
+                                    <div className="row ml-4 mr-4">
+                                        <div class="col-md-12 mr-4 mb-2">
+                                            <div class="mt-2 d-flex justify-content-end ml-auto">
+                                                <button type="button" onClick={searchData} class="btn btn-success mr-4 mr-15">{lang["search"]}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
                                     {statusActive ? (<>
                                         {
                                             loaded ? (
                                                 current && current.length > 0 ? (
                                                     <>
                                                         <div class="table-responsive">
-
                                                             <table className={tableClassName}>
                                                                 <thead>
                                                                     <th class="font-weight-bold" scope="col">{lang["log.no"]}</th>
@@ -700,20 +825,20 @@ console.log(csvData)
                                                                 <tbody>
                                                                     {current.map((row, index) => {
 
-                                                                        if( row ){
+                                                                        if (row) {
 
-                                                                        return (
-                                                                            <tr key={index}>
-                                                                                <td scope="row">{indexOfFirst + index + 1}</td>
-                                                                                {apiDataName.map((header) => (
-                                                                                    <td key={header.fomular_alias}>{renderData(header, row)}</td>
-                                                                                ))}
-                                                                                <td class="align-center" style={{ minWidth: "80px" }}>
-                                                                                    <i class="fa fa-edit size pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
-                                                                                    <i class="fa fa-trash-o size pointer icon-margin icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
-                                                                                </td>
-                                                                            </tr>)
-                                                                        }else{
+                                                                            return (
+                                                                                <tr key={index}>
+                                                                                    <td scope="row">{indexOfFirst + index + 1}</td>
+                                                                                    {apiDataName.map((header) => (
+                                                                                        <td key={header.fomular_alias}>{renderData(header, row)}</td>
+                                                                                    ))}
+                                                                                    <td class="align-center" style={{ minWidth: "80px" }}>
+                                                                                        <i class="fa fa-edit size pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
+                                                                                        <i class="fa fa-trash-o size pointer icon-margin icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                    </td>
+                                                                                </tr>)
+                                                                        } else {
                                                                             return null
                                                                         }
                                                                     })}
@@ -725,46 +850,59 @@ console.log(csvData)
                                                                 </tbody>
                                                             </table>
                                                             <div className="d-flex justify-content-between align-items-center">
-                                                                <p>{lang["show"]} {indexOfFirst + 1}-{ apiData.length  } {lang["of"]} {sumerize} {lang["results"]}</p>
+                                                                <p>{lang["show"]} {indexOfFirst + 1}-{indexOfFirst + apiData.length} {lang["of"]} {sumerize} {lang["results"]}</p>
                                                                 <nav aria-label="Page navigation example">
-                                                                    <ul className="pagination mb-0">
-                                                                        
-                                                                        { currentPage > 1 && 
-                                                                            <li className={`page-item`}>
-                                                                                <button className="page-link" onClick={() => paginate(currentPage - 1)}>
-                                                                                    { currentPage - 1 }
+                                                            <ul className="pagination mb-0">
+                                                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                                    <button className="page-link" onClick={() => paginate(1)}>
+                                                                        &#8810;
+                                                                    </button>
+                                                                </li>
+                                                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                                    <button className="page-link" onClick={() => paginate(currentPage - 1)}>
+                                                                        &laquo;
+                                                                    </button>
+                                                                </li>
+                                                                {currentPage > 1 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                                {Array(totalPages).fill().map((_, index) => {
+                                                                    if (
+                                                                        index + 1 === currentPage ||
+                                                                        (index + 1 >= currentPage - 1 && index + 1 <= currentPage + 1)
+                                                                    ) {
+                                                                        return (
+                                                                            <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                                                <button className="page-link" onClick={() => paginate(index + 1)}>
+                                                                                    {index + 1}
                                                                                 </button>
                                                                             </li>
-                                                                        }
-
-                                                                        <li className={`page-item active`}>
-                                                                            <button className="page-link ">
-                                                                                { currentPage }
-                                                                            </button>
-                                                                        </li>
-
-                                                                        <li className={`page-item`}>
-                                                                            <button className="page-link" onClick={() => paginate(currentPage + 1)}>
-                                                                                { currentPage +1 }
-                                                                            </button>
-                                                                        </li>
-
-
-                                                                    </ul>
-                                                                </nav>
+                                                                        )
+                                                                    }
+                                                                })}
+                                                                {currentPage < totalPages - 1 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                                    <button className="page-link" onClick={() => paginate(currentPage + 1)}>
+                                                                        &raquo;
+                                                                    </button>
+                                                                </li>
+                                                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                                    <button className="page-link" onClick={() => paginate(totalPages)}>
+                                                                        &#8811;
+                                                                    </button>
+                                                                </li>
+                                                            </ul>
+                                                        </nav>
                                                             </div>
                                                         </div>
                                                     </>
                                                 ) : (
                                                     <div class="list_cont ">
-                                                        <p>Chưa có dữ liệu</p>
+                                                        <p>{lang["not found data"]}</p>
                                                     </div>
                                                 )
                                             ) : (
                                                 // <div class="d-flex justify-content-center align-items-center w-100 responsive-div" >
                                                 //     {/* {lang["projects.noprojectfound"]} */}
                                                 //     <img width={350} className="scaled-hover-target" src="/images/icon/loading.gif" ></img>
-
                                                 // </div>
                                                 <div>{lang["not found data"]}</div>
                                             )

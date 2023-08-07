@@ -265,7 +265,10 @@ export default {
     "not found config": "No Database and Api configuration found",
     "not found update": "No update features found",
     "api": " Api Configuration",
-    "database": " Database Configuration"
+    "database": " Database Configuration",
+    "error.email_invalid": "Invalid Email Address",
+    "error.phone_invalid": "Invalid Phone Number",
+    "choose": "Choose"
 
 }
 

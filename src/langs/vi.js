@@ -259,5 +259,9 @@ export default {
     "not found config": "Không tìm thấy cấu hình Database và Api",
     "not found update": "Không tìm thấy tính năng cập nhật",
     "api": " Cấu hình Api",
-    "database": " Cấu hình Database"
+    "database": " Cấu hình Database",
+    "error.email_invalidl": "Email không hợp lệ",
+    "error.phone_invalid": "Số điện thoại không hợp lệ",
+    "choose": "Chọn",
+    
 }

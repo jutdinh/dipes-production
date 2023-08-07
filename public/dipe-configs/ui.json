@@ -1,1 +1,148 @@
-{"data":[{"ui_id":198,"title":"KHÁCH HÀNG","url":"/khach-hang","status":true,"params":[],"create_at":"2023-08-05T18:49:01.386Z","create_by":{"username":"administrator","fullname":"Administrator"},"components":[{"component_id":199,"component_name":"KHÁCH HÀNG","layout_id":"0","table_id":101,"api_get":"/ui/D958151F5DEE4F02BEA31249115F72FD","api_post":"/ui/35C1A7450FDD48A6B33C6EBB85D64472","api_put":"/ui/D2CCD932AE3C4FF78FA20EEA516D2779","api_delete":"/ui/B84BF65D34A54CC8909FAA6AD363DE31"}]},{"ui_id":204,"title":"LOẠI SẢN PHẨM","url":"/loai-san-pham","status":true,"params":[],"create_at":"2023-08-05T18:50:02.857Z","create_by":{"username":"administrator","fullname":"Administrator"},"components":[{"component_id":205,"component_name":"LOẠI SẢN PHẨM","layout_id":0,"table_id":129,"api_get":"/ui/161145792DF44033A45F7A8E370159D5","api_post":"/ui/974EEAC8D81E45E09DFE3712EE280703","api_put":"/ui/9B51E14B6C814C9B9DEF79B2C180C0F5","api_delete":"/ui/C776F8ED94CD4E44B141580C8797D5CA"}]},{"ui_id":210,"title":"SẢN PHẨM","url":"/san-pham","status":true,"params":[],"create_at":"2023-08-05T18:50:22.269Z","create_by":{"username":"administrator","fullname":"Administrator"},"components":[{"component_id":211,"component_name":"SẢN PHẨM","layout_id":0,"table_id":132,"api_get":"/ui/358D960B006C4C27B4608269EDE68FCE","api_post":"/ui/B84245EE97054ABD865E96FED36691D9","api_put":"/ui/01F0780CD1324D038A15765D60E2A310","api_delete":"/ui/93A8E05D5B7A4134A1C6560F24A5CDAE"}]},{"ui_id":216,"title":"ĐƠN HÀNG","url":"/don-hang","status":true,"params":[],"create_at":"2023-08-05T18:50:32.875Z","create_by":{"username":"administrator","fullname":"Administrator"},"components":[{"component_id":217,"component_name":"ĐƠN HÀNG","layout_id":0,"table_id":136,"api_get":"/ui/71EF95F2473D4F5082FD047DE9A58906","api_post":"/ui/6E48991B8389401FA4DFE11BCBD9602A","api_put":"/ui/D519C7CDC52242369177BF19B4C3E9FF","api_delete":"/ui/E2DFD7BF38464523A2D98D129CF27FA8"}]},{"ui_id":222,"title":"CHI TIẾT ĐƠN HÀNG","url":"/chi-tiet-don-hang","status":true,"params":[],"create_at":"2023-08-05T18:50:54.060Z","create_by":{"username":"administrator","fullname":"Administrator"},"components":[{"component_id":223,"component_name":"CHI TIẾT ĐƠN HÀNG","layout_id":0,"table_id":146,"api_get":"/ui/6898BFE8BF6D4D8788B1CCEC36419284","api_post":"/ui/B821E8AAA8E243349BD5E284B6B03CBE","api_put":"/ui/673B02E834CE4E4E8607B7A93705A40A","api_delete":"/ui/9212B7EC39ED4F4F844756C84E312C17"}]},{"ui_id":228,"title":"NHÂN VIÊN","url":"/nhan-vien","status":true,"params":[],"create_at":"2023-08-05T18:51:03.553Z","create_by":{"username":"administrator","fullname":"Administrator"},"components":[{"component_id":229,"component_name":"NHÂN VIÊN","layout_id":0,"table_id":140,"api_get":"/ui/53B3BAE8DB2740EC8F037B2BF93F89C4","api_post":"/ui/561083F907844322ACDC1061171CCCD8","api_put":"/ui/3DE4C00007EE43CB9A8044063DAE33F0","api_delete":"/ui/33C1B53EB9FA4605AEDEF897C418E1B0"}]}]}
+{
+    "data": [
+        {
+            "ui_id": 143,
+            "title": "KHÁCH HÀNG",
+            "url": "/khach-hang",
+            "status": true,
+            "params": [],
+            "create_at": "2023-08-07T01:14:55.060Z",
+            "create_by": {
+                "username": "administrator",
+                "fullname": "Administrator"
+            },
+            "components": [
+                {
+                    "component_id": 144,
+                    "component_name": "KHÁCH HÀNG",
+                    "layout_id": 0,
+                    "table_id": 130,
+                    "api_get": "/ui/7FDB40BB5E314D1F8BCC2F486D9F32E1",
+                    "api_post": "/ui/1AF1F17192DB4095ACA769867665D0AC",
+                    "api_put": "/ui/F32C2C82B0274D979B0AEEDBE8561BE3",
+                    "api_delete": "/ui/A00EDD1C2CA6476A992500168F01B3D2"
+                }
+            ]
+        },
+        {
+            "ui_id": 149,
+            "title": "LOẠI SẢN PHẨM",
+            "url": "/loai-san-pham",
+            "status": true,
+            "params": [],
+            "create_at": "2023-08-07T01:15:23.570Z",
+            "create_by": {
+                "username": "administrator",
+                "fullname": "Administrator"
+            },
+            "components": [
+                {
+                    "component_id": 150,
+                    "component_name": "LOẠI SẢN PHẨM",
+                    "layout_id": 0,
+                    "table_id": 136,
+                    "api_get": "/ui/C5AF00DAF66D4561BE0599DE802897F5",
+                    "api_post": "/ui/929F3FE17D1B4EB0B40E2B63DDDE3206",
+                    "api_put": "/ui/7872D4CCBF184A63958DE0C2D4020D8B",
+                    "api_delete": "/ui/DF743883CA98482B9135B5C661203C70"
+                }
+            ]
+        },
+        {
+            "ui_id": 175,
+            "title": "NHÂN VIÊN",
+            "url": "/nhan-vien",
+            "status": true,
+            "params": [],
+            "create_at": "2023-08-07T01:28:12.187Z",
+            "create_by": {
+                "username": "administrator",
+                "fullname": "Administrator"
+            },
+            "components": [
+                {
+                    "component_id": 176,
+                    "component_name": "NHÂN VIÊN",
+                    "layout_id": 0,
+                    "table_id": 155,
+                    "api_get": "/ui/262A6E570DD049B2A4AFEF8B79FF0F8E",
+                    "api_post": "/ui/1BE53773559E42ACB57D3CF0361EB534",
+                    "api_put": "/ui/CA68A6D4EB3E4EA39948E87179F5DFBA",
+                    "api_delete": "/ui/DC6E7073602446E4B3BFA8708CF460EA"
+                }
+            ]
+        },
+        {
+            "ui_id": 181,
+            "title": "ĐƠN HÀNG",
+            "url": "/don-hang",
+            "status": true,
+            "params": [],
+            "create_at": "2023-08-07T01:28:26.111Z",
+            "create_by": {
+                "username": "administrator",
+                "fullname": "Administrator"
+            },
+            "components": [
+                {
+                    "component_id": 182,
+                    "component_name": "ĐƠN HÀNG",
+                    "layout_id": 0,
+                    "table_id": 161,
+                    "api_get": "/ui/38ED5B336621493D818F4AD9F7E1420D",
+                    "api_post": "/ui/350FABBA98E64065B371ED52B55C43AF",
+                    "api_put": "/ui/6FE6D7E111BE4C138CEF2D4DF4EE6B6C",
+                    "api_delete": "/ui/441C172BE8C543D3837E426C5F08A8B7"
+                }
+            ]
+        },
+        {
+            "ui_id": 187,
+            "title": "SẢN PHẨM",
+            "url": "/san-pham",
+            "status": true,
+            "params": [],
+            "create_at": "2023-08-07T01:28:49.146Z",
+            "create_by": {
+                "username": "administrator",
+                "fullname": "Administrator"
+            },
+            "components": [
+                {
+                    "component_id": 188,
+                    "component_name": "SẢN PHẨM",
+                    "layout_id": 0,
+                    "table_id": 151,
+                    "api_get": "/ui/3C1A2D62601F4AD0A804375F2C105785",
+                    "api_post": "/ui/4BE1E72128E7457DA51FF43CD5EC3096",
+                    "api_put": "/ui/2E911FD2DEB540A8A53CCD69AE47390D",
+                    "api_delete": "/ui/7230CB74A439493C9131B424AC95865D"
+                }
+            ]
+        },
+        {
+            "ui_id": 193,
+            "title": "CHI TIẾT SẢN PHẨM",
+            "url": "/chi-tiet-san-pham",
+            "status": true,
+            "params": [],
+            "create_at": "2023-08-07T01:29:28.327Z",
+            "create_by": {
+                "username": "administrator",
+                "fullname": "Administrator"
+            },
+            "components": [
+                {
+                    "component_id": 194,
+                    "component_name": "CHI TIẾT SẢN PHẨM",
+                    "layout_id": 0,
+                    "table_id": 161,
+                    "api_get": "/ui/7FE54B2A4C7943E895602F7709D51091",
+                    "api_post": "/ui/F2F43D24CB30429F84F30CCB49B6729D",
+                    "api_put": "/ui/27FDB51EF2AE44038E08E1C5E90B93BA",
+                    "api_delete": "/ui/F8D04DC133FF4AAEBCB501B66BBF30D2"
+                }
+            ]
+        }
+    ]
+}

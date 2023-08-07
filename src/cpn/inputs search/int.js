@@ -2,57 +2,24 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 export default (props) => {
-
-    const { field, changeTrigger, related, table, defaultValue, selectOption, onEmailError, readOnly } = props;
+    const { field, changeTrigger, related, table, defaultValue, selectOption } = props;
 
     const [current, setCurrent] = useState(defaultValue ? defaultValue : "")
     const [fields, setFields] = useState([])
     const [height, setHeight] = useState(0)
     const [foreignData, setForeignData] = useState([])
     const [showKey, setShowKey] = useState("")
-    const { proxy, unique_string, lang } = useSelector(state => state);
+    const { proxy, unique_string } = useSelector(state => state);
     const [relatedTable, setRelatedTable] = useState({})
     const [pk, setPK] = useState("");
-
-
-    const [emailError, setEmailError] = useState(false);
-    const validateEmail = (email) => {
-        const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return emailRegex.test(email);
-    };
-
-
-    const fieldChangeData = (e) => {
-        const { value } = e.target;
-        setCurrent(value);
-        const isValidEmail = validateEmail(value) || value === '';
-        onEmailError(!isValidEmail);
-        if (isValidEmail) {
-            changeTrigger(field, value);
-            setEmailError(false);
-        }
-        else {
-            setEmailError(true);
-        }
-    };
-    const changeRawData = (e) => {
-        const { value } = e.target;
-        setCurrent(value);
-        const isValidEmail = validateEmail(value) || value === '';
-        onEmailError(!isValidEmail);
-        if (isValidEmail) {
-            changeTrigger(field, value);
-            setEmailError(false);
-        }
-        else {
-            setEmailError(true);
-        }
-    }
+    // console.log(table)
+    // console.log("data field",field.id)
 
     useEffect(() => {
         if (defaultValue !== undefined) {
             const key = isFieldForeign()
             if (key) {
+
                 // fetch(`${proxy()}/apis/apis/table/data/${table_alias}`).then(res => res.json()).then(res => {/table/:table_id/data
                 fetch(`${proxy()}/apis/table/${key.table_id}/data`).then(res => res.json()).then(res => {
                     const { success, data, fields } = res.data;
@@ -71,11 +38,15 @@ export default (props) => {
                 setCurrent(defaultValue)
             }
         } else {
-
-            if (!isFieldForeign()) {
-
+            if (!isFieldForeign() && field.AUTO_INCREMENT) {
+                fetch(`${proxy()}/apis/field/autoid/${field.id}`)
+                    .then(res => res.json()).then(res => {
+                        const { data } = res;
+                        // console.log(data.id)
+                        setCurrent(data.id)
+                        changeTrigger(field, data.id)
+                    })
             } else {
-
                 const key = isFieldForeign()
                 if (key) {
                     if (foreignData.length == 0) {
@@ -96,11 +67,13 @@ export default (props) => {
 
             }
         }
-    }, [defaultValue]);
+    }, [defaultValue])
+
+    useEffect(() => {
+
+    }, [])
 
     const isFieldForeign = () => {
-        // console.log(table)
-        // console.log(field)
         if (table) {
             const { foreign_keys } = table;
             const key = foreign_keys.find(key => key.field_id == field.id)
@@ -122,7 +95,19 @@ export default (props) => {
         return false
     }
 
+    const fieldChangeData = (e) => {
+        const rawJSON = e.target.value
+        const value = JSON.parse(rawJSON)
 
+        setCurrent(value[pk])
+        changeTrigger(field, value[pk])
+    }
+
+    const changeRawData = (e) => {
+        const { value } = e.target
+        setCurrent(value)
+        changeTrigger(field, value)
+    }
 
     const focusTrigger = () => {
         setHeight(250);
@@ -147,51 +132,40 @@ export default (props) => {
         }
         return null
     }
-
-
+    // const dataClickedTrigger = (data) => {
+    //     setCurrent(data);
+    //     changeTrigger(field, data[pk])
+    // }
     if (isPrimaryKey()) {
-
         if (!isFieldForeign()) {
-
             return (
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
+                    <div class="col-md-4 col-sm-3">
                         <form>
                             <div class="form-group">
                                 <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
                                 <input
-                                    type="text"
+                                    type={field.AUTO_INCREMENT ? "text" : "number"}
                                     className="form-control"
                                     placeholder=""
                                     onChange={changeRawData}
                                     defaultValue={defaultValue == undefined ? current : defaultValue}
-                                    readOnly={readOnly ? true : false}
+                                    readOnly={field.AUTO_INCREMENT ? true : false}
                                 />
-                                <div className="rel">
-                                    <div className="abs">
-                                        {emailError && (
-                                            <span className="block text-red text-14-px mb-2" style={{color: 'red'}}>
-                                               {lang["error.email_invalid"]}
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
                             </div>
                         </form>
                     </div>
-                </div>
             )
         }
         else {
             return (
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
+             
+                    <div class="col-md-4 col-sm-3">
                         <form>
                             <div class="form-group">
                                 <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
                                 <select className="form-control" name="role" onChange={fieldChangeData} value={generateData(current)}>
                                     {selectOption ? (
-                                        <option value={""}>{lang["choose"]}</option>
+                                        <option value={""} >Chọn</option>
                                     ) : null
                                     }
 
@@ -205,17 +179,8 @@ export default (props) => {
                                 </select>
                             </div>
                         </form>
-                        {emailError && (
-                            <div className="rel">
-                                <div className="abs">
-                                    <span className="block crimson p-0-5 text-14-px mb-2" style={{color: 'red'}}>
-                                    {lang["error.email_invalid"]}
-                                    </span>
-                                </div>
-                            </div>
-                        )}
                     </div>
-                </div>
+                
             )
         }
 
@@ -223,44 +188,35 @@ export default (props) => {
 
         if (!isFieldForeign()) {
             return (
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
+                
+                    <div class="col-md-4 col-sm-3">
                         <form>
                             <div class="form-group">
                                 <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
                                 <input
-                                    type="text"
+                                    type={field.AUTO_INCREMENT ? "text" : "number"}
                                     className="form-control"
                                     placeholder=""
                                     onChange={changeRawData}
                                     value={current}
-                                    // readOnly={readOnly ? true : false}
+                                    // readOnly={field.AUTO_INCREMENT ? true : false}
                                 />
 
                             </div>
                         </form>
-                        {emailError && (
-                            <div className="rel">
-                                <div className="abs">
-                                    <span className="block crimson p-0-5 text-14-px mb-2" style={{color: 'red'}}>
-                                    {lang["error.email_invalid"]}
-                                    </span>
-                                </div>
-                            </div>
-                        )}
                     </div>
-                </div>
+               
             )
         } else {
             return (
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
+                
+                    <div class="col-md-4 col-sm-3">
                         <form>
                             <div class="form-group">
                                 <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
                                 <select className="form-control" name="role" onChange={fieldChangeData} value={generateData(current)}>
                                     {selectOption ? (
-                                        <option value={""} >{lang["choose"]}</option>
+                                        <option value={""} >Chọn</option>
                                     ) : null
                                     }
                                     {foreignData && foreignData.length > 0 && foreignData.map((d, index) =>
@@ -271,23 +227,12 @@ export default (props) => {
                                         </option>
                                     )}
                                 </select>
-                                {emailError && (
-                                    <div className="rel">
-                                        <div className="abs">
-                                            <span className="block crimson p-0-5 text-14-px mb-2" style={{color: 'red'}}>
-                                            {lang["error.email_invalid"]}
-                                            </span>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
-
                         </form>
                     </div>
-                </div>
+               
             )
         }
+    }
 
-    };
-
-};
+}
