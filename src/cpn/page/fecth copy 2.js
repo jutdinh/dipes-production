@@ -812,7 +812,7 @@ export default () => {
                                                                                     />
                                                                                 </th>
                                                                             ))}
-                                                                            <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size pointer icon-margin mb-2" onClick={handleSearchClick} title={lang["search"]}></i></th>
+                                                                            <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size-search pointer icon-margin mb-2" onClick={handleSearchClick} title={lang["search"]}></i></th>
                                                                         </tr>
                                                                     )}
                                                                 </thead>
