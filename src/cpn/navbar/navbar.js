@@ -76,47 +76,58 @@ export default () => {
                   </li>
                ) : null}
 
-
-             
-                 
-           
-
-               <li>
-                  <a href="#dashboard" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-                     <i class="fa fa-dashboard yellow_color"></i>
-                     <span>{lang["data management"]}</span>
-                  </a>
-                  <ul class="collapse list-unstyled show nav-custom " id="dashboard">
-                     {pages && pages.map(ui => (
-                        ui.status ? (
-                           <li className="navbar-item">
-                              <NavLink to={ `/page${ui.url}` }  activeClassName="nav-active">
-                                 <i class="fa fa-newspaper-o"></i>
-                                 <span>{ui.title}</span>
-                              </NavLink>
-                           </li>
-                        ) : null
-                     ))}
-                  </ul>
-               </li>
-
                {user.role === "ad" || user.role === "uad" ? (
-                    <li className="navbar-item">
-                    <NavLink to="/diagram_db" activeClassName="nav-active">
-                       <i class="fa fa-database pointer icon-database"></i>
-                       <span>{lang["diagram"]}</span>
-                    </NavLink>
-                 </li>
+                  <li>
+                     <a href="#dashboard" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fa fa-dashboard yellow_color"></i>
+                        <span>{lang["data management"]}</span>
+                     </a>
+                     <ul class="collapse list-unstyled show nav-custom " id="dashboard">
+                        {pages && pages.map(ui => (
+                           ui.status ? (
+                              <li className="navbar-item">
+                                 <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
+                                    <i class="fa fa-newspaper-o"></i>
+                                    <span>{ui.title}</span>
+                                 </NavLink>
+                              </li>
+                           ) : null
+                        ))}
+                     </ul>
+                  </li>
                ) : null}
 
-             
+                {user.role === "pd" ? (
+                  <li>
+                        {pages && pages.map(ui => (
+                           ui.status ? (
+                              <li className="navbar-item">
+                                 <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
+                                    <i class="fa fa-newspaper-o"></i>
+                                    <span>{ui.title}</span>
+                                 </NavLink>
+                              </li>
+                           ) : null
+                        ))}
+                  </li>
+               ) : null}
+
+               {user.role === "ad" || user.role === "uad" ? (
                   <li className="navbar-item">
-                     <NavLink to="/sitemap" onClick={() => { openTab('/sitemap') }} activeClassName="nav-active">
-                        <i class="fa fa-sitemap"></i>
-                        <span>{lang["site map"]}</span>
+                     <NavLink to="/diagram_db" activeClassName="nav-active">
+                        <i class="fa fa-database pointer icon-database"></i>
+                        <span>{lang["diagram"]}</span>
                      </NavLink>
                   </li>
-             
+               ) : null}
+
+               <li className="navbar-item">
+                  <NavLink to="/sitemap" onClick={() => { openTab('/sitemap') }} activeClassName="nav-active">
+                     <i class="fa fa-sitemap"></i>
+                     <span>{lang["site map"]}</span>
+                  </NavLink>
+               </li>
+
                {/* {user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/logs" activeClassName="nav-active">

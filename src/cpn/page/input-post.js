@@ -118,27 +118,27 @@ export default () => {
                     }
                 }
                 // console.log(`VALID: ${valid}`)
-                // if (valid) {
-                //     Swal.fire({
-                //         title: lang["success"],
-                //         text: lang["success.add"],
-                //         icon: "success",
-                //         showConfirmButton: false,
-                //         timer: 1500
-                //     }).then(function () {
-                //         window.location.reload();
-                //     });
-                // } else {
-                //     Swal.fire({
-                //         title: lang["faild"],
-                //         text: lang["fail.add"],
-                //         icon: "error",
-                //         showConfirmButton: true,
+                if (valid) {
+                    Swal.fire({
+                        title: lang["success"],
+                        text: lang["success.add"],
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(function () {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: lang["faild"],
+                        text: lang["fail.add"],
+                        icon: "error",
+                        showConfirmButton: true,
 
-                //     }).then(function () {
-                //         // Không cần reload trang
-                //     });
-                // }
+                    }).then(function () {
+                        // Không cần reload trang
+                    });
+                }
             })
         } else {
             if (emailError) {

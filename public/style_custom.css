@@ -1277,3 +1277,35 @@ h5 {
     overflow-y: auto;
     /* Kích hoạt thanh cuộn khi nội dung vượt quá chiều cao tối đa */
 }
+
+
+.custom-dropdown {
+    position: relative;
+    border: 1px solid #ccc;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.dropdown-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.dropdown-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #e6e6e6;
+}
+
+
+

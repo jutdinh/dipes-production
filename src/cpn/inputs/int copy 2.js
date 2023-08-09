@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+const SAMPLE_DATA = [
+    { id: 1, name: "Data 1" },
+    { id: 2, name: "Data 2" },
+    { id: 3, name: "Data 3" },
+    //... thêm nhiều dữ liệu khác theo nhu cầu của bạn
+];
 
 export default (props) => {
     const { field, changeTrigger, related, table, defaultValue, selectOption } = props;
@@ -7,13 +13,30 @@ export default (props) => {
     const [current, setCurrent] = useState(defaultValue ? defaultValue : "")
     const [fields, setFields] = useState([])
     const [height, setHeight] = useState(0)
-    const [foreignData, setForeignData] = useState([])
+    const [foreignData, setForeignData] = useState([]);
+
     const [showKey, setShowKey] = useState("")
     const { proxy, unique_string } = useSelector(state => state);
     const [relatedTable, setRelatedTable] = useState({})
     const [pk, setPK] = useState("");
+   
+
     // console.log(table)
     // console.log("data field",field.id)
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+    };
+    const filteredData =1
+
+    const [isOpen, setIsOpen] = useState(false);
+    const toggleDropdown = () => {
+        setIsOpen(!isOpen);
+    };
+    const handleInputClick = (e) => {
+        e.stopPropagation();
+    };
 
     useEffect(() => {
         if (defaultValue !== undefined) {
@@ -21,6 +44,28 @@ export default (props) => {
             if (key) {
 
                 // fetch(`${proxy()}/apis/apis/table/data/${table_alias}`).then(res => res.json()).then(res => {/table/:table_id/data
+                fetch(`${proxy()}/apis/table/${key.table_id}/data`)
+
+                    .then(res => res.json())
+
+                    .then(res => {
+                        const { success, data, fields } = res.data;
+                        // console.log(res.data)
+                        setForeignData(data)
+                        setFields(fields)
+
+                        const { ref_field_id } = key;
+                        const primaryField = fields.find(field => field.id == ref_field_id);
+                        if (primaryField) {
+                            setPK(primaryField.fomular_alias)
+                        }
+                    })
+
+            } else {
+                setCurrent(defaultValue)
+            }
+        } else {
+            if (!isFieldForeign() && field.AUTO_INCREMENT) {
                 const dataBody = {
                     table_id: 41,
                     start_index: 0,
@@ -42,26 +87,13 @@ export default (props) => {
                     setCurrent(data)
                     changeTrigger(field, data)
                 })
-
-            } else {
-                setCurrent(defaultValue)
-            }
-        } else {
-            if (!isFieldForeign() && field.AUTO_INCREMENT) {
-                fetch(`${proxy()}/apis/field/autoid/${field.id}`)
-                    .then(res => res.json()).then(res => {
-                        const { data } = res;
-                        // console.log(data.id)
-                        setCurrent(data.id)
-                        changeTrigger(field, data.id)
-                    })
             } else {
                 const key = isFieldForeign()
                 if (key) {
                     if (foreignData.length == 0) {
                         const dataBody = {
                             table_id: 41,
-                            start_index: 1,
+                            start_index: 0,
                             criteria: {
         
                             }
@@ -78,14 +110,12 @@ export default (props) => {
                         }).then(res => res.json())
                             .then(res => {
                                 const { success, data, fields,  sumerize, statistic } = res;
-                               
+                                console.log(res)
                                 setForeignData(data)
                                 setFields(fields)
- 
-                            const { ref_field_id } = key;
-                                console.log(key)
+
+                                const { ref_field_id } = key;
                                 const primaryField = fields.find(field => field.id == ref_field_id);
-                                console.log(primaryField)
                                 if (primaryField) {
                                     setPK(primaryField.fomular_alias)
                                 }
@@ -192,30 +222,45 @@ export default (props) => {
         }
         else {
             return (
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
+                <div className="row justify-content-center">
+                    <div className="col-md-6">
                         <form>
-                            <div class="form-group">
+                            <div className="form-group">
                                 <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
-                                <select className="form-control" name="role" onChange={fieldChangeData} value={generateData(current)}>
-                                    {selectOption ? (
-                                        <option value={""} >Chọn</option>
-                                    ) : null
-                                    }
-
-                                    {foreignData && foreignData.length > 0 && foreignData.map((d, index) =>
-                                        <option value={JSON.stringify(d)} selected={d[pk] == defaultValue ? true : false} >
-                                            <div key={index} className="form-control" >
-                                                <span>{generateData(d)}</span>
-                                            </div>
-                                        </option>
+                                <div className="custom-dropdown" onClick={toggleDropdown}>
+                                    {generateData(current) || "Chọn"}
+                                    {isOpen && (
+                                        <div className="dropdown-list">
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Search..."
+                                                value={searchTerm}
+                                                onClick={handleInputClick}
+                                                onChange={handleSearchChange}
+                                            />
+                                            {filteredData && filteredData.length > 0 && filteredData.map((d, index) =>
+                                                <div
+                                                    key={index}
+                                                    className="dropdown-item"
+                                                    onClick={() => {
+                                                        setCurrent(d);
+                                                        changeTrigger(field, d[pk]);
+                                                        setIsOpen(false);
+                                                    }}
+                                                >
+                                                    {generateData(d)}
+                                                </div>
+                                            )}
+                                        </div>
                                     )}
-                                </select>
+                                </div>
                             </div>
                         </form>
                     </div>
                 </div>
             )
+
         }
 
     } else {
@@ -233,7 +278,7 @@ export default (props) => {
                                     placeholder=""
                                     onChange={changeRawData}
                                     value={current}
-                                    // readOnly={field.AUTO_INCREMENT ? true : false}
+                                // readOnly={field.AUTO_INCREMENT ? true : false}
                                 />
 
                             </div>
@@ -243,29 +288,45 @@ export default (props) => {
             )
         } else {
             return (
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
+                <div className="row justify-content-center">
+                    <div className="col-md-6">
                         <form>
-                            <div class="form-group">
+                            <div className="form-group">
                                 <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
-                                <select className="form-control" name="role" onChange={fieldChangeData} value={generateData(current)}>
-                                    {selectOption ? (
-                                        <option value={""} >Chọn</option>
-                                    ) : null
-                                    }
-                                    {foreignData && foreignData.length > 0 && foreignData.map((d, index) =>
-                                        <option value={JSON.stringify(d)} selected={d[pk] == defaultValue ? true : false} >
-                                            <div key={index} className="form-control" >
-                                                <span>{generateData(d)}</span>
-                                            </div>
-                                        </option>
+                                <div className="custom-dropdown" onClick={toggleDropdown}>
+                                    {generateData(current) || "Chọn"}
+                                    {isOpen && (
+                                        <div className="dropdown-list">
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Search..."
+                                                value={searchTerm}
+                                                onClick={handleInputClick}
+                                                onChange={handleSearchChange}
+                                            />
+                                            {filteredData && filteredData.length > 0 && filteredData.map((d, index) =>
+                                                <div
+                                                    key={index}
+                                                    className="dropdown-item"
+                                                    onClick={() => {
+                                                        setCurrent(d);
+                                                        changeTrigger(field, d[pk]);
+                                                        setIsOpen(false);
+                                                    }}
+                                                >
+                                                    {generateData(d)}
+                                                </div>
+                                            )}
+                                        </div>
                                     )}
-                                </select>
+                                </div>
                             </div>
                         </form>
                     </div>
                 </div>
             )
+
         }
     }
 

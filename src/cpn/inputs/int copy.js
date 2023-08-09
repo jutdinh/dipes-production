@@ -21,26 +21,17 @@ export default (props) => {
             if (key) {
 
                 // fetch(`${proxy()}/apis/apis/table/data/${table_alias}`).then(res => res.json()).then(res => {/table/:table_id/data
-                const dataBody = {
-                    table_id: 41,
-                    start_index: 0,
-                    criteria: {
+                fetch(`${proxy()}/apis/table/${key.table_id}/data`).then(res => res.json()).then(res => {
+                    const { success, data, fields } = res.data;
+                    // console.log(res.data)
+                    setForeignData(data)
+                    setFields(fields)
+
+                    const { ref_field_id } = key;
+                    const primaryField = fields.find(field => field.id == ref_field_id);
+                    if (primaryField) {
+                        setPK(primaryField.fomular_alias)
                     }
-                }
-                console.log(dataBody)
-                fetch(`${proxy()}/api/foreign/data`, {
-                    method: "POST",
-                    headers: {
-                        "content-type": "application/json",
-
-                    },
-                    body: JSON.stringify(dataBody)
-
-                }).then(res => res.json()).then(res => {
-                    const { success, data, fields,  sumerize, statistic } = res;
-                    console.log(res)
-                    setCurrent(data)
-                    changeTrigger(field, data)
                 })
 
             } else {
@@ -59,37 +50,18 @@ export default (props) => {
                 const key = isFieldForeign()
                 if (key) {
                     if (foreignData.length == 0) {
-                        const dataBody = {
-                            table_id: 41,
-                            start_index: 1,
-                            criteria: {
-        
-                            }
-                        }
-                        console.log(dataBody)
-                        fetch(`${proxy()}/api/foreign/data`, {
-                            method: "POST",
-                            headers: {
-                                "content-type": "application/json",
+                        fetch(`${proxy()}/apis/table/${key.table_id}/data`).then(res => res.json()).then(res => {
+                            const { success, data, fields } = res;
+                            // console.log(data)
+                            setForeignData(data.data)
+                            setFields(data.fields)
 
-                            },
-                            body: JSON.stringify(dataBody)
-
-                        }).then(res => res.json())
-                            .then(res => {
-                                const { success, data, fields,  sumerize, statistic } = res;
-                               
-                                setForeignData(data)
-                                setFields(fields)
- 
                             const { ref_field_id } = key;
-                                console.log(key)
-                                const primaryField = fields.find(field => field.id == ref_field_id);
-                                console.log(primaryField)
-                                if (primaryField) {
-                                    setPK(primaryField.fomular_alias)
-                                }
-                            })
+                            const primaryField = data.fields.find(field => field.id == ref_field_id);
+                            if (primaryField) {
+                                setPK(primaryField.fomular_alias)
+                            }
+                        })
                     }
                 }
 
