@@ -18,7 +18,7 @@ export default (props) => {
     const [showKey, setShowKey] = useState("")
     const { proxy, unique_string } = useSelector(state => state);
     const [relatedTable, setRelatedTable] = useState({})
-    const [pk, setPK] = useState("");
+    const [pk, setPK] = useState(undefined);
     console.log(pk)
     // console.log("data field",field.id)
     const [startIndex, setStartIndex] = useState(0);
@@ -52,8 +52,15 @@ export default (props) => {
                 }).then(res => res.json()).then(res => {
                     const { success, data, fields, sumerize, statistic } = res;
                     console.log(res)
-                    setCurrent(data)
-                    changeTrigger(field, data)
+
+                    setForeignData(data)
+                    setFields(fields)
+
+                    const { ref_field_id } = key;
+                    const primaryField = fields.find(field => field.id == ref_field_id);
+                    if (primaryField) {
+                        setPK(primaryField.fomular_alias)
+                    }
                 })
 
             } else {
@@ -91,18 +98,15 @@ export default (props) => {
                             .then(res => {
                                 const { success, data, fields, sumerize, statistic } = res;
                                 console.log(82, res)
-                                if (data.length === 0) {
-                                    setHasMoreData(false);
-                                } else {
-                                    // setForeignData(prevData => [...prevData, ...data.filter(record => record !== undefined)]);
-                                    setFields(fields)
-                                }
+
+                                setForeignData([...data.filter(record => record !== undefined)]);
+                                setFields(fields)
 
                                 const { ref_field_id } = key;
                                 console.log(key)
                                 const primaryField = fields.find(field => field.id == ref_field_id);
-                                console.log(primaryField)
                                 if (primaryField) {
+                                    console.log(primaryField)
                                     setPK(primaryField.fomular_alias)
                                 }
                             })
@@ -113,27 +117,30 @@ export default (props) => {
         }
     }, [defaultValue])
 
-    useEffect(() => {
+    useEffect(() => {        
 
-    }, [])
+    }, [pk])
 
-    const [hasMoreData, setHasMoreData] = useState(true);
-
-
-
+    const [selectedValue, setSelectedValue] = useState(null);
+    const [loadedRecordCount, setLoadedRecordCount] = useState(0);
+    const [options, setOption] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
 
     const loadOptions = async (search, loadedOptions, { page }) => {
-        console.log(search)
+        console.log(search);
 
-        const query = {}
-        query[pk] = search
-        const dataBody = {
+        let dataBody = {
             table_id: corespondingKey.table_id,
-            start_index: page,
-            query
+            start_index: page
         };
 
-        console.log(dataBody)
+        if (search && search.trim() !== "") {
+            const criteria = {};
+            criteria[pk] = search;
+            dataBody.criteria = criteria;
+        }
+
+        console.log(dataBody);
         const response = await fetch(`${proxy()}/api/foreign/data`, {
             method: "POST",
             headers: {
@@ -142,42 +149,52 @@ export default (props) => {
             body: JSON.stringify(dataBody)
         });
         const res = await response.json();
-        console.log(res)
-        if (res.result.length === 0) {
-            return {
-                options: options,
-                hasMore: false,
-                additional: {
-                    page: page + 1,
-                },
-            };
+        console.log(res);
 
-        }
+        let returnedData = [];
 
-        setForeignData([...res.data.filter(record => record !== undefined)]);
-        if (res.data.includes(null)) {
-            return {
-                options: options,
-                hasMore: false,
-                additional: {
-                    page: page + 1,
-                },
-            };
+        if (res.result) {
+            returnedData = res.result;
         } else {
-            return {
-                options: options,
-                hasMore: true,
-                additional: {
-                    page: page + 1,
-                },
-            };
+            returnedData = res.data;
         }
 
+        console.log(returnedData)
+        const dataWithoutNull = returnedData.filter(record => record !== null && record !== undefined);
 
+        setForeignData(dataWithoutNull)
 
+        setLoadedRecordCount(prevCount => prevCount + dataWithoutNull.length);
 
+     
+        let hasMoreValue;
 
+        if (search && search.trim() !== "") {
+            hasMoreValue = true; 
+        } else {
+            hasMoreValue = loadedRecordCount + 17 < res.sumerize; 
+        }
+        const options = dataWithoutNull.map(d => ({
+            value: JSON.stringify(d),
+            label: generateData(d)
+        }));
+        setOption(options)
+        if (defaultValue) {
+            const foundOption = options.find(option => option.value === JSON.stringify(defaultValue));
+            if (foundOption) {
+                setSelectedOption(foundOption);
+            }
+        }
+        return {
+            options: options,
+            hasMore: hasMoreValue,
+            additional: {
+                page: page + 1,
+            },
+        };
     }
+
+
     const isFieldForeign = () => {
         if (table) {
             const { foreign_keys } = table;
@@ -188,7 +205,7 @@ export default (props) => {
         }
         return false
     }
-    console.log(foreignData)
+
     const isPrimaryKey = () => {
         if (table) {
             const { primary_key } = table;
@@ -201,6 +218,7 @@ export default (props) => {
     }
 
     const fieldChangeData = (e) => {
+        console.log(e.target.value)
         const rawJSON = e.target.value
         const value = JSON.parse(rawJSON)
 
@@ -217,40 +235,33 @@ export default (props) => {
     const focusTrigger = () => {
         setHeight(250);
     }
+
     const generateData = (data) => {
-
-        // if( fields.length > 0 && data ){
-        //     let showFields = fields;
-        //     const { display_fields } = relatedTable;
-
-        //     if( display_fields && display_fields.length > 0 ){
-        //         showFields = display_fields;
-        //         return showFields.map( f => data[f] ).join(' - ')
-        //     }
-        //     return showFields.map( f => data[ f.field_alias ] ).join(' - ')
-
-        // }else{
-        //     return null
-        // }c        
-        if (data) {
-            return data[pk]
+        console.log(data)
+        console.log(pk)
+        if (pk) {
+            return data[pk];
         }
-        return null
+        return null;
     }
+    
+    
 
     // const dataClickedTrigger = (data) => {
     //     setCurrent(data);
     //     changeTrigger(field, data[pk])
     // }
 
-    const options = foreignData.map(d => ({
-        value: JSON.stringify(d),
-        label: generateData(d)
-    }));
 
     const handleChange = option => {
-        fieldChangeData({ target: { value: option.value } });
+        console.log("Before update: ", selectedValue);
+        setSelectedValue(option);
+        console.log("After update: ", selectedValue);
+
+
+        fieldChangeData({ target: { value: option.value } }); // Continue with your original logic
     };
+
     const [isLoading, setIsLoading] = useState(false);
 
     const handleScrollToBottom = () => {
@@ -261,7 +272,65 @@ export default (props) => {
         }
     };
 
+    console.log(JSON.stringify(defaultValue))
+    const [defaultOption, setDefaultOption] = useState(null);
 
+    const [initialValue, setInitialValue] = useState(null);
+    console.log(defaultOption)
+    useEffect(() => {
+
+        const fetchDataForDefaultValue = async () => {
+            const { foreign_keys } = table;
+            const corespondingKey = foreign_keys.find(key => key.field_id == field.id)
+            if (corespondingKey) {
+                const dataBody = {
+                    table_id: corespondingKey.table_id,
+                    start_index: 0 // Bắt đầu từ trang đầu tiên
+                };
+
+                const criteria = {};
+                criteria[pk] = defaultValue;
+                dataBody.criteria = criteria;
+
+                const response = await fetch(`${proxy()}/api/foreign/data`, {
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/json",
+                    },
+                    body: JSON.stringify(dataBody)
+                });
+
+                const res = await response.json();
+
+                let returnedData = res.result || res.data;
+             
+                const foundData = returnedData.find(d => d[pk] === defaultValue);
+                console.log(foundData)
+                const label = generateData(foundData);
+                console.log(label);
+
+                if (foundData) {
+                    const dataOption = {
+                        value: JSON.stringify(foundData),
+                        label: generateData(foundData)
+                    };
+
+                    setDefaultOption(dataOption);
+
+                    if (!initialValue) {
+                        setInitialValue(dataOption);
+                        setSelectedValue(dataOption);
+                    } else if (selectedValue && initialValue.value === selectedValue.value) {
+                        setSelectedValue(dataOption);
+                    }
+                }
+            }
+
+        };
+        if (current != undefined) {
+            fetchDataForDefaultValue()
+        }
+    }, [current, pk]);
 
     if (isPrimaryKey()) {
 
@@ -288,31 +357,26 @@ export default (props) => {
             )
         }
         else {
+
             return (
                 <div class="row justify-content-center">
                     <div class="col-md-6">
                         <form>
                             <div class="form-group">
                                 <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
-                                <select className="form-control" name="role" onChange={fieldChangeData} value={generateData(current)}>
-                                    {selectOption ? (
-                                        <option value={""} >Chọn</option>
-                                    ) : null
-                                    }
-
-                                    {foreignData && foreignData.length > 0 && foreignData.map((d, index) =>
-                                        <option value={JSON.stringify(d)} selected={d[pk] == defaultValue ? true : false} >
-                                            <div key={index} className="form-control" >
-                                                <span>{generateData(d)}</span>
-                                            </div>
-                                        </option>
-                                    )}
-                                </select>
+                                <input
+                                    type={field.AUTO_INCREMENT ? "text" : "number"}
+                                    className="form-control"
+                                    placeholder=""
+                                    onChange={changeRawData}
+                                    defaultValue={defaultValue == undefined ? current : defaultValue}
+                                    readOnly={field.AUTO_INCREMENT ? true : false}
+                                />
                             </div>
                         </form>
                     </div>
                 </div>
-            )
+            );
         }
 
     } else {
@@ -346,11 +410,12 @@ export default (props) => {
                             <div className="form-group">
                                 <label>{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
                                 <AsyncPaginate
-                                    defaultOptions
+                                    // defaultOptions
+                                    // key={ Math.random()}
                                     loadOptions={loadOptions}
                                     onChange={handleChange}
                                     isSearchable={true}
-                                    value={options.find(option => option.value === JSON.stringify(current))}
+                                    value={selectedValue}
                                     styles={{
                                         menuList: base => ({
                                             ...base,

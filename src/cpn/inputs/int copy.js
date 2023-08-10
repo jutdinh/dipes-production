@@ -1,8 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import $ from 'jquery';
+import Select from 'react-select';
+import { AsyncPaginate } from 'react-select-async-paginate';
+
+
+
 
 export default (props) => {
     const { field, changeTrigger, related, table, defaultValue, selectOption } = props;
+    const selectRef = useRef(null);
 
     const [current, setCurrent] = useState(defaultValue ? defaultValue : "")
     const [fields, setFields] = useState([])
@@ -12,26 +19,41 @@ export default (props) => {
     const { proxy, unique_string } = useSelector(state => state);
     const [relatedTable, setRelatedTable] = useState({})
     const [pk, setPK] = useState("");
-    // console.log(table)
+    console.log(table)
     // console.log("data field",field.id)
+    const [startIndex, setStartIndex] = useState(0);
 
+    const { foreign_keys } = table;
+    const corespondingKey = foreign_keys.find(key => key.field_id == field.id)
+
+    console.log(startIndex)
     useEffect(() => {
+        const key = isFieldForeign()
+        const { foreign_keys } = table;
+        const corespondingKey = foreign_keys.find(key => key.field_id == field.id)
         if (defaultValue !== undefined) {
-            const key = isFieldForeign()
             if (key) {
-
                 // fetch(`${proxy()}/apis/apis/table/data/${table_alias}`).then(res => res.json()).then(res => {/table/:table_id/data
-                fetch(`${proxy()}/apis/table/${key.table_id}/data`).then(res => res.json()).then(res => {
-                    const { success, data, fields } = res.data;
-                    // console.log(res.data)
-                    setForeignData(data)
-                    setFields(fields)
+                const dataBody = {
+                    table_id: corespondingKey.table_id,
+                    start_index: startIndex,
+                    criteria: {}
+                };
 
-                    const { ref_field_id } = key;
-                    const primaryField = fields.find(field => field.id == ref_field_id);
-                    if (primaryField) {
-                        setPK(primaryField.fomular_alias)
-                    }
+                console.log(dataBody)
+                fetch(`${proxy()}/api/foreign/data`, {
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/json",
+
+                    },
+                    body: JSON.stringify(dataBody)
+
+                }).then(res => res.json()).then(res => {
+                    const { success, data, fields, sumerize, statistic } = res;
+                    console.log(res)
+                    setCurrent(data)
+                    changeTrigger(field, data)
                 })
 
             } else {
@@ -50,18 +72,40 @@ export default (props) => {
                 const key = isFieldForeign()
                 if (key) {
                     if (foreignData.length == 0) {
-                        fetch(`${proxy()}/apis/table/${key.table_id}/data`).then(res => res.json()).then(res => {
-                            const { success, data, fields } = res;
-                            // console.log(data)
-                            setForeignData(data.data)
-                            setFields(data.fields)
+                        const dataBody = {
+                            table_id: corespondingKey.table_id,
+                            start_index: startIndex,
+                            criteria: {}
+                        };
 
-                            const { ref_field_id } = key;
-                            const primaryField = data.fields.find(field => field.id == ref_field_id);
-                            if (primaryField) {
-                                setPK(primaryField.fomular_alias)
-                            }
-                        })
+                        console.log(69, dataBody)
+                        fetch(`${proxy()}/api/foreign/data`, {
+                            method: "POST",
+                            headers: {
+                                "content-type": "application/json",
+
+                            },
+                            body: JSON.stringify(dataBody)
+
+                        }).then(res => res.json())
+                            .then(res => {
+                                const { success, data, fields, sumerize, statistic } = res;
+                                console.log(82, res)
+                                if (data.length === 0) {
+
+                                } else {
+                                    setForeignData([...data.filter(record => record !== undefined)]);
+                                    setFields(fields)
+                                }
+
+                                const { ref_field_id } = key;
+                                console.log(key)
+                                const primaryField = fields.find(field => field.id == ref_field_id);
+                                console.log(primaryField)
+                                if (primaryField) {
+                                    setPK(primaryField.fomular_alias)
+                                }
+                            })
                     }
                 }
 
@@ -72,6 +116,79 @@ export default (props) => {
     useEffect(() => {
 
     }, [])
+
+
+
+    const [selectedValue, setSelectedValue] = useState(null);
+
+
+    const [loadedRecordCount, setLoadedRecordCount] = useState(0);
+    const [options, setOption] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
+
+    const loadOptions = async (search, loadedOptions, { page }) => {
+        console.log(search);
+
+        let dataBody = {
+            table_id: corespondingKey.table_id,
+            start_index: page
+        };
+
+        if (search && search.trim() !== "") {
+            const criteria = {};
+            criteria[pk] = search;
+            dataBody.criteria = criteria;
+        }
+
+        console.log(dataBody);
+        const response = await fetch(`${proxy()}/api/foreign/data`, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+            },
+            body: JSON.stringify(dataBody)
+        });
+        const res = await response.json();
+        console.log(res);
+
+        let returnedData = [];
+
+
+        if (res.result) {
+            returnedData = res.result;
+        } else {
+            returnedData = res.data;
+        }
+
+        console.log(returnedData)
+        const dataWithoutNull = returnedData.filter(record => record !== null && record !== undefined);
+
+        setForeignData(dataWithoutNull)
+
+        setLoadedRecordCount(prevCount => prevCount + dataWithoutNull.length);
+
+        const hasMore = loadedRecordCount + 17 < res.sumerize;
+
+        const options = dataWithoutNull.map(d => ({
+            value: JSON.stringify(d),
+            label: generateData(d)
+        }));
+        setOption(options)
+        if (defaultValue) {
+            const foundOption = options.find(option => option.value === JSON.stringify(defaultValue));
+            if (foundOption) {
+                setSelectedOption(foundOption);
+            }
+        }
+        return {
+            options: options,
+            hasMore: true,
+            additional: {
+                page: page + 1,
+            },
+        };
+    }
+
 
     const isFieldForeign = () => {
         if (table) {
@@ -96,6 +213,7 @@ export default (props) => {
     }
 
     const fieldChangeData = (e) => {
+        console.log(e.target.value)
         const rawJSON = e.target.value
         const value = JSON.parse(rawJSON)
 
@@ -138,6 +256,81 @@ export default (props) => {
     //     changeTrigger(field, data[pk])
     // }
 
+
+    const handleChange = option => {
+        console.log("Before update: ", selectedValue);
+    setSelectedValue(option);
+    console.log("After update: ", selectedValue);
+      
+    
+        fieldChangeData({ target: { value: option.value } }); // Continue with your original logic
+    };
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleScrollToBottom = () => {
+        if (!isLoading) {
+            setIsLoading(true);
+            console.log("Reached bottom!");
+            setStartIndex(prevIndex => prevIndex + 1);
+        }
+    };
+
+    console.log(JSON.stringify(defaultValue))
+    const [defaultOption, setDefaultOption] = useState(null);
+    
+    const [initialValue, setInitialValue] = useState(null);
+console.log(defaultOption)
+    useEffect(() => {
+        
+        const fetchDataForDefaultValue = async () => {            
+            const { foreign_keys } = table;
+            const corespondingKey = foreign_keys.find(key => key.field_id == field.id)
+            if( corespondingKey ){
+                const dataBody = {
+                    table_id: corespondingKey.table_id,
+                    start_index: 0 // Bắt đầu từ trang đầu tiên
+                };
+    
+                const criteria = {};
+                criteria[pk] = defaultValue;
+                dataBody.criteria = criteria;
+    
+                const response = await fetch(`${proxy()}/api/foreign/data`, {
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/json",
+                    },
+                    body: JSON.stringify(dataBody)
+                });
+    
+                const res = await response.json();
+    
+                let returnedData = res.result || res.data;
+                const foundData = returnedData.find(d => d[pk] === defaultValue);
+                if (foundData) {
+                    const dataOption = {
+                        value: JSON.stringify(foundData),
+                        label: generateData(foundData)
+                    };
+                    
+                    setDefaultOption(dataOption);
+                    
+                    if (!initialValue) {
+                        setInitialValue(dataOption);
+                        setSelectedValue(dataOption);
+                    } else if (selectedValue && initialValue.value === selectedValue.value) {
+                        setSelectedValue(dataOption);
+                    }
+                }
+            }
+            
+        };
+        if( current != undefined ){
+            fetchDataForDefaultValue()
+        }
+    }, [current]);
+   
     if (isPrimaryKey()) {
 
         if (!isFieldForeign()) {
@@ -163,31 +356,60 @@ export default (props) => {
             )
         }
         else {
-            return (
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <form>
-                            <div class="form-group">
-                                <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
-                                <select className="form-control" name="role" onChange={fieldChangeData} value={generateData(current)}>
-                                    {selectOption ? (
-                                        <option value={""} >Chọn</option>
-                                    ) : null
-                                    }
+            // return (
+            //     <div class="row justify-content-center">
+            //         <div class="col-md-6">
+            //             <form>
+            //                 <div class="form-group">
+            //                     <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
+            //                     <select className="form-control" name="role" onChange={fieldChangeData} value={generateData(current)}>
+            //                         {selectOption ? (
+            //                             <option value={""} >Chọn</option>
+            //                         ) : null
+            //                         }
 
-                                    {foreignData && foreignData.length > 0 && foreignData.map((d, index) =>
-                                        <option value={JSON.stringify(d)} selected={d[pk] == defaultValue ? true : false} >
-                                            <div key={index} className="form-control" >
-                                                <span>{generateData(d)}</span>
-                                            </div>
-                                        </option>
-                                    )}
-                                </select>
+            //                         {foreignData && foreignData.length > 0 && foreignData.map((d, index) =>
+            //                             <option value={JSON.stringify(d)} selected={d[pk] == defaultValue ? true : false} >
+            //                                 <div key={index} className="form-control" >
+            //                                     <span>{generateData(d)}</span>
+            //                                 </div>
+            //                             </option>
+            //                         )}
+            //                     </select>
+            //                 </div>
+            //             </form>
+            //         </div>
+            //     </div>
+            // )
+
+            return (
+                <div className="row justify-content-center">
+                    <div className="col-md-6">
+                        <form>
+                            <div className="form-group">
+                                <label>{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
+                                <AsyncPaginate
+                                    // defaultOptions
+                                    // key={ Math.random()}
+                                    loadOptions={loadOptions}
+                                    onChange={handleChange}
+                                    isSearchable={true}
+                                    value={selectedValue}
+                                    styles={{
+                                        menuList: base => ({
+                                            ...base,
+                                            maxHeight: '250px'
+                                        })
+                                    }}
+                                    additional={{
+                                        page: 0,
+                                    }}
+                                />
                             </div>
                         </form>
                     </div>
                 </div>
-            )
+            );
         }
 
     } else {
@@ -205,7 +427,7 @@ export default (props) => {
                                     placeholder=""
                                     onChange={changeRawData}
                                     value={current}
-                                    // readOnly={field.AUTO_INCREMENT ? true : false}
+                                // readOnly={field.AUTO_INCREMENT ? true : false}
                                 />
 
                             </div>
@@ -215,29 +437,34 @@ export default (props) => {
             )
         } else {
             return (
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
+                <div className="row justify-content-center">
+                    <div className="col-md-6">
                         <form>
-                            <div class="form-group">
-                                <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
-                                <select className="form-control" name="role" onChange={fieldChangeData} value={generateData(current)}>
-                                    {selectOption ? (
-                                        <option value={""} >Chọn</option>
-                                    ) : null
-                                    }
-                                    {foreignData && foreignData.length > 0 && foreignData.map((d, index) =>
-                                        <option value={JSON.stringify(d)} selected={d[pk] == defaultValue ? true : false} >
-                                            <div key={index} className="form-control" >
-                                                <span>{generateData(d)}</span>
-                                            </div>
-                                        </option>
-                                    )}
-                                </select>
+                            <div className="form-group">
+                                <label>{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
+                                <AsyncPaginate
+                                    // defaultOptions
+                                    // key={ Math.random()}
+                                    loadOptions={loadOptions}
+                                    onChange={handleChange}
+                                    isSearchable={true}
+                                    value={selectedValue}
+                                    styles={{
+                                        menuList: base => ({
+                                            ...base,
+                                            maxHeight: '250px'
+                                        })
+                                    }}
+                                    additional={{
+                                        page: 0,
+                                    }}
+                                />
                             </div>
                         </form>
                     </div>
                 </div>
-            )
+            );
+
         }
     }
 

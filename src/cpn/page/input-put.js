@@ -85,7 +85,7 @@ export default () => {
         fetch(`${proxy()}/apis/api/${id_str}/input_info`).then(res => res.json())
             .then(res => {
                 const { success, data } = res;
-                // console.log(res)
+                console.log(res)
                 if (success) {
                     // const { tables } = data.tables;
                     const apiFields = data.params;
@@ -110,10 +110,11 @@ export default () => {
                     setTables(data.tables)
                     setRelatedTables(relatedTables)
 
+                    
 
                     fetch(`${proxy()}/apis/retrieve/${id_str}/${rawParams}`)
                         .then(res => res.json()).then(res => {
-                            // console.log(res);
+                            console.log(res);
 
                             const { data } = res;
 
@@ -154,7 +155,7 @@ export default () => {
         const url = window.location;
         const rawParams = url.pathname.split(`/${id_str}/`)[1];
         const paramsList = rawParams.split('/');
-        // console.log("body", data)
+        console.log("body", data)
         if (!emailError && !phoneError && nullCheck(data)) {
             fetch(`${proxy()}/ui/${id_str}/${paramsList.join('/')}`, {
                 method: "PUT",
@@ -263,6 +264,8 @@ export default () => {
                                         </div>
 
                                     </div>
+                                    { tables.length > 0 ?
+                                    
                                     <div class="col-md-12">
                                         <div className="w-50-pct mg-auto p-1 bg-white">
                                             <span className="block text-32-px text-center p-0-5">{api.api_name}</span>
@@ -271,7 +274,7 @@ export default () => {
 
                                                     {field.DATATYPE == "PHONE" ?
                                                         <DataPhone
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger}
                                                             onPhoneError={handlePhoneError} defaultValue={initialData[field.fomular_alias]}
@@ -279,21 +282,21 @@ export default () => {
                                                     }
                                                     {field.DATATYPE == "VARCHAR" ?
                                                         <Varchar
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
                                                         /> : null
                                                     }
                                                     {field.DATATYPE == "CHAR" ?
                                                         <Char
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
                                                         /> : null
                                                     }
                                                     {field.DATATYPE == "TEXT" ?
                                                         <Text
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
                                                         /> : null
@@ -301,21 +304,21 @@ export default () => {
                                                     {field.DATATYPE == "INT" || field.data_type == "BIG INT" ?
                                                         <Int
                                                             selectOption={false}
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
                                                             field={field}
                                                             changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
                                                         /> : null
                                                     }
                                                     {field.DATATYPE == "INT UNSIGNED" || field.data_type == "BIG INT UNSIGNED" ?
                                                         <Int
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
                                                             related={relatedTables} unsigned={true} field={field}
                                                             changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
                                                         /> : null
                                                     }
                                                     {field.DATATYPE == "DATE" ?
                                                         <DateInput
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
                                                         /> : null
@@ -324,7 +327,7 @@ export default () => {
                                                         <DataEmail
                                                             selectOption={true}
                                                             readOnly={true}
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger}
                                                             onEmailError={handleEmailError} defaultValue={initialData[field.fomular_alias]}
@@ -332,35 +335,35 @@ export default () => {
                                                     }
                                                     {field.DATATYPE == "TIME" ?
                                                         <TimeInput
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
                                                         /> : null
                                                     }
                                                     {field.DATATYPE == "DATETIME" ?
                                                         <DateTimeInput
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
                                                         /> : null
                                                     }
                                                     {field.DATATYPE == "DECIMAL" ?
                                                         <Decimal
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
                                                         /> : null
                                                     }
                                                     {field.DATATYPE == "DECIMAL UNSIGNED" ?
                                                         <Decimal
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
                                                             related={relatedTables} unsigned={true} field={field}
                                                             changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
                                                         /> : null
                                                     }
                                                     {field.DATATYPE == "BOOL" ?
                                                         <Bool
-                                                            table={tables.filter(tb => tb.table_id == field.table_id)[0]}
+                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
                                                             related={relatedTables} field={field}
                                                             changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
                                                         /> : null
@@ -390,7 +393,8 @@ export default () => {
 
 
                                         </div>
-                                    </div>
+                                    </div> : null
+                                    }
                                 </div>
                             </div>
                         </div>

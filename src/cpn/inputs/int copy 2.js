@@ -1,77 +1,45 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-const SAMPLE_DATA = [
-    { id: 1, name: "Data 1" },
-    { id: 2, name: "Data 2" },
-    { id: 3, name: "Data 3" },
-    //... thêm nhiều dữ liệu khác theo nhu cầu của bạn
-];
+import $ from 'jquery';
+import Select from 'react-select';
+import { AsyncPaginate } from 'react-select-async-paginate';
+
+
+
 
 export default (props) => {
     const { field, changeTrigger, related, table, defaultValue, selectOption } = props;
+    const selectRef = useRef(null);
 
     const [current, setCurrent] = useState(defaultValue ? defaultValue : "")
     const [fields, setFields] = useState([])
     const [height, setHeight] = useState(0)
-    const [foreignData, setForeignData] = useState([]);
-
+    const [foreignData, setForeignData] = useState([])
     const [showKey, setShowKey] = useState("")
     const { proxy, unique_string } = useSelector(state => state);
     const [relatedTable, setRelatedTable] = useState({})
     const [pk, setPK] = useState("");
-   
-
-    // console.log(table)
+    console.log(pk)
     // console.log("data field",field.id)
-    const [searchTerm, setSearchTerm] = useState("");
+    const [startIndex, setStartIndex] = useState(0);
 
-    const handleSearchChange = (e) => {
-        setSearchTerm(e.target.value);
-    };
-    const filteredData =1
+    const { foreign_keys } = table;
+    const corespondingKey = foreign_keys.find(key => key.field_id == field.id)
 
-    const [isOpen, setIsOpen] = useState(false);
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
-    };
-    const handleInputClick = (e) => {
-        e.stopPropagation();
-    };
-
+    console.log(startIndex)
     useEffect(() => {
+        const key = isFieldForeign()
+        const { foreign_keys } = table;
+        const corespondingKey = foreign_keys.find(key => key.field_id == field.id)
         if (defaultValue !== undefined) {
-            const key = isFieldForeign()
             if (key) {
-
                 // fetch(`${proxy()}/apis/apis/table/data/${table_alias}`).then(res => res.json()).then(res => {/table/:table_id/data
-                fetch(`${proxy()}/apis/table/${key.table_id}/data`)
-
-                    .then(res => res.json())
-
-                    .then(res => {
-                        const { success, data, fields } = res.data;
-                        // console.log(res.data)
-                        setForeignData(data)
-                        setFields(fields)
-
-                        const { ref_field_id } = key;
-                        const primaryField = fields.find(field => field.id == ref_field_id);
-                        if (primaryField) {
-                            setPK(primaryField.fomular_alias)
-                        }
-                    })
-
-            } else {
-                setCurrent(defaultValue)
-            }
-        } else {
-            if (!isFieldForeign() && field.AUTO_INCREMENT) {
                 const dataBody = {
-                    table_id: 41,
-                    start_index: 0,
-                    criteria: {
-                    }
-                }
+                    table_id: corespondingKey.table_id,
+                    start_index: startIndex,
+                    criteria: {}
+                };
+
                 console.log(dataBody)
                 fetch(`${proxy()}/api/foreign/data`, {
                     method: "POST",
@@ -82,23 +50,35 @@ export default (props) => {
                     body: JSON.stringify(dataBody)
 
                 }).then(res => res.json()).then(res => {
-                    const { success, data, fields,  sumerize, statistic } = res;
+                    const { success, data, fields, sumerize, statistic } = res;
                     console.log(res)
                     setCurrent(data)
                     changeTrigger(field, data)
                 })
+
+            } else {
+                setCurrent(defaultValue)
+            }
+        } else {
+            if (!isFieldForeign() && field.AUTO_INCREMENT) {
+                fetch(`${proxy()}/apis/field/autoid/${field.id}`)
+                    .then(res => res.json()).then(res => {
+                        const { data } = res;
+                        // console.log(data.id)
+                        setCurrent(data.id)
+                        changeTrigger(field, data.id)
+                    })
             } else {
                 const key = isFieldForeign()
                 if (key) {
                     if (foreignData.length == 0) {
                         const dataBody = {
-                            table_id: 41,
-                            start_index: 0,
-                            criteria: {
-        
-                            }
-                        }
-                        console.log(dataBody)
+                            table_id: corespondingKey.table_id,
+                            start_index: startIndex,
+                            criteria: {}
+                        };
+
+                        console.log(69, dataBody)
                         fetch(`${proxy()}/api/foreign/data`, {
                             method: "POST",
                             headers: {
@@ -109,13 +89,19 @@ export default (props) => {
 
                         }).then(res => res.json())
                             .then(res => {
-                                const { success, data, fields,  sumerize, statistic } = res;
-                                console.log(res)
-                                setForeignData(data)
-                                setFields(fields)
+                                const { success, data, fields, sumerize, statistic } = res;
+                                console.log(82, res)
+                                if (data.length === 0) {
+                                    setHasMoreData(false);
+                                } else {
+                                    // setForeignData(prevData => [...prevData, ...data.filter(record => record !== undefined)]);
+                                    setFields(fields)
+                                }
 
                                 const { ref_field_id } = key;
+                                console.log(key)
                                 const primaryField = fields.find(field => field.id == ref_field_id);
+                                console.log(primaryField)
                                 if (primaryField) {
                                     setPK(primaryField.fomular_alias)
                                 }
@@ -130,6 +116,79 @@ export default (props) => {
     useEffect(() => {
 
     }, [])
+
+    const [hasMoreData, setHasMoreData] = useState(true);
+
+
+
+ 
+    const [loadedRecordCount, setLoadedRecordCount] = useState(0);
+    const [options, setOption] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
+
+    const loadOptions = async (search, loadedOptions, { page }) => {
+        console.log(search);
+    
+        let dataBody = {
+            table_id: corespondingKey.table_id,
+            start_index: page
+        };
+    
+        if (search && search.trim() !== "") {
+            const criteria = {};
+            criteria[pk] = search;
+            dataBody.criteria = criteria;
+        }
+    
+        console.log(dataBody);
+        const response = await fetch(`${proxy()}/api/foreign/data`, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+            },
+            body: JSON.stringify(dataBody)
+        });
+        const res = await response.json();
+        console.log(res);
+    
+        let returnedData = [];
+    
+   
+        if (res.result) {
+            returnedData = res.result;
+        } else {
+            returnedData = res.data;
+        }
+     
+        console.log(returnedData)
+        const dataWithoutNull = returnedData.filter(record => record !== null && record !== undefined);
+       
+        setForeignData(dataWithoutNull)
+        
+        setLoadedRecordCount(prevCount => prevCount + dataWithoutNull.length);
+    
+        const hasMore = loadedRecordCount + 17 < res.sumerize;
+       
+        const options = dataWithoutNull.map(d => ({
+            value: JSON.stringify(d),
+            label: generateData(d)
+        }));
+        setOption(options)
+        if (defaultValue) {
+            const foundOption = options.find(option => option.value === JSON.stringify(defaultValue));
+            if (foundOption) {
+                setSelectedOption(foundOption);
+            }
+        }
+        return {
+            options: options,
+            hasMore: hasMore,
+            additional: {
+                page: page + 1,
+            },
+        };
+    }
+    
 
     const isFieldForeign = () => {
         if (table) {
@@ -196,6 +255,60 @@ export default (props) => {
     //     changeTrigger(field, data[pk])
     // }
 
+
+    const handleChange = option => {
+        fieldChangeData({ target: { value: option.value } });
+    };
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleScrollToBottom = () => {
+        if (!isLoading) {
+            setIsLoading(true);
+            console.log("Reached bottom!");
+            setStartIndex(prevIndex => prevIndex + 1);
+        }
+    };
+
+    console.log(JSON.stringify(defaultValue))
+    const [defaultOption, setDefaultOption] = useState(null);
+console.log(defaultOption)
+useEffect(() => {
+  
+    const fetchDataForDefaultValue = async () => {
+        const dataBody = {
+            table_id: 41,
+            start_index: 0 // Bắt đầu từ trang đầu tiên
+        };
+
+        const criteria = {};
+        criteria[pk] = defaultValue;
+        dataBody.criteria = criteria;
+
+        const response = await fetch(`${proxy()}/api/foreign/data`, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+            },
+            body: JSON.stringify(dataBody)
+        });
+
+        const res = await response.json();
+
+        let returnedData = res.result || res.data;
+        const foundData = returnedData.find(d => d[pk] === defaultValue);
+        if (foundData) {
+            setDefaultOption({
+                value: JSON.stringify(foundData),
+                label: generateData(foundData)
+            });
+        }
+    };
+
+    fetchDataForDefaultValue();
+}, [current]);
+
+   
+    
     if (isPrimaryKey()) {
 
         if (!isFieldForeign()) {
@@ -222,45 +335,30 @@ export default (props) => {
         }
         else {
             return (
-                <div className="row justify-content-center">
-                    <div className="col-md-6">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
                         <form>
-                            <div className="form-group">
+                            <div class="form-group">
                                 <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
-                                <div className="custom-dropdown" onClick={toggleDropdown}>
-                                    {generateData(current) || "Chọn"}
-                                    {isOpen && (
-                                        <div className="dropdown-list">
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                placeholder="Search..."
-                                                value={searchTerm}
-                                                onClick={handleInputClick}
-                                                onChange={handleSearchChange}
-                                            />
-                                            {filteredData && filteredData.length > 0 && filteredData.map((d, index) =>
-                                                <div
-                                                    key={index}
-                                                    className="dropdown-item"
-                                                    onClick={() => {
-                                                        setCurrent(d);
-                                                        changeTrigger(field, d[pk]);
-                                                        setIsOpen(false);
-                                                    }}
-                                                >
-                                                    {generateData(d)}
-                                                </div>
-                                            )}
-                                        </div>
+                                <select className="form-control" name="role" onChange={fieldChangeData} value={generateData(current)}>
+                                    {selectOption ? (
+                                        <option value={""} >Chọn</option>
+                                    ) : null
+                                    }
+
+                                    {foreignData && foreignData.length > 0 && foreignData.map((d, index) =>
+                                        <option value={JSON.stringify(d)} selected={d[pk] == defaultValue ? true : false} >
+                                            <div key={index} className="form-control" >
+                                                <span>{generateData(d)}</span>
+                                            </div>
+                                        </option>
                                     )}
-                                </div>
+                                </select>
                             </div>
                         </form>
                     </div>
                 </div>
             )
-
         }
 
     } else {
@@ -292,40 +390,28 @@ export default (props) => {
                     <div className="col-md-6">
                         <form>
                             <div className="form-group">
-                                <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
-                                <div className="custom-dropdown" onClick={toggleDropdown}>
-                                    {generateData(current) || "Chọn"}
-                                    {isOpen && (
-                                        <div className="dropdown-list">
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                placeholder="Search..."
-                                                value={searchTerm}
-                                                onClick={handleInputClick}
-                                                onChange={handleSearchChange}
-                                            />
-                                            {filteredData && filteredData.length > 0 && filteredData.map((d, index) =>
-                                                <div
-                                                    key={index}
-                                                    className="dropdown-item"
-                                                    onClick={() => {
-                                                        setCurrent(d);
-                                                        changeTrigger(field, d[pk]);
-                                                        setIsOpen(false);
-                                                    }}
-                                                >
-                                                    {generateData(d)}
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
+                                <label>{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
+                                <AsyncPaginate
+                                    // defaultOptions
+                                    loadOptions={ loadOptions}
+                                    onChange={handleChange}
+                                    isSearchable={true}
+                                    value={defaultOption}
+                                    styles={{
+                                        menuList: base => ({
+                                            ...base,
+                                            maxHeight: '250px'
+                                        })
+                                    }}
+                                    additional={{
+                                        page: 0,
+                                    }}
+                                />
                             </div>
                         </form>
                     </div>
                 </div>
-            )
+            );
 
         }
     }

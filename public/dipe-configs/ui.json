@@ -15,7 +15,7 @@
                 {
                     "component_id": 103,
                     "component_name": "Loại ",
-                    "layout_id": 1,
+                    "layout_id": 0,
                     "table_id": 41,
                     "api_get": "/ui/E3383CB932D5477D854B723004FCEA36",
                     "api_post": "/ui/E4E6A7D0791D49A4B529FC20B0430EF3",
