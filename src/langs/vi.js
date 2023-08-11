@@ -252,6 +252,7 @@ export default {
     "site map": "Sơ đồ website",
     "not found user": "Chưa có người dùng",
     "not found data": "Chưa có dữ liệu",
+    "not found": "Không tìm thấy",
     "activate.key": "Khóa kích hoạt",
     "profile.empty": "Vui lòng điền đầy đủ thông tin",
     "create": "Thêm mới",
@@ -263,5 +264,6 @@ export default {
     "error.email_invalidl": "Email không hợp lệ",
     "error.phone_invalid": "Số điện thoại không hợp lệ",
     "choose": "Chọn",
+    "select export type": "Chọn loại xuất"
     
 }

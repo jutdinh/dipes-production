@@ -98,10 +98,8 @@ export default (props) => {
                             .then(res => {
                                 const { success, data, fields, sumerize, statistic } = res;
                                 console.log(82, res)
-
                                 setForeignData([...data.filter(record => record !== undefined)]);
                                 setFields(fields)
-
                                 const { ref_field_id } = key;
                                 console.log(key)
                                 const primaryField = fields.find(field => field.id == ref_field_id);
@@ -112,15 +110,11 @@ export default (props) => {
                             })
                     }
                 }
-
             }
         }
     }, [defaultValue])
-
-    useEffect(() => {        
-
+    useEffect(() => {
     }, [pk])
-
     const [selectedValue, setSelectedValue] = useState(null);
     const [loadedRecordCount, setLoadedRecordCount] = useState(0);
     const [options, setOption] = useState([]);
@@ -166,13 +160,13 @@ export default (props) => {
 
         setLoadedRecordCount(prevCount => prevCount + dataWithoutNull.length);
 
-     
+
         let hasMoreValue;
 
         if (search && search.trim() !== "") {
-            hasMoreValue = true; 
+            hasMoreValue = true;
         } else {
-            hasMoreValue = loadedRecordCount + 17 < res.sumerize; 
+            hasMoreValue = loadedRecordCount + 17 < res.sumerize;
         }
         const options = dataWithoutNull.map(d => ({
             value: JSON.stringify(d),
@@ -239,13 +233,13 @@ export default (props) => {
     const generateData = (data) => {
         console.log(data)
         console.log(pk)
-        if (pk) {
+        if (pk && data) {
             return data[pk];
         }
         return null;
     }
-    
-    
+
+
 
     // const dataClickedTrigger = (data) => {
     //     setCurrent(data);
@@ -303,8 +297,8 @@ export default (props) => {
                 const res = await response.json();
 
                 let returnedData = res.result || res.data;
-             
-                const foundData = returnedData.find(d => d[pk] === defaultValue);
+
+                const foundData = returnedData.find(d => d != undefined && d[pk] === defaultValue);
                 console.log(foundData)
                 const label = generateData(foundData);
                 console.log(label);
@@ -357,28 +351,58 @@ export default (props) => {
             )
         }
         else {
+            if (selectOption) {
+                return (
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <form>
+                                <div class="form-group">
+                                    <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
 
-            return (
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <form>
-                            <div class="form-group">
-                                <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
-                                <input
-                                    type={field.AUTO_INCREMENT ? "text" : "number"}
-                                    className="form-control"
-                                    placeholder=""
-                                    onChange={changeRawData}
-                                    defaultValue={defaultValue == undefined ? current : defaultValue}
-                                    readOnly={field.AUTO_INCREMENT ? true : false}
-                                />
-                            </div>
-                        </form>
+                                    <AsyncPaginate
+                                        // defaultOptions
+                                        // key={ Math.random()}
+                                        loadOptions={loadOptions}
+                                        onChange={handleChange}
+                                        isSearchable={true}
+                                        value={selectedValue}
+                                        styles={{
+                                            menuList: base => ({
+                                                ...base,
+                                                maxHeight: '250px'
+                                            })
+                                        }}
+                                        additional={{
+                                            page: 0,
+                                        }}
+                                    />
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            );
+                );
+            } else {
+                return (
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <form>
+                                <div class="form-group">
+                                    <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
+                                    <input
+                                        type={field.AUTO_INCREMENT ? "text" : "number"}
+                                        className="form-control"
+                                        placeholder=""
+                                        onChange={changeRawData}
+                                        defaultValue={defaultValue == undefined ? current : defaultValue}
+                                        readOnly={field.AUTO_INCREMENT ? true : false}
+                                    />
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                )
+            }
         }
-
     } else {
 
         if (!isFieldForeign()) {

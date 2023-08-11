@@ -257,7 +257,7 @@ export default {
     "preview.content": "Please select at least one field to view sample data",
     "site map": "Sitemap",
     "not found user": "No users yet",
-    "not found data": "No data yet",
+    "not found data": "No found",
     "activate.key": "Activation key",
     "profile.empty": "Please fill in the information",
     "create": "Add",
@@ -268,7 +268,8 @@ export default {
     "database": " Database Configuration",
     "error.email_invalid": "Invalid Email Address",
     "error.phone_invalid": "Invalid Phone Number",
-    "choose": "Choose"
+    "choose": "Choose",
+    "select export type": "Select export type"
 
 }
 
