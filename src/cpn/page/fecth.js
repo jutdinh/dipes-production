@@ -247,7 +247,7 @@ export default () => {
         if (currentPageSearch === 1) {
             callApi();
         }
-        setSearchValues([])
+        // setSearchValues([])
 
     }
 
@@ -992,12 +992,26 @@ export default () => {
                                 <div class="heading1 margin_0 ">
                                     <h5>{page?.components?.[0]?.component_name}</h5>
                                 </div>
+                                {
+                                    current && current.length > 0 ? (
+                                        <div class="ml-auto pointer" onClick={downloadAPI} data-toggle="modal" data-target="#exportExcel">
+                                            <i class="fa fa-download icon-export"></i>
+                                        </div>
+                                    ) : null
+                                }
                                 {statusActive ? (
 
-                                    <div class="ml-auto pointer" onClick={() => redirectToInput()} data-toggle="modal">
+                                    <div class="ml-4 pointer" onClick={() => redirectToInput()} data-toggle="modal">
                                         <i class="fa fa-plus-circle icon-ui"></i>
                                     </div>
                                 ) : null}
+                                {
+                                    current && current.length > 0 ? (
+                                        <div class="ml-4 pointer" onClick={downloadAPI} data-toggle="modal" data-target="#exportExcel">
+                                            <i class="fa fa-download icon-export"></i>
+                                        </div>
+                                    ) : null
+                                }
                                 {
                                     current && current.length > 0 ? (
                                         <div class="ml-4 pointer" onClick={downloadAPI} data-toggle="modal" data-target="#exportExcel">
