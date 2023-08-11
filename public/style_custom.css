@@ -760,6 +760,11 @@ h5 {
     font-size: 24px;
 }
 
+.icon-export-ex {
+    color: #9c2e1b;
+    font-size: 24px;
+}
+
 .icon-ui {
     color: #0056b3;
     font-size: 24px;
@@ -1035,7 +1040,7 @@ h5 {
 }
 
 .padding_infor_info {
-    padding: 10px 35px;
+    padding: 5px 35px 5px 35px;
     float: left;
     width: 100%;
     min-height: 560px;

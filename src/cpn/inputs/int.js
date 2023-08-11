@@ -19,7 +19,7 @@ export default (props) => {
     const { proxy, unique_string } = useSelector(state => state);
     const [relatedTable, setRelatedTable] = useState({})
     const [pk, setPK] = useState(undefined);
-    console.log(pk)
+
     // console.log("data field",field.id)
     const [startIndex, setStartIndex] = useState(0);
 
@@ -279,13 +279,15 @@ export default (props) => {
             if (corespondingKey) {
                 const dataBody = {
                     table_id: corespondingKey.table_id,
-                    start_index: 0 // Bắt đầu từ trang đầu tiên
+                    start_index: 0,// Bắt đầu từ trang đầu tiên
+                    require_count: false
                 };
 
                 const criteria = {};
+
                 criteria[pk] = defaultValue;
                 dataBody.criteria = criteria;
-
+                console.log(290, dataBody)
                 const response = await fetch(`${proxy()}/api/foreign/data`, {
                     method: "POST",
                     headers: {
@@ -299,7 +301,7 @@ export default (props) => {
                 let returnedData = res.result || res.data;
 
                 const foundData = returnedData.find(d => d != undefined && d[pk] === defaultValue);
-                console.log(foundData)
+                console.log(criteria)
                 const label = generateData(foundData);
                 console.log(label);
 
@@ -324,8 +326,8 @@ export default (props) => {
         if (current != undefined) {
             fetchDataForDefaultValue()
         }
-    }, [current, pk]);
-
+    }, [defaultValue, pk]);
+    console.log(pk)
     if (isPrimaryKey()) {
 
         if (!isFieldForeign()) {

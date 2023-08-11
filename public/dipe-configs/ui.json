@@ -2,7 +2,7 @@
     "data": [
         {
             "ui_id": 389,
-            "title": "KHÁCH HANG",
+            "title": "KHÁCH HÀNG",
             "url": "/khach-hang",
             "status": true,
             "params": [],
@@ -14,7 +14,7 @@
             "components": [
                 {
                     "component_id": 390,
-                    "component_name": "KHÁCH HANG",
+                    "component_name": "KHÁCH HÀNG",
                     "layout_id": "1",
                     "table_id": 130,
                     "api_get": "/ui/6B3D2FC2C9EB499AACCE4E8E256A313A",

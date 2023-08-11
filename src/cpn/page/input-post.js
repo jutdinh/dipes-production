@@ -86,12 +86,13 @@ export default () => {
 
 
 
+    const [isLoading, setIsLoading] = useState(false);
 
 
 
     const submit = () => {
 
-        console.log({...data})
+        console.log({ ...data })
         if (!emailError && !phoneError && nullCheck(data)) {
             fetch(`${proxy()}${result?.components?.[0]?.api_post}`, {
                 method: "POST",
@@ -101,45 +102,50 @@ export default () => {
 
                 body: JSON.stringify({ ...data })
 
-            }).then(res => res.json()).then(res => {
-                const { success, data, fk, content } = res;
-                // console.log(res)
-                const errors = [
-                    "primaryConflict",
-                    "foreignConflict",
-                    "typeError"
-                ]
+            }).then(res => res.json())
+                .then(res => {
+                    setIsLoading(false);
+                    const { success, data, fk, content } = res;
+                    // console.log(res)
+                    const errors = [
+                        "primaryConflict",
+                        "foreignConflict",
+                        "typeError"
+                    ]
 
-                let valid = true;
-                for (let i = 0; i < errors.length; i++) {
-                    const isInValid = res[errors[i]]
-                    if (isInValid) {
-                        valid = false
+                    let valid = true;
+                    for (let i = 0; i < errors.length; i++) {
+                        const isInValid = res[errors[i]]
+                        if (isInValid) {
+                            valid = false
+                        }
                     }
-                }
-                // console.log(`VALID: ${valid}`)
-                if (valid) {
-                    Swal.fire({
-                        title: lang["success"],
-                        text: lang["success.add"],
-                        icon: "success",
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(function () {
-                        window.location.reload();
-                    });
-                } else {
-                    Swal.fire({
-                        title: lang["faild"],
-                        text: lang["fail.add"],
-                        icon: "error",
-                        showConfirmButton: true,
+                    // console.log(`VALID: ${valid}`)
+                    if (valid) {
+                        Swal.fire({
+                            title: lang["success"],
+                            text: lang["success.add"],
+                            icon: "success",
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(function () {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: lang["faild"],
+                            text: lang["fail.add"],
+                            icon: "error",
+                            showConfirmButton: true,
 
-                    }).then(function () {
-                        // Không cần reload trang
-                    });
-                }
-            })
+                        }).then(function () {
+                            // Không cần reload trang
+                        });
+                    }
+                }).catch(error => {
+                    setIsLoading(false);
+                    // Xử lý lỗi nếu cần
+                });
         } else {
             if (emailError) {
                 Swal.fire({
@@ -210,7 +216,13 @@ export default () => {
                                         </div>
 
                                     </div>
-                                    <div class="col-md-12">
+                                
+                                        {isLoading ? (
+                                            <div class="d-flex justify-content-center align-items-center w-100 responsive-div">
+                                                <img width={350} className="scaled-hover-target" src="/images/icon/loading.gif" ></img>
+                                            </div>
+                                        ) : (
+                                            <div class="col-md-12">
                                         <div className="w-50-pct mg-auto p-1 bg-white">
                                             <span className="block text-32-px text-center p-0-5">{api.api_name}</span>
                                             {fields.map(field =>
@@ -328,6 +340,8 @@ export default () => {
 
                                         </div>
                                     </div>
+           
+        )}
                                 </div>
                             </div>
                         </div>
