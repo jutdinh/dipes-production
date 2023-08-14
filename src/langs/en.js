@@ -269,8 +269,16 @@ export default {
     "error.email_invalid": "Invalid Email Address",
     "error.phone_invalid": "Invalid Phone Number",
     "choose": "Choose",
-    "select export type": "Select export type"
-
+    "select export type": "Select export type",
+    "import data": "Import data",
+    "export sample data": "Export sample data",
+    "selected file": "Selected file",
+    "size": "Size",
+    "type": "Type",
+    "check file": "Only .csv, .xlsx, and .xls file formats are accepted",
+    "loading": "Loading...",
+    "searching": "Searching...",
+    "import": "Import"
 }
 
 

@@ -251,9 +251,7 @@ export default (props) => {
         console.log("Before update: ", selectedValue);
         setSelectedValue(option);
         console.log("After update: ", selectedValue);
-
-
-        fieldChangeData({ target: { value: option.value } }); // Continue with your original logic
+        fieldChangeData({ target: { value: option.value } }); 
     };
 
     const [isLoading, setIsLoading] = useState(false);
@@ -279,8 +277,9 @@ export default (props) => {
             if (corespondingKey) {
                 const dataBody = {
                     table_id: corespondingKey.table_id,
-                    start_index: 0,// Bắt đầu từ trang đầu tiên
-                    require_count: false
+                    start_index: 0,
+                    require_count: false,
+                    // exact: true
                 };
 
                 const criteria = {};

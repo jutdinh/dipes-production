@@ -264,6 +264,16 @@ export default {
     "error.email_invalidl": "Email không hợp lệ",
     "error.phone_invalid": "Số điện thoại không hợp lệ",
     "choose": "Chọn",
-    "select export type": "Chọn loại xuất"
+    "select export type": "Chọn loại xuất",
+    "import data": "Nhập dữ liệu",
+    "export sample data": "Xuất dữ liệu mẫu",
+    "selected file":"File đã chọn",
+    "size": "Kích thước",
+    "type": "Loại",
+    "check file": "Chỉ chấp nhận định dạng tệp .csv, .xlsx, và .xls",
+    "loading": "Đang tải...",
+    "searching": "Đang tìm kiếm...",
+    "import": "Nhập"
+    
     
 }

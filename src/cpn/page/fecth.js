@@ -1,11 +1,14 @@
 
 import { useParams } from "react-router-dom";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileExport, faFileImport } from '@fortawesome/free-solid-svg-icons';
+
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Swal from 'sweetalert2';
 import XLSX from 'xlsx-js-style';
-
+import Papa from 'papaparse';
 import {
     Varchar, Char, Text, Int,
     DateInput, TimeInput, DateTimeInput,
@@ -26,6 +29,11 @@ export default () => {
     const [dataTable_id, setDataTableID] = useState([]);
     const [dataFields, setDataFields] = useState([]);
     const [apiData, setApiData] = useState([])
+    const [errorSelect, setErrorSelect] = useState(null);
+    const [loadingExportFile, setLoadingExportFile] = useState(false);
+    const [loadingSearch, setLoadingSearch] = useState(false);
+    const [uploadedJson, setUploadedJson] = useState(null);
+
     const [apiDataName, setApiDataName] = useState([])
     const [dataStatis, setDataStatis] = useState({})
     const [statusActive, setStatusActive] = useState(false);
@@ -37,9 +45,22 @@ export default () => {
     const [dataSearch, setdataSearch] = useState([])
     const [totalSearch, setTotalSearch] = useState(0)
     const [sumerize, setSumerize] = useState(0)
+    const [hasSetSumerize, setHasSetSumerize] = useState(false); //lưu count 1 lần
+    const [count, setCount] = useState(0)
     const formatNumber = (num) => {
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
     }
+
+    const formatNumberSize = (num) => {
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    }
+    const location = useLocation();
+
+    useEffect(() => {
+
+        setSearchValues({});
+    }, [location.pathname]);
+
     useEffect(() => {
 
         fetch(`${proxy()}/auth/activation/check`, {
@@ -96,6 +117,208 @@ export default () => {
     const tableClassName = layoutId === 0 ? "table table-striped" : "table table-hover";
 
 
+    const CustomFileInput = ({ onChange, ...props }) => {
+
+        const [selectedFile, setSelectedFile] = useState(null);
+        const fileInputRef = useRef(null);
+
+        const handleButtonClick = (event) => {
+            event.preventDefault();
+            fileInputRef.current.click();
+        };
+
+        const handleFileChange = (event) => {
+            event.preventDefault();
+            const supportedExtensions = ['csv', 'xlsx', 'xls'];
+
+            if (event.target.files.length > 0) {
+                const file = event.target.files[0];
+                const fileExtension = file.name.split(".").pop().toLowerCase();
+
+                if (supportedExtensions.includes(fileExtension)) {
+                    setSelectedFile({
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        rawFile: file
+                    });
+                    setErrorSelect(null);
+                } else {
+                    setSelectedFile(null);
+                    setErrorSelect(lang["check file"]);
+                }
+            }
+        };
+
+        function extractValueInBrackets(value) {
+            const matches = value.match(/\(([^)]+)\)/);
+            return matches ? matches[1] : value;
+        }
+        const processSelectedFile = (event) => {
+            event.preventDefault();
+            if (!selectedFile || !selectedFile.rawFile) return;
+
+            const file = selectedFile.rawFile;
+            const fileExtension = file.name.split(".").pop().toLowerCase();
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                try {
+                    if (fileExtension === 'csv') {
+                        Papa.parse(e.target.result, {
+                            complete: (result) => {
+                                const modifiedData = result.data
+                                    .filter(row => Object.values(row).some(value => value.trim() !== ''))
+                                    .map(row => {
+                                        const newRow = {};
+                                        for (let key in row) {
+                                            newRow[extractValueInBrackets(key)] = row[key];
+                                        }
+                                        return newRow;
+                                    });
+
+                                console.log("Parsed CSV Result:", modifiedData);
+                                setUploadedJson(modifiedData);
+                                importData();
+                            },
+                            header: true
+                        });
+                    } else if (['xlsx', 'xls'].includes(fileExtension)) {
+                        const workbook = XLSX.read(e.target.result, { type: 'binary' });
+                        const sheetName = workbook.SheetNames[0];
+                        const json = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+                        const modifiedData = json.map(row => {
+                            const newRow = {};
+                            for (let key in row) {
+                                newRow[extractValueInBrackets(key)] = row[key];
+                            }
+                            return newRow;
+                        });
+                        console.log("Parsed Excel Result:", modifiedData);
+                        setUploadedJson({ data: modifiedData });
+                        importData();
+                    }
+                } catch (error) {
+                    setErrorSelect(lang["format"]);
+                }
+            };
+
+            if (fileExtension === 'csv') {
+                reader.readAsText(file);
+            } else {
+                reader.readAsBinaryString(file);
+            }
+        };
+
+
+        const fileTypeToReadable = (type) => {
+            switch (type) {
+                case 'text/csv':
+                    return 'CSV';
+                case 'application/vnd.ms-excel':
+                    return 'Excel (XLS)';
+                case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                    return 'Excel (XLSX)';
+                default:
+                    return 'Không xác định';
+            }
+        };
+
+        return (
+            <div>
+                <input
+                    type="file"
+                    accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    onChange={handleFileChange}
+                    {...props}
+                />
+
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <button onClick={handleButtonClick} className="btn btn-primary">
+                        <i className="fa fa-file-excel-o"></i>  {lang["select file"]}
+                    </button>
+
+                    {selectedFile && <button className="btn btn-success ml-auto" onClick={processSelectedFile}>{lang["import"]}</button>}
+                </div>
+
+                {selectedFile && (
+                    <div className="mt-2">
+                        <ul>
+                            <li> {lang["selected file"]}: {selectedFile.name}</li>
+                            <li>{lang["size"]}: {formatNumberSize((selectedFile.size / 1024).toFixed(0))} KB</li>
+                            <li>{lang["type"]}: {fileTypeToReadable(selectedFile.type)}</li>
+                        </ul>
+                    </div>
+                )}
+                {
+                    errorSelect &&
+                    <div className="mt-2 text-danger">
+                        {errorSelect}
+                    </div>
+                }
+            </div>
+        );
+    };
+
+    console.log(uploadedJson)
+
+    const BATCH_SIZE = 1000;
+
+
+
+
+
+    const importData = async () => {
+        if (!uploadedJson?.data) return;
+        let batches = [];
+        for (let i = 0; i < uploadedJson.data.length; i += BATCH_SIZE) {
+            batches.push(uploadedJson.data.slice(i, i + BATCH_SIZE));
+        }
+
+        let logCount = 0;
+
+        for (let batch of batches) {
+            const requestBody = {
+                data: batch
+            };
+            logCount++;
+            console.log("Sample batch data:", requestBody);
+
+            try {
+                const response = await fetch(`${proxy()}${page.components?.[0]?.api_import}`, {
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/json",
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const jsonResponse = await response.json();
+                const { success, content, data, result, total, fields, statisticValues, count, sumerize } = jsonResponse;
+
+                if (!success) {
+                    console.error("Server did not process batch successfully:", jsonResponse);
+                    break;
+                }
+
+                console.log("Successfully processed batch number:", logCount);
+            } catch (error) {
+                console.error("Error sending batch:", error);
+                break;
+            }
+        }
+    };
+
+
+    useEffect(() => {
+
+        importData()
+
+    }, [uploadedJson])
+
+
     useEffect(() => {
         if (page && page.components) {
             const id_str = page.components?.[0]?.api_post.split('/')[2];
@@ -116,99 +339,45 @@ export default () => {
                 })
         }
     }, [page, dataTable_id])
-
-
     console.log(dataTable_id)
-
-
 
     const handleCloseModal = () => {
         setSelectedFields([]);
         setSelectedStats([]);
     }
-
-
     const [loaded, setLoaded] = useState(false);
 
 
-    // const callApi = () => {
-    //     /* this must be fixed */
-    //     fetch(`${proxy()}${page.components?.[0]?.api_get}`, {
-    //         headers: {
-    //             fromIndex: currentPage - 1
-    //         }
-    //     }).then(res => res.json()).then(res => {
-
-    //         const { success, content, data, fields, statistic, sumerize } = res;
-    //         console.log(res)
-    //         if (success) {
-    //             const statisticValues = res.statistic.values;
-    //             setApiData(data.filter(record => record != undefined))
-    //             setApiDataName(fields)
-    //             setDataStatis(statisticValues)
-    //             setLoaded(true)
-    //             setSumerize(sumerize)
-    //         }
-    //         else {
-    //             setLoaded(true)
-    //             if (statusActive) {
-    //                 Swal.fire({
-    //                     title: lang["faild"],
-    //                     text: lang["not found config"],
-    //                     icon: "error",
-    //                     showConfirmButton: true,
-    //                     customClass: {
-    //                         confirmButton: 'swal2-confirm my-confirm-button-class'
-    //                     }
-    //                 })
-    //                 return;
-    //             }
-
-    //             setErrorLoadConfig(true)
-
-
-    //         }
-
-    //     })
-    // }
-
-
     //search
+    const [currentPage, setCurrentPage] = useState(0);
+    const [requireCount, setRequireCount] = useState(true);
     const [searchValues, setSearchValues] = useState({});
-    const [showSearch, setShowSearch] = useState(false);
-    console.log(showSearch)
     // const timeoutRef = useRef(null);
     const handleInputChange = (fomular_alias, value) => {
         setSearchValues(prevValues => ({
             ...prevValues,
             [fomular_alias]: value
         }));
-
-        // // Nếu đã có một bộ đếm thời gian, hủy nó
-        // if (timeoutRef.current) {
-        //     clearTimeout(timeoutRef.current);
-        // }
-
-        // // Bắt đầu một bộ đếm thời gian mới
-        // timeoutRef.current = setTimeout(() => {
-
-        //     if (value.trim() !== "") {
-        //         callApiSearch();
-        //     }
-        // }, 2000);
     };
+    // useEffect(() => {
+    //     if (currentPage > 1 ) {
+    //         setRequireCount(false);
+    //     }
+
+    // }, [currentPage]);
 
     console.log(searchValues)
     const callApi = () => {
 
+        if (Object.keys(searchValues).length !== 0) {
+            setLoadingSearch(true);
+        }
         const searchBody = {
-
             table_id: dataTable_id,
             start_index: currentPage - 1,
-            criteria:
-                searchValues
-            ,
-            require_count: true
+            criteria: searchValues,
+            require_count: requireCount,
+            // exact: true
         }
         console.log(searchBody)
         fetch(`${proxy()}/api/foreign/data`, {
@@ -218,46 +387,60 @@ export default () => {
                 fromIndex: currentPage - 1
             },
             body: JSON.stringify(searchBody)
-
-        }).then(res => res.json()).then(res => {
-
-            const { success, content, data, result, total, fields, statisticValues, count, sumerize } = res;
-            console.log(res)
-            if (success) {
-                // setdataSearch(result)
-                // setTotalSearch(total)
-                setApiData(data.filter(record => record != undefined))
-                setApiDataName(fields)
-                setDataStatis(statisticValues)
-                setLoaded(true)
-                if (count) {
-                    setSumerize(count)
-                } else {
-                    setSumerize(sumerize)
-                }
-            }
         })
+            .then(res => res.json())
+            .then(res => {
+                const { success, content, data, result, total, fields, statisticValues, count, sumerize } = res;
+                console.log(res)
+                if (success) {
+                    // setdataSearch(result)
+                    // setTotalSearch(total)
+                    setApiData(data.filter(record => record != undefined))
+                    setApiDataName(fields)
+                    setDataStatis(statisticValues)
+                    setLoaded(true)
+                    if (count !== undefined) {
 
+                        setSumerize(count);
+                    }
+                    else {
+                        setSumerize(sumerize)
+                    }
+
+                }
+                setLoadingSearch(false)
+
+            })
     };
-    console.log(dataTables)
+
+    useEffect(() => {
+        let timeout;
+
+        if (loadingSearch) {
+            Swal.fire({
+                title: "Searching...",
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        } else {
+            timeout = setTimeout(() => {
+                Swal.close();
+            }, 1000);
+        }
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [loadingSearch]);
+
     const handleSearchClick = () => {
         setCurrentPage(1);
         if (currentPage === 1) {
             callApi();
         }
-        // setSearchValues([])
-
     }
-
-    // const handleOpenSearchClick = () => {
-    //     setCurrentPageSearch(1);
-    //     setShowSearch(!showSearch)
-    // }
-
-
-
-
-
 
     const redirectToInput = () => {
         if (errorLoadConfig) {
@@ -302,6 +485,7 @@ export default () => {
             }
         })
     }
+
     const handleDelete = (data) => {
         // console.log(data)
 
@@ -386,6 +570,7 @@ export default () => {
             }
         });
     }
+
     const redirectToInputPUT = async (record) => {
 
         const { components } = page;
@@ -427,7 +612,6 @@ export default () => {
         }
     }
 
-
     const renderBoolData = (data, field) => {
         const IF_TRUE = field.DEFAULT_TRUE;
         const IF_FALSE = field.DEFAULT_FALSE
@@ -440,6 +624,7 @@ export default () => {
             return IF_FALSE ? IF_FALSE : "false"
         }
     }
+
     const renderData = (field, data) => {
         if (data) {
             switch (field.DATATYPE) {
@@ -464,40 +649,21 @@ export default () => {
         // console.log(apiData);
 
     };
-    // const [currentPage, setCurrentPage] = useState(58823);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [currentPageSearch, setCurrentPageSearch] = useState(1);
 
+    console.log(page)
     useEffect(() => {
-        if (page.components?.[0]?.api_get != undefined && dataTables) {
+        if (page.components?.[0]?.api_get != undefined) {
             callApi();
         }
     }, [currentPage])
 
-    // useEffect(() => {
-    //     if (page.components?.[0]?.api_search != undefined) {
-    //         callApiSearch()
-    //     }
 
-    // }, [currentPageSearch]); 
-
-    useEffect(() => {
-        setdataSearch([])
-        setSearchValues({})
-    }, [showSearch]);
-
-    const rowsPerPage = 19;
-
+    const rowsPerPage = 20;
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
     const current = apiData
-
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
     const totalPages = Math.ceil(sumerize / rowsPerPage);
-
-
-
 
     const [selectedFields, setSelectedFields] = useState([]);/// fields
     const [selectedStats, setSelectedStats] = useState([]);
@@ -565,21 +731,16 @@ export default () => {
         }
         // const headerRow = selectedHeaders.reduce((obj, header) => ({ ...obj, [header.fomular_alias]: header.display_name }), {});
 
-        // Tạo header row chỉ với display_name
-        const headerRow = selectedHeaders.map(header => header.display_name);
+        const headerRow = selectedHeaders.map(header => `${header.display_name}(${header.fomular_alias})`);
         const sampleRow = selectedHeaders.map(header => generateSampleData(header));
 
-        // Kiểm tra loại tệp được chọn và thực hiện xuất tương ứng
         if (selectedFileType === 'xlsx') {
-            // Chuyển header row thành sheet Excel và thêm vào workbook
             const ws = XLSX.utils.json_to_sheet([headerRow, sampleRow], { skipHeader: true });
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Template");
 
-            // Ghi ra file Excel
             XLSX.writeFile(wb, `DIPES-PRODUCTION-TEMPLATE-${(new Date()).getTime()}-Export.xlsx`);
         } else if (selectedFileType === 'csv') {
-            // Chuyển header row thành chuỗi CSV và lưu ra file
             const utf8BOM = "\uFEFF";
             const csv = utf8BOM + headerRow.join(",") + "\n" + sampleRow.join(",") + "\n";
 
@@ -593,8 +754,6 @@ export default () => {
             document.body.removeChild(link);
         }
     }
-    console.log(apiDataName)
-
 
 
     const getCurrentDateTimeForFilename = () => {
@@ -607,6 +766,7 @@ export default () => {
         const seconds = String(now.getSeconds()).padStart(2, '0');
         return `${year}${month}${day}_${hours}${minutes}${seconds}`;
     };
+
     const Export = () => {
         const exportBody = {
             export_fields: [...selectedFields],
@@ -615,7 +775,7 @@ export default () => {
         };
 
         console.log(exportBody)
-
+        setLoadingExportFile(true)
         fetch(`${proxy()}${page.components?.[0]?.api_export}`, {
             method: "POST",
             headers: {
@@ -642,12 +802,41 @@ export default () => {
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
+                setLoadingExportFile(false)
+                setSelectedFields([]);
             })
             .catch(error => {
                 console.error('Error during export:', error);
+                setLoadingExportFile(false)
             });
     };
 
+    const [isInitialRender, setIsInitialRender] = useState(true);
+
+    useEffect(() => {
+        if (isInitialRender) {
+            setIsInitialRender(false);
+            return;
+        }
+
+        if (loadingExportFile) {
+            Swal.fire({
+                title: lang["loading"],
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        } else {
+            Swal.fire({
+                title: lang["success"],
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    }, [loadingExportFile]);
 
 
 
@@ -668,6 +857,7 @@ export default () => {
     }
 
     console.log(searchValues)
+    console.log(apiDataName)
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -680,12 +870,12 @@ export default () => {
                 </div>
                 {/* List table */}
                 <div class="row">
-                    {/* modal export excel */}
+                    {/* modal export excel/csv example */}
                     <div class={`modal `} id="exportExcelEx">
                         <div class="modal-dialog modal-dialog-center">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h4 class="modal-title">Export cấu trúc</h4>
+                                    <h4 class="modal-title">{lang["export sample data"]}</h4>
                                     <button type="button" class="close" onClick={handleCloseModal} data-dismiss="modal">&times;</button>
                                 </div>
                                 <div class="modal-body">
@@ -713,20 +903,16 @@ export default () => {
                                                 <span className="ml-2">CSV</span>
                                             </label>
                                         </div>
-
-
-
-
                                     </form>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" onClick={exportToCSV} class="btn btn-success">{lang["export"]}</button>
-                                    <button type="button" onClick={handleCloseModal} class="btn btn-danger">{lang["btn.close"]}</button>
+                                    <button type="button" onClick={handleCloseModal} class="btn btn-danger" data-dismiss="modal">{lang["btn.close"]}</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-
+                    {/* modal export excel/csv */}
                     <div class={`modal `} id="exportExcel">
                         <div class="modal-dialog modal-dialog-center">
                             <div class="modal-content">
@@ -747,7 +933,7 @@ export default () => {
                                                         checked={selectedFields.includes(header.fomular_alias)}
                                                         onChange={handleFieldChange}
                                                     />
-                                                    <span className="ml-2">{header.display_name}</span>
+                                                    <span className="ml-2">{header.display_name || header.field_name}</span>
                                                 </label>
                                             ))}
                                         </div>
@@ -816,7 +1002,6 @@ export default () => {
 
                                             ) : <>  {lang["preview.content"]}
                                             </>}
-
                                         {selectedFields && selectedFields.length > 0 || current & current.length > 0 || dataStatis && dataStatis.length > 0 ? (
                                             <div class="table-responsive">
                                                 <table class="table table-striped excel-preview">
@@ -874,7 +1059,30 @@ export default () => {
                                             Export(apiData);
                                         }
                                     }} class="btn btn-success " data-dismiss="modal">{lang["export"]} </button>
-                                    <button type="button" data-dismiss="modal" onClick={handleCloseModal} class="btn btn-danger">{lang["btn.close"]}</button>
+                                    <button type="button" data-dismiss="modal" onClick={handleCloseModal} class="btn btn-danger" >{lang["btn.close"]}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/* modal import excel/csv data */}
+                    <div class={`modal `} id="importExcel">
+                        <div class="modal-dialog modal-dialog-center">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">{lang["import data"]}</h4>
+                                    <button type="button" class="close" onClick={handleCloseModal} data-dismiss="modal">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+
+                                        <div>
+                                            <CustomFileInput />
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+
+                                    <button type="button" onClick={handleCloseModal} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
                                 </div>
                             </div>
                         </div>
@@ -886,27 +1094,37 @@ export default () => {
                                 <div class="heading1 margin_0 ">
                                     <h5>{page?.components?.[0]?.component_name}</h5>
                                 </div>
-                                
                                 {statusActive ? (
 
                                     <div class="ml-auto pointer" onClick={() => redirectToInput()} data-toggle="modal" title="Add">
-                                        <i class="fa fa-plus-circle icon-ui"></i>
+                                        <i class="fa fa-plus-circle icon-add"></i>
                                     </div>
                                 ) : null}
                                 {
                                     current && current.length > 0 ? (
-                                        <div class="ml-4 pointer" onClick={downloadAPI} data-toggle="modal" data-target="#exportExcel" title="Export to file">
+                                        <div class="ml-4 pointer" data-toggle="modal" data-target="#exportExcel" title="Export to file">
                                             <i class="fa fa-download icon-export"></i>
                                         </div>
                                     ) : null
                                 }
                                 {
                                     current && current.length > 0 ? (
-                                        <div class="ml-4 pointer" onClick={downloadAPI} data-toggle="modal" data-target="#exportExcelEx" title="Export Data Example">
-                                            <i class="fa fa-download icon-export-ex"></i>
+                                        <div class="ml-4 pointer" data-toggle="modal" data-target="#exportExcelEx" title="Export Data Example">
+
+                                            <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
                                         </div>
                                     ) : null
                                 }
+                                {
+                                    current && current.length > 0 ? (
+                                        <div class="ml-3 pointer" data-toggle="modal" data-target="#importExcel" title="Import data">
+                                            <FontAwesomeIcon icon={faFileImport} className="icon-import" />
+                                        </div>
+                                    ) : null
+                                }
+
+
+
 
                                 {/* <button type="button" class="btn btn-primary custom-buttonadd" onClick={() => redirectToInput()}>
                                     <i class="fa fa-plus"></i>
@@ -933,19 +1151,20 @@ export default () => {
                                                                         <th class="font-weight-bold align-center" style={{ width: "100px" }}>{lang["log.action"]}</th>
                                                                     </tr>
 
-                                                                    {/* <tr>
+                                                                    <tr>
                                                                         <th></th>
                                                                         {apiDataName.map((header, index) => (
                                                                             <th>
                                                                                 <input
                                                                                     type="text"
                                                                                     class="form-control"
+                                                                                    value={searchValues[header.fomular_alias] || ''}
                                                                                     onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
                                                                                 />
                                                                             </th>
                                                                         ))}
                                                                         <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size pointer icon-margin mb-2" title={lang["search"]}></i></th>
-                                                                    </tr> */}
+                                                                    </tr>
 
                                                                 </thead>
                                                                 <tbody>
@@ -1039,7 +1258,7 @@ export default () => {
                                                                     {apiDataName.map((header, index) => (
                                                                         <th class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
                                                                     ))}
-                                                                    <th class="font-weight-bold align-center" style={{ width: "100px" }}>Thao tác</th>
+                                                                    <th class="font-weight-bold align-center" style={{ width: "100px" }}>{lang["log.action"]}</th>
                                                                 </tr>
 
                                                                 <tr>
@@ -1049,6 +1268,7 @@ export default () => {
                                                                             <input
                                                                                 type="text"
                                                                                 class="form-control"
+                                                                                value={searchValues[header.fomular_alias] || ''}
                                                                                 onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
                                                                             />
                                                                         </th>
@@ -1058,27 +1278,18 @@ export default () => {
 
                                                             </thead>
                                                             <tbody>
-
-
-
                                                                 <tr>
                                                                     <td class="font-weight-bold" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found data"]}</div></td>
                                                                 </tr>
-
-
                                                             </tbody>
                                                         </table>
-
-
-
-
                                                     </div>
                                                 )
                                             ) : (
-                                                <div class="d-flex justify-content-center align-items-center w-100 responsive-div" >
-                                                 
-                                                    <img width={350} className="scaled-hover-target" src="/images/icon/loading.gif" ></img>
-                                                </div>
+                                                null
+                                                // <div class="d-flex justify-content-center align-items-center w-100 responsive-div" >
+                                                //     <img width={350} className="scaled-hover-target" src="/images/icon/loading.gif" ></img>
+                                                // </div>
                                                 // <div>{lang["not found data"]}</div>
                                             )
                                         }
