@@ -273,69 +273,23 @@ export default () => {
     const BATCH_SIZE = 1000;
 
     console.log(dataImport)
-    // const importData = async () => {
-    //     if (!uploadedJson?.data) return;
-    //     let batches = [];
-    //     for (let i = 0; i < uploadedJson.data.length; i += BATCH_SIZE) {
-    //         batches.push(uploadedJson.data.slice(i, i + BATCH_SIZE));
-    //     }
-    //     let logCount = 0;
-
-    //     for (let batch of batches) {
-    //         const requestBody = {
-    //             data: batch,
-    //             // type: "import"
-    //         };
-    //         logCount++;
-    //         console.log("Sample batch data:", requestBody);
-
-    //         try {
-    //             const response = await fetch(`${proxy()}${page.components?.[0]?.api_import}`, {
-    //                 method: "POST",
-    //                 headers: {
-    //                     "content-type": "application/json",
-    //                 },
-    //                 body: JSON.stringify(requestBody)
-    //             });
-
-    //             const jsonResponse = await response.json();
-    //             const { success, content, data, result, total, fields, statisticValues, count, sumerize } = jsonResponse;
-    //             console.log(jsonResponse)
-    //             if (success) {
-    //                 setDataImportTemp(prevDataImport => [...prevDataImport, ...jsonResponse.data]);
-    //                 await importReceivedData(jsonResponse.data);
-
-
-
-    //             }
-    //             if (!success) {
-    //                 console.error("Server did not process batch successfully:", jsonResponse);
-    //                 break;
-    //             }
-
-    //             console.log("Successfully processed batch number:", logCount);
-    //         } catch (error) {
-    //             console.error("Error sending batch:", error);
-    //             break;
-    //         }
-    //     }
-    // };
-
     const importData = async () => {
         if (!uploadedJson?.data) return;
-
         let batches = [];
         for (let i = 0; i < uploadedJson.data.length; i += BATCH_SIZE) {
             batches.push(uploadedJson.data.slice(i, i + BATCH_SIZE));
         }
+        let logCount = 0;
 
-        const requests = batches.map(async (batch, index) => {
+        for (let batch of batches) {
             const requestBody = {
                 data: batch,
+                // type: "import"
             };
+            logCount++;
+            console.log("Sample batch data:", requestBody);
 
             try {
-
                 const response = await fetch(`${proxy()}${page.components?.[0]?.api_import}`, {
                     method: "POST",
                     headers: {
@@ -346,31 +300,80 @@ export default () => {
 
                 const jsonResponse = await response.json();
                 const { success, content, data, result, total, fields, statisticValues, count, sumerize } = jsonResponse;
-
                 console.log(jsonResponse)
                 if (success) {
-                    setDataImportTemp(prevDataImport => [...prevDataImport, ...jsonResponse.data])
-                    const validData = jsonResponse.data.filter(item => !(item.errors?.primary || item.errors?.duplicate));
-                    await importReceivedData(validData);
+                   
+                    setDataImportTemp(prevDataImport => [...prevDataImport, ...jsonResponse.data]);
+                    await importReceivedData(jsonResponse.data);
+
+
 
                 }
                 if (!success) {
                     console.error("Server did not process batch successfully:", jsonResponse);
+                    break;
                 }
+
+                console.log("Successfully processed batch number:", logCount);
             } catch (error) {
-                console.error("Error in batch:", index, error);
+                console.error("Error sending batch:", error);
+                break;
             }
-        });
-        await Promise.all(requests);
-        console.log("All batches have been processed");
+        }
     };
+
+    // const importData = async () => {
+    //     if (!uploadedJson?.data) return;
+
+    //     let logCount = 0;
+    //     let batches = [];
+    //     for (let i = 0; i < uploadedJson.data.length; i += BATCH_SIZE) {
+    //         batches.push(uploadedJson.data.slice(i, i + BATCH_SIZE));
+    //     }
+    //     logCount++;
+    //     const requests = batches.map(async (batch, index) => {
+    //         const requestBody = {
+    //             data: batch,
+    //         };
+
+    //         try {
+
+    //             const response = await fetch(`${proxy()}${page.components?.[0]?.api_import}`, {
+    //                 method: "POST",
+    //                 headers: {
+    //                     "content-type": "application/json",
+    //                 },
+    //                 body: JSON.stringify(requestBody)
+    //             });
+
+    //             const jsonResponse = await response.json();
+    //             const { success, content, data, result, total, fields, statisticValues, count, sumerize } = jsonResponse;
+
+    //             console.log(jsonResponse)
+    //             if (success) {
+    //                 setDataImportTemp(prevDataImport => [...prevDataImport, ...jsonResponse.data])
+    //                 const validData = jsonResponse.data.filter(item => !(item.errors?.primary || item.errors?.duplicate));
+    //                 await importReceivedData(validData);
+
+    //             }
+    //             if (!success) {
+    //                 console.error("Server did not process batch successfully:", jsonResponse);
+    //             }
+    //             console.log("Successfully processed batch number:", logCount);
+    //         } catch (error) {
+    //             console.error("Error in batch:", index, error);
+    //         }
+    //     });
+    //     await Promise.all(requests);
+    //     console.log("All batches have been processed");
+    // };
     const importReceivedData = async (data) => {
         const requestBody = {
             data: data,
             type: "import"
 
         };
-        console.log(371, requestBody)
+        // console.log(371, requestBody)
         try {
             const response = await fetch(`${proxy()}${page.components?.[0]?.api_import}`, {
                 method: "POST",
