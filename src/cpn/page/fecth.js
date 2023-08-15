@@ -9,6 +9,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Swal from 'sweetalert2';
 import XLSX from 'xlsx-js-style';
 import Papa from 'papaparse';
+import $ from 'jquery'
 import {
     Varchar, Char, Text, Int,
     DateInput, TimeInput, DateTimeInput,
@@ -267,21 +268,18 @@ export default () => {
     const BATCH_SIZE = 1000;
 
 
-
-
-
     const importData = async () => {
         if (!uploadedJson?.data) return;
         let batches = [];
         for (let i = 0; i < uploadedJson.data.length; i += BATCH_SIZE) {
             batches.push(uploadedJson.data.slice(i, i + BATCH_SIZE));
         }
-
         let logCount = 0;
 
         for (let batch of batches) {
             const requestBody = {
-                data: batch
+                data: batch,
+                // type: "import"
             };
             logCount++;
             console.log("Sample batch data:", requestBody);
@@ -297,7 +295,7 @@ export default () => {
 
                 const jsonResponse = await response.json();
                 const { success, content, data, result, total, fields, statisticValues, count, sumerize } = jsonResponse;
-
+                console.log(jsonResponse)
                 if (!success) {
                     console.error("Server did not process batch successfully:", jsonResponse);
                     break;
@@ -412,7 +410,7 @@ export default () => {
 
             })
     };
-
+    console.log(apiData)
     useEffect(() => {
         let timeout;
 
@@ -459,7 +457,23 @@ export default () => {
         const id_str = page.components?.[0]?.api_post.split('/')[2];
         window.location.href = `apis/api/${id_str}/input_info`;
     }
+    const redirectToImportData = () => {
+        if (errorLoadConfig) {
+            Swal.fire({
+                title: lang["faild"],
+                text: lang["not found config"],
+                icon: "error",
+                showConfirmButton: true,
+                customClass: {
+                    confirmButton: 'swal2-confirm my-confirm-button-class'
+                }
+            })
+            return;
+        }
+        // console.log(page)
 
+        window.location.href = `/page/${url}/import`;
+    }
     const deleteData = (data) => {
         let rawParams = page.apis.delete;
         // const keys = Object.keys(data);
@@ -501,24 +515,19 @@ export default () => {
                 // Lấy ra mảng các id từ foundObjects
                 let fomular_alias = foundObjects.map(obj => obj.fomular_alias);
                 // console.log(fomular_alias)
-
                 const newData = [];
                 if (data.hasOwnProperty(fomular_alias)) {
                     newData.push(data[fomular_alias]);
                 }
-
                 // console.log(newData);
                 // Tạo chuỗi newParams bằng cách nối api_delete và ids
                 newParams = `${api_delete}/${newData.join("/")}`;
-
-
             } else {
                 // console.log('Không tìm thấy đối tượng nào có id trong primaryKeys');
             }
         } else {
             // console.log('Không tìm thấy primaryKeys');
         }
-
         // console.log(newParams);
         console.log(data)
         Swal.fire({
@@ -650,7 +659,8 @@ export default () => {
 
     };
 
-    console.log(page)
+
+
     useEffect(() => {
         if (page.components?.[0]?.api_get != undefined) {
             callApi();
@@ -693,7 +703,8 @@ export default () => {
         const rows = jsonData.map(row => Object.values(row).join(","));
         return [header, ...rows].join("\n");
     }
-
+    console.log(page)
+    console.log(apiDataName)
     const exportToCSV = (csvData) => {
         const selectedHeaders = apiDataName;
 
@@ -730,6 +741,9 @@ export default () => {
             }
         }
         // const headerRow = selectedHeaders.reduce((obj, header) => ({ ...obj, [header.fomular_alias]: header.display_name }), {});
+        const segments = page.url.split('/');
+        const lastSegment = segments[segments.length - 1];//tên
+        const result = lastSegment.replace(/-/g, '');
 
         const headerRow = selectedHeaders.map(header => `${header.display_name}(${header.fomular_alias})`);
         const sampleRow = selectedHeaders.map(header => generateSampleData(header));
@@ -739,7 +753,9 @@ export default () => {
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Template");
 
-            XLSX.writeFile(wb, `DIPES-PRODUCTION-TEMPLATE-${(new Date()).getTime()}-Export.xlsx`);
+
+            XLSX.writeFile(wb, `TEMPLATE_${result.toUpperCase()}_${(new Date()).getTime()}.xlsx`);
+
         } else if (selectedFileType === 'csv') {
             const utf8BOM = "\uFEFF";
             const csv = utf8BOM + headerRow.join(",") + "\n" + sampleRow.join(",") + "\n";
@@ -748,11 +764,12 @@ export default () => {
             const link = document.createElement("a");
             const url = URL.createObjectURL(blob);
             link.setAttribute("href", url);
-            link.setAttribute("download", `DIPES-PRODUCTION-TEMPLATE-${(new Date()).getTime()}-Export.csv`);
+            link.setAttribute("download", `TEMPLATE_${result.toUpperCase()}_${(new Date()).getTime()}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
+        $('#closeModalExportFileSample').click();
     }
 
 
@@ -796,8 +813,14 @@ export default () => {
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
+
                 const datetimeString = getCurrentDateTimeForFilename();
-                a.download = exportType === 'excel' ? `Dipes_Production_Exported_file_${datetimeString}.xlsx` : `Dipes_Production_Exported_file_${datetimeString}.csv`;
+
+                const segments = page.url.split('/');
+                const lastSegment = segments[segments.length - 1];//tên
+                const result = lastSegment.replace(/-/g, '');
+
+                a.download = exportType === 'excel' ? `DATA_${result.toUpperCase()}_${datetimeString}.xlsx` : `DATA_${result.toUpperCase()}_${datetimeString}.csv`;
 
                 document.body.appendChild(a);
                 a.click();
@@ -814,6 +837,7 @@ export default () => {
     const [isInitialRender, setIsInitialRender] = useState(true);
 
     useEffect(() => {
+        let timeout;
         if (isInitialRender) {
             setIsInitialRender(false);
             return;
@@ -824,20 +848,45 @@ export default () => {
                 title: lang["loading"],
                 allowEscapeKey: false,
                 allowOutsideClick: false,
+
                 didOpen: () => {
                     Swal.showLoading();
                 }
             });
         } else {
-            Swal.fire({
-                title: lang["success"],
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
-            });
+            timeout = setTimeout(() => {
+                Swal.close();
+            }, 1000);
+
+            // Swal.fire({
+            //     title: lang["success"],
+            //     icon: 'success',
+            //     timer: 2000,
+            //     showConfirmButton: false
+            // });
         }
     }, [loadingExportFile]);
+    useEffect(() => {
+        let timeout;
 
+        if (loadingSearch) {
+            Swal.fire({
+                title: "Searching...",
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        } else {
+            timeout = setTimeout(() => {
+                Swal.close();
+            }, 1000);
+        }
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [loadingSearch]);
 
 
     const changeTrigger = (field, value) => {
@@ -907,7 +956,7 @@ export default () => {
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" onClick={exportToCSV} class="btn btn-success">{lang["export"]}</button>
-                                    <button type="button" onClick={handleCloseModal} class="btn btn-danger" data-dismiss="modal">{lang["btn.close"]}</button>
+                                    <button type="button" id="closeModalExportFileSample" onClick={handleCloseModal} class="btn btn-danger" data-dismiss="modal">{lang["btn.close"]}</button>
                                 </div>
                             </div>
                         </div>
@@ -1107,21 +1156,36 @@ export default () => {
                                         </div>
                                     ) : null
                                 }
-                                {
+                                {/* {
                                     current && current.length > 0 ? (
                                         <div class="ml-4 pointer" data-toggle="modal" data-target="#exportExcelEx" title="Export Data Example">
 
                                             <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
                                         </div>
                                     ) : null
-                                }
-                                {
+                                } */}
+                                {/* {
                                     current && current.length > 0 ? (
                                         <div class="ml-3 pointer" data-toggle="modal" data-target="#importExcel" title="Import data">
                                             <FontAwesomeIcon icon={faFileImport} className="icon-import" />
                                         </div>
                                     ) : null
-                                }
+                                } */}
+
+                                {/* {
+                                    current && current.length > 0 ? (
+                                        <div class="ml-3 pointer" onClick={redirectToImportData} title="Import data">
+                                            <FontAwesomeIcon icon={faFileImport} className="icon-import" />
+                                        </div>
+                                    ) : null
+                                } */}
+                                <div class="ml-4 pointer" data-toggle="modal" data-target="#exportExcelEx" title="Export Data Example">
+
+                                    <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
+                                </div>
+                                <div class="ml-3 pointer" onClick={redirectToImportData} title="Import data">
+                                    <FontAwesomeIcon icon={faFileImport} className="icon-import" />
+                                </div>
 
 
 
@@ -1279,7 +1343,7 @@ export default () => {
                                                             </thead>
                                                             <tbody>
                                                                 <tr>
-                                                                    <td class="font-weight-bold" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found data"]}</div></td>
+                                                                    <td class="font-weight-bold" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
                                                                 </tr>
                                                             </tbody>
                                                         </table>
@@ -1296,6 +1360,7 @@ export default () => {
                                     </>
                                     ) : null}
                                 </div>
+
                             </div>
                         </div>
                     </div>

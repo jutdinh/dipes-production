@@ -315,7 +315,7 @@ export default (props) => {
                             <h4>{lang["accounts manager"]}</h4>
 
                             {statusActive ? (
-                                <button type="button" class="btn btn-primary custom-buttonadd ml-auto" data-toggle="modal" data-target="#quoteForm">
+                                <button type="button" class="btn btn-primary custom-buttonadd ml-auto mr-4" data-toggle="modal" data-target="#quoteForm">
                                     <i class="fa fa-plus"></i>
                                 </button>
                             ) : null}

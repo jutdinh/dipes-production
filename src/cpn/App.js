@@ -24,7 +24,7 @@ import { UI, CreateUi} from './ui'
 import updateApi from './api/update-api';
 import { Diagram } from './diagram';
 import  Active_Key from "./active_key/active";
-import { Fetch, InputPost, InputPut  } from './page';
+import { Fetch, InputPost, InputPut, ImportData } from './page';
 
 import "../css/index.scss";
 import { SiteMap } from './site-map';
@@ -134,6 +134,7 @@ function App() {
         <Route exac path="/page/apis/api/:id_str/input_info" element={ < Navigation Child={InputPost} /> } />
         <Route path="/page/put/api/:id_str/*" element={ < Navigation Child={InputPut} /> } />
         <Route exac path="/page/:url" element={ < Navigation Child={Fetch} /> } />
+        <Route exac path="/page/:url/import" element={ < Navigation Child={ImportData} /> } />
         {/* <Route exac path="/diagram" element={ < Navigation Child={Diagram} /> } /> */}
         <Route path="*" element={<PageNotFound />} />
 

@@ -754,6 +754,10 @@ h5 {
 .excel-preview td {
     text-align: left;
 }
+.error-row {
+    background-color: #f8d7da; 
+    color: #721c24; 
+}
 
 .icon-export {
     color: #269c1b;
