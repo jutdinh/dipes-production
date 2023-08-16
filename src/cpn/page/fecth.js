@@ -36,7 +36,7 @@ export default () => {
     const [uploadedJson, setUploadedJson] = useState(null);
 
     const [apiDataName, setApiDataName] = useState([])
-    const [dataStatis, setDataStatis] = useState({})
+    const [dataStatis, setDataStatis] = useState([])
     const [statusActive, setStatusActive] = useState(false);
     const [errorLoadConfig, setErrorLoadConfig] = useState(false);
     const [effectOneCompleted, setEffectOneCompleted] = useState(false);
@@ -376,6 +376,7 @@ export default () => {
             start_index: currentPage - 1,
             criteria: searchValues,
             require_count: requireCount,
+            api_id: page.components?.[0]?.api_get.split('/')[2]
             // exact: true
         }
         console.log(searchBody)
@@ -389,7 +390,8 @@ export default () => {
         })
             .then(res => res.json())
             .then(res => {
-                const { success, content, data, result, total, fields, statisticValues, count, sumerize } = res;
+                const { success, content, data, result, total, fields, count, sumerize } = res;
+                const statisticValues = res.statistic;
                 console.log(res)
                 if (success) {
                     // setdataSearch(result)
@@ -511,16 +513,16 @@ export default () => {
         let newParams = api_delete;
         if (primaryKeys) {
             let foundObjects = dataFields.filter((obj) => primaryKeys.includes(obj.id));
-            
+
             if (foundObjects.length > 0) {
                 // Lấy ra mảng các id từ foundObjects
                 let fomular_alias = foundObjects.map(obj => obj.fomular_alias);
                 console.log(fomular_alias)
 
                 const newData = [];
-                
-                fomular_alias.map( alias => {
-                    newData.push( data[alias] )
+
+                fomular_alias.map(alias => {
+                    newData.push(data[alias])
                 })
 
                 // console.log(newData);
@@ -705,7 +707,7 @@ export default () => {
         }
         setSelectAll(!selectAll);
     }
-    
+
     const handleFieldChange = (event) => {
         const { value } = event.target;
         setSelectedFields(prevFields =>
@@ -1388,10 +1390,57 @@ export default () => {
                                     ) : null}
                                 </div>
 
+{/* Cái này mới thim dô để chạy tạm cái UI thống kê nhe má */}
+                                <div className="d-flex flex-wrap" style={{ marginTop: "2em" }}>
+                                    {dataStatis.map(statis => {
+
+                                        const { display_name, type, data } = statis;
+
+                                        if (type == "text") {
+                                            return (
+                                                <div>
+                                                    <p className="font-weight-bold">{display_name}: {data}</p>
+                                                </div>
+                                            )
+                                        }
+
+                                        if (type == "table") {
+                                            const { headers, values } = data;
+                                            return (
+                                                <div class="table-responsive" style={{ width: "80%", maxWidth: "448px", margin: "1em 1em 0 0 " }}>
+                                                    <div>
+                                                        <p className="font-weight-bold">{display_name}</p>
+                                                    </div>
+
+                                                    <table className={tableClassName}>
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="font-weight-bold " style={{ width: "100px" }} scope="col">Tiêu chí</th>
+                                                                <th class="font-weight-bold " style={{ width: "100px" }} scope="col">Kết quả</th>
+                                                            </tr>                                            
+                                                        </thead>
+                                                        <tbody>
+                                                            {headers.map( (header, index) => 
+                                                                <tr>
+                                                                    <td class="font-weight-bold" >{ header }</td>
+                                                                    <td>{values[index]}</td>
+                                                                </tr>                                            
+                                                            )}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            )
+                                        }
+
+                                    })}
+                                </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
+
+
             </div >
         </div >
     )
