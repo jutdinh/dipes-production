@@ -756,8 +756,14 @@ h5 {
 }
 .error-row {
     background-color: #f8d7da; 
-    color: #721c24; 
+    color: #1a1919; 
 }
+
+.foreign-error {
+    background-color: #f8d7da;
+    color: #1a1919
+}
+
 
 .icon-export {
     color: #269c1b;
@@ -769,6 +775,10 @@ h5 {
     font-size: 24px;
 }
 
+.icon-import-nav {
+    color: #ddda31;
+    font-size: 24px;
+}
 .icon-import {
     color: #1b629c;
     font-size: 24px;
@@ -1329,3 +1339,51 @@ h5 {
 
 
 
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading {
+    position: relative;
+}
+
+.loading::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.loading-image {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+.import-status {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 18px;
+    font-weight: bold;
+    z-index: 2;
+}

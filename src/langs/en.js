@@ -278,7 +278,12 @@ export default {
     "check file": "Only .csv, .xlsx, and .xls file formats are accepted",
     "loading": "Loading...",
     "searching": "Searching...",
-    "import": "Import"
+    "import": "Import",
+    "error.import.primarykey": "Primary key error", 
+    "error.import.duplicate": "Duplicate errors",
+    "error.import.foreign": "Foreign key error",
+    "selectall": "Select all",
+    "imported": "In Progress"
 }
 
 

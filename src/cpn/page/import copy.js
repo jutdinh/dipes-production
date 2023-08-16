@@ -16,7 +16,6 @@ import {
     Decimal, Bool, DataEmail, DataPhone
 
 } from '../inputs search';
-import { Bar } from "recharts";
 
 export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
@@ -39,8 +38,7 @@ export default () => {
     const [uploadedJson, setUploadedJson] = useState(null);
     const [dataImport, setDataImport] = useState([]);
     const [dataImportTemp, setDataImportTemp] = useState([]);
-    const [isImporting, setIsImporting] = useState(false);
-    const [rowsImported, setRowsImported] = useState(0);
+
 
     const [apiDataName, setApiDataName] = useState([])
     const [dataStatis, setDataStatis] = useState({})
@@ -68,16 +66,6 @@ export default () => {
 
         setSearchValues({});
     }, [location.pathname]);
-
-
-
-    useEffect(() => {
-        if (isImporting) {
-            // Hãy thêm mã để hiển thị hình mờ load tại đây.
-        } else {
-            // Khi import hoàn tất, hãy ẩn hình mờ load tại đây.
-        }
-    }, [isImporting]);
 
     useEffect(() => {
 
@@ -200,16 +188,15 @@ export default () => {
 
     // const tableClassName = layoutId === 0 ? "table table-striped" : "table table-hover";
     const tableClassName = "table table-hover";
-    const [selectedFile, setSelectedFile] = useState(null);
+
     const CustomFileInput = ({ onChange, ...props }) => {
 
-       
+        const [selectedFile, setSelectedFile] = useState(null);
         const fileInputRef = useRef(null);
 
         const handleButtonClick = (event) => {
             event.preventDefault();
             fileInputRef.current.click();
-            // setUploadedJson(null)
         };
 
         const handleFileChange = (event) => {
@@ -261,14 +248,14 @@ export default () => {
                                         }
                                         return newRow;
                                     });
+
                                 console.log("Parsed CSV Result:", modifiedData);
-                                setUploadedJson({ data: modifiedData });
-                                // setSumerize(modifiedData.length) 
+                                setUploadedJson(modifiedData);
+                                setSumerize(modifiedData.data.length)
                                 importData();
                             },
                             header: true
                         });
-                        
                     } else if (['xlsx', 'xls'].includes(fileExtension)) {
                         const workbook = XLSX.read(e.target.result, { type: 'binary' });
                         const sheetName = workbook.SheetNames[0];
@@ -287,20 +274,17 @@ export default () => {
                     }
                     setLoadingReadFile(false)
                 } catch (error) {
-                    console.error(error);
                     setErrorSelect(lang["format"]);
                 }
-                
-                
             };
 
             if (fileExtension === 'csv') {
-                reader.readAsText(file, 'ISO-8859-1');
+                reader.readAsText(file);
             } else {
                 reader.readAsBinaryString(file);
             }
         };
-        console.log(uploadedJson)
+        // console.log(sumerize)
         useEffect(() => {
             let timeout;
             if (isInitialRender) {
@@ -331,9 +315,6 @@ export default () => {
                 // });
             }
         }, [loadingReadFile]);
-
-
-
         const fileTypeToReadable = (type) => {
             switch (type) {
                 case 'text/csv':
@@ -349,7 +330,6 @@ export default () => {
 
         return (
             <div>
-               
                 <input
                     type="file"
                     accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
@@ -366,7 +346,7 @@ export default () => {
 
                     {selectedFile && <button className="btn btn-success ml-auto" onClick={processSelectedFile}>{lang["import"]}</button>}
                 </div>
-                
+
                 {selectedFile && (
                     <div className="mt-2">
                         <ul>
@@ -386,43 +366,26 @@ export default () => {
         );
     };
 
+    // console.log(uploadedJson)
 
+    const BATCH_SIZE = 1000;
 
-
-
+    // console.log(dataImport)
     const importData = async () => {
         if (!uploadedJson?.data) return;
-
-        const BATCH_SIZE = 1000;
-        const totalRows = uploadedJson.data.length;
-
-
-
         let batches = [];
-
-        if (totalRows <= 1000) {
-
-            batches.push(uploadedJson.data);
-        } else {
-
-            for (let i = 0; i < totalRows; i += BATCH_SIZE) {
-                batches.push(uploadedJson.data.slice(i, i + BATCH_SIZE));
-            }
-            if (uploadedJson.data.length > 0 && loadingReadFile === false) {
-                setIsImporting(true);
-            }
+        for (let i = 0; i < uploadedJson.data.length; i += BATCH_SIZE) {
+            batches.push(uploadedJson.data.slice(i, i + BATCH_SIZE));
         }
-
-
-        let completedBatches = 0;
-;
-
+        let logCount = 0;
         const startTime = new Date().getTime();
-
         for (let batch of batches) {
             const requestBody = {
                 data: batch,
+                // type: "import"
             };
+            logCount++;
+            console.log("Sample batch data:", requestBody);
 
             try {
                 const response = await fetch(`${proxy()}${page.components?.[0]?.api_import}`, {
@@ -434,27 +397,18 @@ export default () => {
                 });
 
                 const jsonResponse = await response.json();
-                console.log(jsonResponse)
-                if (jsonResponse.success) {
-                    completedBatches++;
-                    let newRowsImported = completedBatches * BATCH_SIZE;
-                    setRowsImported(newRowsImported);
+                const { success, content, data, result, total, fields, statisticValues, count, sumerize } = jsonResponse;
+                // console.log(jsonResponse)
+                if (success) {
                     setDataImportTemp(prevDataImport => [...prevDataImport, ...jsonResponse.data]);
-                    const validData = jsonResponse.data.filter(item => !(item.errors?.primary || item.errors?.duplicate));
-                    await importReceivedData(validData);
+                    //  await importReceivedData(jsonResponse.data);
                 }
-                if (!jsonResponse.success) {
+                if (!success) {
                     console.error("Server did not process batch successfully:", jsonResponse);
-                    Swal.fire({
-                        title: 'Lỗi',
-                        text: 'File import không đúng định dạng',
-                        icon: 'error',
-                        showConfirmButton: true,
-                        timer: 5000,
-                    });
                     break;
                 }
 
+                console.log("Successfully processed batch number:", logCount);
             } catch (error) {
                 console.error("Error sending batch:", error);
                 break;
@@ -464,6 +418,7 @@ export default () => {
 
         const endTime = new Date().getTime();
 
+
         const elapsedTime = endTime - startTime;
         const elapsedSeconds = elapsedTime / 1000;
         const elapsedMinutes = elapsedTime / (1000 * 60);
@@ -471,25 +426,7 @@ export default () => {
         console.log(`Giây: ${elapsedSeconds} `);
         console.log(`Phút ${elapsedMinutes} `);
         console.log(`Giờ ${elapsedHours} `);
-
-        if (completedBatches === batches.length) {
-
-            Swal.fire({
-                title: 'Import hoàn thành',
-                text: 'Your data has been successfully imported',
-                icon: 'success',
-                timer: 5000,
-                showConfirmButton: false,
-            });
-        setSelectedFile(null)
-
-        }
-        // setSelectedFile(null)
-        setIsImporting(false);
     };
-    const percentageCompleted = (rowsImported / sumerize) * 100;
-    console.log(rowsImported)
-    console.log(sumerize)
 
     // const importData = async () => {
     //     if (!uploadedJson?.data) return;
@@ -660,7 +597,7 @@ export default () => {
 
 
 
-    const rowsPerPage = 18;
+    const rowsPerPage = 20;
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
 
@@ -854,14 +791,13 @@ export default () => {
         const errors = [];
         if (row.errors) {
             if (row.errors.primary) {
-                errors.push(lang["error.import.primarykey"]);
+                errors.push(lang["error.import.priamarykey"]);
             }
             if (row.errors.duplicate) {
                 errors.push(lang["error.import.duplicate"]);
             }
             if (row.errors.foreign && row.errors.foreign.length > 0) {
-                // errors.push(`${lang["error.import.foreign"]}` + ': ' + row.errors.foreign.join(', '));
-                errors.push(`${lang["error.import.foreign"]}`);
+                errors.push(`${lang["error.import.foreign"]}` + ': ' + row.errors.foreign.join(', '));
             }
         }
         return errors.join('; ');
@@ -893,21 +829,7 @@ export default () => {
                                     <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.title} <i class="fa fa-chevron-right"></i> Import data</h5>
                                 </div>
                             </div>
-                            <div className={`table_section padding_infor_info ${isImporting ? 'loading' : ''}`}>
-                                {isImporting && (
-                                    <>
-                                        <img
-                                            width={80}
-                                            className="scaled-hover-target loading-image"
-                                            src="/images/icon/load.gif"
-                                            alt="Loading..."
-                                        ></img>
-                                        <div className="import-status">
-                                            {lang["imported"]}: {percentageCompleted.toFixed()}%
-                                        </div>
-                                    </>
-
-                                )}
+                            <div class="table_section padding_infor_info">
                                 <div class="col-md-12 mt-2">
                                     <CustomFileInput />
                                 </div>
@@ -933,18 +855,14 @@ export default () => {
                                                                         {currentData.map((row, index) => {
                                                                             if (row) {
 
-                                                                                const isPrimaryError = row.errors && (row.errors.primary || row.errors?.duplicate);
-                                                                                const foreignErrors = row.errors ? row.errors.foreign : [];
+                                                                                const isPrimaryError = row.errors && (row.errors.primary || row.errors?.duplicate || (row.errors.foreign && row.errors.foreign.length > 0));
                                                                                 return (
                                                                                     <tr key={index} className={isPrimaryError ? 'error-row' : ''}>
                                                                                         <td scope="row">{indexOfFirst + index + 1}</td>
                                                                                         {apiDataName.map((header) => (
-                                                                                            <td
-                                                                                                key={header.fomular_alias}
-                                                                                                className={foreignErrors.includes(header.fomular_alias) ? 'foreign-error' : ''}
-                                                                                            >{renderData(header, row)}</td>
+                                                                                            <td key={header.fomular_alias}>{renderData(header, row)}</td>
                                                                                         ))}
-                                                                                        <td>{getErrorMessages(row)}</td>
+                                                                                        {/* <td>{getErrorMessages(row)}</td> */}
                                                                                     </tr>
                                                                                 )
                                                                             } else {
@@ -953,6 +871,7 @@ export default () => {
                                                                         })}
                                                                     </>
                                                                 </tbody>
+
                                                             </table>
                                                             <div className="d-flex justify-content-between align-items-center">
 
@@ -1015,6 +934,7 @@ export default () => {
                                     </>
                                     ) : null}
                                 </div>
+
 
                             </div>
                         </div>

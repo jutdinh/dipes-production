@@ -510,18 +510,23 @@ export default () => {
         let newParams = api_delete;
         if (primaryKeys) {
             let foundObjects = dataFields.filter((obj) => primaryKeys.includes(obj.id));
-
+            
             if (foundObjects.length > 0) {
                 // Lấy ra mảng các id từ foundObjects
                 let fomular_alias = foundObjects.map(obj => obj.fomular_alias);
-                // console.log(fomular_alias)
+                console.log(fomular_alias)
+
                 const newData = [];
-                if (data.hasOwnProperty(fomular_alias)) {
-                    newData.push(data[fomular_alias]);
-                }
+                
+                fomular_alias.map( alias => {
+                    newData.push( data[alias] )
+                })
+
                 // console.log(newData);
                 // Tạo chuỗi newParams bằng cách nối api_delete và ids
                 newParams = `${api_delete}/${newData.join("/")}`;
+
+
             } else {
                 // console.log('Không tìm thấy đối tượng nào có id trong primaryKeys');
             }
@@ -690,6 +695,16 @@ export default () => {
     }
     // console.log(selectedStats)
     //fields
+    const [selectAll, setSelectAll] = useState(false);
+    const handleSelectAllChange = () => {
+        if (selectAll) {
+            setSelectedFields([]);
+        } else {
+            setSelectedFields(apiDataName.map(header => header.fomular_alias));
+        }
+        setSelectAll(!selectAll);
+    }
+    
     const handleFieldChange = (event) => {
         const { value } = event.target;
         setSelectedFields(prevFields =>
@@ -973,6 +988,16 @@ export default () => {
                                     <form>
                                         <h5 class="mt-2 mb-2">{lang["select fields"]}:</h5>
                                         <div className="checkboxes-grid ml-4">
+                                            <div className="select-all-checkbox">
+                                                <label>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectAll}
+                                                        onChange={handleSelectAllChange}
+                                                    />
+                                                    <span className="ml-2">{lang["selectall"]}</span>
+                                                </label>
+                                            </div>
 
                                             {apiDataName.map((header, index) => (
                                                 <label key={index}>

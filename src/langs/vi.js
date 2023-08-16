@@ -273,7 +273,13 @@ export default {
     "check file": "Chỉ chấp nhận định dạng tệp .csv, .xlsx, và .xls",
     "loading": "Đang tải...",
     "searching": "Đang tìm kiếm...",
-    "import": "Nhập"
+    "import": "Nhập",
+    "error.import.primarykey": "Lỗi khóa chính",
+    "error.import.duplicate": "Lỗi trùng lặp",
+    "error.import.foreign": "Lỗi khóa ngoại",
+    "selectall": "Chọn tất cả",
+    "imported": "Đang thực hiện"
+
     
     
 }
