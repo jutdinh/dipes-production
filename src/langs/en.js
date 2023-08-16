@@ -283,7 +283,10 @@ export default {
     "error.import.duplicate": "Duplicate errors",
     "error.import.foreign": "Foreign key error",
     "selectall": "Select all",
-    "imported": "In Progress"
+    "imported": "In Progress",
+    "error.format":"The imported file is not in the correct format",
+    "import.complete":"Import complete",
+    "import.text": "Data was imported successfully"
 }
 
 

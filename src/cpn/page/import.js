@@ -1,7 +1,7 @@
 
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileExport, faFileImport } from '@fortawesome/free-solid-svg-icons';
+import { faBreadSlice, faFileExport, faFileImport } from '@fortawesome/free-solid-svg-icons';
 
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -203,7 +203,7 @@ export default () => {
     const [selectedFile, setSelectedFile] = useState(null);
     const CustomFileInput = ({ onChange, ...props }) => {
 
-       
+
         const fileInputRef = useRef(null);
 
         const handleButtonClick = (event) => {
@@ -268,7 +268,7 @@ export default () => {
                             },
                             header: true
                         });
-                        
+
                     } else if (['xlsx', 'xls'].includes(fileExtension)) {
                         const workbook = XLSX.read(e.target.result, { type: 'binary' });
                         const sheetName = workbook.SheetNames[0];
@@ -290,8 +290,8 @@ export default () => {
                     console.error(error);
                     setErrorSelect(lang["format"]);
                 }
-                
-                
+
+
             };
 
             if (fileExtension === 'csv') {
@@ -301,36 +301,37 @@ export default () => {
             }
         };
         console.log(uploadedJson)
+       
+        
         useEffect(() => {
             let timeout;
             if (isInitialRender) {
                 setIsInitialRender(false);
                 return;
             }
-
+        
             if (loadingReadFile) {
                 Swal.fire({
                     title: lang["loading"],
                     allowEscapeKey: false,
                     allowOutsideClick: false,
-
                     didOpen: () => {
                         Swal.showLoading();
                     }
                 });
-            } else {
+            } else if (!errorOccurred) {
                 timeout = setTimeout(() => {
                     Swal.close();
                 }, 1000);
-
-                // Swal.fire({
-                //     title: lang["success"],
-                //     icon: 'success',
-                //     timer: 2000,
-                //     showConfirmButton: false
-                // });
+            } else {
+                clearTimeout(timeout); 
             }
-        }, [loadingReadFile]);
+        
+            return () => clearTimeout(timeout); 
+        
+        }, [loadingReadFile, errorOccurred]);
+        
+
 
 
 
@@ -349,7 +350,7 @@ export default () => {
 
         return (
             <div>
-               
+
                 <input
                     type="file"
                     accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
@@ -366,7 +367,7 @@ export default () => {
 
                     {selectedFile && <button className="btn btn-success ml-auto" onClick={processSelectedFile}>{lang["import"]}</button>}
                 </div>
-                
+
                 {selectedFile && (
                     <div className="mt-2">
                         <ul>
@@ -386,7 +387,16 @@ export default () => {
         );
     };
 
+    const [errorOccurred, setErrorOccurred] = useState(false);
 
+    function showErrorAlert() {
+        Swal.fire({
+            title: lang["error"],
+            text: lang["error.format"],
+            icon: 'error',
+            showConfirmButton: true,
+        });
+    }
 
 
 
@@ -415,7 +425,7 @@ export default () => {
 
 
         let completedBatches = 0;
-;
+        ;
 
         const startTime = new Date().getTime();
 
@@ -434,8 +444,14 @@ export default () => {
                 });
 
                 const jsonResponse = await response.json();
+                const { success } = jsonResponse
                 console.log(jsonResponse)
-                if (jsonResponse.success) {
+                if (!success) {
+                    console.error("Server did not process batch successfully:", jsonResponse);
+                    setErrorOccurred(true);
+                    showErrorAlert();
+                    return;
+                } else {
                     completedBatches++;
                     let newRowsImported = completedBatches * BATCH_SIZE;
                     setRowsImported(newRowsImported);
@@ -443,17 +459,7 @@ export default () => {
                     const validData = jsonResponse.data.filter(item => !(item.errors?.primary || item.errors?.duplicate));
                     await importReceivedData(validData);
                 }
-                if (!jsonResponse.success) {
-                    console.error("Server did not process batch successfully:", jsonResponse);
-                    Swal.fire({
-                        title: 'Lỗi',
-                        text: 'File import không đúng định dạng',
-                        icon: 'error',
-                        showConfirmButton: true,
-                        timer: 5000,
-                    });
-                    break;
-                }
+
 
             } catch (error) {
                 console.error("Error sending batch:", error);
@@ -473,16 +479,16 @@ export default () => {
         console.log(`Giờ ${elapsedHours} `);
 
         if (completedBatches === batches.length) {
-
+            setErrorOccurred(true);
             Swal.fire({
-                title: 'Import hoàn thành',
-                text: 'Your data has been successfully imported',
+                title: lang["import.complete"],
+                text: lang["import.text"],
                 icon: 'success',
-                timer: 5000,
+                timer:3000,
                 showConfirmButton: false,
             });
-        setSelectedFile(null)
-
+            setSelectedFile(null)
+          
         }
         // setSelectedFile(null)
         setIsImporting(false);

@@ -278,7 +278,10 @@ export default {
     "error.import.duplicate": "Lỗi trùng lặp",
     "error.import.foreign": "Lỗi khóa ngoại",
     "selectall": "Chọn tất cả",
-    "imported": "Đang thực hiện"
+    "imported": "Đang thực hiện",
+    "error.format":"File import không đúng định dạng",
+    "import.complete":"Import hoàn thành",
+    "import.text": "Dữ liệu đã được nhập thành công"
 
     
     

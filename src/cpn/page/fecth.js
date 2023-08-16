@@ -342,6 +342,7 @@ export default () => {
     const handleCloseModal = () => {
         setSelectedFields([]);
         setSelectedStats([]);
+        setSelectAll(false)
     }
     const [loaded, setLoaded] = useState(false);
 
@@ -842,6 +843,7 @@ export default () => {
                 window.URL.revokeObjectURL(url);
                 setLoadingExportFile(false)
                 setSelectedFields([]);
+                setSelectAll(false)
             })
             .catch(error => {
                 console.error('Error during export:', error);
@@ -1068,7 +1070,7 @@ export default () => {
 
                                         </div>
 
-                                        {/* <h5 class="mt-4 mb-2">{lang["preview data"]}: </h5>
+                                        <h5 class="mt-4 mb-2">{lang["preview data"]}: </h5>
                                         {selectedFields && selectedFields.length > 0 || selectedStats.length > 0 ?
                                             (
                                                 <>
@@ -1113,7 +1115,7 @@ export default () => {
                                                     </tbody>
                                                 </table>
                                             </div>
-                                        ) : null} */}
+                                        ) : null}
 
                                     </form>
                                 </div>
