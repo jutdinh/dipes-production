@@ -36,6 +36,12 @@ export default (props) => {
                     <div class="form-group">
                         <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
                         <textarea type="text"
+                        onKeyDown={e => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                               
+                            }
+                        }}
                             className="form-control"
                             value={current}
                             placeholder="" onChange={fieldChangeData}

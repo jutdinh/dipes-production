@@ -31,6 +31,7 @@ export default () => {
     const [dataTable_id, setDataTableID] = useState([]);
     const [dataFields, setDataFields] = useState([]);
     const [apiData, setApiData] = useState([])
+    const [time, setTime] = useState("")
     const [errorSelect, setErrorSelect] = useState(null);
     const [loadingExportFile, setLoadingExportFile] = useState(false);
 
@@ -41,6 +42,8 @@ export default () => {
     const [dataImportTemp, setDataImportTemp] = useState([]);
     const [isImporting, setIsImporting] = useState(false);
     const [rowsImported, setRowsImported] = useState(0);
+
+    const [rowsImportedError, setRowsImportedError] = useState(0);
 
     const [apiDataName, setApiDataName] = useState([])
     const [dataStatis, setDataStatis] = useState({})
@@ -56,6 +59,10 @@ export default () => {
     const [hasSetSumerize, setHasSetSumerize] = useState(false); //lưu count 1 lần
     const [count, setCount] = useState(0)
     const formatNumber = (num) => {
+        if (num === null || num === undefined || isNaN(Number(num))) {
+            return '';
+        }
+
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
     }
 
@@ -214,6 +221,16 @@ export default () => {
 
         const handleFileChange = (event) => {
             event.preventDefault();
+
+            setSelectedFile(null);
+            setErrorSelect(null);
+            setLoadingReadFile(false);
+            setUploadedJson([]);
+            setSumerize(0);
+            setDataImportTemp([])
+            setErrorOccurred(false);
+
+
             const supportedExtensions = ['csv', 'xlsx', 'xls'];
 
             if (event.target.files.length > 0) {
@@ -237,8 +254,13 @@ export default () => {
 
         function extractValueInBrackets(value) {
             const matches = value.match(/\(([^)]+)\)/);
-            return matches ? matches[1] : value;
+            if (matches) {
+                return matches[1];
+            } else {
+                return null;
+            }
         }
+
         const processSelectedFile = (event) => {
             event.preventDefault();
             if (!selectedFile || !selectedFile.rawFile) return;
@@ -247,12 +269,34 @@ export default () => {
             const fileExtension = file.name.split(".").pop().toLowerCase();
             const reader = new FileReader();
 
+            function extractValueInBrackets(value) {
+                const matches = value.match(/\(([^)]+)\)/);
+                return matches ? matches[1] : null;
+            }
+
             reader.onload = (e) => {
                 try {
+                    let isValidHeader = true;
+                    let modifiedData;
+
                     if (fileExtension === 'csv') {
                         Papa.parse(e.target.result, {
                             complete: (result) => {
-                                const modifiedData = result.data
+                                for (let key of result.meta.fields) {
+                                    if (extractValueInBrackets(key) === null) {
+                                        isValidHeader = false;
+                                        break;
+                                    }
+                                }
+
+                                if (!isValidHeader) {
+                                    setErrorSelect(lang["format"]);
+                                    setLoadingReadFile(false)
+
+                                    return;
+                                }
+
+                                modifiedData = result.data
                                     .filter(row => Object.values(row).some(value => value.trim() !== ''))
                                     .map(row => {
                                         const newRow = {};
@@ -261,10 +305,8 @@ export default () => {
                                         }
                                         return newRow;
                                     });
+
                                 console.log("Parsed CSV Result:", modifiedData);
-                                setUploadedJson({ data: modifiedData });
-                                // setSumerize(modifiedData.length) 
-                                importData();
                             },
                             header: true
                         });
@@ -273,25 +315,47 @@ export default () => {
                         const workbook = XLSX.read(e.target.result, { type: 'binary' });
                         const sheetName = workbook.SheetNames[0];
                         const json = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-                        const modifiedData = json.map(row => {
+
+                        const firstRow = json[0];
+                        for (let key in firstRow) {
+                            if (extractValueInBrackets(key) === null) {
+                                isValidHeader = false;
+                                break;
+                            }
+                        }
+
+                        if (!isValidHeader) {
+                            setErrorSelect(lang["format"]);
+                            setLoadingReadFile(false)
+                            return;
+                        }
+
+                        modifiedData = json.map(row => {
                             const newRow = {};
                             for (let key in row) {
                                 newRow[extractValueInBrackets(key)] = row[key];
                             }
                             return newRow;
                         });
+
                         console.log("Parsed Excel Result:", modifiedData);
+                    }
+
+                    if (isValidHeader) {
                         setUploadedJson({ data: modifiedData });
                         setSumerize(modifiedData.length)
                         importData();
                     }
-                    setLoadingReadFile(false)
+
+                    setLoadingReadFile(false);
+
                 } catch (error) {
                     console.error(error);
                     setErrorSelect(lang["format"]);
                 }
-
-
+                finally {
+                    setLoadingReadFile(false);
+                }
             };
 
             if (fileExtension === 'csv') {
@@ -300,16 +364,17 @@ export default () => {
                 reader.readAsBinaryString(file);
             }
         };
+
         console.log(uploadedJson)
-       
-        
+
+
         useEffect(() => {
             let timeout;
             if (isInitialRender) {
                 setIsInitialRender(false);
                 return;
             }
-        
+
             if (loadingReadFile) {
                 Swal.fire({
                     title: lang["loading"],
@@ -322,15 +387,15 @@ export default () => {
             } else if (!errorOccurred) {
                 timeout = setTimeout(() => {
                     Swal.close();
-                }, 1000);
+                }, 500);
             } else {
-                clearTimeout(timeout); 
+                clearTimeout(timeout);
             }
-        
-            return () => clearTimeout(timeout); 
-        
+
+            return () => clearTimeout(timeout);
+
         }, [loadingReadFile, errorOccurred]);
-        
+
 
 
 
@@ -362,10 +427,13 @@ export default () => {
 
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <button onClick={handleButtonClick} className="btn btn-primary">
-                        <i className="fa fa-file-excel-o"></i>  {lang["select file"]}
+                        {/* <i className="fa fa-file-excel-o"></i>   */}
+                        {lang["select file"]}
                     </button>
 
-                    {selectedFile && <button className="btn btn-success ml-auto" onClick={processSelectedFile}>{lang["import"]}</button>}
+                    {selectedFile && !errorSelect &&
+                        <button style={{ width: "87px" }} className="btn btn-success ml-auto" onClick={processSelectedFile}>{lang["import"]}</button>
+                    }
                 </div>
 
                 {selectedFile && (
@@ -425,8 +493,8 @@ export default () => {
 
 
         let completedBatches = 0;
-        ;
-
+        let rowsImported = 0;
+        let rowsWithError = 0;
         const startTime = new Date().getTime();
 
         for (let batch of batches) {
@@ -450,13 +518,26 @@ export default () => {
                     console.error("Server did not process batch successfully:", jsonResponse);
                     setErrorOccurred(true);
                     showErrorAlert();
+                    setErrorSelect(lang["format"]);
                     return;
                 } else {
                     completedBatches++;
-                    let newRowsImported = completedBatches * BATCH_SIZE;
-                    setRowsImported(newRowsImported);
+                    if (totalRows <= 1000) {
+                        rowsImported = totalRows;
+                    }
+                    if (completedBatches === batches.length) {
+                        rowsImported = totalRows;
+                    } else {
+                        rowsImported = completedBatches * BATCH_SIZE;
+                    }
+                    setRowsImported(rowsImported);
                     setDataImportTemp(prevDataImport => [...prevDataImport, ...jsonResponse.data]);
-                    const validData = jsonResponse.data.filter(item => !(item.errors?.primary || item.errors?.duplicate));
+
+                    const validData = jsonResponse.data.filter(item => !item.errors?.primary && !item.errors?.duplicate && (item.errors?.foreign?.length === 0));
+                    rowsWithError += (batch.length - validData.length);
+                    setRowsImportedError(rowsWithError)
+
+
                     await importReceivedData(validData);
                 }
 
@@ -472,7 +553,16 @@ export default () => {
 
         const elapsedTime = endTime - startTime;
         const elapsedSeconds = elapsedTime / 1000;
+
+
         const elapsedMinutes = elapsedTime / (1000 * 60);
+     
+        const formattedMinutes = `${elapsedMinutes.toFixed(2)} ${lang["minute"]}`;
+
+        const formattedTime = `${formattedMinutes} (${elapsedSeconds.toFixed(0)}s)`;
+
+
+        setTime(formattedTime)
         const elapsedHours = elapsedTime / (1000 * 60 * 60);
         console.log(`Giây: ${elapsedSeconds} `);
         console.log(`Phút ${elapsedMinutes} `);
@@ -484,11 +574,11 @@ export default () => {
                 title: lang["import.complete"],
                 text: lang["import.text"],
                 icon: 'success',
-                timer:3000,
+                timer: 3000,
                 showConfirmButton: false,
             });
             setSelectedFile(null)
-          
+
         }
         // setSelectedFile(null)
         setIsImporting(false);
@@ -675,7 +765,7 @@ export default () => {
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     const totalRows = uploadedJson?.data ? uploadedJson?.data.length : 0;
-    const totalPages = Math.ceil(totalRows / rowsPerPage);
+    const totalPages = Math.ceil(totalRows / rowsPerPage) || 0;
 
 
     // console.log(uploadedJson?.data)
@@ -879,6 +969,11 @@ export default () => {
 
     console.log(currentData)
     console.log(apiDataName)
+
+
+    console.log(rowsImported)
+    console.log(rowsImportedError)
+
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -910,6 +1005,7 @@ export default () => {
                                         ></img>
                                         <div className="import-status">
                                             {lang["imported"]}: {percentageCompleted.toFixed()}%
+
                                         </div>
                                     </>
 
@@ -917,6 +1013,16 @@ export default () => {
                                 <div class="col-md-12 mt-2">
                                     <CustomFileInput />
                                 </div>
+                                {currentData && currentData.length > 0 ? (
+                                    <div class="col-md-12 mt-2">
+                                        <p>{lang["total.line"]}: {totalRows}</p>
+                                        <p>{lang["total.imported"]}: {rowsImported - rowsImportedError}</p>
+                                        <p>{lang["total.error"]}: {rowsImportedError}</p>
+                                        <p>{lang["total.time"]}: {time}</p>
+                                    </div>
+                                ) : null
+                                }
+
                                 <div class="col-md-12 my-2">
                                     {statusActive ? (<>
                                         {
@@ -962,7 +1068,10 @@ export default () => {
                                                             </table>
                                                             <div className="d-flex justify-content-between align-items-center">
 
-                                                                <p>{lang["show"]} {formatNumber(indexOfFirst + 1)} - {formatNumber(indexOfFirst + currentData.length)} {lang["of"]} {formatNumber(uploadedJson?.data.length)} {lang["results"]}</p>
+                                                                {uploadedJson?.data ? (
+                                                                    <p>{lang["show"]} {formatNumber(indexOfFirst + 1)} - {formatNumber(indexOfFirst + currentData.length)} {lang["of"]} {formatNumber(uploadedJson?.data.length)} {lang["results"]}</p>
+                                                                ) : null}
+
 
                                                                 <nav aria-label="Page navigation example">
                                                                     <ul className="pagination mb-0">

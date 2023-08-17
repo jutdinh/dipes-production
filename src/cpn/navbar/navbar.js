@@ -83,9 +83,9 @@ export default () => {
                         <span>{lang["data management"]}</span>
                      </a>
                      <ul class="collapse list-unstyled show nav-custom " id="dashboard">
-                        {pages && pages.map(ui => (
+                        {pages && pages.map((ui, index) => (
                            ui.status ? (
-                              <li className="navbar-item">
+                              <li key={index} className="navbar-item">
                                  <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
                                     <i class="fa fa-newspaper-o"></i>
                                     <span>{ui.title}</span>

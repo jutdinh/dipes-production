@@ -286,7 +286,12 @@ export default {
     "imported": "In Progress",
     "error.format":"The imported file is not in the correct format",
     "import.complete":"Import complete",
-    "import.text": "Data was imported successfully"
+    "import.text": "Data was imported successfully",
+    "total.line": "Total number of lines",
+    "total.imported": "Number of lines imported",
+    "total.error": "Number of error lines",
+    "total.time": "Time",
+    "minute": "minute"
 }
 
 

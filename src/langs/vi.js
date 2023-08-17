@@ -281,7 +281,13 @@ export default {
     "imported": "Đang thực hiện",
     "error.format":"File import không đúng định dạng",
     "import.complete":"Import hoàn thành",
-    "import.text": "Dữ liệu đã được nhập thành công"
+    "import.text": "Dữ liệu đã được nhập thành công",
+    "total.line": "Tổng số dòng",
+    "total.imported": "Số dòng đã import",
+    "total.error": "Số dòng lỗi",
+    "total.time": "Thời gian",
+    "minute": "Phút"
+
 
     
     

@@ -24,7 +24,16 @@ export default () => {
     const [relatedTables, setRelatedTables] = useState([])
     const [page, setPage] = useState(null);
 
-
+    const inputs = document.querySelectorAll('input[type="number"], input[type="text"], textarea');
+    inputs.forEach(input => {
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                submit()
+            }
+        });
+    });
+    
     const [phoneError, setPhoneError] = useState(false);
     const handlePhoneError = (error) => {
         setPhoneError(error);
