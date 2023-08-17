@@ -766,11 +766,15 @@ h5 {
 .icon-export {
     color: #269c1b;
     font-size: 24px;
+    width: 24px;
+    height: 24px;
 }
 
 .icon-export-ex {
     color: #9c2e1b;
     font-size: 24px;
+    width: 25x;
+    height: 24px;
 }
 
 .icon-import-nav {
@@ -780,6 +784,8 @@ h5 {
 .icon-import {
     color: #1b629c;
     font-size: 24px;
+    width: 24px;
+    height: 24px;
 }
 
 .icon-ui {
@@ -787,7 +793,9 @@ h5 {
     font-size: 24px;
 }.icon-add {
     color: #0056b3;
-    font-size: 26px;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
 }
 .icon-database {
     color: #f09393;

@@ -1,7 +1,7 @@
 
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileExport, faFileImport } from '@fortawesome/free-solid-svg-icons';
+import { faFileExport, faFileImport, faDownload, faSquarePlus, faCirclePlus } from '@fortawesome/free-solid-svg-icons';
 
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -1188,13 +1188,15 @@ export default () => {
                                 </div>
                                 {statusActive ? (
                                     <div class="ml-auto pointer" onClick={() => redirectToInput()} data-toggle="modal" title="Add">
-                                        <i class="fa fa-plus-circle icon-add"></i>
+                                                                              
+                                        <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
                                     </div>
                                 ) : null}
                                 {
                                     current && current.length > 0 ? (
                                         <div class="ml-4 pointer" data-toggle="modal" data-target="#exportExcel" title="Export to file">
-                                            <i class="fa fa-download icon-export"></i>
+                                           
+                                            <FontAwesomeIcon icon={faDownload} className="icon-export" />
                                         </div>
                                     ) : null
                                 }
@@ -1225,7 +1227,7 @@ export default () => {
 
                                     <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
                                 </div>
-                                <div class="ml-3 pointer" onClick={redirectToImportData} title="Import data">
+                                <div class="ml-4 mr-3 pointer" onClick={redirectToImportData} title="Import data">
                                     <FontAwesomeIcon icon={faFileImport} className="icon-import" />
                                 </div>
 
@@ -1398,7 +1400,7 @@ export default () => {
                                     ) :
                                         null}
                                 </div>
-                                {/* <div class="row">
+                                <div class="row">
                                     {dataStatis?.map((statis, index) => {
                                         const { display_name, type, data } = statis;
                                         if (type == "text") {
@@ -1427,7 +1429,7 @@ export default () => {
                                                                 {headers.map((header, headerIndex) =>
                                                                     <tr key={headerIndex}>
                                                                         <td class="font-weight-bold" >{header}</td>
-                                                                        <td>{values[headerIndex]}</td>
+                                                                        <td>{formatNumber(values[headerIndex])}</td>
                                                                     </tr>
                                                                 )}
                                                             </tbody>
@@ -1437,7 +1439,7 @@ export default () => {
                                             )
                                         }
                                     })}
-                                </div> */}
+                                </div>
                             </div>
                         </div>
                     </div>
