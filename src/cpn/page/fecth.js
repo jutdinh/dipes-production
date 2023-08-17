@@ -358,24 +358,39 @@ export default () => {
     const [searchValues, setSearchValues] = useState({});
     // const timeoutRef = useRef(null);
     const handleInputChange = (fomular_alias, value) => {
-        setSearchValues(prevValues => ({
-            ...prevValues,
-            [fomular_alias]: value
-        }));
+        setSearchValues(prevValues => {
+            if (value.trim() === '') {
+                const { [fomular_alias]: _, ...newValues } = prevValues;
+                return newValues;
+            } else {
+                return {
+                    ...prevValues,
+                    [fomular_alias]: value
+                };
+            }
+        });
     };
+    
     useEffect(() => {
-        if (currentPage > 1 ) {
+        if (currentPage >= 1 ) {
             setRequireCount(false);
         }
-       
+       console.log(requireCount)
     }, [currentPage]);
 
     console.log(2343243243324242,currentPage)
+    const [previousSearchValues, setPreviousSearchValues] = useState({});
+    const [currentCount, setCurrentCount] = useState(null);
     
-    const callApi = () => {
+
+    const callApi = (requireCount= false) => {
 
         if (Object.keys(searchValues).length !== 0) {
             setLoadingSearch(true);
+        }
+        if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
+            setPreviousSearchValues(searchValues);
+            requireCount = true;
         }
         const searchBody = {
             table_id: dataTable_id,
@@ -398,28 +413,29 @@ export default () => {
             .then(res => {
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
-                // console.log(3989, res)
+            
                 if (success) {
-                    // setdataSearch(result)
-                    // setTotalSearch(total)
-                    setApiData(data.filter(record => record != undefined))
-                    setApiDataName(fields)
-                    setDataStatis(statisticValues)
-                    setLoaded(true)
-                    if (count !== undefined) {
-
+                    setApiData(data.filter(record => record != undefined));
+                    setApiDataName(fields);
+                    setDataStatis(statisticValues);
+                    setLoaded(true);
+            
+                    if (count !== undefined && requireCount) {
+                        setCurrentCount(count);
                         setSumerize(count);
+                    } else if (sumerize !== undefined) {
+                        setSumerize(sumerize);
+                    } else if (!requireCount && currentCount != null) {
+                        setSumerize(currentCount);
                     }
-                    else {
-                        setSumerize(sumerize)
-                    }
-
                 }
-                setLoadingSearch(false)
-
+            
+                setLoadingSearch(false);
             })
+            
+            
     };
-    // console.log(apiData)
+    console.log(currentCount)
     useEffect(() => {
         let timeout;
 
@@ -445,7 +461,7 @@ export default () => {
     const handleSearchClick = () => {
         setCurrentPage(1);
         if (currentPage === 1) {
-            callApi();
+            callApi(true);
         }
     }
 
@@ -1121,7 +1137,7 @@ export default () => {
                                                                         (stat) => stat.fomular_alias === statAlias
                                                                     );
                                                                     return (
-                                                                        <td key={index} class="font-weight-bold" colSpan={`${selectedFields.length + 1}`} style={{ textAlign: 'right' }}>
+                                                                        <td key={index} class="font-weight-bold" colspan={`${selectedFields.length + 1}`} style={{ textAlign: 'right' }}>
                                                                             {stat ? `${stat.display_name}: ${stat.result}` : ''}
                                                                         </td>
                                                                     );
@@ -1382,7 +1398,7 @@ export default () => {
                                                                 </thead>
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td class="font-weight-bold" colSpan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
+                                                                        <td class="font-weight-bold" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
