@@ -28,5 +28,7 @@ const setProjects = (state, action) => {
 
 const setUIPages = (state, action) => {
     const { pages } = action.payload;
+    const stringifiedUI = JSON.stringify( pages )
+    localStorage.setItem( "ui", stringifiedUI )
     return { ...state, pages }
 } 

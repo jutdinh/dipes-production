@@ -33,8 +33,8 @@ function App() {
 
   const dispatch = useDispatch()
   const _token = localStorage.getItem("_token");
-  const { lang, proxy, auth } = useSelector(state => state);
-
+  const { lang, proxy, auth, pages } = useSelector(state => state);
+  
   useEffect(() => {
     const specialURLs = ["/login", "/signup", "/signout"]
     const url = window.location.pathname;
@@ -59,16 +59,21 @@ function App() {
     }   
 
     const fetchData = async () => {
-      try {
-        const response = await axios.get('/dipe-configs/ui.json');
-        dispatch({
-            type: "setUIPages",
-            payload: { pages: response.data.data}
-        })     
+      // try {
+        const response = await axios.get(proxy() + '/apis/get/ui');
+        if( pages && pages.length == 0 ){
+          const { success, ui } = response.data;
+          if( success ){          
+            dispatch({
+                type: "setUIPages",
+                payload: { pages: ui.data}
+            })     
+          }
+        }
         
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }    
+      // } catch (error) {
+      //   console.error('Error fetching data:', error);
+      // }    
         
     };
 

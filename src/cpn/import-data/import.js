@@ -155,6 +155,62 @@ export default () => {
         }
     };
 
+
+    const importUI = async () => {
+        console.log("IMPORT UI")
+        if (!uploadedJson) {
+            // al.failure("Thất bại", "Vui lòng tải lên một file JSON trước khi import");
+            return;
+        }
+        try {
+            const response = await fetch(`${proxy()}/apis/import/ui`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ui: uploadedJson }),
+            });
+
+            if (response.ok) {
+                Swal.fire({
+                    title: lang["success"],
+                    text: lang["success.content"],
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 1500,
+
+                })
+                setTimeout(() => {
+                    localStorage.setItem( "ui", JSON.stringify( uploadedJson.data ) )
+                    window.location.reload();
+                }, 1600);
+            } else {
+                Swal.fire({
+                    title: lang["faild"],
+                    text: lang["faild.content"],
+                    icon: "error",
+                    showConfirmButton: true,
+                    customClass: {
+                        confirmButton: 'swal2-confirm my-confirm-button-class'
+                    }
+
+                })
+            }
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                title: lang["faild"],
+                text: lang["faild.content"],
+                icon: "error",
+                showConfirmButton: true,
+                customClass: {
+                    confirmButton: 'swal2-confirm my-confirm-button-class'
+                }
+
+            })
+        }
+    }
+
     const getFileType = () => {
         const { data } = uploadedJson
         const keys = Object.keys(data);
@@ -167,7 +223,12 @@ export default () => {
             if (isDatabase) {
                 return lang["database"]
             } else {
-                return lang["faild.format"]
+
+                if( Array.isArray(data) ){
+                    return "UI" // lang update if in need
+                }else{
+                    return lang["faild.format"]
+                }
             }
         }
     }
@@ -327,7 +388,14 @@ export default () => {
                                                     >
                                                         Import Database
                                                     </button>
-                                                ) : (
+                                                ) : getFileType() == "UI" ? (
+                                                    <button
+                                                        onClick={importUI}
+                                                        className="btn btn-primary"
+                                                    >
+                                                        Import UI
+                                                    </button>
+                                                ): (
                                                     <p className="text-red-500">
                                                     </p>
                                                 )
