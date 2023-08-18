@@ -187,7 +187,7 @@ export default {
     "log.id": "ID",
     "log.listtitle": "Tiêu đề",
     "log.dayupdate": "Ngày cập nhật",
-    "log.action": "Thao tác",
+    "log.action": "THAO TÁC",
     "btn.ok": "Lọc",
     "btn.clear": "Xóa",
     "btn.viewdetail": "Xem chi tiết",
@@ -215,7 +215,7 @@ export default {
     "activation": "Kích hoạt bản quyền",
 
     "success": "Thành công",
-    "success.content":"Import dữ liệu thành công",
+    "success.content": "Import dữ liệu thành công",
     "faild": "Thất bại",
     "faild.content": "Import dữ liệu thất bại",
     "format": "Định dạng tệp không hợp lệ",
@@ -227,18 +227,18 @@ export default {
     "create account": "Tạo tài khoản",
     "manage data": "Quản lý dữ liệu",
     "create": "Tạo mới",
-    "MAC":"Địa chỉ MAC máy chủ",
+    "MAC": "Địa chỉ MAC máy chủ",
     "active now": "Kích hoạt ngay",
     "select fields": "Chọn trường",
     "select statistic fields ": "Chọn trường thống kê",
     "preview data": "Bản xem trước dữ liệu Excel",
-"export.content.error": "Vui lòng chọn ít nhất một trường trước khi xuất.",
+    "export.content.error": "Vui lòng chọn ít nhất một trường trước khi xuất.",
 
     "success.add": "Thêm thành công",
     "fail.add": "Thêm thất bại",
     "success.update": "Cập nhật thành công",
     "fail.update": "Cập nhật thất bại",
-    
+
     "confirm": "Xác nhận xóa",
     "confirm.content": "Bạn có chắc chắn muốn xóa trường này?",
     "btn.delete": "Xóa",
@@ -267,7 +267,7 @@ export default {
     "select export type": "Chọn loại xuất",
     "import data": "Nhập dữ liệu",
     "export sample data": "Xuất dữ liệu mẫu",
-    "selected file":"File đã chọn",
+    "selected file": "File đã chọn",
     "size": "Kích thước",
     "type": "Loại",
     "check file": "Chỉ chấp nhận định dạng tệp .csv, .xlsx, và .xls",
@@ -279,8 +279,8 @@ export default {
     "error.import.foreign": "Lỗi khóa ngoại",
     "selectall": "Chọn tất cả",
     "imported": "Đang thực hiện",
-    "error.format":"File import không đúng định dạng",
-    "import.complete":"Import hoàn thành",
+    "error.format": "File import không đúng định dạng",
+    "import.complete": "Import hoàn thành",
     "import.text": "Dữ liệu đã được nhập thành công",
     "total.line": "Tổng số dòng",
     "total.imported": "Số dòng đã import",
@@ -288,9 +288,10 @@ export default {
     "total.time": "Thời gian",
     "minute": "Phút",
     "back": "Quay lại",
-    "copied": "Đã sao chép!"
+    "copied": "Đã sao chép!",
+    "Number of rows exceeds the allowable limit": "Số hàng vượt quá giới hạn cho phép",
+    "File size exceeds the allowable limit": "Kích thước tệp vượt quá giới hạn cho phép (Tối đa 120MB)"
 
 
-    
-    
+
 }

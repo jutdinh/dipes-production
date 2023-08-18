@@ -298,7 +298,7 @@ export default () => {
                 <div class="row column_title">
                     <div class="col-md-12">
                         <div class="page_title">
-                            <h4>Import data</h4>
+                            <h4 class="ml-1">Import data</h4>
                         </div>
                     </div>
                 </div>

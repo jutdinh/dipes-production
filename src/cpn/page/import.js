@@ -133,7 +133,7 @@ export default () => {
             require_count: requireCount,
             // exact: true
         }
-        console.log(searchBody)
+        // console.log(searchBody)
         fetch(`${proxy()}/api/foreign/data`, {
             method: "POST",
             headers: {
@@ -145,7 +145,7 @@ export default () => {
             .then(res => res.json())
             .then(res => {
                 const { success, content, data, result, total, fields, statisticValues, count, sumerize } = res;
-                console.log(res)
+                // console.log(res)
                 if (success) {
                     // setdataSearch(result)
                     // setTotalSearch(total)
@@ -174,7 +174,7 @@ export default () => {
                 .then(res => res.json())
                 .then(res => {
                     const { data, success, content } = res;
-                    console.log(res)
+                    // console.log(res)
                     if (success) {
                         setDataTables(data.tables)
                         setDataTableID(data.tables[0].id)
@@ -236,7 +236,11 @@ export default () => {
             if (event.target.files.length > 0) {
                 const file = event.target.files[0];
                 const fileExtension = file.name.split(".").pop().toLowerCase();
-
+                const maxFileSize = 120 * 1024 * 1024; // 5MB
+                if (file.size > maxFileSize) {
+                    setErrorSelect(lang["File size exceeds the allowable limit"]);
+                    return;
+                }
                 if (supportedExtensions.includes(fileExtension)) {
                     setSelectedFile({
                         name: file.name,
@@ -288,14 +292,11 @@ export default () => {
                                         break;
                                     }
                                 }
-
                                 if (!isValidHeader) {
                                     setErrorSelect(lang["format"]);
                                     setLoadingReadFile(false)
-
                                     return;
                                 }
-
                                 modifiedData = result.data
                                     .filter(row => Object.values(row).some(value => value.trim() !== ''))
                                     .map(row => {
@@ -305,12 +306,10 @@ export default () => {
                                         }
                                         return newRow;
                                     });
-
-                                console.log("Parsed CSV Result:", modifiedData);
+                                // console.log("Parsed CSV Result:", modifiedData);
                             },
                             header: true
                         });
-
                     } else if (['xlsx', 'xls'].includes(fileExtension)) {
                         const workbook = XLSX.read(e.target.result, { type: 'binary' });
                         const sheetName = workbook.SheetNames[0];
@@ -337,8 +336,13 @@ export default () => {
                             }
                             return newRow;
                         });
+                        const maxRows = 1100000;
+                        if (modifiedData.length > maxRows) {
+                            setErrorSelect(lang["Number of rows exceeds the allowable limit"]);
+                            return;
+                        }
 
-                        console.log("Parsed Excel Result:", modifiedData);
+                        // console.log("Parsed Excel Result:", modifiedData);
                     }
 
                     if (isValidHeader) {
@@ -365,7 +369,7 @@ export default () => {
             }
         };
 
-        console.log(uploadedJson)
+        // console.log(uploadedJson)
 
 
         useEffect(() => {
@@ -513,7 +517,7 @@ export default () => {
 
                 const jsonResponse = await response.json();
                 const { success } = jsonResponse
-                console.log(jsonResponse)
+                // console.log(jsonResponse)
                 if (!success) {
                     console.error("Server did not process batch successfully:", jsonResponse);
                     setErrorOccurred(true);
@@ -556,7 +560,7 @@ export default () => {
 
 
         const elapsedMinutes = elapsedTime / (1000 * 60);
-     
+
         const formattedMinutes = `${elapsedMinutes.toFixed(2)} ${lang["minute"]}`;
 
         const formattedTime = `${formattedMinutes} (${elapsedSeconds.toFixed(0)}s)`;
@@ -564,9 +568,9 @@ export default () => {
 
         setTime(formattedTime)
         const elapsedHours = elapsedTime / (1000 * 60 * 60);
-        console.log(`Giây: ${elapsedSeconds} `);
-        console.log(`Phút ${elapsedMinutes} `);
-        console.log(`Giờ ${elapsedHours} `);
+        // console.log(`Giây: ${elapsedSeconds} `);
+        // console.log(`Phút ${elapsedMinutes} `);
+        // console.log(`Giờ ${elapsedHours} `);
 
         if (completedBatches === batches.length) {
             setErrorOccurred(true);
@@ -584,8 +588,8 @@ export default () => {
         setIsImporting(false);
     };
     const percentageCompleted = (rowsImported / sumerize) * 100;
-    console.log(rowsImported)
-    console.log(sumerize)
+    // console.log(rowsImported)
+    // console.log(sumerize)
 
     // const importData = async () => {
     //     if (!uploadedJson?.data) return;
@@ -649,7 +653,7 @@ export default () => {
             });
 
             if (response.ok) {
-                console.log("Data has been successfully imported");
+                // console.log("Data has been successfully imported");
             } else {
                 console.error("Failed to import data", await response.json());
             }
@@ -673,7 +677,7 @@ export default () => {
                 .then(res => res.json())
                 .then(res => {
                     const { data, success, content } = res;
-                    console.log(res)
+                    // console.log(res)
                     if (success) {
                         setDataTables(data.tables)
                         setDataTableID(data.tables[0].id)
@@ -712,7 +716,7 @@ export default () => {
 
     // }, [currentPage]);
 
-    console.log(searchValues)
+
 
 
 
@@ -775,107 +779,7 @@ export default () => {
     const [exportType, setExportType] = useState("excel");
 
     // statis fields
-    const handleStatsChange = (event) => {
-        const { value } = event.target;
-        setSelectedStats(prevStats =>
-            prevStats.includes(value)
-                ? prevStats.filter(stat => stat !== value)
-                : [...prevStats, value]
-        );
-    }
-    // console.log(selectedStats)
-    //fields
-    const handleFieldChange = (event) => {
-        const { value } = event.target;
-        setSelectedFields(prevFields =>
-            prevFields.includes(value)
-                ? prevFields.filter(field => field !== value)
-                : [...prevFields, value]
-        );
-    }
-    function jsonToCsv(jsonData) {
-        const header = Object.keys(jsonData[0]).join(",");
-        const rows = jsonData.map(row => Object.values(row).join(","));
-        return [header, ...rows].join("\n");
-    }
-    const exportToCSV = (csvData) => {
-        const selectedHeaders = apiDataName;
-
-        const generateSampleData = (field) => {
-            switch (field.DATATYPE) {
-                case "INT":
-                    return field.MIN || "0001";
-                case "INT UNSIGNED":
-                    return "0001";
-                case "BIGINT":
-                    return "0001";
-                case "BIGINT UNSIGNED":
-                    return "0001";
-                case "TEXT":
-                    return "Sample Text";
-                case "BOOL":
-                    return "True/False";
-                case "DECIMAL":
-                    return "1.00";
-                case "DECIMAL":
-                    return "1.0";
-                case "CHAR":
-                    return "a";
-                case "EMAIL":
-                    return "abc@gmail.com";
-                case "PHONE":
-                    return "0123456789";
-                case "DATE":
-                    return "01/11/2022";
-                case "DATETIME":
-                    return "01/11/2022 10:10:26";
-                default:
-                    return "Sample Text";
-            }
-        }
-        // const headerRow = selectedHeaders.reduce((obj, header) => ({ ...obj, [header.fomular_alias]: header.display_name }), {});
-        const segments = page.url.split('/');
-        const lastSegment = segments[segments.length - 1];//tên
-        const result = lastSegment.replace(/-/g, '');
-
-        const headerRow = selectedHeaders.map(header => `${header.display_name}(${header.fomular_alias})`);
-        const sampleRow = selectedHeaders.map(header => generateSampleData(header));
-
-        if (selectedFileType === 'xlsx') {
-            const ws = XLSX.utils.json_to_sheet([headerRow, sampleRow], { skipHeader: true });
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Template");
-
-
-            XLSX.writeFile(wb, `TEMPLATE_${result.toUpperCase()}_${(new Date()).getTime()}.xlsx`);
-
-        } else if (selectedFileType === 'csv') {
-            const utf8BOM = "\uFEFF";
-            const csv = utf8BOM + headerRow.join(",") + "\n" + sampleRow.join(",") + "\n";
-
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", `TEMPLATE_${result.toUpperCase()}_${(new Date()).getTime()}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-        $('#closeModalExportFileSample').click();
-    }
-
-
-    const getCurrentDateTimeForFilename = () => {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        return `${year}${month}${day}_${hours}${minutes}${seconds}`;
-    };
+   
 
 
 
@@ -934,17 +838,7 @@ export default () => {
     }, [loadingSearch]);
 
 
-    const changeTrigger = (field, value) => {
-        const newData = data;
-        if (value === "true") {
-            newData[field.fomular_alias] = true;
-        } else if (value === "false") {
-            newData[field.fomular_alias] = false;
-        } else {
-            newData[field.fomular_alias] = value;
-        }
-        setData(newData);
-    }
+    
 
     function getErrorMessages(row) {
         const errors = [];
@@ -963,16 +857,7 @@ export default () => {
         return errors.join('; ');
     }
 
-    const searchData = () => {
-        console.log(data)
-    }
-
-    console.log(currentData)
-    console.log(apiDataName)
-
-
-    console.log(rowsImported)
-    console.log(rowsImportedError)
+   
 
     return (
         <div class="midde_cont">

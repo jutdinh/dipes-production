@@ -64,7 +64,7 @@ export default ( props ) => {
         <div className="" >
             <div ref = {ref} className="_shadow-blur _m-2 _bg-white _pointer _shadow-hover"                 
                 onClick={ setCurrentTable }
-                style={{ minWidth: 325}}>
+                style={{ width: 448}}>
                 <div className="_p-0-5 _border-1-bottom">
                     <span className="_block _text-left _text-16-px _bold">{ table.table_name }</span>                
                 </div>

@@ -8,7 +8,7 @@ import DatabaseBranch from './router/db';
 import ApiBranch from './router/api';
 
 const localUI = localStorage.getItem("ui");
-console.log(localUI)
+// console.log(localUI)
 const initState = {
     ...config,
     functions,

@@ -314,7 +314,7 @@ export default (props) => {
                 <div class="row column_title">
                     <div class="col-md-12">
                         <div class="page_title d-flex align-items-center">
-                            <h4>{lang["accounts manager"]}</h4>
+                            <h4 class="ml-1">{lang["accounts manager"]}</h4>
 
                             {statusActive ? (
                                 <button type="button" class="btn btn-primary custom-buttonadd ml-auto mr-4" data-toggle="modal" data-target="#quoteForm">

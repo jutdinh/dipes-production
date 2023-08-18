@@ -63,7 +63,7 @@ function ActivationForm() {
         <div class="row column_title">
           <div class="col-md-12">
             <div class="page_title">
-              <h4>{lang["activation"]}</h4>
+              <h4 class="ml-1">{lang["activation"]}</h4>
             </div>
           </div>
         </div>

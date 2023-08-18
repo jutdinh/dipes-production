@@ -85,7 +85,7 @@ export default () => {
         fetch(`${proxy()}/apis/api/${id_str}/input_info`).then(res => res.json())
             .then(res => {
                 const { success, data } = res;
-                console.log(res)
+                // console.log(res)
                 if (success) {
                     // const { tables } = data.tables;
                     const apiFields = data.params;
@@ -114,7 +114,7 @@ export default () => {
 
                     fetch(`${proxy()}/apis/retrieve/${id_str}/${rawParams}`)
                         .then(res => res.json()).then(res => {
-                            console.log(res);
+                            // console.log(res);
 
                             const { data } = res;
 
@@ -146,7 +146,7 @@ export default () => {
     }, [])
 
     useEffect(() => {
-        console.log(data)
+        // console.log(data)
     }, [data])
 
     // console.log(fields)
@@ -155,7 +155,7 @@ export default () => {
         const url = window.location;
         const rawParams = url.pathname.split(`/${id_str}/`)[1];
         const paramsList = rawParams.split('/');
-        console.log("body", data)
+        // console.log("body", data)
         if (!emailError && !phoneError && nullCheck(data)) {
             fetch(`${proxy()}/ui/${id_str}/${paramsList.join('/')}`, {
                 method: "PUT",
@@ -166,7 +166,7 @@ export default () => {
                 body: JSON.stringify({ ...data })
             }).then(res => res.json()).then(res => {
                 const { success, data, fk, content } = res;
-                console.log(res)
+                // console.log(res)
                 const errors = [
                     "primaryConflict",
                     "foreignConflict",
@@ -229,7 +229,7 @@ export default () => {
                 <div class="row column_title">
                     <div class="col-md-12">
                         <div class="page_title">
-                            <h4>{lang["data management"]}</h4>
+                            <h4 class="ml-1">{lang["data management"]}</h4>
                         </div>
                     </div>
                 </div>

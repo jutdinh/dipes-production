@@ -41,7 +41,7 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, status, content } = resp;
-                console.log(resp)
+                // console.log(resp)
                 if (success) {
 
                     if (data) {
@@ -85,7 +85,7 @@ export default () => {
             table_name: tableUpdate.table_name,
 
         };
-        console.log(requestBody)
+        // console.log(requestBody)
         fetch(`${proxy}/db/tables/table`, {
             method: "PUT",
             headers: {
@@ -205,9 +205,9 @@ export default () => {
             <div class="container-fluid">
                 <div class="row column_title">
                     <div class="col-md-12">
-                        <div class="page_title">
+                        <div class="page_title ">
                             {/* <h4><a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-4"></i></a>Quản lý bảng</h4> */}
-                            <h4>{lang["diagram"]}</h4>
+                            <h4 class="ml-1">{lang["diagram"]}</h4>
                         </div>
                     </div>
                 </div>
@@ -218,7 +218,7 @@ export default () => {
                         <div class="white_shd full margin_bottom_30">
                            
                             <div class={`table_section padding_infor_info`}>
-                              
+                            
 
                                 <div class={`row column1`}>
                                     <Diagram />

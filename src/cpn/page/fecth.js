@@ -182,7 +182,7 @@ export default () => {
                                         return newRow;
                                     });
 
-                                console.log("Parsed CSV Result:", modifiedData);
+                                // console.log("Parsed CSV Result:", modifiedData);
                                 setUploadedJson(modifiedData);
                                 importData();
                             },
@@ -199,7 +199,7 @@ export default () => {
                             }
                             return newRow;
                         });
-                        console.log("Parsed Excel Result:", modifiedData);
+                        // console.log("Parsed Excel Result:", modifiedData);
                         setUploadedJson({ data: modifiedData });
                         importData();
                     }
@@ -286,7 +286,7 @@ export default () => {
                 // type: "import"
             };
             logCount++;
-            console.log("Sample batch data:", requestBody);
+            // console.log("Sample batch data:", requestBody);
 
             try {
                 const response = await fetch(`${proxy()}${page.components?.[0]?.api_import}`, {
@@ -305,7 +305,7 @@ export default () => {
                     break;
                 }
 
-                console.log("Successfully processed batch number:", logCount);
+                // console.log("Successfully processed batch number:", logCount);
             } catch (error) {
                 console.error("Error sending batch:", error);
                 break;
@@ -353,7 +353,7 @@ export default () => {
 
     //search
     const [currentPage, setCurrentPage] = useState(0);
-    console.log(currentPage)
+    // console.log(currentPage)
     const [requireCount, setRequireCount] = useState(true);
     const [searchValues, setSearchValues] = useState({});
     // const timeoutRef = useRef(null);
@@ -375,23 +375,29 @@ export default () => {
         if (currentPage >= 1) {
             setRequireCount(false);
         }
-        console.log(requireCount)
+        // console.log(requireCount)
     }, [currentPage]);
 
-    console.log(2343243243324242, currentPage)
+    // console.log(2343243243324242, currentPage)
     const [previousSearchValues, setPreviousSearchValues] = useState({});
     const [currentCount, setCurrentCount] = useState(null);
 
 
     const callApi = (requireCount = false) => {
+        const startTime = new Date().getTime();
+        let loadingTimeout;
 
         if (Object.keys(searchValues).length !== 0) {
-            setLoadingSearch(true);
+            loadingTimeout = setTimeout(() => {
+                setLoadingSearch(true);
+            }, 150);
         }
+
         if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
             setPreviousSearchValues(searchValues);
             requireCount = true;
         }
+
         const searchBody = {
             table_id: dataTable_id,
             start_index: currentPage - 1,
@@ -400,7 +406,9 @@ export default () => {
             api_id: page.components?.[0]?.api_get.split('/')[2]
             // exact: true
         }
-        console.log(searchBody)
+
+        // console.log(searchBody)
+
         fetch(`${proxy()}/api/foreign/data`, {
             method: "POST",
             headers: {
@@ -413,7 +421,7 @@ export default () => {
             .then(res => {
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
-                console.log(res)
+                // console.log(33565659656599974, res)
                 if (success) {
                     setApiData(data.filter(record => record != undefined));
                     setApiDataName(fields);
@@ -430,18 +438,24 @@ export default () => {
                     }
                 }
 
+                const endTime = new Date().getTime();
+                const elapsedTime = endTime - startTime;
+
+                clearTimeout(loadingTimeout); // Clear the timeout
                 setLoadingSearch(false);
-            })
 
-
+                console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+            });
     };
-    console.log(currentCount)
+
+
+
     useEffect(() => {
         let timeout;
 
         if (loadingSearch) {
             Swal.fire({
-                title: "Searching...",
+                title: lang["searching"],
                 allowEscapeKey: false,
                 allowOutsideClick: false,
                 didOpen: () => {
@@ -451,12 +465,13 @@ export default () => {
         } else {
             timeout = setTimeout(() => {
                 Swal.close();
-            }, 1000);
+            }, 10);
         }
         return () => {
             clearTimeout(timeout);
         };
     }, [loadingSearch]);
+
 
     const handleSearchClick = () => {
         setCurrentPage(1);
@@ -559,7 +574,7 @@ export default () => {
             // console.log('Không tìm thấy primaryKeys');
         }
         // console.log(newParams);
-        console.log(data)
+
         Swal.fire({
             title: lang["confirm"],
             text: lang["confirm.content"],
@@ -747,8 +762,7 @@ export default () => {
         const rows = jsonData.map(row => Object.values(row).join(","));
         return [header, ...rows].join("\n");
     }
-    // console.log(page)
-    // console.log(apiDataName)
+
     const exportToCSV = (csvData) => {
         const selectedHeaders = apiDataName;
 
@@ -827,9 +841,7 @@ export default () => {
         const seconds = String(now.getSeconds()).padStart(2, '0');
         return `${year}${month}${day}_${hours}${minutes}${seconds}`;
     };
-    // console.log(dataStatis)
-    // console.log(selectedFields)
-    // console.log(selectedStats)
+
     const Export = () => {
         const selectFields = [...selectedFields, ...selectedStats]
         const exportBody = {
@@ -845,7 +857,7 @@ export default () => {
             headers: {
                 "content-type": "application/json",
                 "Accept": exportType === 'excel' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' : 'text/csv',
-                fromIndex: currentPage - 1
+
             },
             body: JSON.stringify(exportBody)
         })
@@ -914,27 +926,7 @@ export default () => {
             // });
         }
     }, [loadingExportFile]);
-    useEffect(() => {
-        let timeout;
 
-        if (loadingSearch) {
-            Swal.fire({
-                title: "Searching...",
-                allowEscapeKey: false,
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-        } else {
-            timeout = setTimeout(() => {
-                Swal.close();
-            }, 1000);
-        }
-        return () => {
-            clearTimeout(timeout);
-        };
-    }, [loadingSearch]);
 
 
     const changeTrigger = (field, value) => {
@@ -954,14 +946,14 @@ export default () => {
     }
 
     // console.log(searchValues)
-    console.log(sumerize)
+    // console.log(sumerize)
     return (
         <div class="midde_cont">
             <div class="container-fluid">
                 <div class="row column_title">
                     <div class="col-md-12">
-                        <div class="page_title">
-                            <h4>{lang["manage data"]}</h4>
+                        <div class="page_title ">
+                            <h4 class="ml-1">{lang["manage data"]}</h4>
                         </div>
                     </div>
                 </div>
@@ -1046,7 +1038,7 @@ export default () => {
                                             ))}
                                         </div>
 
-                                        {
+                                        {/* {
                                             dataStatis && dataStatis.length > 0 ? (
                                                 <>
                                                     <h5 class="mt-4 mb-2">{lang["select statistic fields "]}:</h5>
@@ -1078,7 +1070,7 @@ export default () => {
                                             ) : (
                                                 null
                                             )
-                                        }
+                                        } */}
                                         <h5 class="mt-4 mb-2">{lang["select export type"]}:</h5>
                                         <div className="ml-4">
 
@@ -1419,13 +1411,13 @@ export default () => {
                                     ) :
                                         null}
                                 </div>
-                                <div class="row">
+                                <div class="row  mt-4" style={{ marginLeft: "-10px", marginRight: "-10px" }}>
                                     {dataStatis?.map((statis, index) => {
                                         const { display_name, type, data } = statis;
                                         if (type == "text") {
                                             return (
-                                                <div class="col-md-12 col-sm-6">
-                                                    <p key={index} className="font-weight-bold">{display_name}: {data}</p>
+                                                <div class="col-md-12 ml-2 col-sm-4">
+                                                    <p key={index} className="font-weight-bold">{display_name}: {data && data !== undefined && formatNumber(data.toFixed())}</p>
                                                 </div>
                                             )
                                         }
@@ -1433,14 +1425,15 @@ export default () => {
                                             const { headers, values } = data;
                                             return (
                                                 <div class="col-md-6 col-sm-4">
+                                                    <p class="mt-4">{display_name}</p>
                                                     <div class="table-outer">
                                                         <table class="table-head">
                                                             <thead>
-                                                                    <th class="font-weight-bold ml-2" style={{ width: "100px" }} scope="col">Tiêu chí</th>
-                                                                    <th class="scrollbar-measure"></th>
-                                                                    <th class="font-weight-bold ml-2" style={{ width: "100px" }} scope="col">Kết quả</th>
-                                                                    <th class="scrollbar-measure"></th>
-                                                              
+                                                                <th class="font-weight-bold p-l-5" style={{ width: "100px" }} scope="col">Tiêu chí</th>
+                                                                <th class="scrollbar-measure"></th>
+                                                                <th class="font-weight-bold p-l-5" style={{ width: "100px" }} scope="col">Kết quả</th>
+                                                                <th class="scrollbar-measure"></th>
+
                                                             </thead>
                                                         </table>
                                                         <div class="table-body">
@@ -1449,7 +1442,7 @@ export default () => {
                                                                     {headers.map((header, headerIndex) =>
                                                                         <tr key={headerIndex}>
                                                                             <td class="font-weight-bold" >{header}</td>
-                                                                            <td>{formatNumber(values[headerIndex])}</td>
+                                                                            <td>{formatNumber(values[headerIndex].toFixed())}</td>
                                                                         </tr>
                                                                     )}
                                                                 </tbody>

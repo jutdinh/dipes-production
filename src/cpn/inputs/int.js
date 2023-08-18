@@ -26,7 +26,7 @@ export default (props) => {
     const { foreign_keys } = table;
     const corespondingKey = foreign_keys.find(key => key.field_id == field.id)
 
-    console.log(startIndex)
+    // console.log(startIndex)
     useEffect(() => {
         const key = isFieldForeign()
         const { foreign_keys } = table;
@@ -37,10 +37,11 @@ export default (props) => {
                 const dataBody = {
                     table_id: corespondingKey.table_id,
                     start_index: startIndex,
-                    criteria: {}
+                    criteria: {},
+                    exact: true
                 };
 
-                console.log(dataBody)
+                // console.log(dataBody)
                 fetch(`${proxy()}/api/foreign/data`, {
                     method: "POST",
                     headers: {
@@ -51,7 +52,7 @@ export default (props) => {
 
                 }).then(res => res.json()).then(res => {
                     const { success, data, fields, sumerize, statistic } = res;
-                    console.log(res)
+                    // console.log(res)
 
                     setForeignData(data)
                     setFields(fields)
@@ -85,7 +86,7 @@ export default (props) => {
                             criteria: {}
                         };
 
-                        console.log(69, dataBody)
+                        // console.log(69, dataBody)
                         fetch(`${proxy()}/api/foreign/data`, {
                             method: "POST",
                             headers: {
@@ -97,14 +98,14 @@ export default (props) => {
                         }).then(res => res.json())
                             .then(res => {
                                 const { success, data, fields, sumerize, statistic } = res;
-                                console.log(82, res)
+                                // console.log(82, res)
                                 setForeignData([...data.filter(record => record !== undefined)]);
                                 setFields(fields)
                                 const { ref_field_id } = key;
-                                console.log(key)
+                                // console.log(key)
                                 const primaryField = fields.find(field => field.id == ref_field_id);
                                 if (primaryField) {
-                                    console.log(primaryField)
+                                    // console.log(primaryField)
                                     setPK(primaryField.fomular_alias)
                                 }
                             })
@@ -121,11 +122,12 @@ export default (props) => {
     const [selectedOption, setSelectedOption] = useState(null);
 
     const loadOptions = async (search, loadedOptions, { page }) => {
-        console.log(search);
+        // console.log(search);
 
         let dataBody = {
             table_id: corespondingKey.table_id,
-            start_index: page
+            start_index: page,
+
         };
 
         if (search && search.trim() !== "") {
@@ -134,7 +136,7 @@ export default (props) => {
             dataBody.criteria = criteria;
         }
 
-        console.log(dataBody);
+        // console.log(dataBody);
         const response = await fetch(`${proxy()}/api/foreign/data`, {
             method: "POST",
             headers: {
@@ -143,7 +145,7 @@ export default (props) => {
             body: JSON.stringify(dataBody)
         });
         const res = await response.json();
-        console.log(res);
+        // console.log(res);
 
         let returnedData = [];
 
@@ -153,7 +155,7 @@ export default (props) => {
             returnedData = res.data;
         }
 
-        console.log(returnedData)
+        // console.log(returnedData)
         const dataWithoutNull = returnedData.filter(record => record !== null && record !== undefined);
 
         setForeignData(dataWithoutNull)
@@ -163,7 +165,11 @@ export default (props) => {
 
         let hasMoreValue;
 
-        if (search && search.trim() !== "") {
+       
+
+        if (dataWithoutNull.length === 0) {
+            hasMoreValue = false;
+        } else if (search && search.trim() !== "") {
             hasMoreValue = true;
         } else {
             hasMoreValue = loadedRecordCount + 17 < res.sumerize;
@@ -183,7 +189,7 @@ export default (props) => {
             options: options,
             hasMore: hasMoreValue,
             additional: {
-                page: page + 1,
+                page: hasMoreValue ? page + 1 : page
             },
         };
     }
@@ -212,7 +218,7 @@ export default (props) => {
     }
 
     const fieldChangeData = (e) => {
-        console.log(e.target.value)
+        // console.log(e.target.value)
         const rawJSON = e.target.value
         const value = JSON.parse(rawJSON)
 
@@ -231,8 +237,8 @@ export default (props) => {
     }
 
     const generateData = (data) => {
-        console.log(data)
-        console.log(pk)
+        // console.log(data)
+        // console.log(pk)
         if (pk && data) {
             return data[pk];
         }
@@ -248,9 +254,9 @@ export default (props) => {
 
 
     const handleChange = option => {
-        console.log("Before update: ", selectedValue);
+        // console.log("Before update: ", selectedValue);
         setSelectedValue(option);
-        console.log("After update: ", selectedValue);
+        // console.log("After update: ", selectedValue);
         fieldChangeData({ target: { value: option.value } }); 
     };
 
@@ -259,16 +265,16 @@ export default (props) => {
     const handleScrollToBottom = () => {
         if (!isLoading) {
             setIsLoading(true);
-            console.log("Reached bottom!");
+            // console.log("Reached bottom!");
             setStartIndex(prevIndex => prevIndex + 1);
         }
     };
 
-    console.log(JSON.stringify(defaultValue))
+    // console.log(JSON.stringify(defaultValue))
     const [defaultOption, setDefaultOption] = useState(null);
 
     const [initialValue, setInitialValue] = useState(null);
-    console.log(defaultOption)
+    // console.log(defaultOption)
     useEffect(() => {
 
         const fetchDataForDefaultValue = async () => {
@@ -279,14 +285,14 @@ export default (props) => {
                     table_id: corespondingKey.table_id,
                     start_index: 0,
                     require_count: false,
-                    // exact: true
+                    //  exact: true
                 };
 
                 const criteria = {};
 
                 criteria[pk] = defaultValue;
                 dataBody.criteria = criteria;
-                console.log(290, dataBody)
+                // console.log(290, dataBody)
                 const response = await fetch(`${proxy()}/api/foreign/data`, {
                     method: "POST",
                     headers: {
@@ -300,9 +306,9 @@ export default (props) => {
                 let returnedData = res.result || res.data;
 
                 const foundData = returnedData.find(d => d != undefined && d[pk] === defaultValue);
-                console.log(criteria)
+                // console.log(criteria)
                 const label = generateData(foundData);
-                console.log(label);
+                // console.log(label);
 
                 if (foundData) {
                     const dataOption = {
@@ -326,7 +332,7 @@ export default (props) => {
             fetchDataForDefaultValue()
         }
     }, [defaultValue, pk]);
-    console.log(pk)
+    // console.log(pk)
     if (isPrimaryKey()) {
 
         if (!isFieldForeign()) {
@@ -370,7 +376,7 @@ export default (props) => {
                                         styles={{
                                             menuList: base => ({
                                                 ...base,
-                                                maxHeight: '250px'
+                                                maxHeight: '300px'
                                             })
                                         }}
                                         additional={{
@@ -435,8 +441,7 @@ export default (props) => {
                             <div className="form-group">
                                 <label>{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
                                 <AsyncPaginate
-                                    // defaultOptions
-                                    // key={ Math.random()}
+                                    
                                     loadOptions={loadOptions}
                                     onChange={handleChange}
                                     isSearchable={true}
@@ -444,7 +449,7 @@ export default (props) => {
                                     styles={{
                                         menuList: base => ({
                                             ...base,
-                                            maxHeight: '250px'
+                                            maxHeight: '300px'
                                         })
                                     }}
                                     additional={{

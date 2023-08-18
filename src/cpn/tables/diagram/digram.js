@@ -62,7 +62,7 @@ export default () => {
     useEffect(() => {
         const width = $('#hdxjhdksrhkhg').width();
         const height = $('#hdxjhdksrhkhg').height();
-        setWidth(window.innerWidth-50); setHeight(window.innerHeight);
+        setWidth((window.innerWidth)) ; setHeight( window.innerHeight);
     }, [])
 
     useEffect(() => {
@@ -167,7 +167,7 @@ export default () => {
 
 
             </div>
-            <div className="_abs _t-0 _l-0 _z-index-0" style={{ width, height }}>
+            <div className="_abs _t-0 _l-0 _z-index-0" style={{ width: width + 200, height}}>
                 <svg width={width} height={height}>
                     {offsets.map((point, index) =>
                         <path style={{ opacity: "0.8" }} key={index} d={pathGenerator(index, point)} stroke={autoColoring()} strokeWidth={3}></path>

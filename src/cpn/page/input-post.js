@@ -58,7 +58,7 @@ export default () => {
                 }
             })
     }, [pages])
-    console.log(fields)
+    // console.log(fields)
     const result = pages?.find(item => {
         // Lấy id từ api_get
         const api_get_id = item.components?.[0]?.api_post.split('/')[2];
@@ -101,7 +101,7 @@ export default () => {
 
     const submit = () => {
 
-        console.log({ ...data })
+        // console.log({ ...data })
         if (!emailError && !phoneError && nullCheck(data)) {
             fetch(`${proxy()}${result?.components?.[0]?.api_post}`, {
                 method: "POST",
@@ -190,7 +190,7 @@ export default () => {
                 <div class="row column_title">
                     <div class="col-md-12">
                         <div class="page_title">
-                            <h4>{lang["data management"]}</h4>
+                            <h4 class="ml-1">{lang["data management"]}</h4>
                         </div>
                     </div>
                 </div>

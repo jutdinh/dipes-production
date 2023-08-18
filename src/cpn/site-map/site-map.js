@@ -173,7 +173,7 @@ export default () => {
                 <div class="row column_title">
                     <div class="col-md-12">
                         <div class="page_title d-flex align-items-center">
-                            <h4>{lang["site map"]}</h4>
+                            <h4 class="ml-1">{lang["site map"]}</h4>
                         </div>
                     </div>
                 </div>

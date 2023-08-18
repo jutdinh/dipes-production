@@ -194,7 +194,7 @@ export default {
     "log.id": "ID",
     "log.listtitle": "Title",
     "log.dayupdate": "Date",
-    "log.action": "Action",
+    "log.action": "ACTION",
     "btn.ok": "Filter",
     "btn.clear": "Clear",
     "btn.viewdetail": "View details",
@@ -294,7 +294,9 @@ export default {
     "total.time": "Time",
     "minute": "minute",
     "back": "Back",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "Number of rows exceeds the allowable limit": "Number of rows exceeds the allowable limit",
+    "File size exceeds the allowable limit": "File size exceeds allowable limit (Up to 120MB)"
 }
 
 
