@@ -9,10 +9,20 @@ function ActivationForm() {
   const [key, setKey] = useState({ MAC: "", activated: true });
   const _token = localStorage.getItem("_token");
 
+  const [isCopied, setIsCopied] = useState(false);
+
   const handleCopy = (event) => {
     event.preventDefault();
     copy(key.MAC);
+
+    setIsCopied(true);
+
+
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 2000);
   };
+
   useEffect(() => {
     fetch(`${proxy()}/auth/activation/machine_id`, {
       headers: {
@@ -63,7 +73,7 @@ function ActivationForm() {
             <div class="white_shd full ">
               <div class="full graph_head">
                 <div class="heading1 margin_0">
-                  <h5><a><i class="fa fa-chevron-circle-left mr-3 mb-2"></i></a> {lang["activation"]}</h5>
+                  <h5><a></a> {lang["activation"]}</h5>
                 </div>
               </div>
 
@@ -72,7 +82,7 @@ function ActivationForm() {
                   <div class="row" style={{ marginBottom: 'auto' }}>
                     <div className="form-group col-lg-12">
                       <label>{lang["MAC"]}</label>
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
                         <input
                           type="text"
                           className="form-control"
@@ -80,10 +90,28 @@ function ActivationForm() {
                           readOnly
                           style={{ flex: 1 }}
                         />
-                        <i class="fa fa-clipboard ml-3 pointer " onClick={handleCopy} style={{ fontSize: '24px' }} title='Copy'></i>
+                        <i
+                          className="fa fa-clipboard ml-3 pointer"
+                          onClick={handleCopy}
+                          style={{ fontSize: '24px' }}
+                          title='Copy'
+                        ></i>
 
+                        {isCopied &&
+                          <div className="copy-alert" style={{
+                            animation: 'fadeInOut 3s ease-out',
+                            position: 'absolute',
+                            top: '100%',
+                            left: '40%',
+                            // transform: 'translate(10px, -50%)',
+                            zIndex: 1
+                          }}>
+                            <i className='fa fa-check-circle mr-1 mt-1'></i> {lang["copied"]}
+                          </div>
+                        }
                       </div>
                     </div>
+
                     <div class="form-group col-lg-12">
                       <label>{lang["activate.key"]}</label>
                       <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -95,7 +123,7 @@ function ActivationForm() {
                         />
                       </div>
                     </div>
-                    
+
                     <div class="form-group col-lg-12">
                       <button type="button" onClick={submitKey} class="btn btn-success ">{lang["active now"]}</button>
                     </div>

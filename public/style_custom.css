@@ -1,3 +1,75 @@
+.copy-alert {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 5px 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.copy-alert i {
+    color: #4CAF50;
+    margin-right: 5px;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+
+
+
+
+.table-outer {
+    position: relative;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.table-head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+
+
+}
+
+.table-body {
+    min-height: 292px;
+    height: 292px;
+    overflow-y: auto;
+
+}
+
+.table-head,
+.table-body table {
+    width: 100%;
+    display: table;
+    table-layout: fixed;
+    margin: 0;
+}
+
+.scrollbar-measure {
+    width: 20px;
+   height: 30px;
+}
+
+
+
 .my-confirm-button-class {
     background-color: rgb(209, 72, 81);
 }
@@ -575,12 +647,15 @@ h5 {
     padding-right: 1.5rem;
     padding-left: 1.5rem;
 }
-.ml-15{
+
+.ml-15 {
     margin-right: 15px;
 }
-.mr-15{
+
+.mr-15 {
     margin-left: 15px;
 }
+
 .row .col-md-12 {
     position: relative;
     width: 100%;
@@ -752,9 +827,10 @@ h5 {
 .excel-preview td {
     text-align: left;
 }
+
 .error-row {
-    background-color: #f8d7da; 
-    color: #1a1919; 
+    background-color: #f8d7da;
+    color: #1a1919;
 }
 
 .foreign-error {
@@ -773,14 +849,10 @@ h5 {
 .icon-export-ex {
     color: #9c2e1b;
     font-size: 24px;
-    width: 25x;
+    width: 27px;
     height: 24px;
 }
 
-.icon-import-nav {
-    color: #ddda31;
-    font-size: 24px;
-}
 .icon-import {
     color: #1b629c;
     font-size: 24px;
@@ -788,15 +860,25 @@ h5 {
     height: 24px;
 }
 
+
+
+.icon-import-nav {
+    color: #ddda31;
+    font-size: 24px;
+}
+
 .icon-ui {
     color: #0056b3;
     font-size: 24px;
-}.icon-add {
+}
+
+.icon-add {
     color: #0056b3;
     font-size: 24px;
     width: 24px;
     height: 27px;
 }
+
 .icon-database {
     color: #f09393;
     font-size: 24px;
@@ -1182,8 +1264,12 @@ h5 {
     padding-left: 10px;
 }
 
-.size {
+.size-18 {
     font-size: 18px;
+}
+
+.size-24 {
+    font-size: 24px;
 }
 
 .size-search {

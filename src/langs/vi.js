@@ -286,7 +286,9 @@ export default {
     "total.imported": "Số dòng đã import",
     "total.error": "Số dòng lỗi",
     "total.time": "Thời gian",
-    "minute": "Phút"
+    "minute": "Phút",
+    "back": "Quay lại",
+    "copied": "Đã sao chép!"
 
 
     

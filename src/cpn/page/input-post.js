@@ -26,14 +26,14 @@ export default () => {
 
     const inputs = document.querySelectorAll('input[type="number"], input[type="text"], textarea');
     inputs.forEach(input => {
-        input.addEventListener('keydown', function(e) {
+        input.addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 submit()
             }
         });
     });
-    
+
     const [phoneError, setPhoneError] = useState(false);
     const handlePhoneError = (error) => {
         setPhoneError(error);
@@ -201,8 +201,11 @@ export default () => {
                             <div class="full graph_head d-flex">
                                 <div class="heading1 margin_0 ">
                                     {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
-
-                                    <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{result?.title} <i class="fa fa-chevron-right"></i> {lang["create"]}</h5>
+                                    <h5> <label onClick={() => navigate(-1)} className='pointer' title={lang["back"]}>
+                                        <i class="fa fa-chevron-circle-left size-18 mr-1"></i>
+                                        {result?.title}
+                                    </label><i class="fa fa-chevron-right ml-2"></i> {lang["create"]}
+                                    </h5>
                                 </div>
                                 {/* <div class="ml-auto">
                                 <i class="fa fa-newspaper-o icon-ui"></i>
@@ -225,107 +228,107 @@ export default () => {
                                         </div>
 
                                     </div>
-                                
-                                        {isLoading ? (
-                                            <div class="d-flex justify-content-center align-items-center w-100 responsive-div">
-                                                <img width={350} className="scaled-hover-target" src="/images/icon/loading.gif" ></img>
-                                            </div>
-                                        ) : (
-                                            <div class="col-md-12">
-                                        <div className="w-50-pct mg-auto p-1 bg-white">
-                                            <span className="block text-32-px text-center p-0-5">{api.api_name}</span>
-                                            {fields.map(field =>
-                                                <div key={field.field_id}>
 
-                                                    {field.DATATYPE == "PHONE" ?
-                                                        <DataPhone
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger}
-                                                            onPhoneError={handlePhoneError}
-                                                        /> : null
-                                                    }
-                                                    {field.DATATYPE == "VARCHAR" ?
-                                                        <Varchar
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
-                                                    }
-                                                    {field.DATATYPE == "CHAR" ?
-                                                        <Char
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
-                                                    }
-                                                    {field.DATATYPE == "TEXT" ?
-                                                        <Text
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
-                                                    }
-                                                    {field.DATATYPE == "INT" || field.data_type == "BIG INT" ?
-                                                        <Int
-                                                            selectOption={true}
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
-                                                            field={field}
-                                                            changeTrigger={changeTrigger} /> : null
-                                                    }
-                                                    {field.DATATYPE == "INT UNSIGNED" || field.data_type == "BIG INT UNSIGNED" ?
-                                                        <Int
-                                                            selectOption={true}
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
-                                                            related={relatedTables} unsigned={true} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
-                                                    }
-                                                    {field.DATATYPE == "DATE" ?
-                                                        <DateInput
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
-                                                    }
-                                                    {field.DATATYPE == "EMAIL" ?
-                                                        <DataEmail
-                                                            selectOption={true}
-                                                            readOnly={false}
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger}
-                                                            onEmailError={handleEmailError}
-                                                        /> : null
-                                                    }
-                                                    {field.DATATYPE == "TIME" ?
-                                                        <TimeInput
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
-                                                    }
-                                                    {field.DATATYPE == "DATETIME" ?
-                                                        <DateTimeInput
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
-                                                    }
-                                                    {field.DATATYPE == "DECIMAL" ?
-                                                        <Decimal
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
-                                                    }
-                                                    {field.DATATYPE == "DECIMAL UNSIGNED" ?
-                                                        <Decimal
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
-                                                            related={relatedTables} unsigned={true} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
-                                                    }
-                                                    {field.DATATYPE == "BOOL" ?
-                                                        <Bool
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0]}
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} /> : null
-                                                    }
-                                                </div>
-                                            )}
-                                            {/* <div className="m-t-1">
+                                    {isLoading ? (
+                                        <div class="d-flex justify-content-center align-items-center w-100 responsive-div">
+                                            <img width={350} className="scaled-hover-target" src="/images/icon/loading.gif" ></img>
+                                        </div>
+                                    ) : (
+                                        <div class="col-md-12">
+                                            <div className="w-50-pct mg-auto p-1 bg-white">
+                                                <span className="block text-32-px text-center p-0-5">{api.api_name}</span>
+                                                {fields.map(field =>
+                                                    <div key={field.field_id}>
+
+                                                        {field.DATATYPE == "PHONE" ?
+                                                            <DataPhone
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger}
+                                                                onPhoneError={handlePhoneError}
+                                                            /> : null
+                                                        }
+                                                        {field.DATATYPE == "VARCHAR" ?
+                                                            <Varchar
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} /> : null
+                                                        }
+                                                        {field.DATATYPE == "CHAR" ?
+                                                            <Char
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} /> : null
+                                                        }
+                                                        {field.DATATYPE == "TEXT" ?
+                                                            <Text
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} /> : null
+                                                        }
+                                                        {field.DATATYPE == "INT" || field.data_type == "BIG INT" ?
+                                                            <Int
+                                                                selectOption={true}
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                field={field}
+                                                                changeTrigger={changeTrigger} /> : null
+                                                        }
+                                                        {field.DATATYPE == "INT UNSIGNED" || field.data_type == "BIG INT UNSIGNED" ?
+                                                            <Int
+                                                                selectOption={true}
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} unsigned={true} field={field}
+                                                                changeTrigger={changeTrigger} /> : null
+                                                        }
+                                                        {field.DATATYPE == "DATE" ?
+                                                            <DateInput
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} /> : null
+                                                        }
+                                                        {field.DATATYPE == "EMAIL" ?
+                                                            <DataEmail
+                                                                selectOption={true}
+                                                                readOnly={false}
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger}
+                                                                onEmailError={handleEmailError}
+                                                            /> : null
+                                                        }
+                                                        {field.DATATYPE == "TIME" ?
+                                                            <TimeInput
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} /> : null
+                                                        }
+                                                        {field.DATATYPE == "DATETIME" ?
+                                                            <DateTimeInput
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} /> : null
+                                                        }
+                                                        {field.DATATYPE == "DECIMAL" ?
+                                                            <Decimal
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} /> : null
+                                                        }
+                                                        {field.DATATYPE == "DECIMAL UNSIGNED" ?
+                                                            <Decimal
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} unsigned={true} field={field}
+                                                                changeTrigger={changeTrigger} /> : null
+                                                        }
+                                                        {field.DATATYPE == "BOOL" ?
+                                                            <Bool
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} /> : null
+                                                        }
+                                                    </div>
+                                                )}
+                                                {/* <div className="m-t-1">
                                                 <div className="p-1">
                                                     <div className="button-wrapper">
                                                         <button onClick={submit} className="w-max-content p-0-5 p-l-1 p-r-1 shadow-blur shadow-hover bg-theme-color no-border block text-16-px white pointer shadow-blur shadow-hover">Lưu lại</button>
@@ -337,20 +340,20 @@ export default () => {
                                             </div> */}
 
 
-                                            <div class="row justify-content-center">
-                                                <div class="col-md-6">
-                                                    <div class="mt-2 d-flex justify-content-end">
-                                                        <button type="button" onClick={submit} class="btn btn-success mr-2">{lang["btn.create"]}</button>
-                                                        <button type="button" onClick={() => navigate(-1)} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
+                                                <div class="row justify-content-center">
+                                                    <div class="col-md-6">
+                                                        <div class="mt-2 d-flex justify-content-end">
+                                                            <button type="button" style={{minWidth: "105px"}} onClick={submit} class="btn btn-success mr-2">{lang["btn.create"]}</button>
+                                                            <button type="button" style={{minWidth: "105px"}} onClick={() => navigate(-1)} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
+                                                        </div>
                                                     </div>
                                                 </div>
+
+
                                             </div>
-
-
                                         </div>
-                                    </div>
-           
-        )}
+
+                                    )}
                                 </div>
                             </div>
                         </div>

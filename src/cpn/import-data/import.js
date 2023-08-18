@@ -249,7 +249,7 @@ export default () => {
                                 <div class="white_shd full ">
                                     <div class="full graph_head">
                                         <div class="heading1 margin_0">
-                                            <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3 mb-2"></i></a>Import</h5>
+                                            <h5> Import</h5>
                                         </div>
                                     </div>
                                     {/* <div class="full price_table padding_infor_info" style={{ display: 'flex', flexDirection: 'column', minHeight: '40vh' }}>
@@ -294,7 +294,7 @@ export default () => {
                                 </div>
                             </div> */}
                                     <div class="full price_table padding_infor_info" style={{ display: 'flex', flexDirection: 'column', minHeight: '40vh' }}>
-                                        <div class="row" style={{ marginBottom: 'auto' }}>
+                                        <div class="form-group col-md-12" style={{ marginBottom: 'auto' }}>
                                             <div class="col-md-12 mt-4">
                                                 <label><b class="font-weight-bold">{lang["file name"]}:</b> {file.name} </label>
                                             </div>

@@ -292,7 +292,9 @@ export default {
     "total.imported": "Number of lines imported",
     "total.error": "Number of error lines",
     "total.time": "Time",
-    "minute": "minute"
+    "minute": "minute",
+    "back": "Back",
+    "copied": "Copied!"
 }
 
 

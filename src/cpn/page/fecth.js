@@ -353,7 +353,7 @@ export default () => {
 
     //search
     const [currentPage, setCurrentPage] = useState(0);
-  console.log(currentPage)
+    console.log(currentPage)
     const [requireCount, setRequireCount] = useState(true);
     const [searchValues, setSearchValues] = useState({});
     // const timeoutRef = useRef(null);
@@ -370,20 +370,20 @@ export default () => {
             }
         });
     };
-    
+
     useEffect(() => {
-        if (currentPage >= 1 ) {
+        if (currentPage >= 1) {
             setRequireCount(false);
         }
-       console.log(requireCount)
+        console.log(requireCount)
     }, [currentPage]);
 
-    console.log(2343243243324242,currentPage)
+    console.log(2343243243324242, currentPage)
     const [previousSearchValues, setPreviousSearchValues] = useState({});
     const [currentCount, setCurrentCount] = useState(null);
-    
 
-    const callApi = (requireCount= false) => {
+
+    const callApi = (requireCount = false) => {
 
         if (Object.keys(searchValues).length !== 0) {
             setLoadingSearch(true);
@@ -413,13 +413,13 @@ export default () => {
             .then(res => {
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
-            
+                console.log(res)
                 if (success) {
                     setApiData(data.filter(record => record != undefined));
                     setApiDataName(fields);
                     setDataStatis(statisticValues);
                     setLoaded(true);
-            
+
                     if (count !== undefined && requireCount) {
                         setCurrentCount(count);
                         setSumerize(count);
@@ -429,11 +429,11 @@ export default () => {
                         setSumerize(currentCount);
                     }
                 }
-            
+
                 setLoadingSearch(false);
             })
-            
-            
+
+
     };
     console.log(currentCount)
     useEffect(() => {
@@ -697,7 +697,7 @@ export default () => {
         }
     }, [currentPage])
 
-
+    ///
     const rowsPerPage = 20;
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
@@ -708,6 +708,9 @@ export default () => {
     const [selectedFields, setSelectedFields] = useState([]);/// fields
     const [selectedStats, setSelectedStats] = useState([]);
     const [exportType, setExportType] = useState("excel");
+    ////paginate statistic
+
+
 
     // statis fields
     const handleStatsChange = (event) => {
@@ -951,7 +954,7 @@ export default () => {
     }
 
     // console.log(searchValues)
-    // console.log(apiDataName)
+    console.log(sumerize)
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -1204,14 +1207,14 @@ export default () => {
                                 </div>
                                 {statusActive ? (
                                     <div class="ml-auto pointer" onClick={() => redirectToInput()} data-toggle="modal" title="Add">
-                                                                              
+
                                         <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
                                     </div>
                                 ) : null}
                                 {
                                     current && current.length > 0 ? (
                                         <div class="ml-4 pointer" data-toggle="modal" data-target="#exportExcel" title="Export to file">
-                                           
+
                                             <FontAwesomeIcon icon={faDownload} className="icon-export" />
                                         </div>
                                     ) : null
@@ -1240,8 +1243,8 @@ export default () => {
                                     ) : null
                                 } */}
                                 <div class="ml-4 pointer" data-toggle="modal" data-target="#exportExcelEx" title="Export Data Example">
-
                                     <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
+
                                 </div>
                                 <div class="ml-4 mr-3 pointer" onClick={redirectToImportData} title="Import data">
                                     <FontAwesomeIcon icon={faFileImport} className="icon-import" />
@@ -1302,8 +1305,8 @@ export default () => {
                                                                                         ))}
                                                                                         <td class="align-center" style={{ minWidth: "80px" }}>
 
-                                                                                            <i class="fa fa-edit size pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
-                                                                                            <i class="fa fa-trash-o size pointer icon-margin icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                            <i class="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
+                                                                                            <i class="fa fa-trash-o size-24 pointer icon-margin icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
                                                                                         </td>
                                                                                     </tr>)
                                                                             } else {
@@ -1430,26 +1433,28 @@ export default () => {
                                             const { headers, values } = data;
                                             return (
                                                 <div class="col-md-6 col-sm-4">
-                                                    <div class="table-responsive" style={{ width: "100%", margin: "1em 0.5em 0 0 " }}>
-                                                        <div key={index}>
-                                                            <p className="font-weight-bold">{display_name}</p>
-                                                        </div>
-                                                        <table className={tableClassName}>
+                                                    <div class="table-outer">
+                                                        <table class="table-head">
                                                             <thead>
-                                                                <tr>
-                                                                    <th class="font-weight-bold " style={{ width: "100px" }} scope="col">Tiêu chí</th>
-                                                                    <th class="font-weight-bold " style={{ width: "100px" }} scope="col">Kết quả</th>
-                                                                </tr>
+                                                                    <th class="font-weight-bold ml-2" style={{ width: "100px" }} scope="col">Tiêu chí</th>
+                                                                    <th class="scrollbar-measure"></th>
+                                                                    <th class="font-weight-bold ml-2" style={{ width: "100px" }} scope="col">Kết quả</th>
+                                                                    <th class="scrollbar-measure"></th>
+                                                              
                                                             </thead>
-                                                            <tbody>
-                                                                {headers.map((header, headerIndex) =>
-                                                                    <tr key={headerIndex}>
-                                                                        <td class="font-weight-bold" >{header}</td>
-                                                                        <td>{formatNumber(values[headerIndex])}</td>
-                                                                    </tr>
-                                                                )}
-                                                            </tbody>
                                                         </table>
+                                                        <div class="table-body">
+                                                            <table class="table table-striped">
+                                                                <tbody>
+                                                                    {headers.map((header, headerIndex) =>
+                                                                        <tr key={headerIndex}>
+                                                                            <td class="font-weight-bold" >{header}</td>
+                                                                            <td>{formatNumber(values[headerIndex])}</td>
+                                                                        </tr>
+                                                                    )}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             )

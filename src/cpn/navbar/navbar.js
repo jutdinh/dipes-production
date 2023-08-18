@@ -53,7 +53,7 @@ export default () => {
                {user.role === "ad" || user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/" activeClassName="nav-active">
-                        <i class="fa fa-upload icon-import-nav"></i>
+                        <i class="fa fa-upload size-24 icon-import-nav"></i>
                         <span>Import</span>
                      </NavLink>
                   </li>
