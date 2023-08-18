@@ -1441,7 +1441,7 @@ export default () => {
                                                                 <tbody>
                                                                     {headers.map((header, headerIndex) =>
                                                                         <tr key={headerIndex}>
-                                                                            <td class="font-weight-bold" >{header}</td>
+                                                                            <td>{header}</td>
                                                                             <td>{formatNumber(values[headerIndex].toFixed())}</td>
                                                                         </tr>
                                                                     )}
