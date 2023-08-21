@@ -290,7 +290,11 @@ export default {
     "back": "Quay lại",
     "copied": "Đã sao chép!",
     "Number of rows exceeds the allowable limit": "Số hàng vượt quá giới hạn cho phép",
-    "File size exceeds the allowable limit": "Kích thước tệp vượt quá giới hạn cho phép (Tối đa 120MB)"
+    "File size exceeds the allowable limit": "Kích thước tệp vượt quá giới hạn cho phép (Tối đa 120MB)",
+    "export_excel_csv": "Xuất Excel/CSV",
+    "export data example": "Xuất file mẫu",
+    "import data": "Import dữ liệu"
+
 
 
 

@@ -34,7 +34,7 @@ export default (props) => {
             <div class="table-outer">
                 <table class="table-head">
                     <thead>
-                        <th class="scrollbar-measure"></th>
+                        
                         <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
                         <th class="scrollbar-measure"></th>
                         <th class="font-weight-bold p-l-5" style={{ width: "100px" }} scope="col">Tiêu chí</th>
@@ -73,6 +73,8 @@ export default (props) => {
                                         &laquo;
                                     </button>
                                 </li>
+
+                                {/* Logic to display the 3 pages around the current page */}
                                 {Array.from({ length: totalPages }).map((_, index) => {
                                     if (index === currentPage || index === currentPage - 1 || index === currentPage + 1) {
                                         return (

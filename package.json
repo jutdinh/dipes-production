@@ -35,7 +35,7 @@
     "react-select": "^5.7.4",
     "react-select-async-paginate": "^0.7.3",
     "reactstrap": "^9.2.0",
-    "recharts": "^2.6.2",
+    "recharts": "^2.7.3",
     "redux": "^4.2.0",
     "sass": "^1.56.1",
     "scss": "^0.2.4",

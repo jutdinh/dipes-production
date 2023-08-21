@@ -1200,14 +1200,14 @@ export default () => {
                                     <h5>{page?.components?.[0]?.component_name}</h5>
                                 </div>
                                 {statusActive ? (
-                                    <div class="ml-auto pointer" onClick={() => redirectToInput()} data-toggle="modal" title="Add">
+                                    <div class="ml-auto pointer" onClick={() => redirectToInput()} data-toggle="modal" title={lang["btn.create"]}>
 
                                         <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
                                     </div>
                                 ) : null}
                                 {
                                     current && current.length > 0 ? (
-                                        <div class="ml-4 pointer" data-toggle="modal" data-target="#exportExcel" title="Export to file">
+                                        <div class="ml-4 pointer" data-toggle="modal" data-target="#exportExcel" title={lang["export_excel_csv"]}>
 
                                             <FontAwesomeIcon icon={faDownload} className="icon-export" />
                                         </div>
@@ -1236,11 +1236,11 @@ export default () => {
                                         </div>
                                     ) : null
                                 } */}
-                                <div class="ml-4 pointer" data-toggle="modal" data-target="#exportExcelEx" title="Export Data Example">
+                                <div class="ml-4 pointer" data-toggle="modal" data-target="#exportExcelEx" title={lang["export data example"]}>
                                     <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
 
                                 </div>
-                                <div class="ml-4 mr-3 pointer" onClick={redirectToImportData} title="Import data">
+                                <div class="ml-4 mr-3 pointer" onClick={redirectToImportData} title={lang["import data"]}>
                                     <FontAwesomeIcon icon={faFileImport} className="icon-import" />
                                 </div>
 
@@ -1416,35 +1416,38 @@ export default () => {
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-12">
-                        <div class="white_shd full margin_bottom_30">
-                            <div class="full graph_head d-flex">
-                                <div class="heading1 margin_0 ">
-                                    <h5>{lang["statistic"]}: {page?.components?.[0]?.component_name}</h5>
+                    {dataStatis && dataStatis.length > 0 ? (
+                        <div class="col-md-12">
+                            <div class="white_shd full margin_bottom_30">
+                                <div class="full graph_head d-flex">
+                                    <div class="heading1 margin_0 ">
+                                        <h5>{lang["statistic"]}: {page?.components?.[0]?.component_name}</h5>
+                                    </div>
                                 </div>
-                               </div>
-                            <div class="table_section padding_infor_info">
-                              
-                                <div class="row  mt-4" style={{  }}>
-                                    {dataStatis?.map((statis, index) => {
-                                        const { display_name, type, data } = statis;
-                                        if (type == "text") {
-                                            return (
-                                                <div class="col-md-12 ml-2 col-sm-4">
-                                                    <p key={index} className="font-weight-bold">{display_name}: {data && data !== undefined && formatNumber(data.toFixed())}</p>
-                                                </div>
-                                            )
-                                        }
-                                        if (type == "table") {                                            
-                                            return (
-                                                <StatisTable  data={data} statis={ statis }/>
-                                            )
-                                        }
-                                    })}
+                                <div class="table_section padding_infor_info">
+
+                                    <div class="row  mt-4" style={{}}>
+                                        {dataStatis?.map((statis, index) => {
+                                            const { display_name, type, data } = statis;
+                                            if (type == "text") {
+                                                return (
+                                                    <div class="col-md-12 ml-2 col-sm-4">
+                                                        <p key={index} className="font-weight-bold">{display_name}: {data && data !== undefined && formatNumber(data.toFixed())}</p>
+                                                    </div>
+                                                )
+                                            }
+                                            if (type == "table") {
+                                                return (
+                                                    <StatisTable data={data} statis={statis} />
+                                                )
+                                            }
+                                        })}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    ) : null
+                    }
                 </div>
             </div >
         </div >
