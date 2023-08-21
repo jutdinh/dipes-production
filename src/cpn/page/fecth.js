@@ -421,7 +421,7 @@ export default () => {
             .then(res => {
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
-                // console.log(33565659656599974, res)
+                // console.log(74, res)
                 if (success) {
                     setApiData(data.filter(record => record != undefined));
                     setApiDataName(fields);
@@ -444,7 +444,7 @@ export default () => {
                 clearTimeout(loadingTimeout); // Clear the timeout
                 setLoadingSearch(false);
 
-                console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
             });
     };
 
@@ -1411,7 +1411,19 @@ export default () => {
                                     ) :
                                         null}
                                 </div>
-                                <div class="row  mt-4" style={{ marginLeft: "-10px", marginRight: "-10px" }}>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="white_shd full margin_bottom_30">
+                            <div class="full graph_head d-flex">
+                                <div class="heading1 margin_0 ">
+                                    <h5>{lang["statistic"]}: {page?.components?.[0]?.component_name}</h5>
+                                </div>
+                               </div>
+                            <div class="table_section padding_infor_info">
+                              
+                                <div class="row  mt-4" style={{  }}>
                                     {dataStatis?.map((statis, index) => {
                                         const { display_name, type, data } = statis;
                                         if (type == "text") {

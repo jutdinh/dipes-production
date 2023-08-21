@@ -60,17 +60,7 @@ export default () => {
                 // localStorage.setItem('fullname', data.data.fullname)
                 const stringifiedUser = JSON.stringify(data.data)
                 localStorage.setItem('user', stringifiedUser);
-                // Swal.fire({
-                //     title: "Đăng nhập thành công!",
-                //     text: content,
-                //     icon: "success",
-                //     showConfirmButton: false,
-                //     timer: 1500,
-                // }).then(function () {
-
-                //      window.location = "/projects";
-                // });
-
+        
                 fetch(`${proxy()}/auth/activation/check`, {
                     headers: {
                         Authorization: data.token
@@ -108,9 +98,6 @@ export default () => {
 
                         }
                     })
-
-
-
             } else {
                 setAuthError(content);
 
