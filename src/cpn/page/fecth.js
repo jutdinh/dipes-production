@@ -17,6 +17,8 @@ import {
 
 } from '../inputs search';
 
+import StatisTable from './statistic/table'
+
 export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
 
@@ -1433,35 +1435,9 @@ export default () => {
                                                 </div>
                                             )
                                         }
-                                        if (type == "table") {
-                                            const { headers, values } = data;
+                                        if (type == "table") {                                            
                                             return (
-                                                <div class="col-md-6 col-sm-4">
-                                                    <p class="mt-4">{display_name}</p>
-                                                    <div class="table-outer">
-                                                        <table class="table-head">
-                                                            <thead>
-                                                                <th class="font-weight-bold p-l-5" style={{ width: "100px" }} scope="col">Tiêu chí</th>
-                                                                <th class="scrollbar-measure"></th>
-                                                                <th class="font-weight-bold p-l-5" style={{ width: "100px" }} scope="col">Kết quả</th>
-                                                                <th class="scrollbar-measure"></th>
-
-                                                            </thead>
-                                                        </table>
-                                                        <div class="table-body">
-                                                            <table class="table table-striped">
-                                                                <tbody>
-                                                                    {headers.map((header, headerIndex) =>
-                                                                        <tr key={headerIndex}>
-                                                                            <td>{header}</td>
-                                                                            <td>{formatNumber(values[headerIndex].toFixed())}</td>
-                                                                        </tr>
-                                                                    )}
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <StatisTable  data={data} statis={ statis }/>
                                             )
                                         }
                                     })}

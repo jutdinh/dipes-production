@@ -134,7 +134,15 @@ const floatValidate = ( number ) => {
     }
 }
 
+const formatNumber = (num) => {
+    if (num == null || isNaN(num)) {
+        return '0';
+    }
+
+    return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+}
+
 export default {
     uid, removeDuplicate, titleCase, openTab, dateGenerator, renderDateTimeByFormat,
-    showApiResponseMessage, formatNumberWithCommas
+    showApiResponseMessage, formatNumberWithCommas, formatNumber
 }
