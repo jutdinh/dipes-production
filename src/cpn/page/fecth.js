@@ -715,7 +715,7 @@ export default () => {
     }, [currentPage])
 
     ///
-    const rowsPerPage = 20;
+    const rowsPerPage = 15;
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
     const current = apiData
