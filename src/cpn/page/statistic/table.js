@@ -15,12 +15,16 @@ export default (props) => {
     const [currentPage, setCurrentPage] = useState(0)
     const totalPages = Math.ceil(headers.length / RECORD_PER_PAGE);
 
-
+    
     useEffect(() => {
-
         setDisplay(headers.slice(currentPage * RECORD_PER_PAGE, (currentPage + 1) * RECORD_PER_PAGE))
     }, [currentPage])
 
+    useEffect(() => {
+        const { headers } = data;
+        setCurrentPage(0)
+        setDisplay(headers.slice(currentPage * RECORD_PER_PAGE, (currentPage + 1) * RECORD_PER_PAGE))
+    }, [data])
 
     const paginate = (nextPage) => {
         setCurrentPage(nextPage)
@@ -50,7 +54,7 @@ export default (props) => {
                                 <tr key={currentPage * RECORD_PER_PAGE + headerIndex}>
                                     <td style={{ width: "100px" }}>{currentPage * RECORD_PER_PAGE + headerIndex + 1}</td>
                                     <td>{header}</td>
-                                    <td>{formatNumber(values[headers.indexOf(header)].toFixed())}</td>
+                                    <td>{formatNumber(values[headers.indexOf(header)]?.toFixed())}</td>
                                 </tr>
                             )}
                         </tbody>
