@@ -41,7 +41,7 @@ export default (props) => {
                     exact: true
                 };
 
-                // console.log(dataBody)
+                console.log(dataBody)
                 fetch(`${proxy()}/api/foreign/data`, {
                     method: "POST",
                     headers: {
@@ -86,7 +86,7 @@ export default (props) => {
                             criteria: {}
                         };
 
-                        // console.log(69, dataBody)
+                        console.log(69, dataBody)
                         fetch(`${proxy()}/api/foreign/data`, {
                             method: "POST",
                             headers: {
@@ -136,7 +136,7 @@ export default (props) => {
             dataBody.criteria = criteria;
         }
 
-        // console.log(dataBody);
+        console.log(dataBody);
         const response = await fetch(`${proxy()}/api/foreign/data`, {
             method: "POST",
             headers: {

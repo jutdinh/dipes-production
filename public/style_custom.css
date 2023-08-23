@@ -866,12 +866,46 @@ h5 {
 }
 
 
-
+.custom-tooltip {
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    padding: 10px;
+    border-bottom: none;
+  }
+  
 .icon-import-nav {
     color: #ddda31;
     font-size: 24px;
 }
+.graph_head_cus {
+    padding: 0px 25px 0px 0px;
+    /* padding: 18px 25px 18px 25px; */
+    float: left;
+    width: 100%;
+    border-bottom: solid #f3f3f3 2px;
+}
+.nav .nav-tabs .h5 {
+   color: white;
+}
 
+.tab_style2 .tabbar nav div.nav-tabs .nav-link.active {
+    background: #d4e0ec;
+    color: #fff;
+    border-color: #ced4da;
+    border-bottom: none;
+    /* padding: 18px 25px 18px 25px; */
+}
+
+.heading1_cus {
+    float: left;
+    padding: 0;
+    width: 100%;
+    margin-top: 50px;
+}
+
+.tabbar .nav-tabs {
+    border-bottom: solid #eee 0px !important;
+}
 .icon-ui {
     color: #0056b3;
     font-size: 24px;

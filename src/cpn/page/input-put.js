@@ -237,11 +237,13 @@ export default () => {
                 <div class="row">
                     <div class="col-md-12">
                         <div class="white_shd full margin_bottom_30">
-                            <div class="full graph_head d-flex">
-                                <div class="heading1 margin_0 ">
+                            <div class="full graph_head_cus d-flex">
+                                <div class="heading1_cus margin_0 ">
                                     {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
-
-                                    <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{result?.title} <i class="fa fa-chevron-right"></i> {lang["update"]}</h5>
+                                    <h5> <label onClick={() => navigate(-1)}>
+                                        <a  title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-0 nav-item nav-link"></i></a>{result?.title}
+                                    </label> <i class="fa fa-chevron-right"></i>  {lang["update"]}</h5>
+                                    
                                 </div>
                                 {/* <div class="ml-auto">
                                 <i class="fa fa-newspaper-o icon-ui"></i>

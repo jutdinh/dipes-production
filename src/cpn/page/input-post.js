@@ -198,14 +198,14 @@ export default () => {
                 <div class="row">
                     <div class="col-md-12">
                         <div class="white_shd full margin_bottom_30">
-                            <div class="full graph_head d-flex">
-                                <div class="heading1 margin_0 ">
+                            <div class="full graph_head_cus d-flex">
+                                <div class="heading1_cus margin_0 ">
                                     {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
-                                    <h5> <label onClick={() => navigate(-1)} className='pointer' title={lang["back"]}>
-                                        <i class="fa fa-chevron-circle-left size-18 mr-1"></i>
-                                        {result?.title}
-                                    </label><i class="fa fa-chevron-right ml-2"></i> {lang["create"]}
-                                    </h5>
+                                   
+                                    <h5> <label onClick={() => navigate(-1)}>
+                                        <a  title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-1 nav-item nav-link"></i></a>{result?.title}
+                                    </label> <i class="fa fa-chevron-right"></i>  {lang["create"]}</h5>
+
                                 </div>
                                 {/* <div class="ml-auto">
                                 <i class="fa fa-newspaper-o icon-ui"></i>
@@ -343,8 +343,8 @@ export default () => {
                                                 <div class="row justify-content-center">
                                                     <div class="col-md-6">
                                                         <div class="mt-2 d-flex justify-content-end">
-                                                            <button type="button" style={{minWidth: "105px"}} onClick={submit} class="btn btn-success mr-2">{lang["btn.create"]}</button>
-                                                            <button type="button" style={{minWidth: "105px"}} onClick={() => navigate(-1)} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
+                                                            <button type="button" style={{ minWidth: "105px" }} onClick={submit} class="btn btn-success mr-2">{lang["btn.create"]}</button>
+                                                            <button type="button" style={{ minWidth: "105px" }} onClick={() => navigate(-1)} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
                                                         </div>
                                                     </div>
                                                 </div>
