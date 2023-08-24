@@ -59,13 +59,13 @@ export default () => {
             })
     }, [pages])
     // console.log(fields)
-    const result = pages?.find(item => {
+    const result = pages?.filter(item => item.type !== "apiview").find(item => {
         // Lấy id từ api_get
         const api_get_id = item.components?.[0]?.api_post.split('/')[2];
-        // console.log(api_get_id)
         // So sánh với id_str
         return api_get_id === id_str;
     });
+    
     // console.log (result)
 
     const changeTrigger = (field, value) => {

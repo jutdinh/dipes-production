@@ -41,12 +41,13 @@ export default () => {
 
 
 
-    const result = pages?.find(item => {
-
+    const result = pages?.filter(item => item.type !== "apiview").find(item => {
+        // Lấy id từ api_get
         const api_get_id = item.components?.[0]?.api_put.split('/')[2];
-
+        // So sánh với id_str
         return api_get_id === id_str;
     });
+    
     // console.log(result)
 
     const changeTrigger = (field, value) => {

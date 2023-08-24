@@ -903,7 +903,7 @@ export default () => {
                                         <p>{lang["total.line"]}: {totalRows}</p>
                                         <p>{lang["total.imported"]}: {rowsImported - rowsImportedError}</p>
                                         <p>{lang["total.error"]}: {rowsImportedError}</p>
-                                        <p>{lang["total.time"]}: {time}</p>
+                                        {/* <p>{lang["total.time"]}: {time}</p> */}
                                     </div>
                                 ) : null
                                 }
