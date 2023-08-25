@@ -19,7 +19,7 @@ export default (props) => {
     const totalPages = Math.ceil(headers.length / RECORD_PER_PAGE);
 
 
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF5733','#C70039','#900C3F','#581845','#2E4053','#9A7D0A'];
 
     const MyPieChart = () => {
         let pieData = [];
@@ -178,10 +178,10 @@ export default (props) => {
         const option = {
             //Điều chỉnh vị trí
             grid: {
-                left: '10%',  
-                right: '5%', 
-                top: '5%',   
-                bottom: '10%' 
+                left: '10%',
+                right: '5%',
+                top: '5%',
+                bottom: '10%'
             },
             xAxis: {
                 type: 'category',
@@ -202,8 +202,8 @@ export default (props) => {
             },
             legend: {
                 data: ['value'],
-                bottom: 10,         
-                orient: 'horizontal'  
+                bottom: 10,
+                orient: 'horizontal'
             },
 
             series: [{
@@ -289,7 +289,7 @@ export default (props) => {
                                         <td>
                                             {
                                                 values[headers.indexOf(header)] !== undefined
-                                                    ? formatNumber(values[headers.indexOf(header)].toFixed())
+                                                    ? formatNumber(values[headers.indexOf(header)]?.toFixed())
                                                     : formatNumber("0")
                                             }
                                         </td>

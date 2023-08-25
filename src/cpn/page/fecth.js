@@ -60,7 +60,7 @@ export default () => {
 
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     }
-    console.log(dataStatis)
+    // console.log(dataStatis)
     const formatNumberSize = (num) => {
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     }
@@ -124,7 +124,7 @@ export default () => {
     }, [pages, url]);
     const matchingPage = apiViewPages?.find(page => page.url === `/${url}`);
 
-    console.log(apiViewPages)
+    // console.log(apiViewPages)
 
 
     useEffect(() => {
@@ -313,7 +313,7 @@ export default () => {
 
                 const jsonResponse = await response.json();
                 const { success, content, data, result, total, fields, statisticValues, count, sumerize } = jsonResponse;
-                console.log(jsonResponse)
+                // console.log(jsonResponse)
                 if (!success) {
                     console.error("Server did not process batch successfully:", jsonResponse);
                     break;
@@ -365,7 +365,7 @@ export default () => {
     }
     const [loaded, setLoaded] = useState(false);
 
-    console.log(page)
+    // console.log(page)
     //search
     const [currentPage, setCurrentPage] = useState(0);
     // console.log(currentPage)
@@ -437,7 +437,7 @@ export default () => {
             .then(res => {
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
-                console.log(74, res)
+                // console.log(74, res)
                 if (success) {
                     setApiData(data.filter(record => record != undefined));
                     setApiDataName(fields);
@@ -494,7 +494,7 @@ export default () => {
             callApi(true);
         }
     }
-    console.log()
+    // console.log()
 
     const redirectToInput = () => {
         if (errorLoadConfig) {
@@ -733,12 +733,12 @@ export default () => {
     const callApiView = () => {
         if (apiViewPages.length > 0) {
             const apiGet = apiViewPages[0].components?.[0]?.api_get;
-            console.log(apiGet)
+            // console.log(apiGet)
             fetch(`${proxy()}${apiGet}`)
                 .then(res => res.json())
                 .then(res => {
                     const { success, content, data, fields} = res;
-                    console.log(12122121, res);
+                    // console.log(12122121, res);
                     setApiViewData(data)
                     setApiViewFields(fields)
                 });
@@ -789,8 +789,8 @@ export default () => {
         setSelectAll(!selectAll);
     }
     if (apiViewPages.length > 0) {
-        console.log(apiViewPages);
-        console.log(apiViewPages[0].components?.[0].component_name);
+        // console.log(apiViewPages);
+        // console.log(apiViewPages[0].components?.[0].component_name);
     }
     
     const handleFieldChange = (event) => {
@@ -987,7 +987,7 @@ export default () => {
     }
 
     const searchData = () => {
-        console.log(data)
+        // console.log(data)
     }
 
     // console.log(searchValues)
