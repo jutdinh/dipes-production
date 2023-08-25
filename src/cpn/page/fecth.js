@@ -1477,7 +1477,6 @@ export default () => {
                                                                                                             ))}
                                                                                                             <th class="font-weight-bold align-center" style={{ width: "100px" }}>{lang["log.action"]}</th>
                                                                                                         </tr>
-
                                                                                                         <tr>
                                                                                                             <th></th>
                                                                                                             {apiDataName.map((header, index) => (
@@ -1491,7 +1490,7 @@ export default () => {
                                                                                                                     />
                                                                                                                 </th>
                                                                                                             ))}
-                                                                                                            <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size pointer icon-margin mb-2" title={lang["search"]}></i></th>
+                                                                                                            <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size-24 pointer mb-2" title={lang["search"]}></i></th>
                                                                                                         </tr>
 
                                                                                                     </thead>
@@ -1509,7 +1508,7 @@ export default () => {
                                                                                                                         <td class="align-center" style={{ minWidth: "80px" }}>
 
                                                                                                                             <i class="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
-                                                                                                                            <i class="fa fa-trash-o size-24 pointer icon-margin icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                                                            <i class="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
                                                                                                                         </td>
                                                                                                                     </tr>)
                                                                                                             } else {
