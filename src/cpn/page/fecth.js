@@ -21,6 +21,7 @@ import StatisTable from './statistic/table'
 
 export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
+  
 
     const { formatNumberWithCommas } = functions
 
@@ -65,7 +66,15 @@ export default () => {
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     }
     const location = useLocation();
+    const [activeTab, setActiveTab] = useState('nav-home_s2');
 
+    useEffect(() => {
+        // Kiểm tra nếu dataStatis tồn tại và activeTab là 'nav-profile_s2' (tab thống kê)
+        if (!dataStatis || dataStatis.length === 0 && activeTab === 'nav-profile_s2') {
+            setActiveTab('nav-home_s2');
+        }
+    }, [dataStatis]);
+    
     useEffect(() => {
 
         setSearchValues({});
@@ -511,7 +520,8 @@ export default () => {
         }
         // console.log(page)
         const id_str = page.components?.[0]?.api_post.split('/')[2];
-        window.location.href = `apis/api/${id_str}/input_info`;
+      
+        window.location.href = `${url}/apis/api/${id_str}/input_info?myParam=${url}`;
     }
     const redirectToImportData = () => {
         if (errorLoadConfig) {
@@ -669,7 +679,8 @@ export default () => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                openTab(`/page/put/api/${id_str}/${stringifiedParams}`)
+                openTab(`/page/put/api/${id_str}/${stringifiedParams}?myParam=${url}`)
+                
             }
         } else {
             Swal.fire({
@@ -720,7 +731,7 @@ export default () => {
 
     };
 
-  
+
 
 
 
@@ -737,8 +748,8 @@ export default () => {
             fetch(`${proxy()}${apiGet}`)
                 .then(res => res.json())
                 .then(res => {
-                    const { success, content, data, fields} = res;
-                    // console.log(12122121, res);
+                    const { success, content, data, fields } = res;
+                    console.log(12122121, res);
                     setApiViewData(data)
                     setApiViewFields(fields)
                 });
@@ -748,12 +759,10 @@ export default () => {
     useEffect(() => {
         if (apiViewPages) {
             callApiView();
-            callApi()
         }
-    }, [apiViewPages]);
+    }, [matchingPage]);
 
 
-    ///
     const rowsPerPage = 15;
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
@@ -792,7 +801,7 @@ export default () => {
         // console.log(apiViewPages);
         // console.log(apiViewPages[0].components?.[0].component_name);
     }
-    
+
     const handleFieldChange = (event) => {
         const { value } = event.target;
         // console.log(value)
@@ -810,7 +819,25 @@ export default () => {
 
     const exportToCSV = (csvData) => {
         const selectedHeaders = apiDataName;
+        function styleHeaders(ws) {
+            const headerStyle = {
+                fill: {
+                    fgColor: { rgb: "008000" }
+                },
+                font: {
+                    bold: true,
+                    color: { rgb: "fffffff" }
+                }
+            };
 
+            const colNum = XLSX.utils.decode_range(ws['!ref']).e.c + 1;
+            for (let i = 0; i < colNum; ++i) {
+                const cellRef = XLSX.utils.encode_cell({ c: i, r: 0 });
+                if (ws[cellRef]) {
+                    ws[cellRef].s = headerStyle;
+                }
+            }
+        }
         const generateSampleData = (field) => {
             switch (field.DATATYPE) {
                 case "INT":
@@ -853,6 +880,7 @@ export default () => {
 
         if (selectedFileType === 'xlsx') {
             const ws = XLSX.utils.json_to_sheet([headerRow, sampleRow], { skipHeader: true });
+            styleHeaders(ws);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Template");
 
@@ -992,6 +1020,8 @@ export default () => {
 
     // console.log(searchValues)
     // console.log(sumerize)
+  
+
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -1237,7 +1267,6 @@ export default () => {
                         </div>
                     </div>
                     {matchingPage ? (
-
                         <div class="col-md-12">
                             <div class="white_shd full margin_bottom_30">
                                 <div class="full graph_head_cus d-flex">
@@ -1247,9 +1276,9 @@ export default () => {
                                                 <nav>
                                                     <div class="nav nav-tabs" style={{ borderBottomStyle: "0px" }} id="nav-tab" role="tablist">
                                                         {apiViewData && apiViewData.length > 0 ? (
-                                                             <a class="nav-item nav-link " id="nav-home-tab" data-toggle="tab" href="#nav-home_s2" role="tab" aria-controls="nav-home_s2" ><h5>{apiViewPages[0].components?.[0].component_name}</h5></a>
+                                                            <a class="nav-item nav-link " id="nav-home-tab" data-toggle="tab" href="#nav-home_s2" role="tab" aria-controls="nav-home_s2" ><h5>{apiViewPages[0].components?.[0].component_name}</h5></a>
                                                         ) :
-                                                           null
+                                                            null
                                                         }
                                                     </div>
                                                 </nav>
@@ -1327,17 +1356,45 @@ export default () => {
                                         <div class="tab_style2">
                                             <div class="tabbar">
                                                 <nav>
-                                                    <div class="nav nav-tabs" style={{ borderBottomStyle: "0px" }} id="nav-tab" role="tablist">
-
+                                                    <div className="nav nav-tabs" style={{ borderBottomStyle: "0px" }} id="nav-tab" role="tablist">
                                                         {dataStatis && dataStatis.length > 0 ? (
                                                             <>
-                                                                <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home_s2" role="tab" aria-controls="nav-home_s2" aria-selected="true">    <h5>{page?.components?.[0]?.component_name}</h5></a>
-                                                                <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile_s2" role="tab" aria-controls="nav-profile_s2" aria-selected="false"> <h5>{lang["statistic"]}: {page?.components?.[0]?.component_name}</h5></a>
+                                                                <a
+                                                                    className={`nav-item nav-link ${activeTab === 'nav-home_s2' ? 'active' : ''}`}
+                                                                    id="nav-home-tab"
+                                                                    data-toggle="tab"
+                                                                    href="#nav-home_s2"
+                                                                    role="tab"
+                                                                    aria-controls="nav-home_s2"
+                                                                    onClick={() => setActiveTab('nav-home_s2')}
+                                                                >
+                                                                    <h5>{page?.components?.[0]?.component_name}</h5>
+                                                                </a>
+                                                                <a
+                                                                    className={`nav-item nav-link ${activeTab === 'nav-profile_s2' ? 'active' : ''}`}
+                                                                    id="nav-profile-tab"
+                                                                    data-toggle="tab"
+                                                                    href="#nav-profile_s2"
+                                                                    role="tab"
+                                                                    aria-controls="nav-profile_s2"
+                                                                    onClick={() => setActiveTab('nav-profile_s2')}
+                                                                >
+                                                                    <h5>{lang["statistic"]}: {page?.components?.[0]?.component_name}</h5>
+                                                                </a>
                                                             </>
-
-                                                        ) :
-                                                            <a class="nav-item nav-link " id="nav-home-tab" data-toggle="tab" href="#nav-home_s2" role="tab" aria-controls="nav-home_s2" >    <h5>{page?.components?.[0]?.component_name}</h5></a>
-                                                        }
+                                                        ) : (
+                                                            <a
+                                                                className="nav-item nav-link"
+                                                                id="nav-home-tab"
+                                                                data-toggle="tab"
+                                                                href="#nav-home_s2"
+                                                                role="tab"
+                                                                aria-controls="nav-home_s2"
+                                                                onClick={() => setActiveTab('nav-home_s2')}
+                                                            >
+                                                                <h5>{page?.components?.[0]?.component_name}</h5>
+                                                            </a>
+                                                        )}
                                                     </div>
                                                 </nav>
                                             </div>
@@ -1399,7 +1456,7 @@ export default () => {
                                             <div class="tab_style2">
                                                 <div class="tabbar padding_infor_info">
                                                     <div class="tab-content" id="nav-tabContent">
-                                                        <div class="tab-pane fade show active" id="nav-home_s2" role="tabpanel" aria-labelledby="nav-home-tab">
+                                                    <div class={`tab-pane fade ${activeTab === 'nav-home_s2' ? 'show active' : ''}`} id="nav-home_s2" role="tabpanel" aria-labelledby="nav-home-tab">
                                                             <div class="table_section">
                                                                 <div class="col-md-12">
                                                                     {statusActive ? (
@@ -1413,7 +1470,7 @@ export default () => {
 
                                                                                                 <table className={tableClassName} style={{ marginBottom: "10px" }}>
                                                                                                     <thead>
-                                                                                                        <tr>
+                                                                                                        <tr class="color-tr">
                                                                                                             <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
                                                                                                             {apiDataName.map((header, index) => (
                                                                                                                 <th key={index} class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
@@ -1521,7 +1578,7 @@ export default () => {
 
                                                                                             <table className={tableClassName}>
                                                                                                 <thead>
-                                                                                                    <tr>
+                                                                                                    <tr class="color-tr">
                                                                                                         <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
                                                                                                         {apiDataName.map((header, index) => (
                                                                                                             <th key={index} class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
@@ -1567,17 +1624,17 @@ export default () => {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="tab-pane fade" id="nav-profile_s2" role="tabpanel" aria-labelledby="nav-profile-tab">
+                                                        <div class={`tab-pane fade ${activeTab === 'nav-profile_s2' ? 'show active' : ''}`} id="nav-profile_s2" role="tabpanel" aria-labelledby="nav-profile-tab">
                                                             {dataStatis && dataStatis.length > 0 ? (
                                                                 <div class="col-md-12">
                                                                     <div class="table_section">
-                                                                        <div class="row " style={{ border: "1px" }}>
+                                                                       
                                                                             {dataStatis?.map((statis, index) => {
                                                                                 const { display_name, type, data } = statis;
                                                                                 if (type == "text") {
                                                                                     return (
-                                                                                        <div class="col-md-12 ml-2 col-sm-4">
-                                                                                            <p key={index} className="font-weight-bold">{display_name}: {data && data !== undefined && formatNumber(data.toFixed())}</p>
+                                                                                        <div class="col-md-12  col-sm-4 d-flex ">
+                                                                                            <p key={index} className="font-weight-bold ml-auto ">{display_name}: {data && data !== undefined && formatNumber(data.toFixed())}</p>
                                                                                         </div>
                                                                                     )
                                                                                 }
@@ -1588,7 +1645,7 @@ export default () => {
                                                                                 }
                                                                                 else return null
                                                                             })}
-                                                                        </div>
+                                                                        
                                                                     </div>
                                                                 </div>
 

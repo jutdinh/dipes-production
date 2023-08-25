@@ -19,3 +19,10 @@
         max-width: 50%; 
     }
 }
+
+
+@media (max-width: 768px) {
+    .pie-legend-container {
+        display: none;
+    }
+}

@@ -19,11 +19,11 @@ export default (props) => {
     const totalPages = Math.ceil(headers.length / RECORD_PER_PAGE);
 
 
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF5733','#C70039','#900C3F','#581845','#2E4053','#9A7D0A'];
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF5733', '#C70039', '#900C3F', '#581845', '#2E4053', '#9A7D0A'];
 
     const MyPieChart = () => {
         let pieData = [];
-
+    
         if (props.data.values.length < 10) {
             pieData = props.data.values.map((value, index) => ({
                 name: props.data.headers[index],
@@ -31,46 +31,50 @@ export default (props) => {
             }));
         }
         console.log(pieData);
-
+    
         return (
-            <ResponsiveContainer width="100%" height={400}>
-                <PieChart>
-                    <Pie
-                        data={pieData}
-                        dataKey="value"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={140}
-                        fill="#8884d8"
-                    >
-                        {pieData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                    </Pie>
-                    <Legend
-                        verticalAlign="bottom"
-                        height={60}
-                        wrapperStyle={{ paddingBottom: '5px' }}
-                        iconType="circle"
-                        align="center"
-                    />
-                    <Tooltip
-                        content={({ payload }) => {
-                            if (payload && payload.length > 0) {
-                                return (
-                                    <div className="custom-tooltip">
-                                        <p>{`${payload[0].name} : ${formatNumber(payload[0].value.toFixed())}`}</p>
-                                    </div>
-                                );
-                            }
-                            return null;
-                        }}
-                    />
-                </PieChart>
-            </ResponsiveContainer>
+            <div className="pie-container">
+                <ResponsiveContainer className="pie-chart-container">
+                    <PieChart>
+                        <Pie
+                            data={pieData}
+                            dataKey="value"
+                            nameKey="name"
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={140}
+                            fill="#8884d8"
+                        >
+                            {pieData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                        </Pie>
+                        <Tooltip
+                            content={({ payload }) => {
+                                if (payload && payload.length > 0) {
+                                    return (
+                                        <div className="custom-tooltip">
+                                            <p>{`${payload[0].name} : ${formatNumber(payload[0].value.toFixed())}`}</p>
+                                        </div>
+                                    );
+                                }
+                                return null;
+                            }}
+                        />
+                    </PieChart>
+                </ResponsiveContainer>
+                <div className="pie-legend-container">
+                    {pieData.map((data, index) => (
+                        <div key={index} className="legend-item">
+                            <div className="color-box" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
+                            <p>{`${data.name}`}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
         );
     };
+    
 
 
     const COLORS1 = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
@@ -173,19 +177,19 @@ export default (props) => {
             name: props.data.headers[index],
             value: value,
         }));
-        const xAxisData = barData.map(item => item.name);
+    
         const showLabels = props.data.values.length <= 10;
+    
         const option = {
-            //Điều chỉnh vị trí
             grid: {
                 left: '10%',
-                right: '5%',
-                top: '5%',
-                bottom: '10%'
+                right: '2%', // Ajust space for the custom legend
+                top: '9%',
+                bottom: '5%'
             },
             xAxis: {
                 type: 'category',
-                data: xAxisData,
+                data: barData.map(item => item.name),
                 axisLabel: {
                     show: showLabels
                 }
@@ -201,13 +205,10 @@ export default (props) => {
                 }
             },
             legend: {
-                data: ['value'],
-                bottom: 10,
-                orient: 'horizontal'
+                show: false, // Disable default legend
             },
-
             series: [{
-                name: 'value',
+                name: lang["value"],
                 type: 'bar',
                 data: barData.map(item => item.value),
                 itemStyle: {
@@ -215,139 +216,179 @@ export default (props) => {
                 }
             }]
         };
-
+    
         return (
-            <ReactECharts option={option} style={{ height: 450 }} />
+            <div className="bar-container">
+                <ResponsiveContainer className="bar-chart-container">
+                    <ReactECharts option={option} style={{ height: 430 }} />
+                </ResponsiveContainer>
+                <div className="bar-legend-container">
+                    <div className="legend-item">
+                        <div className="color-box" style={{ backgroundColor: COLORS[0] }}></div>
+                        <p>{lang["value"]}</p>
+                    </div>
+                </div>
+            </div>
         );
     };
-
-
+    
 
     useEffect(() => {
-
         setDisplay(headers.slice(currentPage * RECORD_PER_PAGE, (currentPage + 1) * RECORD_PER_PAGE))
     }, [currentPage])
-
 
     const paginate = (nextPage) => {
         setCurrentPage(nextPage)
     }
 
-
-
     console.log(props.data.values.length)
     return (
         <>
-            <div class="col-md-6 col-sm-6">
+            <div class="custom-container">
+                <div class="row">
+                   
+                    <div class="col-md-6 col-sm-12">
+                    <p class="font-weight-bold mb-1 ml-1 mt-1">{display_name}</p>
+                        <div class="table-responsive">
+                            {/* <div class="table-outer mb-4">
+                            <table class="table-head">
+                                <thead>
+                                    <th class="scrollbar-measure"></th>
+                                    <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
 
-                {props.data.values && props.data.values.length < 3 ?
-                    (
-                        <>
-                            <MyPieChart />
-                            {/* <MyBarChart1 /> */}
-                            {/* <MyBarChart /> */}
-                            {/* <MyAreaChart />
-                            <MyComposedChart /> */}
-                        </>
-                    ) :
-                    // <MyLineChart />
-                    <>
-                        {/* <MyPieChart />
-                        <MyAreaChart />
-                        <MyComposedChart /> */}
-                        {/* <MyBarChart /> */}
-                        {/* <MyScatterPlot /> */}
-                        <MyBarChart1 />
-                        {/* <MyPieChart /> */}
-                    </>
-                }
+                                    <th class="font-weight-bold p-l-5" style={{ width: "100px" }} scope="col">Tiêu chí</th>
 
+                                    <th class="font-weight-bold p-l-5" style={{ width: "100px" }} scope="col">Kết quả</th>
+                                    <th class="scrollbar-measure"></th>
+                                </thead>
+                            </table>
+                            <div class="table-body" style={{ height: 350 }}>
+                                <table class="table table" >
+                                    <tbody>
+                                        {display.map((header, headerIndex) =>
+                                            <tr key={currentPage * RECORD_PER_PAGE + headerIndex}>
+                                                <td style={{ width: "100px" }}>{currentPage * RECORD_PER_PAGE + headerIndex + 1}</td>
+                                                <td>{header}</td>
+                                                <td>
+                                                    {
+                                                        values[headers.indexOf(header)] !== undefined
+                                                            ? formatNumber(values[headers.indexOf(header)]?.toFixed())
+                                                            : formatNumber("0")
+                                                    }
+                                                </td>
 
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> */}
+                            <table class="table table mt-1" style={{ marginBottom: "10px" }}>
+                                <thead>
+                                    <tr class="color-tr">
+                                        <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
 
-            </div>
-            <div class="col-md-6 col-sm-6">
-                <p class="mb-1 mt-1">{display_name}</p>
-                <div class="table-outer mb-4">
-                    <table class="table-head">
-                        <thead>
-                            <th class="scrollbar-measure"></th>
-                            <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
-                            <th class="scrollbar-measure"></th>
-                            <th class="font-weight-bold p-l-5" style={{ width: "100px" }} scope="col">Tiêu chí</th>
-                            <th class="scrollbar-measure"></th>
-                            <th class="font-weight-bold p-l-5" style={{ width: "100px" }} scope="col">Kết quả</th>
-                            <th class="scrollbar-measure"></th>
-                        </thead>
-                    </table>
-                    <div class="table-body" style={{ height: 350 }}>
-                        <table class="table table-striped" >
-                            <tbody>
-                                {display.map((header, headerIndex) =>
-                                    <tr key={currentPage * RECORD_PER_PAGE + headerIndex}>
-                                        <td style={{ width: "100px" }}>{currentPage * RECORD_PER_PAGE + headerIndex + 1}</td>
-                                        <td>{header}</td>
-                                        <td>
-                                            {
-                                                values[headers.indexOf(header)] !== undefined
-                                                    ? formatNumber(values[headers.indexOf(header)]?.toFixed())
-                                                    : formatNumber("0")
-                                            }
-                                        </td>
+                                        <th class="font-weight-bold p-l-5" style={{ width: "100px" }} scope="col">Tiêu chí</th>
 
+                                        <th class="font-weight-bold p-l-5" style={{ width: "100px" }} scope="col">Kết quả</th>
                                     </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div className="d-flex justify-content-between align-items-center">
-                    {totalPages > 1 ?
-                        <>
-                            <p>{lang["show"]} {formatNumber(currentPage * RECORD_PER_PAGE + 1)} - {formatNumber(Math.min((currentPage + 1) * RECORD_PER_PAGE, headers.length))} {lang["of"]} {formatNumber(headers.length)} {lang["results"]}</p>
-                            <nav aria-label="Page navigation example">
-                                <ul className="pagination mb-0">
-                                    <li className={`page-item ${currentPage === 0 ? 'disabled' : ''}`}>
-                                        <button className="page-link" onClick={() => paginate(0)}>
-                                            &#8810;
-                                        </button>
-                                    </li>
-                                    <li className={`page-item ${currentPage === 0 ? 'disabled' : ''}`}>
-                                        <button className="page-link" onClick={() => paginate(Math.max(0, currentPage - 1))}>
-                                            &laquo;
-                                        </button>
-                                    </li>
-                                    {Array.from({ length: totalPages }).map((_, index) => {
-                                        if (index === currentPage || index === currentPage - 1 || index === currentPage + 1) {
-                                            return (
-                                                <li key={index} className={`page-item ${currentPage === index ? 'active' : ''}`}>
-                                                    <button className="page-link" onClick={() => paginate(index)}>
-                                                        {index + 1}
+                                </thead>
+                                <tbody>
+                                    {display.map((header, headerIndex) =>
+                                        <tr key={currentPage * RECORD_PER_PAGE + headerIndex}>
+                                            <td style={{ width: "100px" }}>{currentPage * RECORD_PER_PAGE + headerIndex + 1}</td>
+                                            <td>{header}</td>
+                                            <td>
+                                                {
+                                                    values[headers.indexOf(header)] !== undefined
+                                                        ? formatNumber(values[headers.indexOf(header)]?.toFixed())
+                                                        : formatNumber("0")
+                                                }
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                            <div className="d-flex justify-content-between align-items-center">
+                                {totalPages > 1 ?
+                                    <>
+                                        <p>{lang["show"]} {formatNumber(currentPage * RECORD_PER_PAGE + 1)} - {formatNumber(Math.min((currentPage + 1) * RECORD_PER_PAGE, headers.length))} {lang["of"]} {formatNumber(headers.length)} {lang["results"]}</p>
+                                        <nav aria-label="Page navigation example">
+                                            <ul className="pagination mb-0">
+                                                <li className={`page-item ${currentPage === 0 ? 'disabled' : ''}`}>
+                                                    <button className="page-link" onClick={() => paginate(0)}>
+                                                        &#8810;
                                                     </button>
                                                 </li>
-                                            );
-                                        } else if (index === currentPage - 2 && currentPage > 1) {
-                                            return <li className="page-item" key="dots1"><span className="page-link">...</span></li>;
-                                        } else if (index === currentPage + 2 && currentPage < totalPages - 2) {
-                                            return <li className="page-item" key="dots2"><span className="page-link">...</span></li>;
-                                        }
-                                        return null;
-                                    })}
+                                                <li className={`page-item ${currentPage === 0 ? 'disabled' : ''}`}>
+                                                    <button className="page-link" onClick={() => paginate(Math.max(0, currentPage - 1))}>
+                                                        &laquo;
+                                                    </button>
+                                                </li>
+                                                {Array.from({ length: totalPages }).map((_, index) => {
+                                                    if (index === currentPage || index === currentPage - 1 || index === currentPage + 1) {
+                                                        return (
+                                                            <li key={index} className={`page-item ${currentPage === index ? 'active' : ''}`}>
+                                                                <button className="page-link" onClick={() => paginate(index)}>
+                                                                    {index + 1}
+                                                                </button>
+                                                            </li>
+                                                        );
+                                                    } else if (index === currentPage - 2 && currentPage > 1) {
+                                                        return <li className="page-item" key="dots1"><span className="page-link">...</span></li>;
+                                                    } else if (index === currentPage + 2 && currentPage < totalPages - 2) {
+                                                        return <li className="page-item" key="dots2"><span className="page-link">...</span></li>;
+                                                    }
+                                                    return null;
+                                                })}
 
-                                    <li className={`page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}`}>
-                                        <button className="page-link" onClick={() => paginate(Math.min(totalPages - 1, currentPage + 1))}>
-                                            &raquo;
-                                        </button>
-                                    </li>
-                                    <li className={`page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}`}>
-                                        <button className="page-link" onClick={() => paginate(totalPages - 1)}>
-                                            &#8811;
-                                        </button>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </>
-                        : null}
+                                                <li className={`page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}`}>
+                                                    <button className="page-link" onClick={() => paginate(Math.min(totalPages - 1, currentPage + 1))}>
+                                                        &raquo;
+                                                    </button>
+                                                </li>
+                                                <li className={`page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}`}>
+                                                    <button className="page-link" onClick={() => paginate(totalPages - 1)}>
+                                                        &#8811;
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </>
+                                    : null}
+                            </div>
+                        </div>
+                    </div> 
+                    <div class="col-md-6 col-sm-12">
+                        
+                        {props.data.values && props.data.values.length <10 ?
+                            (
+                                <>
+                                    <MyPieChart />
+                                    {/* <MyBarChart1 /> */}
+                                    {/* <MyBarChart /> */}
+                                    {/* <MyAreaChart />
+                            <MyComposedChart /> */}
+                                </>
+                            ) :
+                            // <MyLineChart />
+                            <>
+                                {/* <MyPieChart />
+                        <MyAreaChart />
+                        <MyComposedChart /> */}
+                                {/* <MyBarChart /> */}
+                                {/* <MyScatterPlot /> */}
+                                <MyBarChart1 />
+                                {/* <MyPieChart /> */}
+                            </>
+                        }
+
+
+
+                    </div>
                 </div>
+
+
             </div>
         </>
     )

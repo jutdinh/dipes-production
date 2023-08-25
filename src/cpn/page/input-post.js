@@ -24,6 +24,12 @@ export default () => {
     const [relatedTables, setRelatedTables] = useState([])
     const [page, setPage] = useState(null);
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const myParam = urlParams.get('myParam');
+    console.log(myParam); 
+    const goToHomePage = () => {
+        navigate(`/page/${myParam}`);
+    };
     const inputs = document.querySelectorAll('input[type="number"], input[type="text"], textarea');
     inputs.forEach(input => {
         input.addEventListener('keydown', function (e) {
@@ -43,6 +49,8 @@ export default () => {
         setEmailError(error);
     };
     // console.log(pages)
+  
+
 
     useEffect(() => {
 
@@ -202,7 +210,7 @@ export default () => {
                                 <div class="heading1_cus margin_0 ">
                                     {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
                                    
-                                    <h5> <label onClick={() => navigate(-1)}>
+                                    <h5> <label onClick={() => goToHomePage()}>
                                         <a  title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-1 nav-item nav-link"></i></a>{result?.title}
                                     </label> <i class="fa fa-chevron-right"></i>  {lang["create"]}</h5>
 

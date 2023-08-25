@@ -299,7 +299,8 @@ export default {
     "File size exceeds the allowable limit": "File size exceeds allowable limit (Up to 120MB)",
     "export_excel_csv": "Export Excel/CSV",
     "export data example": "Export sample file",
-    "import data": "Import Data"
+    "import data": "Import Data",
+    "value": "Value"
 
 }
 

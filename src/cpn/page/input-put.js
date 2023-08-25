@@ -23,11 +23,17 @@ export default () => {
     const [fields, setFields] = useState([]);
     const [data, setData] = useState({});
     const [relatedTables, setRelatedTables] = useState([])
-
     const [initialData, setInitData] = useState({})
-
-
     const [ loaded, setLoaded ] = useState(false)
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const myParam = urlParams.get('myParam');
+    console.log(myParam); 
+    const goToHomePage = () => {
+        navigate(`/page/${myParam}`);
+    };
+
+
 
     const [phoneError, setPhoneError] = useState(false);
     const handlePhoneError = (error) => {
@@ -241,7 +247,7 @@ export default () => {
                             <div class="full graph_head_cus d-flex">
                                 <div class="heading1_cus margin_0 ">
                                     {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
-                                    <h5> <label onClick={() => navigate(-1)}>
+                                    <h5> <label onClick={() => goToHomePage()}>
                                         <a  title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-0 nav-item nav-link"></i></a>{result?.title}
                                     </label> <i class="fa fa-chevron-right"></i>  {lang["update"]}</h5>
                                     

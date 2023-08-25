@@ -293,8 +293,8 @@ export default {
     "File size exceeds the allowable limit": "Kích thước tệp vượt quá giới hạn cho phép (Tối đa 120MB)",
     "export_excel_csv": "Xuất Excel/CSV",
     "export data example": "Xuất file mẫu",
-    "import data": "Import dữ liệu"
-
+    "import data": "Import dữ liệu",
+    "value": "Giá trị"
 
 
 
