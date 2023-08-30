@@ -21,7 +21,7 @@ import StatisTable from './statistic/table'
 
 export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
-  
+
 
     const { formatNumberWithCommas } = functions
 
@@ -74,7 +74,7 @@ export default () => {
             setActiveTab('nav-home_s2');
         }
     }, [dataStatis]);
-    
+
     useEffect(() => {
 
         setSearchValues({});
@@ -520,8 +520,8 @@ export default () => {
         }
         // console.log(page)
         const id_str = page.components?.[0]?.api_post.split('/')[2];
-      
-        window.location.href = `${url}/apis/api/${id_str}/input_info?myParam=${url}`;
+
+        window.location.href = `${url}/apis/api/${id_str}/input_info`;
     }
     const redirectToImportData = () => {
         if (errorLoadConfig) {
@@ -680,7 +680,7 @@ export default () => {
                     return record[fomular_alias]
                 }).join('/')
                 openTab(`/page/put/api/${id_str}/${stringifiedParams}?myParam=${url}`)
-                
+
             }
         } else {
             Swal.fire({
@@ -730,9 +730,6 @@ export default () => {
         // console.log(apiData);
 
     };
-
-
-
 
 
     useEffect(() => {
@@ -1020,7 +1017,7 @@ export default () => {
 
     // console.log(searchValues)
     // console.log(sumerize)
-  
+
 
     return (
         <div class="midde_cont">
@@ -1456,7 +1453,7 @@ export default () => {
                                             <div class="tab_style2">
                                                 <div class="tabbar padding_infor_info">
                                                     <div class="tab-content" id="nav-tabContent">
-                                                    <div class={`tab-pane fade ${activeTab === 'nav-home_s2' ? 'show active' : ''}`} id="nav-home_s2" role="tabpanel" aria-labelledby="nav-home-tab">
+                                                        <div class={`tab-pane fade ${activeTab === 'nav-home_s2' ? 'show active' : ''}`} id="nav-home_s2" role="tabpanel" aria-labelledby="nav-home-tab">
                                                             <div class="table_section">
                                                                 <div class="col-md-12">
                                                                     {statusActive ? (
@@ -1627,24 +1624,24 @@ export default () => {
                                                             {dataStatis && dataStatis.length > 0 ? (
                                                                 <div class="col-md-12">
                                                                     <div class="table_section">
-                                                                       
-                                                                            {dataStatis?.map((statis, index) => {
-                                                                                const { display_name, type, data } = statis;
-                                                                                if (type == "text") {
-                                                                                    return (
-                                                                                        <div class="col-md-12  col-sm-4 d-flex ">
-                                                                                            <p key={index} className="font-weight-bold ml-auto ">{display_name}: {data && data !== undefined && formatNumber(data.toFixed())}</p>
-                                                                                        </div>
-                                                                                    )
-                                                                                }
-                                                                                else if (type == "table") {
-                                                                                    return (
-                                                                                        <StatisTable data={data} statis={statis} />
-                                                                                    )
-                                                                                }
-                                                                                else return null
-                                                                            })}
-                                                                        
+
+                                                                        {dataStatis?.map((statis, index) => {
+                                                                            const { display_name, type, data } = statis;
+                                                                            if (type == "text") {
+                                                                                return (
+                                                                                    <div class="col-md-12  col-sm-4 d-flex ">
+                                                                                        <p key={index} className="font-weight-bold ml-auto ">{display_name}: {data && data !== undefined && formatNumber(data.toFixed())}</p>
+                                                                                    </div>
+                                                                                )
+                                                                            }
+                                                                            else if (type == "table") {
+                                                                                return (
+                                                                                    <StatisTable data={data} statis={statis} />
+                                                                                )
+                                                                            }
+                                                                            else return null
+                                                                        })}
+
                                                                     </div>
                                                                 </div>
 

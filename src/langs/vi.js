@@ -294,7 +294,8 @@ export default {
     "export_excel_csv": "Xuất Excel/CSV",
     "export data example": "Xuất file mẫu",
     "import data": "Import dữ liệu",
-    "value": "Giá trị"
+    "value": "Giá trị",
+    "criteria": "Tiêu chí"
 
 
 

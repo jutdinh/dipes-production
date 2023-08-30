@@ -19,11 +19,48 @@ export default (props) => {
     const totalPages = Math.ceil(headers.length / RECORD_PER_PAGE);
 
 
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF5733', '#C70039', '#900C3F', '#581845', '#2E4053', '#9A7D0A'];
+
+    // function getRandomColor() {
+    //     const letters = '0123456789ABCDEF';
+    //     let color = '#';
+    //     for (let i = 0; i < 6; i++) {
+    //         color += letters[Math.floor(Math.random() * 16)];
+    //     }
+    //     return color;
+    // }
+    // const COLORS = Array.from({ length: props.data.values.length }, () => getRandomColor());
+
+    function generateUniqueColors(num) {
+        const step = Math.cbrt((256 * 256 * 256) / num);
+        const colors = [];
+
+        for (let r = 0; r < 256; r += step) {
+            for (let g = 0; g < 256; g += step) {
+                for (let b = 0; b < 256; b += step) {
+                    if (colors.length >= num) {
+                        return colors;
+                    }
+                    if (r === 0 && g === 0 && b === 0) {
+                        // Bỏ qua màu đen
+                        continue;
+                    }
+                    const color = `#${Math.round(r).toString(16).padStart(2, '0')}${Math.round(g).toString(16).padStart(2, '0')}${Math.round(b).toString(16).padStart(2, '0')}`;
+                    colors.push(color);
+                }
+            }
+        }
+        return colors;
+    }
+
+
+
+    const COLORS = generateUniqueColors(props.data.values.length);
+
+    const colorIndices = display.map((header) => headers.indexOf(header));
 
     const MyPieChart = () => {
         let pieData = [];
-    
+
         if (props.data.values.length < 10) {
             pieData = props.data.values.map((value, index) => ({
                 name: props.data.headers[index],
@@ -31,7 +68,7 @@ export default (props) => {
             }));
         }
         console.log(pieData);
-    
+
         return (
             <div className="pie-container">
                 <ResponsiveContainer className="pie-chart-container">
@@ -63,18 +100,18 @@ export default (props) => {
                         />
                     </PieChart>
                 </ResponsiveContainer>
-                <div className="pie-legend-container">
+                {/* <div className="pie-legend-container">
                     {pieData.map((data, index) => (
                         <div key={index} className="legend-item">
                             <div className="color-box" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
                             <p>{`${data.name}`}</p>
                         </div>
                     ))}
-                </div>
+                </div> */}
             </div>
         );
     };
-    
+
 
 
     const COLORS1 = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
@@ -177,9 +214,10 @@ export default (props) => {
             name: props.data.headers[index],
             value: value,
         }));
-    
+
         const showLabels = props.data.values.length <= 10;
-    
+        const itemColors = barData.map((_, index) => COLORS[index % COLORS.length]);
+
         const option = {
             grid: {
                 left: '10%',
@@ -212,26 +250,26 @@ export default (props) => {
                 type: 'bar',
                 data: barData.map(item => item.value),
                 itemStyle: {
-                    color: COLORS[0]
+                    color: params => itemColors[params.dataIndex]
                 }
             }]
         };
-    
+
         return (
             <div className="bar-container">
                 <ResponsiveContainer className="bar-chart-container">
                     <ReactECharts option={option} style={{ height: 430 }} />
                 </ResponsiveContainer>
-                <div className="bar-legend-container">
+                {/* <div className="bar-legend-container">
                     <div className="legend-item">
-                        <div className="color-box" style={{ backgroundColor: COLORS[0] }}></div>
+                        <div className="color-box" style={{ backgroundColor: COLORS }}></div>
                         <p>{lang["value"]}</p>
                     </div>
-                </div>
+                </div> */}
             </div>
         );
     };
-    
+
 
     useEffect(() => {
         setDisplay(headers.slice(currentPage * RECORD_PER_PAGE, (currentPage + 1) * RECORD_PER_PAGE))
@@ -246,9 +284,9 @@ export default (props) => {
         <>
             <div class="custom-container">
                 <div class="row">
-                   
+
                     <div class="col-md-6 col-sm-12">
-                    <p class="font-weight-bold mb-1 ml-1 mt-1">{display_name}</p>
+                        <p class="font-weight-bold mb-1 ml-1 mt-1">{display_name}</p>
                         <div class="table-responsive">
                             {/* <div class="table-outer mb-4">
                             <table class="table-head">
@@ -288,16 +326,26 @@ export default (props) => {
                                     <tr class="color-tr">
                                         <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
 
-                                        <th class="font-weight-bold p-l-5" style={{ width: "100px" }} scope="col">Tiêu chí</th>
+                                        <th class="font-weight-bold p-l-5" style={{ width: "100px" }} scope="col">{lang["criteria"]}</th>
 
-                                        <th class="font-weight-bold p-l-5" style={{ width: "100px" }} scope="col">Kết quả</th>
+                                        <th class="font-weight-bold p-l-5" style={{ width: "100px" }} scope="col">{lang["result"]}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {display.map((header, headerIndex) =>
                                         <tr key={currentPage * RECORD_PER_PAGE + headerIndex}>
                                             <td style={{ width: "100px" }}>{currentPage * RECORD_PER_PAGE + headerIndex + 1}</td>
-                                            <td>{header}</td>
+                                            <td>
+                                                <div style={{
+                                                    display: 'inline-block',
+                                                    width: '10px',
+                                                    height: '10px',
+                                                    borderRadius: '50%',
+                                                    backgroundColor: COLORS[colorIndices[headerIndex]],
+                                                    marginRight: '10px'
+                                                }}></div>
+                                                {header}
+                                            </td>
                                             <td>
                                                 {
                                                     values[headers.indexOf(header)] !== undefined
@@ -308,6 +356,7 @@ export default (props) => {
                                         </tr>
                                     )}
                                 </tbody>
+
                             </table>
                             <div className="d-flex justify-content-between align-items-center">
                                 {totalPages > 1 ?
@@ -358,10 +407,10 @@ export default (props) => {
                                     : null}
                             </div>
                         </div>
-                    </div> 
+                    </div>
                     <div class="col-md-6 col-sm-12">
-                        
-                        {props.data.values && props.data.values.length <10 ?
+
+                        {props.data.values && props.data.values.length < 10 ?
                             (
                                 <>
                                     <MyPieChart />

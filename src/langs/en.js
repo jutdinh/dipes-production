@@ -300,7 +300,8 @@ export default {
     "export_excel_csv": "Export Excel/CSV",
     "export data example": "Export sample file",
     "import data": "Import Data",
-    "value": "Value"
+    "value": "Value",
+    "criteria": "Criteria"
 
 }
 

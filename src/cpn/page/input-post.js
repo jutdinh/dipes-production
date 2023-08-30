@@ -24,11 +24,10 @@ export default () => {
     const [relatedTables, setRelatedTables] = useState([])
     const [page, setPage] = useState(null);
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const myParam = urlParams.get('myParam');
-    console.log(myParam); 
+  
+    console.log(url); 
     const goToHomePage = () => {
-        navigate(`/page/${myParam}`);
+        navigate(`/page/${url}`);
     };
     const inputs = document.querySelectorAll('input[type="number"], input[type="text"], textarea');
     inputs.forEach(input => {
