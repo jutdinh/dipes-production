@@ -739,8 +739,8 @@ export default () => {
     }, [currentPage])
 
     const callApiView = () => {
-        if (apiViewPages.length > 0) {
-            const apiGet = apiViewPages[0].components?.[0]?.api_get;
+        if (matchingPage) {
+            const apiGet = matchingPage.components?.[0]?.api_get;
             // console.log(apiGet)
             fetch(`${proxy()}${apiGet}`)
                 .then(res => res.json())
