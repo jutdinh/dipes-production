@@ -1339,9 +1339,9 @@ export default () => {
                                                                                 apiViewData && apiViewData.length > 0 ? (
                                                                                     <>
                                                                                         <div class="table-responsive">
-                                                                                            <table className={tableClassName} style={{ marginBottom: "10px" }}>
+                                                                                            <table className={"table table-hover"} style={{ marginBottom: "10px" }}>
                                                                                                 <thead>
-                                                                                                    <tr>
+                                                                                                    <tr class="color-tr">
                                                                                                         <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
                                                                                                         {apiViewFields.map((header, index) => (
                                                                                                             <th key={index} class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>

@@ -28,7 +28,7 @@ export default () => {
 
     const urlParams = new URLSearchParams(window.location.search);
     const myParam = urlParams.get('myParam');
-    console.log(myParam); 
+    // console.log(myParam); 
     const goToHomePage = () => {
         navigate(`/page/${myParam}`);
     };

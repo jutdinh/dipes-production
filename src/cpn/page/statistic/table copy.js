@@ -25,8 +25,8 @@ export default (props) => {
     const paginate = (nextPage) => {
         setCurrentPage(nextPage)
     }
-    console.log("Current Page:", currentPage);
-    console.log("Total Pages:", totalPages);
+    // console.log("Current Page:", currentPage);
+    // console.log("Total Pages:", totalPages);
 
     return (
         <div class="col-md-6 col-sm-4">

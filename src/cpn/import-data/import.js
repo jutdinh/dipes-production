@@ -159,7 +159,7 @@ export default () => {
 
 
     const importUI = async () => {
-        console.log("IMPORT UI")
+        // console.log("IMPORT UI")
         if (!uploadedJson) {
             // al.failure("Thất bại", "Vui lòng tải lên một file JSON trước khi import");
             return;

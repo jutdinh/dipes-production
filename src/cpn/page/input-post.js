@@ -25,7 +25,7 @@ export default () => {
     const [page, setPage] = useState(null);
 
   
-    console.log(url); 
+    // console.log(url); 
     const goToHomePage = () => {
         navigate(`/page/${url}`);
     };

@@ -11,7 +11,7 @@ export default (props) => {
     const { formatNumber } = functions
 
     const { data, statis } = props
-    console.log(props)
+    // console.log(props)
     const { display_name, type } = statis;
     const { headers, values } = data;
     const [display, setDisplay] = useState(headers.slice(0, RECORD_PER_PAGE))
@@ -67,7 +67,7 @@ export default (props) => {
                 value: value,
             }));
         }
-        console.log(pieData);
+        // console.log(pieData);
 
         return (
             <div className="pie-container">
@@ -125,7 +125,7 @@ export default (props) => {
                 value: value,
             }));
         }
-        console.log(lineData);
+        // console.log(lineData);
 
         return (
             <ResponsiveContainer width="80%" height={400}>
@@ -279,7 +279,7 @@ export default (props) => {
         setCurrentPage(nextPage)
     }
 
-    console.log(props.data.values.length)
+    // console.log(props.data.values.length)
     return (
         <>
             <div class="custom-container">
