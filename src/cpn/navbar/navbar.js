@@ -82,7 +82,7 @@ export default () => {
                         <i class="fa fa-dashboard yellow_color"></i>
                         <span>{lang["data management"]}</span>
                      </a>
-                     <ul class="collapse list-unstyled show nav-custom " id="dashboard">
+                     <ul class="collapse list-unstyled show nav-custom scrollable " id="dashboard">
                         {pages && pages.map((ui, index) => (
                            ui.status ? (
                               <li key={index} className="navbar-item">

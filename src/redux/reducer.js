@@ -7,7 +7,7 @@ import { socket } from './configs/socket';
 import DatabaseBranch from './router/db';
 import ApiBranch from './router/api';
 
-const localUI = localStorage.getItem("ui");
+// const localUI = localStorage.getItem("ui");
 // console.log(localUI)
 const initState = {
     ...config,
@@ -19,7 +19,7 @@ const initState = {
     proxy,
     lang: Langs[localStorage.getItem("lang") ? localStorage.getItem("lang") : "Vi"],
     database: { tables: [], fields: [], currentTable: {}, currentField: {}, offsets: [], tableOffsets: [], offsetPoints: [] },
-    pages: localUI ? JSON.parse( localUI ): []
+    pages: []
 }
 
 export default (state = initState, action) => {

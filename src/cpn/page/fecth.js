@@ -46,6 +46,7 @@ export default () => {
     const [page, setPage] = useState([]);
     const [apiViewPages, setApiViewPages] = useState([]);
     const [apiViewData, setApiViewData] = useState([])
+    const [limit, setLimit] = useState(0)
     const [apiViewFields, setApiViewFields] = useState([])
     const [data, setData] = useState({});
     const [selectedFileType, setSelectedFileType] = useState('xlsx');
@@ -738,26 +739,37 @@ export default () => {
         }
     }, [currentPage])
 
-    const callApiView = () => {
+    const callApiView = (startAt = 0, amount = 20) => {
         if (matchingPage) {
             const apiGet = matchingPage.components?.[0]?.api_get;
-            // console.log(apiGet)
-            fetch(`${proxy()}${apiGet}`)
+            fetch(`${proxy()}${apiGet}`, {
+                headers: {
+                    'start-at': startAt,
+                    'data-amount': amount
+                }
+            })
                 .then(res => res.json())
                 .then(res => {
-                    const { success, content, data, fields } = res;
-                    console.log(12122121, res);
-                    setApiViewData(data)
-                    setApiViewFields(fields)
+                    const { success, content, data, fields, limit } = res;
+
+                    if (data && data.length > 0) {
+                     
+                        setLimit(limit)
+                        setApiViewData(data)
+                        setApiViewFields(fields)
+                    }
                 });
         }
     }
 
-    useEffect(() => {
-        if (apiViewPages) {
-            callApiView();
-        }
-    }, [matchingPage]);
+
+
+
+    // useEffect(() => {
+    //     if (apiViewPages) {
+    //         callApiView();
+    //     }
+    // }, [matchingPage]);
 
 
     const rowsPerPage = 15;
@@ -766,6 +778,35 @@ export default () => {
     const current = apiData
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const totalPages = Math.ceil(sumerize / rowsPerPage) || 1;
+
+    //view api 
+    const [currentPageApi, setCurrentPageApi] = useState(1);
+
+    const rowsPerPageApi = 20;
+    const indexOfLastApi = currentPageApi * rowsPerPageApi;
+    const indexOfFirstApi = indexOfLastApi - rowsPerPageApi;
+    
+
+    const currentApi = apiViewData
+    const paginateApi = (pageNumber) => {
+        setCurrentPageApi(pageNumber);
+        const startAt = (pageNumber - 1) * rowsPerPageApi;
+        callApiView(startAt);
+    }
+    
+    
+
+
+    const totalPagesApi = Math.ceil(limit / rowsPerPageApi) || 1;
+
+
+    useEffect(() => {
+        callApiView((currentPageApi -1) * rowsPerPageApi, rowsPerPageApi);
+    }, [currentPageApi, matchingPage]);
+
+
+
+
 
     const [selectedFields, setSelectedFields] = useState([]);/// fields
     const [selectedStats, setSelectedStats] = useState([]);
@@ -1273,7 +1314,7 @@ export default () => {
                                                 <nav>
                                                     <div class="nav nav-tabs" style={{ borderBottomStyle: "0px" }} id="nav-tab" role="tablist">
                                                         {apiViewData && apiViewData.length > 0 ? (
-                                                            <a class="nav-item nav-link " id="nav-home-tab" data-toggle="tab" href="#nav-home_s2" role="tab" aria-controls="nav-home_s2" ><h5>{apiViewPages[0].components?.[0].component_name}</h5></a>
+                                                            <a class="nav-item nav-link " id="nav-home-tab" data-toggle="tab" href="#nav-home_s2" role="tab" aria-controls="nav-home_s2" ><h5>{matchingPage.components?.[0].component_name}</h5></a>
                                                         ) :
                                                             null
                                                         }
@@ -1309,11 +1350,11 @@ export default () => {
                                                                                                     </tr>
                                                                                                 </thead>
                                                                                                 <tbody>
-                                                                                                    {apiViewData.map((row, index) => {
+                                                                                                    {currentApi.map((row, index) => {
                                                                                                         if (row) {
                                                                                                             return (
                                                                                                                 <tr key={index}>
-                                                                                                                    <td scope="row">{indexOfFirst + index + 1}</td>
+                                                                                                                    <td scope="row">{indexOfFirstApi + index + 1}</td>
                                                                                                                     {apiViewFields.map((header) => (
                                                                                                                         <td key={header.fomular_alias}>{renderData(header, row)}</td>
                                                                                                                     ))}
@@ -1325,6 +1366,49 @@ export default () => {
                                                                                                     })}
                                                                                                 </tbody>
                                                                                             </table>
+                                                                                        </div>
+                                                                                        <div className="d-flex justify-content-between align-items-center">
+                                                                                            <p>{lang["show"]} {formatNumber(indexOfFirstApi + 1)} - {formatNumber(indexOfFirstApi + apiViewData?.length)} {lang["of"]} {formatNumber(limit)} {lang["results"]}</p>
+                                                                                            <nav aria-label="Page navigation example">
+                                                                                                <ul className="pagination mb-0">
+                                                                                                    <li className={`page-item ${currentPageApi === 1 ? 'disabled' : ''}`}>
+                                                                                                        <button className="page-link" onClick={() => paginateApi(1)}>
+                                                                                                            &#8810;
+                                                                                                        </button>
+                                                                                                    </li>
+                                                                                                    <li className={`page-item ${currentPageApi === 1 ? 'disabled' : ''}`}>
+                                                                                                        <button className="page-link" onClick={() => paginateApi(currentPageApi - 1)}>
+                                                                                                            &laquo;
+                                                                                                        </button>
+                                                                                                    </li>
+                                                                                                    {currentPageApi > 1 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                                                                    {Array(totalPagesApi).fill().map((_, index) => {
+                                                                                                        if (
+                                                                                                            index + 1 === currentPageApi ||
+                                                                                                            (index + 1 >= currentPageApi - 1 && index + 1 <= currentPageApi + 1)
+                                                                                                        ) {
+                                                                                                            return (
+                                                                                                                <li key={index} className={`page-item ${currentPageApi === index + 1 ? 'active' : ''}`}>
+                                                                                                                    <button className="page-link" onClick={() => paginateApi(index + 1)}>
+                                                                                                                        {index + 1}
+                                                                                                                    </button>
+                                                                                                                </li>
+                                                                                                            )
+                                                                                                        }
+                                                                                                    })}
+                                                                                                    {currentPageApi < totalPagesApi - 1 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                                                                    <li className={`page-item ${currentPageApi === totalPagesApi ? 'disabled' : ''}`}>
+                                                                                                        <button className="page-link" onClick={() => paginateApi(currentPageApi + 1)}>
+                                                                                                            &raquo;
+                                                                                                        </button>
+                                                                                                    </li>
+                                                                                                    <li className={`page-item ${currentPageApi === totalPagesApi ? 'disabled' : ''}`}>
+                                                                                                        <button className="page-link" onClick={() => paginateApi(totalPagesApi)}>
+                                                                                                            &#8811;
+                                                                                                        </button>
+                                                                                                    </li>
+                                                                                                </ul>
+                                                                                            </nav>
                                                                                         </div>
                                                                                     </>
                                                                                 ) : (

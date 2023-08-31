@@ -125,9 +125,11 @@ export default () => {
                     timer: 1500,
 
                 })
+
                 setTimeout(() => {
                     window.location.reload();
                 }, 1600);
+
             } else {
                 Swal.fire({
                     title: lang["faild"],
@@ -181,9 +183,14 @@ export default () => {
 
                 })
                 setTimeout(() => {
-                    localStorage.setItem( "ui", JSON.stringify( uploadedJson.data ) )
+                    localStorage.setItem("ui", JSON.stringify(uploadedJson.data))
                     window.location.reload();
                 }, 1600);
+
+                dispatch({
+                    type: "setUIPages",
+                    payload: { pages: uploadedJson.data }
+                })
             } else {
                 Swal.fire({
                     title: lang["faild"],
@@ -224,9 +231,9 @@ export default () => {
                 return lang["database"]
             } else {
 
-                if( Array.isArray(data) ){
+                if (Array.isArray(data)) {
                     return "UI" // lang update if in need
-                }else{
+                } else {
                     return lang["faild.format"]
                 }
             }
@@ -363,7 +370,7 @@ export default () => {
                                                 <label><b class="font-weight-bold">{lang["type file"]}:</b>
                                                     {uploadedJson ? (
                                                         getFileType() === " Không đúng định dạng, vui lòng chọn lại !" ? (
-                                                            <span className="text-red"> { getFileType()}</span>
+                                                            <span className="text-red"> {getFileType()}</span>
                                                         ) : (
                                                             getFileType()
                                                         )
@@ -395,7 +402,7 @@ export default () => {
                                                     >
                                                         Import UI
                                                     </button>
-                                                ): (
+                                                ) : (
                                                     <p className="text-red-500">
                                                     </p>
                                                 )
