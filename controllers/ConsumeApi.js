@@ -395,7 +395,7 @@ class ConsumeApi extends Controller {
                 const CURRENT_REMAINING_INDEX = REMAINING_ITEM_AMOUNT
                 REMAINING_ITEM_AMOUNT -= total		
                 partitions[i]["from"] = 0
-                partitions[i]["to"]   = REMAINING_ITEM_AMOUNT > 0 ? total - 1 : CURRENT_REMAINING_INDEX 
+                partitions[i]["to"]   = REMAINING_ITEM_AMOUNT > 0 ? total : CURRENT_REMAINING_INDEX 
 
                 FINALE_PARTIONS.push( partitions[i])
 
@@ -761,7 +761,7 @@ class ConsumeApi extends Controller {
         }
 
         const indices = this.generatePeriodIndex(fromIndex)
-        
+        console.log(indices)
         let paramQueries = [];
 
         if (params.length > 0) {
@@ -3293,11 +3293,60 @@ class ConsumeApi extends Controller {
                     serializedForeignData[masterTable.table_alias] = serialized
                 }                                       
 
-                for( let i = 0 ; i < formedData.length; i++ ){
-                    const record = formedData[i]
+                const checkedData = []
 
+                for( let i = 0 ; i < formedData.length; i++ ){
+                    let record = formedData[i]
+                    record.errors = { primary: false, foreign: [], duplicate: false, type: [] }                    
+
+                    for( let j = 0 ; j < fields.length; j++ ){
+                        const field = fields[j]
+                        const check = this.parseType(field, record[field.fomular_alias])
+                        const { valid, result, reason } = check;
+                        if( valid ){
+                            record[field.fomular_alias] = result;  
+                        }else{
+                            record.errors.type.push( field.fomular_alias )
+                        }
+                    }
+
+                    if( record.errors.type.length == 0 ){
+                        
+                        let cloneCheckData = [...checkedData]
+                        for( let j = 0 ; j < this.primaryFields.length; j++ ){
+                            const field = this.primaryFields[j]
+                            cloneCheckData = cloneCheckData.filter( row => row[ field.fomular_alias ] == record[ field.fomular_alias ] )
+                        }
+    
+                        if( cloneCheckData.length > 0 ){
+                            record.errors.duplicate = true
+                        }else{
+                            const corespondingPrimaryKey = this.primaryFields.map( field => record[field.fomular_alias] ).join('')
+                            const corespondingPrimaryData = serializedPrimaryData[corespondingPrimaryKey]                   
+                            
+                            if( corespondingPrimaryData ){
+                                record.errors.primary = true
+                            }else{
+        
+                                for( let j = 0 ; j < this.foreignKeys.length; j++ ){
+                                    const { table, field, refField } = this.foreignKeys[j]
+            
+                                    const corespondingForeignData = serializedForeignData[table.table_alias][ record[field.fomular_alias] ]
+                                    if( corespondingForeignData ){
+                                        record = { ...record, ...corespondingForeignData }
+                                    }else{
+                                        record.errors.foreign.push( field.fomular_alias )
+                                    }
+                                }
+                            }                          
+                            checkedData.push(record)
+                        }
+                    }                  
                     /** CHECK KEYS AND FILL ERRORS */
+                    delete record.position
+                    formedData[i] = record
                 }
+
                 this.res.send({ success: true, data: formedData })
             } else {
                 this.res.send({ success: false })
@@ -3314,10 +3363,9 @@ class ConsumeApi extends Controller {
         const { data } = this.req.body;
         const tables = this.tearTablesAndFieldsToObjects()
         const table = tables[0]
-        const fields = this.getFieldsByTableId(table.id);
-
-        // if (data && data.length > 0) {
-        if ( false ) {
+        const fields = this.getFieldsByTableId(table.id);        
+        if (data && data.length > 0) {
+        // if ( false ) {
 
             data.map(record => {
                 delete record.errors;
@@ -3331,11 +3379,19 @@ class ConsumeApi extends Controller {
                 })
             })
 
-            const periods = await Database.selectFields(table.table_alias, { position: { $ne: "sumerize" } }, ["position", "total"])
-            const sumerizes = await Database.select(table.table_alias, { $and: [{ position: { $eq: "sumerize" } }, { total: { $ne: 0 } }] })
+            let cache = await Cache.getData(`${ table.table_alias }-periods`)
+            if( !cache ){
+                cache = {
+                    key: `${ table.table_alias }-periods`,
+                    value: []
+                }
+                await Cache.setData(`${ table.table_alias }-periods`, [])
+            }
 
-            const position = this.translateColIndexToName(periods.length);
-            let sumerize = sumerizes;
+            const periods = cache.value
+            const sumerizes = await Database.selectAll( table.table_alias, { position: "sumerize" } )
+
+            let sumerize = sumerizes[0];
 
             if (!sumerize) {
                 sumerize = {
@@ -3345,16 +3401,45 @@ class ConsumeApi extends Controller {
                 await Database.insert(table.table_alias, sumerize)
             }
 
-            const partition = {
-                position,
-                data,
-                total: data.length
+            const positions = []
+            for( let j = 0 ; j < periods.length; j++ ){
+                const { position, total } = periods[j]
+
+                if( total < TOTAL_DATA_PER_PARTITION ){
+                    const amount = TOTAL_DATA_PER_PARTITION - total;
+                    for( let h = 0 ; h < amount; h++ ){
+                        positions.push( position )
+                    }
+                }
+            }            
+
+            if( positions.length < data.length ){
+                const newPartition = this.translateColIndexToName( periods.length )
+                const amount = data.length - positions.length;
+                for( let i = 0; i < amount; i++ ){
+                    positions.push( newPartition )
+                } 
+
+                const newPeriods = {
+                    position: newPartition,
+                    total: amount
+                }
+                periods.push(newPeriods)
             }
 
+            data.map( (record, index) => {
+                record.position = positions[index]
+            })
+            await Database.insertMany(table.table_alias, data)
+            await Cache.setData( `${ table.table_alias }-periods`, periods )
+            
             sumerize.total += data.length
+
+            console.log(sumerize)
 
             const calculates = this.API.calculates.valueOrNot()
             const statistics = this.API.statistic.valueOrNot()
+
 
 
 
@@ -3439,16 +3524,7 @@ class ConsumeApi extends Controller {
                 }
             }
 
-            Cache.setUsername(this.req.credential?.username)
-
-            await Database.insert(table.table_alias, partition)
-
-            if(table.primary_key.length == 1){
-                await Database.insertMany(`${table.table_alias}`, partition.data)
-            }
-
-            await Database.update(table.table_alias, { position: "sumerize" }, { ...sumerize })
-            await Cache.setData(`${table.table_alias}-periods`, JSON.stringify([...periods, { position: partition.position, total: partition.total }]))
+            await Database.update(table.table_alias, { position: "sumerize" }, { ...sumerize })            
             this.res.send({ success: true })
 
         } else {
