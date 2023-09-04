@@ -142,7 +142,7 @@ export default () => {
     }, [page, url])
 
     const layoutId = page.components?.[0].layout_id;
-
+    console.log(layoutId)
     const tableClassName = layoutId === 0 ? "table table-striped" : "table table-hover";
 
 
@@ -739,7 +739,7 @@ export default () => {
         }
     }, [currentPage])
 
-    const callApiView = (startAt = 0, amount = 20) => {
+    const callApiView = (startAt = 0, amount = 15) => {
         if (matchingPage) {
             const apiGet = matchingPage.components?.[0]?.api_get;
             fetch(`${proxy()}${apiGet}`, {
@@ -753,7 +753,7 @@ export default () => {
                     const { success, content, data, fields, limit } = res;
 
                     if (data && data.length > 0) {
-                     
+
                         setLimit(limit)
                         setApiViewData(data)
                         setApiViewFields(fields)
@@ -782,10 +782,10 @@ export default () => {
     //view api 
     const [currentPageApi, setCurrentPageApi] = useState(1);
 
-    const rowsPerPageApi = 20;
+    const rowsPerPageApi = 15;
     const indexOfLastApi = currentPageApi * rowsPerPageApi;
     const indexOfFirstApi = indexOfLastApi - rowsPerPageApi;
-    
+
 
     const currentApi = apiViewData
     const paginateApi = (pageNumber) => {
@@ -793,15 +793,15 @@ export default () => {
         const startAt = (pageNumber - 1) * rowsPerPageApi;
         callApiView(startAt);
     }
-    
-    
+
+
 
 
     const totalPagesApi = Math.ceil(limit / rowsPerPageApi) || 1;
 
 
     useEffect(() => {
-        callApiView((currentPageApi -1) * rowsPerPageApi, rowsPerPageApi);
+        callApiView((currentPageApi - 1) * rowsPerPageApi, rowsPerPageApi);
     }, [currentPageApi, matchingPage]);
 
 
@@ -1429,7 +1429,248 @@ export default () => {
                                 </div>
                             </div>
                         </div>
-                    ) :
+                    ) : layoutId === "0" ? (
+                        <>
+                            <div class="col-md-12">
+                                <div class="white_shd full margin_bottom_30">
+                                    <div class="full graph_head d-flex">
+                                        <div class="heading1 margin_0 ">
+                                            <h5>{page?.components?.[0]?.component_name}</h5>
+                                        </div>
+
+                                        {statusActive ? (
+                                            <div class="ml-auto  mt-2 pointer" onClick={() => redirectToInput()} data-toggle="modal" title={lang["btn.create"]}>
+
+                                                <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
+                                            </div>
+                                        ) : null}
+                                        {
+                                            current && current.length > 0 ? (
+                                                <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcel" title={lang["export_excel_csv"]}>
+
+                                                    <FontAwesomeIcon icon={faDownload} className="icon-export" />
+                                                </div>
+                                            ) : null
+                                        }
+
+                                        <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcelEx" title={lang["export data example"]}>
+                                            <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
+
+                                        </div>
+                                        <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
+                                            <FontAwesomeIcon icon={faFileImport} className="icon-import" />
+                                        </div>
+
+
+                                    </div>
+                                    <div class="table_section padding_infor_info">
+                                        <div class="col-md-12">
+                                            {statusActive ? (
+                                                <>
+                                                    {
+                                                        loaded ? (
+                                                            current && current.length > 0 ? (
+                                                                <>
+                                                                    <div class="table-responsive">
+
+
+                                                                        <table className={tableClassName} style={{ marginBottom: "10px" }}>
+                                                                            <thead>
+                                                                                <tr class="color-tr">
+                                                                                    <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
+                                                                                    {apiDataName.map((header, index) => (
+                                                                                        <th key={index} class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
+                                                                                    ))}
+                                                                                    <th class="font-weight-bold align-center" style={{ width: "100px" }}>{lang["log.action"]}</th>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <th></th>
+                                                                                    {apiDataName.map((header, index) => (
+                                                                                        <th key={index}>
+                                                                                            <input
+
+                                                                                                type="text"
+                                                                                                class="form-control"
+                                                                                                value={searchValues[header.fomular_alias] || ''}
+                                                                                                onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
+                                                                                            />
+                                                                                        </th>
+                                                                                    ))}
+                                                                                    <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size-24 pointer mb-2" title={lang["search"]}></i></th>
+                                                                                </tr>
+
+                                                                            </thead>
+                                                                            <tbody>
+
+
+                                                                                {current.map((row, index) => {
+                                                                                    if (row) {
+                                                                                        return (
+                                                                                            <tr key={index}>
+                                                                                                <td scope="row">{indexOfFirst + index + 1}</td>
+                                                                                                {apiDataName.map((header) => (
+                                                                                                    <td key={header.fomular_alias}>{renderData(header, row)}</td>
+                                                                                                ))}
+                                                                                                <td class="align-center" style={{ minWidth: "80px" }}>
+
+                                                                                                    <i class="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
+                                                                                                    <i class="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                                </td>
+                                                                                            </tr>)
+                                                                                    } else {
+                                                                                        return null
+                                                                                    }
+                                                                                })}
+                                                                                {/* {dataStatis.map((data) => (
+                                                                        <tr>
+                                                                            <td class="font-weight-bold" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'right' }}>{data.display_name}: {formatNumberWithCommas(data.result)} </td>
+                                                                        </tr>
+                                                                    ))} */}
+
+                                                                            </tbody>
+                                                                        </table>
+
+                                                                        <div className="d-flex justify-content-between align-items-center">
+                                                                            <p>{lang["show"]} {formatNumber(indexOfFirst + 1)} - {formatNumber(indexOfFirst + apiData?.length)} {lang["of"]} {formatNumber(sumerize)} {lang["results"]}</p>
+                                                                            <nav aria-label="Page navigation example">
+                                                                                <ul className="pagination mb-0">
+                                                                                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                                                        <button className="page-link" onClick={() => paginate(1)}>
+                                                                                            &#8810;
+                                                                                        </button>
+                                                                                    </li>
+                                                                                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                                                        <button className="page-link" onClick={() => paginate(currentPage - 1)}>
+                                                                                            &laquo;
+                                                                                        </button>
+                                                                                    </li>
+                                                                                    {currentPage > 1 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                                                    {Array(totalPages).fill().map((_, index) => {
+                                                                                        if (
+                                                                                            index + 1 === currentPage ||
+                                                                                            (index + 1 >= currentPage - 1 && index + 1 <= currentPage + 1)
+                                                                                        ) {
+                                                                                            return (
+                                                                                                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                                                                    <button className="page-link" onClick={() => paginate(index + 1)}>
+                                                                                                        {index + 1}
+                                                                                                    </button>
+                                                                                                </li>
+                                                                                            )
+                                                                                        }
+                                                                                    })}
+                                                                                    {currentPage < totalPages - 1 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                                                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                                                        <button className="page-link" onClick={() => paginate(currentPage + 1)}>
+                                                                                            &raquo;
+                                                                                        </button>
+                                                                                    </li>
+                                                                                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                                                        <button className="page-link" onClick={() => paginate(totalPages)}>
+                                                                                            &#8811;
+                                                                                        </button>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </nav>
+                                                                        </div>
+
+
+                                                                    </div>
+                                                                </>
+                                                            ) : (
+                                                                <div class="table-responsive">
+
+
+                                                                    <table className={tableClassName}>
+                                                                        <thead>
+                                                                            <tr class="color-tr">
+                                                                                <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
+                                                                                {apiDataName.map((header, index) => (
+                                                                                    <th key={index} class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
+                                                                                ))}
+                                                                                <th class="font-weight-bold align-center" style={{ width: "100px" }}>{lang["log.action"]}</th>
+                                                                            </tr>
+
+                                                                            <tr>
+                                                                                <th></th>
+                                                                                {apiDataName.map((header, index) => (
+                                                                                    <th key={index}>
+                                                                                        <input
+                                                                                            type="text"
+                                                                                            class="form-control"
+                                                                                            value={searchValues[header.fomular_alias] || ''}
+                                                                                            onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
+                                                                                        />
+                                                                                    </th>
+                                                                                ))}
+                                                                                <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size pointer icon-margin mb-2" title={lang["search"]}></i></th>
+                                                                            </tr>
+
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td class="font-weight-bold" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            )
+                                                        ) : (
+                                                            null
+                                                            // <div class="d-flex justify-content-center align-items-center w-100 responsive-div" >
+                                                            //     <img width={350} className="scaled-hover-target" src="/images/icon/loading.gif" ></img>
+                                                            // </div>
+                                                            // <div>{lang["not found data"]}</div>
+                                                        )
+                                                    }
+                                                </>
+                                            ) :
+                                                null}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="white_shd full margin_bottom_30">
+                                    <div class="full graph_head d-flex">
+                                        <div class="heading1 margin_0 ">
+                                            <h5>{lang["statistic"]}: {page?.components?.[0]?.component_name}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="table_section padding_infor_info">
+                                        <div class="col-md-12">
+                                            {dataStatis && dataStatis.length > 0 ? (
+                                                <div class="col-md-12">
+                                                    <div class="table_section">
+
+                                                        {dataStatis?.map((statis, index) => {
+                                                            const { display_name, type, data } = statis;
+                                                            if (type == "text") {
+                                                                return (
+                                                                    <div class="col-md-12  col-sm-4 d-flex ">
+                                                                        <p key={index} className="font-weight-bold ml-auto ">{display_name}: {data && data !== undefined && formatNumber(data.toFixed())}</p>
+                                                                    </div>
+                                                                )
+                                                            }
+                                                            else if (type == "table") {
+                                                                return (
+                                                                    <StatisTable data={data} statis={statis} />
+                                                                )
+                                                            }
+                                                            else return null
+                                                        })}
+
+                                                    </div>
+                                                </div>
+
+                                            ) : null
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
                         <div class="col-md-12">
                             <div class="white_shd full margin_bottom_30">
                                 <div class="full graph_head_cus d-flex">
@@ -1741,7 +1982,9 @@ export default () => {
                                 </div>
 
                             </div>
-                        </div>}
+                        </div>
+                    )
+                    }
                 </div>
             </div >
         </div >
