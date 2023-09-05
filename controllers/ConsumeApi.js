@@ -3391,6 +3391,7 @@ class ConsumeApi extends Controller {
                     const amount = TOTAL_DATA_PER_PARTITION - total;
                     for (let h = 0; h < amount; h++) {
                         positions.push(position)
+                        periods[j].total += 1
                     }
                 }
             }
