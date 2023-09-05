@@ -34,10 +34,19 @@
 }
 
 .scrollable {
-    max-height: 485px; 
+    max-height: 445px; 
     overflow-y: auto;
 }
+.scrollable_user {
+    max-height: 600px; 
+    overflow-y: auto;
+    box-shadow: 0 -5px 20px rgba(250, 247, 247, 0.09), 0 5px 20px rgba(250, 247, 247, 0.09);
+}
 
+#sidebar ul.components ul {
+    background: #214162;
+    padding: 10px 0;
+}
 .pie-container {
     display: flex;
     height: 350px;

@@ -96,12 +96,12 @@ export default () => {
                      </ul>
                   </li>
                ) : null}
-
-                {user.role === "pd" ? (
-                  <li>
+               <div class="scrollable_user">
+                  {user.role === "pd" ? (
+                     <li>
                         {pages && pages.map(ui => (
                            ui.status ? (
-                              <li className="navbar-item">
+                              <li className="navbar-item" >
                                  <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
                                     <i class="fa fa-newspaper-o"></i>
                                     <span>{ui.title}</span>
@@ -109,8 +109,10 @@ export default () => {
                               </li>
                            ) : null
                         ))}
-                  </li>
-               ) : null}
+                     </li>
+                  ) : null}
+               </div>
+
 
                {user.role === "ad" || user.role === "uad" ? (
                   <li className="navbar-item">
