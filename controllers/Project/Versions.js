@@ -1,5 +1,5 @@
 const Crypto = require('../Crypto')
-
+const Cache = require('../Cache/Cache')
 
 const { Controller } = require('../../config/controllers');
 const { Versions, VersionsRecord } = require('../../models/Versions');
@@ -341,98 +341,97 @@ class VersionsController extends Controller {
                     const sumerize = {
                         total: oldSumerize.total
                     }                
-                    const partitions = await Database.selectFields(table_alias, { position: { $ne: "sumerize" } }, ["total", "position"])
-
-
-                    for( let i = 0; i < partitions.length; i++ ){
-                        const { position } = partitions[i]
-                        const partition = await Database.selectAll( table_alias, { position } )
-                        let data = []
-                        if( partition[0] && partition[0].data ){
-                            data = partition[0].data
-                        }
-                        for( let j = 0; j < data.length; j++ ){
-                            const record = data[j]
+                    const cache = await Cache.getData(`${ table_alias }-periods`)
+                    if(cache){
+                        const partitions = cache.value   
+    
+                        for( let i = 0; i < partitions.length; i++ ){
+                            const { position } = partitions[i]
+                            const data = await Database.selectAll( table_alias, { position } )                           
                             
-                            for (let k = 0; k < calculates.length; k++) {
-                                const { fomular_alias, fomular } = calculates[k]
-                                let result = fomular;
-                                keys.map(key => {
-                                    /* replace the goddamn fomular with its coresponding value in record values */
-                                    result = result.replaceAll(key, record[key])
-                                })
-                                try {
-                                    record[fomular_alias] = eval(result)
-                                } catch {
-                                    record[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
-                                }
-                            }
-    
-    
-                            for( let k = 0 ; k < statistic.length; k++ ){
-                                const data = record
-                                const statis = statistic[k]
-                                const { fomular_alias, field, group_by, fomular } = statis;
-                                const stringifyGroupKey = group_by.map(group => data[group]).join("_")
-                                const statisField = sumerize[fomular_alias];
-                                if (!statisField) {
-                                    if (group_by && group_by.length > 0) {
-                                        sumerize[fomular_alias] = {}
-                                    } else {
-                                        sumerize[fomular_alias] = 0
+                            for( let j = 0; j < data.length; j++ ){
+                                const record = data[j]
+                                
+                                for (let k = 0; k < calculates.length; k++) {
+                                    const { fomular_alias, fomular } = calculates[k]
+                                    let result = fomular;
+                                    keys.map(key => {
+                                        /* replace the goddamn fomular with its coresponding value in record values */
+                                        result = result.replaceAll(key, record[key])
+                                    })
+                                    try {
+                                        record[fomular_alias] = eval(result)
+                                    } catch {
+                                        record[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
                                     }
                                 }
-                                if (fomular == "SUM") {
-                                    if (typeof (data[field]) == "number") {
+        
+        
+                                for( let k = 0 ; k < statistic.length; k++ ){
+                                    const data = record
+                                    const statis = statistic[k]
+                                    const { fomular_alias, field, group_by, fomular } = statis;
+                                    const stringifyGroupKey = group_by.map(group => data[group]).join("_")
+                                    const statisField = sumerize[fomular_alias];
+                                    if (!statisField) {
                                         if (group_by && group_by.length > 0) {
-    
-                                            if (!sumerize[fomular_alias][stringifyGroupKey]) {
-                                                sumerize[fomular_alias][stringifyGroupKey] = data[field]
-                                            } else {
-                                                sumerize[fomular_alias][stringifyGroupKey] += data[field]
-                                            }
+                                            sumerize[fomular_alias] = {}
                                         } else {
-                                            sumerize[fomular_alias] += data[field]
+                                            sumerize[fomular_alias] = 0
                                         }
                                     }
-                                }
-    
-                                if (fomular == "AVERAGE") {
-                                    if (typeof (data[field]) == "number") {
-                                        if (group_by && group_by.length > 0) {
-    
-                                            if (!sumerize[fomular_alias][stringifyGroupKey]) {
-                                                sumerize[fomular_alias][stringifyGroupKey] = {
-                                                    total: 1,
-                                                    value: data[field] 
+                                    if (fomular == "SUM") {
+                                        if (typeof (data[field]) == "number") {
+                                            if (group_by && group_by.length > 0) {
+        
+                                                if (!sumerize[fomular_alias][stringifyGroupKey]) {
+                                                    sumerize[fomular_alias][stringifyGroupKey] = data[field]
+                                                } else {
+                                                    sumerize[fomular_alias][stringifyGroupKey] += data[field]
                                                 }
                                             } else {
-                                                if( sumerize[fomular_alias][stringifyGroupKey].value ){
-                                                    sumerize[fomular_alias][stringifyGroupKey].value = ( sumerize[fomular_alias][stringifyGroupKey].value * sumerize[fomular_alias][stringifyGroupKey].total  + data[field]) / ( sumerize[fomular_alias][stringifyGroupKey].total + 1 ) 
-                                                }else{
-                                                    sumerize[fomular_alias][stringifyGroupKey].value = data[field]
-                                                }
-                                                sumerize[fomular_alias][stringifyGroupKey].total += 1
+                                                sumerize[fomular_alias] += data[field]
                                             }
-                                        } else {
-                                            sumerize[fomular_alias] = (sumerize[fomular_alias][stringifyGroupKey] * sumerize.total  + data[field]) / ( sumerize.total + 1 ) 
+                                        }
+                                    }
+        
+                                    if (fomular == "AVERAGE") {
+                                        if (typeof (data[field]) == "number") {
+                                            if (group_by && group_by.length > 0) {
+        
+                                                if (!sumerize[fomular_alias][stringifyGroupKey]) {
+                                                    sumerize[fomular_alias][stringifyGroupKey] = {
+                                                        total: 1,
+                                                        value: data[field] 
+                                                    }
+                                                } else {
+                                                    if( sumerize[fomular_alias][stringifyGroupKey].value ){
+                                                        sumerize[fomular_alias][stringifyGroupKey].value = ( sumerize[fomular_alias][stringifyGroupKey].value * sumerize[fomular_alias][stringifyGroupKey].total  + data[field]) / ( sumerize[fomular_alias][stringifyGroupKey].total + 1 ) 
+                                                    }else{
+                                                        sumerize[fomular_alias][stringifyGroupKey].value = data[field]
+                                                    }
+                                                    sumerize[fomular_alias][stringifyGroupKey].total += 1
+                                                }
+                                            } else {
+                                                sumerize[fomular_alias] = (sumerize[fomular_alias][stringifyGroupKey] * sumerize.total  + data[field]) / ( sumerize.total + 1 ) 
+                                            }
+                                        }
+                                    }
+        
+                                    if (fomular == "COUNT") {
+                                        if (group_by && group_by.length > 0) {
+        
+                                            if (!sumerize[fomular_alias][stringifyGroupKey]) {
+                                                sumerize[fomular_alias][stringifyGroupKey] = 1
+                                            } else {
+                                                sumerize[fomular_alias][stringifyGroupKey] += 1
+                                            }
                                         }
                                     }
                                 }
-    
-                                if (fomular == "COUNT") {
-                                    if (group_by && group_by.length > 0) {
-    
-                                        if (!sumerize[fomular_alias][stringifyGroupKey]) {
-                                            sumerize[fomular_alias][stringifyGroupKey] = 1
-                                        } else {
-                                            sumerize[fomular_alias][stringifyGroupKey] += 1
-                                        }
-                                    }
-                                }
+        
+        
                             }
-    
-    
                         }
                     }   
                             

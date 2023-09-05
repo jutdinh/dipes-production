@@ -217,11 +217,11 @@ class ConsumeApi extends Controller {
         const bodyIds = this.API.body.valueOrNot()
         const paramIds = this.API.params.valueOrNot()
 
-        const tables = tableIds.map( tbID => {
-            const table = this.tables.find( tb => tb.id == tbID )
+        const tables = tableIds.map(tbID => {
+            const table = this.tables.find(tb => tb.id == tbID)
             return table;
         })
-        
+
         const fields = this.fields.filter(fd => fieldIds.indexOf(fd.id) != -1)
         const bodyFields = this.fields.filter(fd => bodyIds.indexOf(fd.id) != -1)
         const paramFields = this.fields.filter(fd => paramIds.indexOf(fd.id) != -1)
@@ -363,47 +363,47 @@ class ConsumeApi extends Controller {
 
 
     generatePeriodIndex = (rawIndex) => {
-        const partitions = this.periods;        
+        const partitions = this.periods;
         const RECORD_PER_PAGE = RESULT_PER_SEARCH_PAGE
-        if( intValidate( rawIndex ) && partitions.length > 0 ){
-            const START_INDEX = parseInt( rawIndex )
+        if (intValidate(rawIndex) && partitions.length > 0) {
+            const START_INDEX = parseInt(rawIndex)
             let PRIMAL_START_POINT = START_INDEX * RECORD_PER_PAGE
 
-            const PARTITION_LENGTH   = partitions.length
-            let TARGET_PARTITION_INDEX = 0 
+            const PARTITION_LENGTH = partitions.length
+            let TARGET_PARTITION_INDEX = 0
 
-            for( let i = 0 ; i < PARTITION_LENGTH; i++ ){
+            for (let i = 0; i < PARTITION_LENGTH; i++) {
                 const total = partitions[i]["total"]
                 const CURRENT_REMAINING_INDEX = PRIMAL_START_POINT
                 PRIMAL_START_POINT -= total
 
-                if (PRIMAL_START_POINT <= 0){
-                    TARGET_PARTITION_INDEX = i 
+                if (PRIMAL_START_POINT <= 0) {
+                    TARGET_PARTITION_INDEX = i
                     partitions[i]["total"] = total - CURRENT_REMAINING_INDEX
                     partitions[i]["from"] = CURRENT_REMAINING_INDEX
-                    partitions[i]["to"] = CURRENT_REMAINING_INDEX + RECORD_PER_PAGE 
+                    partitions[i]["to"] = CURRENT_REMAINING_INDEX + RECORD_PER_PAGE
                     break
                 }
             }
 
-            const FINALE_PARTIONS = [ partitions[TARGET_PARTITION_INDEX] ]
+            const FINALE_PARTIONS = [partitions[TARGET_PARTITION_INDEX]]
             const TOTAL_RESULT_ITEM = RECORD_PER_PAGE
             let REMAINING_ITEM_AMOUNT = TOTAL_RESULT_ITEM - partitions[TARGET_PARTITION_INDEX]["total"]
 
-            for( let i = TARGET_PARTITION_INDEX + 1; i < PARTITION_LENGTH; i++ ){                
+            for (let i = TARGET_PARTITION_INDEX + 1; i < PARTITION_LENGTH; i++) {
                 const total = partitions[i]["total"]
                 const CURRENT_REMAINING_INDEX = REMAINING_ITEM_AMOUNT
-                REMAINING_ITEM_AMOUNT -= total		
+                REMAINING_ITEM_AMOUNT -= total
                 partitions[i]["from"] = 0
-                partitions[i]["to"]   = REMAINING_ITEM_AMOUNT > 0 ? total : CURRENT_REMAINING_INDEX 
+                partitions[i]["to"] = REMAINING_ITEM_AMOUNT > 0 ? total : CURRENT_REMAINING_INDEX
 
-                FINALE_PARTIONS.push( partitions[i])
+                FINALE_PARTIONS.push(partitions[i])
 
                 if (REMAINING_ITEM_AMOUNT <= 0) break
             }
-            return FINALE_PARTIONS   
-        }else{
-            return[{
+            return FINALE_PARTIONS
+        } else {
+            return [{
                 position: partitions[0]?.position,
                 from: 0,
                 to: RECORD_PER_PAGE
@@ -460,7 +460,7 @@ class ConsumeApi extends Controller {
         }
         let remain_items_container = partitions[targetStartIndex]["data"]
         let remain_items = remain_items_container.slice(targetStartItem, remain_items_container.length)
-        
+
 
         const finalePartitions = []
         const precisedTargetPartition = { ...partitions[targetStartIndex] }
@@ -503,20 +503,20 @@ class ConsumeApi extends Controller {
         const datafrom = intValidate(this.req.header("start-at")) ? parseInt(this.req.header("start-at")) : 0
         let dataPerBreak = intValidate(this.req.header("data-amount")) ? parseInt(this.req.header("data-amount")) : RESULT_PER_SEARCH_PAGE
         let tmpDataFrom = datafrom
-        if( dataPerBreak > 100_000 ){
+        if (dataPerBreak > 100_000) {
             this.res.status(200).send({
                 success: false,
                 msg: "Invalid data amount ( maximum 100.000 records per request )",
             })
-        }else{
+        } else {
 
             const startTime = new Date()
-    
+
             if (params.length > 0) {
                 const formatedUrl = this.url.replaceAll('//', '/')
                 const splittedURL = formatedUrl.split('/')
                 const paramValues = splittedURL.slice(PARAMS_PLACE) /* The 3 number is the first index of params located in url, this can be changed to flexible with url format */
-    
+
                 let paramsValid = true;
                 paramQueries = params.map((param, index) => {
                     const query = {}
@@ -535,52 +535,52 @@ class ConsumeApi extends Controller {
                     return
                 }
             }
-    
+
             const foreignKeys = []
             tables.map(tb => {
                 foreignKeys.push(...tb.foreign_keys)
             })
-    
+
             const dbo = await Database.getDBO()
-    
+
             const mainTable = tables[0]
             const paramQuery = paramQueries.filter(q => q.table_id == mainTable.id)
-    
+
             const sideQueries = paramQuery.map(sideQuery => {
                 const { query } = sideQuery;
                 const keys = Object.keys(query)
                 return { [`data.${keys[0]}`]: query[keys[0]] }
             })
-    
+
             const itemsFilterQuery = paramQuery.map(sideQuery => {
                 const { query } = sideQuery;
                 const keys = Object.keys(query)
                 return { $in: [`$$item.${keys[0]}`, [query[keys[0]]]] }
             })
-    
+
             const mainTableQuery = { $and: [{ position: { $ne: "sumerize" } }, ...sideQueries] };
-                    
-            let partitions;
-            const dataLimitation = await Database.selectFields( mainTable.table_alias, { position: "sumerize" }, ["total"] )
+
+            let partitions = [];
+            const dataLimitation = await Database.selectFields(mainTable.table_alias, { position: "sumerize" }, ["total"])
             const stringifiedPeriods = await Cache.getData(`${tables[0].table_alias}-periods`)
             const periods = stringifiedPeriods.value
             if (stringifiedPeriods && periods.length > 0) {
                 partitions = periods
             } else {
 
-            }       
+            }
             const redundantPartitions = []
-            
-            if( paramQueries.length > 0 ){
-    
+
+            if (paramQueries.length > 0) {
+
                 let data_counter = 0;
                 let finale_raw_data_counter = 0;
                 let found = false
-                for( let i = 0 ; i < partitions.length; i++ ){
+                for (let i = 0; i < partitions.length; i++) {
                     const redundantQuery = { ...mainTableQuery }
-                    const $and = redundantQuery["$and"]                        
+                    const $and = redundantQuery["$and"]
                     const redundantPartition = await dbo.collection(mainTable.table_alias).aggregate([
-                        { $match: {...redundantQuery, $and:[ ...$and, { position: partitions[i].position } ]} },
+                        { $match: { ...redundantQuery, $and: [...$and, { position: partitions[i].position }] } },
                         {
                             $project: {
                                 data: {
@@ -594,95 +594,95 @@ class ConsumeApi extends Controller {
                                 }
                             }
                         }
-                    ]).toArray()           
-                    
-                    if( redundantPartition[0] && redundantPartition[0].data ){
+                    ]).toArray()
+
+                    if (redundantPartition[0] && redundantPartition[0].data) {
                         const currentDataLength = redundantPartition[0].data.length
                         data_counter += currentDataLength;
                         // console.log(data_counter, found, finale_raw_data_counter)
-                        if( data_counter > datafrom && !found ){                    
-                            redundantPartitions.push( ...redundantPartition )
+                        if (data_counter > datafrom && !found) {
+                            redundantPartitions.push(...redundantPartition)
                             finale_raw_data_counter += currentDataLength - redundantPartition[0].data.length
                             found = true
                         }
-        
-                        if( finale_raw_data_counter < dataPerBreak && found ){
+
+                        if (finale_raw_data_counter < dataPerBreak && found) {
                             // console.log(finale_raw_data_counter)
                             finale_raw_data_counter += redundantPartition[0].data.length
-                            redundantPartitions.push( ...redundantPartition )
-                            if( finale_raw_data_counter >= dataPerBreak ){
+                            redundantPartitions.push(...redundantPartition)
+                            if (finale_raw_data_counter >= dataPerBreak) {
                                 break;
                             }
                         }
                     }
                 }
-            }else{
+            } else {
                 let data_counter = 0;
                 let finale_raw_data_counter = 0;
                 let found = false
-                for( let i = 0 ; i < partitions.length; i++ ){
+                for (let i = 0; i < partitions.length; i++) {
                     const redundantQuery = { ...mainTableQuery }
-                    const $and = redundantQuery["$and"]                        
-                    const redundantPartition = partitions[i]        
-                    
-                    if( redundantPartition && redundantPartition.total ){
+                    const $and = redundantQuery["$and"]
+                    const redundantPartition = partitions[i]
+
+                    if (redundantPartition && redundantPartition.total) {
                         const currentDataLength = redundantPartition.total
                         data_counter += currentDataLength;
-                        tmpDataFrom  -= currentDataLength
+                        tmpDataFrom -= currentDataLength
                         // console.log(630, data_counter, found, finale_raw_data_counter)
-                        if( data_counter > datafrom && !found ){                            
+                        if (data_counter > datafrom && !found) {
                             // redundantPartitions.push( ...redundantPartitionData )
                             // console.log(655, currentDataLength, redundantPartition.total)
-                            finale_raw_data_counter += (currentDataLength - redundantPartition.total)                            
+                            finale_raw_data_counter += (currentDataLength - redundantPartition.total)
                             found = true
                         }
-        
-                        if( finale_raw_data_counter < dataPerBreak && found ){
+
+                        if (finale_raw_data_counter < dataPerBreak && found) {
                             finale_raw_data_counter += redundantPartition.total
                             // console.log(656, finale_raw_data_counter)
-                                                        
-                            const redundantPartitionData = await Database.selectAll( mainTable.table_alias,  {...redundantQuery, $and:[ ...$and, { position: partitions[i].position } ]} )  
+
+                            const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { ...redundantQuery, $and: [...$and, { position: partitions[i].position }] })
                             // console.log(660, redundantPartitionData)
-                            redundantPartitions.push( {
-                                
+                            redundantPartitions.push({
+
                                 position: partitions[i].position,
-                                total: redundantPartitionData.length, 
+                                total: redundantPartitionData.length,
                                 data: redundantPartitionData,
-                            } )                            
-                            if( finale_raw_data_counter >= dataPerBreak ){
+                            })
+                            if (finale_raw_data_counter >= dataPerBreak) {
                                 break;
                             }
                         }
                     }
                 }
             }
-            
+
             // console.log( redundantPartitions.length)
-    
-            if (redundantPartitions.length > 0) {                
-                
+
+            if (redundantPartitions.length > 0) {
+
                 const partitions = this.PRECISE_PARTITIONS(redundantPartitions, tmpDataFrom + 1, dataPerBreak)
                 const keySortedTables = this.sortTablesByKeys(tables)
                 const cacheData = {}
-    
+
                 keySortedTables.map(table => {
                     cacheData[table.table_alias] = []
                 })
-                
+
                 const data = []
 
 
                 for (let i = 0; i < partitions.length; i++) {
-                    data.push( ...partitions[i].data ) // P[i]                        
-                }                
+                    data.push(...partitions[i].data) // P[i]                        
+                }
 
-                
-    
-                const finaleData = data    
-    
+
+
+                const finaleData = data
+
                 let filtedData = finaleData.filter(record => record != undefined);
                 const calculates = this.API.calculates.valueOrNot();
-    
+
                 if (calculates.length > 0) {
                     filtedData = filtedData.map(record => {
                         const calculateValue = {};
@@ -706,19 +706,19 @@ class ConsumeApi extends Controller {
                 }
                 const rawAPIFields = this.API.fields.valueOrNot()
                 const apiFields = this.getFields(rawAPIFields.map(field => field.id));
-                
+
                 const displayFields = apiFields.map(field => {
                     const { id, display_name } = field;
                     const corespondingField = apiFields.find(f => f.id == id);
                     return { display_name, ...corespondingField }
                 })
-        
+
                 const calculateDisplay = calculates.map(field => {
                     const { fomular_alias, display_name } = field;
                     return { fomular_alias, display_name }
                 })
-    
-    
+
+
                 const endTime = new Date()
                 console.log("API CALL IN " + `${endTime - startTime}`)
                 this.res.status(200).send({
@@ -747,14 +747,14 @@ class ConsumeApi extends Controller {
         const tables = this.tearTablesAndFieldsToObjects()
         const params = this.getFields(this.API.params.valueOrNot())
         const fromIndex = defaultFromIndex ? defaultFromIndex : this.req.header(`fromIndex`)
-        if (!this.periods) {            
-            const start = new Date()                
-            const periods  = await Cache.getData(`${tables[0].table_alias}-periods`)            
-            if ( periods ) {
+        if (!this.periods) {
+            const start = new Date()
+            const periods = await Cache.getData(`${tables[0].table_alias}-periods`)
+            if (periods) {
                 this.periods = periods.value
             } else {
                 this.periods = []
-                await Cache.setData(`${tables[0].table_alias}-periods`, [])            
+                await Cache.setData(`${tables[0].table_alias}-periods`, [])
             }
             const end = new Date()
             console.log(`GET CACHE PARTITION IN: ${end - start}`)
@@ -822,23 +822,23 @@ class ConsumeApi extends Controller {
                 for (let j = 0; j < indices.length; j++) {
                     const period = indices[j]
 
-                    const splittedData = await Table.__findAll__({ position: period.position })                    
+                    const splittedData = await Table.__findAll__({ position: period.position })
                     for (let ii = period.from; ii < period.to; ii++) {
                         data.push(splittedData[ii])
                     }
-                    
+
                 }
             } else {
                 const keys = Object.keys(query)
                 const formatedQuery = {}
-                keys.map(key => {                    
-                    formatedQuery[`${key}`] = query[key]                    
-                })               
-                
+                keys.map(key => {
+                    formatedQuery[`${key}`] = query[key]
+                })
+
                 const partition = await Table.__findAll__(formatedQuery)
-                
+
                 if (partition) {
-                    let partitionData = partition;                    
+                    let partitionData = partition;
 
                     const keys = Object.keys(query)
                     const values = Object.values(query)
@@ -997,7 +997,7 @@ class ConsumeApi extends Controller {
                         if (foreignKey) {
                             const foreignField = this.getField(foreignKey.ref_field_id);
                             const foreignTable = this.getTable(foreignField.table_id);
-                            tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(foreignTable.table_alias, PATTERN)                            
+                            tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(foreignTable.table_alias, PATTERN)
                         } else {
                             tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(table_alias, PATTERN)
                             isAutoIncreTriggerd = true
@@ -1159,11 +1159,11 @@ class ConsumeApi extends Controller {
 
             const query = {}
 
-            primaryFields.map(field => {                
-                query[`${field.fomular_alias}`] = data[field.fomular_alias]                
+            primaryFields.map(field => {
+                query[`${field.fomular_alias}`] = data[field.fomular_alias]
             })
-            
-            const doesThisKeyExist = Database.selectAll(table_alias, query )
+
+            const doesThisKeyExist = Database.selectAll(table_alias, query)
             const queries = [doesThisKeyExist]
 
             for (let i = 0; i < foreign_keys.length; i++) {
@@ -1200,11 +1200,11 @@ class ConsumeApi extends Controller {
 
                 for (let i = 0; i < tearedBody.length; i++) {
                     const { table_alias, data } = tearedBody[i]
-                    let cache = await Cache.getData(`${ table_alias }-periods`)
-                    if( !cache ){
-                        await Cache.setData(`${ table_alias }-periods`, [])
+                    let cache = await Cache.getData(`${table_alias}-periods`)
+                    if (!cache) {
+                        await Cache.setData(`${table_alias}-periods`, [])
                         cache = {
-                            key: `${ table_alias }-periods`,
+                            key: `${table_alias}-periods`,
                             value: []
                         }
                     }
@@ -1225,39 +1225,39 @@ class ConsumeApi extends Controller {
                         }
                     }
 
-                    allKeys.map( ([ foreignData ]) => {
-                        if( foreignData ){
-                            delete foreignData.id 
-                            delete foreignData._id 
-                            const foreignDataKeys = Object.keys( foreignData )
-                            foreignDataKeys.map( key => {
+                    allKeys.map(([foreignData]) => {
+                        if (foreignData) {
+                            delete foreignData.id
+                            delete foreignData._id
+                            const foreignDataKeys = Object.keys(foreignData)
+                            foreignDataKeys.map(key => {
                                 data[key] = foreignData[key]
                             })
                         }
                     })
 
-                    
 
-                    if (found) {                       
-                        
+
+                    if (found) {
+
                         data.position = targetPosition
                         await Database.insert(`${table_alias}`, data)
                         tartgetPositionObject.total += 1
                         periods[targetPositionIndex] = tartgetPositionObject
-                        
-                                                
+
+
                     } else {
-                        const newPosition = this.translateColIndexToName(periods.length)                        
+                        const newPosition = this.translateColIndexToName(periods.length)
                         const serializedData = []
                         serializedData.push(data);
 
                         const newPartition = {
                             position: newPosition,
                             total: 1
-                        }                        
+                        }
                         data.position = newPosition
                         await Database.insert(`${table_alias}`, data)
-                        periods.push( newPartition )                        
+                        periods.push(newPartition)
                     }
 
                     await Cache.setData(`${table_alias}-periods`, periods)
@@ -1273,9 +1273,9 @@ class ConsumeApi extends Controller {
                         await Database.insert(table_alias, newSumerize)
                     }
 
-                    
 
-                    
+
+
 
                     const statisSum = await Database.select(table_alias, { position: "sumerize" })
 
@@ -1351,7 +1351,7 @@ class ConsumeApi extends Controller {
                                 } else {
                                     statisSum[fomular_alias][stringifyGroupKey] += 1
                                 }
-                            }else{
+                            } else {
                                 statisSum[fomular_alias] += 1
                             }
                         }
@@ -1673,37 +1673,37 @@ class ConsumeApi extends Controller {
 
     }
 
-    findSlaveRecursive = ( table, master ) => {        
+    findSlaveRecursive = (table, master) => {
         const { foreign_keys } = table;
-        const slaveRelation = foreign_keys.find( key => key.table_id == master.id )
+        const slaveRelation = foreign_keys.find(key => key.table_id == master.id)
 
-        if( slaveRelation ){
+        if (slaveRelation) {
             return true
-        }else{
-            if( foreign_keys.length == 0 ){
+        } else {
+            if (foreign_keys.length == 0) {
                 return false
-            }else{
+            } else {
                 let found = false
-                for( let i = 0; i < foreign_keys.length; i++ ){
+                for (let i = 0; i < foreign_keys.length; i++) {
                     const { table_id } = foreign_keys[i]
-                    const nextMaster = this.getTable( table_id )                    
-                    if( !found ){
-                        found = this.findSlaveRecursive( nextMaster, master )                                            
+                    const nextMaster = this.getTable(table_id)
+                    if (!found) {
+                        found = this.findSlaveRecursive(nextMaster, master)
                     }
                 }
                 return found
-            }            
+            }
         }
     }
 
-    detectAllSlave = ( master ) => {
+    detectAllSlave = (master) => {
         const tables = this.tables;
         const slaves = []
-        for( let i = 0 ; i < tables.length; i++ ){
+        for (let i = 0; i < tables.length; i++) {
             const table = tables[i]
-            let found = this.findSlaveRecursive( table, master )
-            if( found ){
-                slaves.push( table )
+            let found = this.findSlaveRecursive(table, master)
+            if (found) {
+                slaves.push(table)
             }
         }
         return slaves
@@ -1815,15 +1815,15 @@ class ConsumeApi extends Controller {
 
         const keys = Object.keys(query)
         const formatedQuery = {}
-        keys.map(key => {            
-            formatedQuery[`${key}`] = query[key]            
+        keys.map(key => {
+            formatedQuery[`${key}`] = query[key]
         })
 
 
         /* PRIMARY CHECK */
 
-        const doesThisKeyExist = await Database.selectAll( table_alias, formatedQuery )        
-        const truePrimaryRecord  = doesThisKeyExist[0]
+        const doesThisKeyExist = await Database.selectAll(table_alias, formatedQuery)
+        const truePrimaryRecord = doesThisKeyExist[0]
         if (truePrimaryRecord != undefined) {
             const originData = truePrimaryRecord;
 
@@ -1863,21 +1863,21 @@ class ConsumeApi extends Controller {
                 }
             }
 
-            if (areForeignDataValid) {               
+            if (areForeignDataValid) {
 
                 // const partitionData = partition.data;
-                await Database.update( `${table_alias}`, formatedQuery, { ...data } )
+                await Database.update(`${table_alias}`, formatedQuery, { ...data })
 
                 const slaves = this.detectAllSlave(table)
-                for( let i = 0 ; i < slaves.length; i++ ){
+                for (let i = 0; i < slaves.length; i++) {
                     const startAt = new Date()
                     const slave = slaves[i]
-                    await Database.update(`${ slave.table_alias }`, formatedQuery ,{ ...data })
+                    await Database.update(`${slave.table_alias}`, formatedQuery, { ...data })
                     const endAt = new Date()
-                    console.log(`Synchorized data in table ${ slave.table_name } costs: ${ endAt - startAt }ms`)
+                    console.log(`Synchorized data in table ${slave.table_name} costs: ${endAt - startAt}ms`)
                 }
 
-                
+
 
                 const calculates = this.API.calculates.valueOrNot()
                 const statistics = this.API.statistic.valueOrNot()
@@ -1976,7 +1976,7 @@ class ConsumeApi extends Controller {
                     await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
                 }
 
-                this.res.send({ success: true })                
+                this.res.send({ success: true })
             } else {
                 this.res.send({ success: false })
             }
@@ -2144,21 +2144,21 @@ class ConsumeApi extends Controller {
         const itemQuery = {}
         keys.map(key => {
             const qr = {}
-            formatedQuery[`${key}`] = query[key]            
+            formatedQuery[`${key}`] = query[key]
         })
 
         const model = new Model(table_alias);
-        const Table = model.getModel();               
+        const Table = model.getModel();
 
         const doesThisKeyExist = await Database.selectAll(table_alias, formatedQuery)
         const primaryRecord = doesThisKeyExist[0]; // ? this may cause error if more than 1 partition were returned
 
         // const partitionData = partition.data;
         if (primaryRecord) {
-            
 
-            const sumerize = await Table.__findCriteria__({ position: "sumerize" })            
-            await Database.delete( `${table_alias}`, query )
+
+            const sumerize = await Table.__findCriteria__({ position: "sumerize" })
+            await Database.delete(`${table_alias}`, query)
 
             const originData = primaryRecord;
 
@@ -2256,7 +2256,7 @@ class ConsumeApi extends Controller {
             }
 
             await Table.__manualUpdate__({ position: "sumerize" }, { total: sumerize.total - 1 })
-            
+
             this.res.send({ success: true })
         } else {
             this.res.send({ success: false })
@@ -2469,9 +2469,9 @@ class ConsumeApi extends Controller {
                 const qr = {}
                 qr[`${key}`] = { $regex: query[key] }
                 formatedQuery["$and"].push(qr)
-            })            
+            })
             const regexMatches = { $and: [] }
-            
+
 
             const cache = await Cache.getData(`${table.table_alias}-periods`)
             let partitions = cache ? cache.value : []
@@ -2479,15 +2479,15 @@ class ConsumeApi extends Controller {
             const statistics = this.API.statistic.valueOrNot()
             const statisData = {}
             const calculates = this.API.calculates.valueOrNot();
-            
-            
 
-            const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)  
+
+
+            const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)
             let count;
 
-            if( require_count ){
-                count = await Database.count( table.table_alias, formatedQuery )
-            }      
+            if (require_count) {
+                count = await Database.count(table.table_alias, formatedQuery)
+            }
 
 
             for (let j = 0; j < data.length; j++) {
@@ -2516,7 +2516,7 @@ class ConsumeApi extends Controller {
                     }
                 }
 
-                result.push(record)              
+                result.push(record)
 
                 statistics.map(statis => {
                     const { field, fomular_alias, fomular, group_by } = statis;
@@ -2575,7 +2575,7 @@ class ConsumeApi extends Controller {
                         }
                     }
                 })
-            }                           
+            }
 
             const statistic = []
             statistics.map(statis => {
@@ -2843,17 +2843,60 @@ class ConsumeApi extends Controller {
             const csvHeaders = [...fields.map(field => field.field_name), ...calculates.map(cal => cal.display_name)]
             const csvData = []
             csvData.push(csvHeaders);
-            const periods = await Database.selectFields(table.table_alias, { position: { $ne: "sumerize" } }, ["position", "total"])
+            const cache = await Cache.getData(`${table.table_alias}-periods`)
+            const periods = cache.value
 
             if (criteria == undefined || objectComparator(criteria, {})) {
 
                 for (let i = 0; i < periods.length; i++) {
                     const period = periods[i]
+                    const { position } = period;                    
+                    const data = await Database.selectAll(table.table_alias, { position })
+                    csvData.push(...data.map(record => {
+                        const tmp = {}
+                        fields.map(field => {
+                            tmp[field.fomular_alias] = record[field.fomular_alias]
+                        })
+
+                        calculates.map(calc => {
+                            const { fomular, fomular_alias } = calc;
+                            let result = fomular;
+                            keys.map(key => { result = result.replaceAll(key, record[key]) })
+
+                            try {
+                                tmp[fomular_alias] = eval(result)
+                            } catch {
+                                tmp[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`
+                            }
+                        })
+
+                        return Object.values(tmp)
+                    }))
+                }
+            } else {
+                const keys = Object.keys(criteria)
+                for (let i = 0; i < periods.length; i++) {
+                    const period = periods[i]
                     const { position } = period;
-                    const partition = await Database.select(table.table_alias, { position })
-                    if (partition && partition.data) {
-                        const data = Object.values(partition.data)
-                        csvData.push(...data.map(record => {
+                    const data = await Database.select(table.table_alias, { position })
+                    for (let j = 0; j < data.length; j++) {
+                        const record = data[j]
+                        delete record.id;
+                        delete record.position
+                        let isValid = true
+                        keys.map(key => {
+                            if (record[key] != undefined && criteria[key] != undefined) {
+                                const recordProp = translateUnicodeToBlanText(record[key].toString().toLowerCase())
+                                const value = translateUnicodeToBlanText(criteria[key].toString().toLowerCase())
+
+                                if (!recordProp.includes(value)) {
+                                    isValid = false
+                                }
+                            } else {
+                                isValid = false
+                            }
+                        })
+                        if (isValid) {
                             const tmp = {}
                             fields.map(field => {
                                 tmp[field.fomular_alias] = record[field.fomular_alias]
@@ -2871,57 +2914,7 @@ class ConsumeApi extends Controller {
                                 }
                             })
 
-                            return Object.values(tmp)
-                        }))
-                    }
-                }
-            } else {
-                const keys = Object.keys(criteria)
-                for (let i = 0; i < periods.length; i++) {
-                    const period = periods[i]
-                    const { position } = period;
-                    const partition = await Database.select(table.table_alias, { position })
-                    if (partition.data) {
-                        const data = Object.values(partition.data)
-
-                        for (let j = 0; j < data.length; j++) {
-                            const record = data[j]
-                            delete record.id;
-                            delete record.__position__
-                            let isValid = true
-                            keys.map(key => {
-                                if (record[key] != undefined && criteria[key] != undefined) {
-                                    const recordProp = translateUnicodeToBlanText(record[key].toString().toLowerCase())
-                                    const value = translateUnicodeToBlanText(criteria[key].toString().toLowerCase())
-
-                                    if (!recordProp.includes(value)) {
-                                        isValid = false
-                                    }
-                                } else {
-                                    isValid = false
-                                }
-                            })
-                            if (isValid) {
-                                const tmp = {}
-                                fields.map(field => {
-                                    tmp[field.fomular_alias] = record[field.fomular_alias]
-                                })
-
-                                calculates.map(calc => {
-                                    const { fomular, fomular_alias } = calc;
-                                    let result = fomular;
-                                    keys.map(key => { result = result.replaceAll(key, record[key]) })
-
-                                    try {
-                                        tmp[fomular_alias] = eval(result)
-                                    } catch {
-                                        tmp[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`
-                                    }
-                                })
-
-                                csvData.push(Object.values(tmp))
-                            }
-
+                            csvData.push(Object.values(tmp))
                         }
 
                     }
@@ -2998,22 +2991,63 @@ class ConsumeApi extends Controller {
 
         const splittedData = []
         if (fields.length != 0) {
-
-
-            const periods = await Database.selectFields(table.table_alias, { position: { $ne: "sumerize" } }, ["position", "total"])
-
+            const cache = await Cache.getData(`${table.table_alias}-periods`)
+            const periods = cache.value
             if (criteria == undefined || objectComparator(criteria, {})) {
 
                 for (let i = 0; i < periods.length; i++) {
                     const period = periods[i]
                     const { position } = period;
-                    const partition = await Database.select(table.table_alias, { position })
-                    if (partition.data) {
-                        const data = Object.values(partition.data)
+                    const data = await Database.selectAll(table.table_alias, { position })
+                    newCsvData.push(...data.map(record => {
+                        const tmp = {}
+                        fields.map(field => { tmp[field.fomular_alias] = record[field.fomular_alias] })
 
-                        newCsvData.push(...data.map(record => {
+                        calculates.map(calc => {
+                            const { fomular, fomular_alias } = calc;
+                            let result = fomular;
+                            keys.map(key => { result = result.replaceAll(key, record[key]) })
+
+                            try {
+                                tmp[fomular_alias] = eval(result)
+                            } catch {
+                                tmp[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`
+                            }
+                        })
+
+                        return tmp
+                    }))                    
+                }
+            } else {
+                const keys = Object.keys(criteria)
+                for (let i = 0; i < periods.length; i++) {
+                    const period = periods[i]
+                    const { position } = period;
+
+                    const data = await Database.selectAll(table.table_alias, { position })
+
+                    for (let j = 0; j < data.length; j++) {
+                        const record = data[j]
+                        delete record.id;
+                        delete record.__position__
+                        let isValid = true
+                        keys.map(key => {
+                            if (record[key] != undefined && criteria[key] != undefined) {
+                                const recordProp = translateUnicodeToBlanText(record[key].toString().toLowerCase())
+                                const value = translateUnicodeToBlanText(criteria[key].toString().toLowerCase())
+
+                                if (!recordProp.includes(value)) {
+                                    isValid = false
+                                }
+                            } else {
+                                isValid = false
+                            }
+                        })
+                        if (isValid) {
                             const tmp = {}
-                            fields.map(field => { tmp[field.fomular_alias] = record[field.fomular_alias] })
+                            fields.map(field => {
+                                tmp[field.fomular_alias] = record[field.fomular_alias]
+                            })
 
                             calculates.map(calc => {
                                 const { fomular, fomular_alias } = calc;
@@ -3026,63 +3060,15 @@ class ConsumeApi extends Controller {
                                     tmp[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`
                                 }
                             })
-
-                            return tmp
-                        }))
-                    }
-                }
-            } else {
-                const keys = Object.keys(criteria)
-                for (let i = 0; i < periods.length; i++) {
-                    const period = periods[i]
-                    const { position } = period;
-                    const partition = await Database.select(table.table_alias, { position })
-                    if (partition.data) {
-                        const data = Object.values(partition.data)
-
-                        for (let j = 0; j < data.length; j++) {
-                            const record = data[j]
-                            delete record.id;
-                            delete record.__position__
-                            let isValid = true
-                            keys.map(key => {
-                                if (record[key] != undefined && criteria[key] != undefined) {
-                                    const recordProp = translateUnicodeToBlanText(record[key].toString().toLowerCase())
-                                    const value = translateUnicodeToBlanText(criteria[key].toString().toLowerCase())
-
-                                    if (!recordProp.includes(value)) {
-                                        isValid = false
-                                    }
-                                } else {
-                                    isValid = false
-                                }
+                            const finalResult = {}
+                            const finaleFields = [...fields, ...calculates]
+                            finaleFields.map(field => {
+                                finalResult[field.fomular_alias] = tmp[field.fomular_alias]
                             })
-                            if (isValid) {
-                                const tmp = {}
-                                fields.map(field => {
-                                    tmp[field.fomular_alias] = record[field.fomular_alias]
-                                })
-
-                                calculates.map(calc => {
-                                    const { fomular, fomular_alias } = calc;
-                                    let result = fomular;
-                                    keys.map(key => { result = result.replaceAll(key, record[key]) })
-
-                                    try {
-                                        tmp[fomular_alias] = eval(result)
-                                    } catch {
-                                        tmp[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`
-                                    }
-                                })
-                                const finalResult = {}
-                                const finaleFields = [...fields, ...calculates]
-                                finaleFields.map(field => {
-                                    finalResult[field.fomular_alias] = tmp[field.fomular_alias]
-                                })
-                                newCsvData.push(finalResult)
-                            }
+                            newCsvData.push(finalResult)
                         }
                     }
+
                 }
             }
             const ws = XLSX.utils.json_to_sheet(newCsvData, { skipHeader: true });
@@ -3185,14 +3171,10 @@ class ConsumeApi extends Controller {
                     if (foreignKey) {
                         data[fomular_alias] = record[fomular_alias]
                     } else {
-                        if (record[fomular_alias] != undefined) {
-                            data[fomular_alias] = record[fomular_alias]
+                        if (Fields.isIntFamily(DATATYPE) && AUTO_INCREMENT) {
+                            data[fomular_alias] = await this.makeAutoIncreament(table_alias, PATTERN, autoID)
                         } else {
-                            if (Fields.isIntFamily(DATATYPE) && AUTO_INCREMENT) {
-                                data[fomular_alias] = await this.makeAutoIncreament(table_alias, PATTERN, autoID)
-                            } else {
-                                data[fomular_alias] = record[fomular_alias]
-                            }
+                            data[fomular_alias] = record[fomular_alias]
                         }
                     }
                 }
@@ -3254,11 +3236,11 @@ class ConsumeApi extends Controller {
                     return { table, field, refField }
                 })
 
-                const formedData = await Promise.all(data.map((record, index) => this.FormingImportData(record, index)))        
+                const formedData = await Promise.all(data.map((record, index) => this.FormingImportData(record, index)))
 
-                const primaryDataSet = formedData.map( record => {
+                const primaryDataSet = formedData.map(record => {
                     const primaryQuery = {}
-                    this.primaryFields.map( field => {
+                    this.primaryFields.map(field => {
                         primaryQuery[field.fomular_alias] = record[field.fomular_alias]
                     })
                     return primaryQuery
@@ -3266,82 +3248,82 @@ class ConsumeApi extends Controller {
 
                 // PRIMARY KEY CHECK
 
-                const primaryData = await Database.selectAll( table.table_alias, { $or: primaryDataSet } )
+                const primaryData = await Database.selectAll(table.table_alias, { $or: primaryDataSet })
                 const serializedPrimaryData = {}
-                primaryData.map( record => {                    
-                    const key = this.primaryFields.map( field => record[field.fomular_alias] ).join('')
+                primaryData.map(record => {
+                    const key = this.primaryFields.map(field => record[field.fomular_alias]).join('')
                     serializedPrimaryData[key] = record
-                })               
+                })
                 // FOREIGN KEYS CHECK
 
                 const serializedForeignData = {}
-                for( let i = 0 ; i < foreign_keys.length; i++ ){
+                for (let i = 0; i < foreign_keys.length; i++) {
                     const master = foreign_keys[i]
                     const { table_id, field_id, ref_field_id } = master;
-                    const masterTable = this.getTable( table_id )
-                    const field = this.getField( field_id )
-                    const refField = this.getField( ref_field_id )
+                    const masterTable = this.getTable(table_id)
+                    const field = this.getField(field_id)
+                    const refField = this.getField(ref_field_id)
 
-                    const foreignDataSet = formedData.map( record => record[ field.fomular_alias ] )
-                    const foreignData = await Database.selectAll( masterTable.table_alias, { [refField.fomular_alias]: { $in: foreignDataSet } } )
+                    const foreignDataSet = formedData.map(record => record[field.fomular_alias])
+                    const foreignData = await Database.selectAll(masterTable.table_alias, { [refField.fomular_alias]: { $in: foreignDataSet } })
                     const serialized = {}
-                    foreignData.map( record => {
+                    foreignData.map(record => {
                         delete record._id
-                        serialized[ record[refField.fomular_alias] ] = record
+                        serialized[record[refField.fomular_alias]] = record
                     })
 
                     serializedForeignData[masterTable.table_alias] = serialized
-                }                                       
+                }
 
                 const checkedData = []
 
-                for( let i = 0 ; i < formedData.length; i++ ){
+                for (let i = 0; i < formedData.length; i++) {
                     let record = formedData[i]
-                    record.errors = { primary: false, foreign: [], duplicate: false, type: [] }                    
+                    record.errors = { primary: false, foreign: [], duplicate: false, type: [] }
 
-                    for( let j = 0 ; j < fields.length; j++ ){
+                    for (let j = 0; j < fields.length; j++) {
                         const field = fields[j]
                         const check = this.parseType(field, record[field.fomular_alias])
                         const { valid, result, reason } = check;
-                        if( valid ){
-                            record[field.fomular_alias] = result;  
-                        }else{
-                            record.errors.type.push( field.fomular_alias )
+                        if (valid) {
+                            record[field.fomular_alias] = result;
+                        } else {
+                            record.errors.type.push(field.fomular_alias)
                         }
                     }
 
-                    if( record.errors.type.length == 0 ){
-                        
+                    if (record.errors.type.length == 0) {
+
                         let cloneCheckData = [...checkedData]
-                        for( let j = 0 ; j < this.primaryFields.length; j++ ){
+                        for (let j = 0; j < this.primaryFields.length; j++) {
                             const field = this.primaryFields[j]
-                            cloneCheckData = cloneCheckData.filter( row => row[ field.fomular_alias ] == record[ field.fomular_alias ] )
+                            cloneCheckData = cloneCheckData.filter(row => row[field.fomular_alias] == record[field.fomular_alias])
                         }
-    
-                        if( cloneCheckData.length > 0 ){
+
+                        if (cloneCheckData.length > 0) {
                             record.errors.duplicate = true
-                        }else{
-                            const corespondingPrimaryKey = this.primaryFields.map( field => record[field.fomular_alias] ).join('')
-                            const corespondingPrimaryData = serializedPrimaryData[corespondingPrimaryKey]                   
-                            
-                            if( corespondingPrimaryData ){
+                        } else {
+                            const corespondingPrimaryKey = this.primaryFields.map(field => record[field.fomular_alias]).join('')
+                            const corespondingPrimaryData = serializedPrimaryData[corespondingPrimaryKey]
+
+                            if (corespondingPrimaryData) {
                                 record.errors.primary = true
-                            }else{
-        
-                                for( let j = 0 ; j < this.foreignKeys.length; j++ ){
+                            } else {
+
+                                for (let j = 0; j < this.foreignKeys.length; j++) {
                                     const { table, field, refField } = this.foreignKeys[j]
-            
-                                    const corespondingForeignData = serializedForeignData[table.table_alias][ record[field.fomular_alias] ]
-                                    if( corespondingForeignData ){
+
+                                    const corespondingForeignData = serializedForeignData[table.table_alias][record[field.fomular_alias]]
+                                    if (corespondingForeignData) {
                                         record = { ...record, ...corespondingForeignData }
-                                    }else{
-                                        record.errors.foreign.push( field.fomular_alias )
+                                    } else {
+                                        record.errors.foreign.push(field.fomular_alias)
                                     }
                                 }
-                            }                          
+                            }
                             checkedData.push(record)
                         }
-                    }                  
+                    }
                     /** CHECK KEYS AND FILL ERRORS */
                     delete record.position
                     formedData[i] = record
@@ -3363,9 +3345,9 @@ class ConsumeApi extends Controller {
         const { data } = this.req.body;
         const tables = this.tearTablesAndFieldsToObjects()
         const table = tables[0]
-        const fields = this.getFieldsByTableId(table.id);        
+        const fields = this.getFieldsByTableId(table.id);
         if (data && data.length > 0) {
-        // if ( false ) {
+            // if ( false ) {
 
             data.map(record => {
                 delete record.errors;
@@ -3379,17 +3361,17 @@ class ConsumeApi extends Controller {
                 })
             })
 
-            let cache = await Cache.getData(`${ table.table_alias }-periods`)
-            if( !cache ){
+            let cache = await Cache.getData(`${table.table_alias}-periods`)
+            if (!cache) {
                 cache = {
-                    key: `${ table.table_alias }-periods`,
+                    key: `${table.table_alias}-periods`,
                     value: []
                 }
-                await Cache.setData(`${ table.table_alias }-periods`, [])
+                await Cache.setData(`${table.table_alias}-periods`, [])
             }
 
             const periods = cache.value
-            const sumerizes = await Database.selectAll( table.table_alias, { position: "sumerize" } )
+            const sumerizes = await Database.selectAll(table.table_alias, { position: "sumerize" })
 
             let sumerize = sumerizes[0];
 
@@ -3402,23 +3384,23 @@ class ConsumeApi extends Controller {
             }
 
             const positions = []
-            for( let j = 0 ; j < periods.length; j++ ){
+            for (let j = 0; j < periods.length; j++) {
                 const { position, total } = periods[j]
 
-                if( total < TOTAL_DATA_PER_PARTITION ){
+                if (total < TOTAL_DATA_PER_PARTITION) {
                     const amount = TOTAL_DATA_PER_PARTITION - total;
-                    for( let h = 0 ; h < amount; h++ ){
-                        positions.push( position )
+                    for (let h = 0; h < amount; h++) {
+                        positions.push(position)
                     }
                 }
-            }            
+            }
 
-            if( positions.length < data.length ){
-                const newPartition = this.translateColIndexToName( periods.length )
+            if (positions.length < data.length) {
+                const newPartition = this.translateColIndexToName(periods.length)
                 const amount = data.length - positions.length;
-                for( let i = 0; i < amount; i++ ){
-                    positions.push( newPartition )
-                } 
+                for (let i = 0; i < amount; i++) {
+                    positions.push(newPartition)
+                }
 
                 const newPeriods = {
                     position: newPartition,
@@ -3427,12 +3409,12 @@ class ConsumeApi extends Controller {
                 periods.push(newPeriods)
             }
 
-            data.map( (record, index) => {
+            data.map((record, index) => {
                 record.position = positions[index]
             })
             await Database.insertMany(table.table_alias, data)
-            await Cache.setData( `${ table.table_alias }-periods`, periods )
-            
+            await Cache.setData(`${table.table_alias}-periods`, periods)
+
             sumerize.total += data.length
 
             console.log(sumerize)
@@ -3524,7 +3506,9 @@ class ConsumeApi extends Controller {
                 }
             }
 
-            await Database.update(table.table_alias, { position: "sumerize" }, { ...sumerize })            
+            await Database.update(table.table_alias, { position: "sumerize" }, { ...sumerize })
+            const auto_id = await Database.getAutoIncrementId(`${table.table_alias}-id`)
+            await Database.update("auto_increment_collection", { name: `${table.table_alias}-id` }, { id: auto_id + data.length })
             this.res.send({ success: true })
 
         } else {
