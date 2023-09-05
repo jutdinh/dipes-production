@@ -142,7 +142,7 @@ export default () => {
     }, [page, url])
 
     const layoutId = page.components?.[0].layout_id;
-    console.log(layoutId)
+    // console.log(layoutId)
     const tableClassName = layoutId === 0 ? "table table-striped" : "table table-hover";
 
 

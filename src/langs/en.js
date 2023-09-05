@@ -301,7 +301,8 @@ export default {
     "export data example": "Export sample file",
     "import data": "Import Data",
     "value": "Value",
-    "criteria": "Criteria"
+    "criteria": "Criteria",
+    "importing": "Importing data"
 
 }
 

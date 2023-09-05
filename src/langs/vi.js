@@ -295,7 +295,8 @@ export default {
     "export data example": "Xuất file mẫu",
     "import data": "Import dữ liệu",
     "value": "Giá trị",
-    "criteria": "Tiêu chí"
+    "criteria": "Tiêu chí",
+    "importing": "Đang nhập dữ liệu"
 
 
 

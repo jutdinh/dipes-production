@@ -4,6 +4,7 @@ import Header from "../common/header"
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { StatusEnum, StatusTask } from '../enum/status';
+
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { Tables } from ".";
@@ -13,7 +14,7 @@ export default () => {
     const _token = localStorage.getItem("_token");
     const { project_id, version_id } = useParams();
     let navigate = useNavigate();
-
+    const [loadingImport, setLoadingImport] = useState(false);
 
     const [file, setFile] = useState({});
     const dispatch = useDispatch();
@@ -51,11 +52,21 @@ export default () => {
     };
 
     const importData = async () => {
-
         if (!uploadedJson) {
-            // al.failure("Thất bại", "Vui lòng tải lên một file JSON trước khi import");
             return;
         }
+    
+        setLoadingImport(true);
+    
+        const minimumLoadingTime = 500;
+        let isLoaded = false;
+        
+        const loadingTimeout = setTimeout(() => {
+            if (!isLoaded) {
+                setLoadingImport(true)
+            }
+        }, minimumLoadingTime);
+        
         try {
             const response = await fetch(`${proxy()}/versions/import/database`, {
                 method: 'POST',
@@ -64,7 +75,11 @@ export default () => {
                 },
                 body: JSON.stringify(uploadedJson),
             });
-
+    
+            clearTimeout(loadingTimeout);
+            isLoaded = true;
+            setLoadingImport(false);
+    
             if (response.ok) {
                 Swal.fire({
                     title: lang["success"],
@@ -72,24 +87,16 @@ export default () => {
                     icon: "success",
                     showConfirmButton: false,
                     timer: 1500,
-
-                })
+                });
+    
                 setTimeout(() => {
                     window.location.reload();
                 }, 1600);
             } else {
-                Swal.fire({
-                    title: lang["faild"],
-                    text: lang["faild.content"],
-                    icon: "error",
-                    showConfirmButton: true,
-                    customClass: {
-                        confirmButton: 'swal2-confirm my-confirm-button-class'
-                    }
-                })
+                throw new Error('Response is not ok');
             }
         } catch (error) {
-            // console.error(error);
+            Swal.close();
             Swal.fire({
                 title: lang["faild"],
                 text: lang["faild.content"],
@@ -98,15 +105,30 @@ export default () => {
                 customClass: {
                     confirmButton: 'swal2-confirm my-confirm-button-class'
                 }
-            })
+            });
         }
     };
+    
+    
+    
+  
+
     const importAPI = async () => {
         // console.log("aa")
         if (!uploadedJson) {
             // al.failure("Thất bại", "Vui lòng tải lên một file JSON trước khi import");
             return;
         }
+        let isLoaded = false;
+        const minimumLoadingTime = 500;
+    
+        
+        const loadingTimeout = setTimeout(() => {
+            if (!isLoaded) {
+               setLoadingImport(true)
+                
+            }
+        }, minimumLoadingTime);
         try {
             const response = await fetch(`${proxy()}/versions/import/api`, {
                 method: 'POST',
@@ -117,6 +139,7 @@ export default () => {
             });
 
             if (response.ok) {
+                setLoadingImport(false)
                 Swal.fire({
                     title: lang["success"],
                     text: lang["success.content"],
@@ -143,7 +166,7 @@ export default () => {
                 })
             }
         } catch (error) {
-            // console.error(error);
+            clearTimeout(loadingTimeout);
             Swal.fire({
                 title: lang["faild"],
                 text: lang["faild.content"],
@@ -156,6 +179,28 @@ export default () => {
             })
         }
     };
+
+    useEffect(() => {
+        let timeout;
+        if (loadingImport) {
+            Swal.fire({
+                title: lang["importing"],
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        } else {
+            timeout = setTimeout(() => {
+                Swal.close();
+            }, 1700);
+        }
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [loadingImport]);
+
 
 
     const importUI = async () => {

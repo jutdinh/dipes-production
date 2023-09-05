@@ -11,7 +11,7 @@ export default (props) => {
     const { formatNumber } = functions
 
     const { data, statis } = props
-    // console.log(props)
+    console.log(props)
     const { display_name, type } = statis;
     const { headers, values } = data;
     const [display, setDisplay] = useState(headers.slice(0, RECORD_PER_PAGE))
@@ -19,16 +19,6 @@ export default (props) => {
     const totalPages = Math.ceil(headers.length / RECORD_PER_PAGE);
 
 
-
-    // function getRandomColor() {
-    //     const letters = '0123456789ABCDEF';
-    //     let color = '#';
-    //     for (let i = 0; i < 6; i++) {
-    //         color += letters[Math.floor(Math.random() * 16)];
-    //     }
-    //     return color;
-    // }
-    // const COLORS = Array.from({ length: props.data.values.length }, () => getRandomColor());
 
     function generateUniqueColors(num) {
         const step = Math.cbrt((256 * 256 * 256) / num);
