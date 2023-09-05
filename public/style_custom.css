@@ -1290,7 +1290,13 @@ h5 {
     min-height: 560px;
 
 }
+.padding_infor_info_layout2 {
+    padding: 10px 20px 5px 20px;
+    float: left;
+    width: 100%;
+    min-height: 560px;
 
+}
 .padding_infor_info-logs {
     padding: 10px 35px;
     float: left;
