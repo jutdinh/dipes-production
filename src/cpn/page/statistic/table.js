@@ -215,7 +215,7 @@ export default (props) => {
             value: value,
         }));
 
-        const showLabels = props.data.values.length <= 10;
+        const showLabels = props.data.values.length < 5;
         const itemColors = barData.map((_, index) => COLORS[index % COLORS.length]);
 
         const option = {
