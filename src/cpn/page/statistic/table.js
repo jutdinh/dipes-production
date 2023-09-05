@@ -11,14 +11,15 @@ export default (props) => {
     const { formatNumber } = functions
 
     const { data, statis } = props
-    console.log(props)
+    // console.log(props)
     const { display_name, type } = statis;
     const { headers, values } = data;
     const [display, setDisplay] = useState(headers.slice(0, RECORD_PER_PAGE))
     const [currentPage, setCurrentPage] = useState(0)
     const totalPages = Math.ceil(headers.length / RECORD_PER_PAGE);
 
-
+// console.log(display)
+// console.log(props)
 
     function generateUniqueColors(num) {
         const step = Math.cbrt((256 * 256 * 256) / num);
@@ -47,6 +48,67 @@ export default (props) => {
     const COLORS = generateUniqueColors(props.data.values.length);
 
     const colorIndices = display.map((header) => headers.indexOf(header));
+
+    const MyBarChart1 = () => {
+        const barData = props.data.values.map((value, index) => ({
+            name: props.data.headers[index],
+            value: value,
+        }));
+
+        const showLabels = props.data.values.length < 5;
+        const itemColors = barData.map((_, index) => COLORS[index % COLORS.length]);
+
+        const option = {
+            grid: {
+                left: '10%',
+                right: '2%', 
+                top: '9%',
+                bottom: '5%'
+            },
+            xAxis: {
+                type: 'category',
+                data: barData.map(item => item.name),
+                axisLabel: {
+                    show: showLabels
+                }
+            },
+            yAxis: {
+                type: 'value'
+            },
+            tooltip: {
+                trigger: 'axis',
+                formatter: function (params) {
+                    const data = params[0];
+                    return `${data.name}: ${formatNumber(data.value.toFixed())}`;
+                }
+            },
+            legend: {
+                show: false, // Disable default legend
+            },
+            series: [{
+                name: lang["value"],
+                type: 'bar',
+                data: barData.map(item => item.value),
+                itemStyle: {
+                    color: params => itemColors[params.dataIndex]
+                }
+            }]
+        };
+
+        return (
+            <div className="bar-container">
+                <ResponsiveContainer className="bar-chart-container">
+                    <ReactECharts option={option} style={{ height: 430 }} />
+                </ResponsiveContainer>
+                {/* <div className="bar-legend-container">
+                    <div className="legend-item">
+                        <div className="color-box" style={{ backgroundColor: COLORS }}></div>
+                        <p>{lang["value"]}</p>
+                    </div>
+                </div> */}
+            </div>
+        );
+    };
 
     const MyPieChart = () => {
         let pieData = [];
@@ -199,66 +261,7 @@ export default (props) => {
         );
     };
 
-    const MyBarChart1 = () => {
-        const barData = props.data.values.map((value, index) => ({
-            name: props.data.headers[index],
-            value: value,
-        }));
-
-        const showLabels = props.data.values.length < 5;
-        const itemColors = barData.map((_, index) => COLORS[index % COLORS.length]);
-
-        const option = {
-            grid: {
-                left: '10%',
-                right: '2%', // Ajust space for the custom legend
-                top: '9%',
-                bottom: '5%'
-            },
-            xAxis: {
-                type: 'category',
-                data: barData.map(item => item.name),
-                axisLabel: {
-                    show: showLabels
-                }
-            },
-            yAxis: {
-                type: 'value'
-            },
-            tooltip: {
-                trigger: 'axis',
-                formatter: function (params) {
-                    const data = params[0];
-                    return `${data.name}: ${formatNumber(data.value.toFixed())}`;
-                }
-            },
-            legend: {
-                show: false, // Disable default legend
-            },
-            series: [{
-                name: lang["value"],
-                type: 'bar',
-                data: barData.map(item => item.value),
-                itemStyle: {
-                    color: params => itemColors[params.dataIndex]
-                }
-            }]
-        };
-
-        return (
-            <div className="bar-container">
-                <ResponsiveContainer className="bar-chart-container">
-                    <ReactECharts option={option} style={{ height: 430 }} />
-                </ResponsiveContainer>
-                {/* <div className="bar-legend-container">
-                    <div className="legend-item">
-                        <div className="color-box" style={{ backgroundColor: COLORS }}></div>
-                        <p>{lang["value"]}</p>
-                    </div>
-                </div> */}
-            </div>
-        );
-    };
+   
 
 
     useEffect(() => {

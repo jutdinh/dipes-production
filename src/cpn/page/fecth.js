@@ -36,6 +36,7 @@ export default () => {
     const [errorSelect, setErrorSelect] = useState(null);
     const [loadingExportFile, setLoadingExportFile] = useState(false);
     const [loadingSearch, setLoadingSearch] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [uploadedJson, setUploadedJson] = useState(null);
 
     const [apiDataName, setApiDataName] = useState([])
@@ -411,12 +412,18 @@ export default () => {
     const callApi = (requireCount = false) => {
         const startTime = new Date().getTime();
         let loadingTimeout;
-
+        let loadingTimeoutSearch;
         if (Object.keys(searchValues).length !== 0) {
-            loadingTimeout = setTimeout(() => {
+            loadingTimeoutSearch = setTimeout(() => {
                 setLoadingSearch(true);
             }, 150);
         }
+
+            loadingTimeout = setTimeout(() => {
+            
+                setLoading(true)
+            }, 300);
+        
 
         if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
             setPreviousSearchValues(searchValues);
@@ -447,7 +454,7 @@ export default () => {
             .then(res => {
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
-                // console.log(74, res)
+                console.log(74, res)
                 if (success) {
                     setApiData(data.filter(record => record != undefined));
                     setApiDataName(fields);
@@ -467,15 +474,17 @@ export default () => {
                 const endTime = new Date().getTime();
                 const elapsedTime = endTime - startTime;
 
-                clearTimeout(loadingTimeout); // Clear the timeout
+                clearTimeout(loadingTimeout); 
+                clearTimeout(loadingTimeoutSearch);// Clear the timeout
                 setLoadingSearch(false);
+                setLoading(false)
 
                 // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
             });
     };
 
 
-
+//searching
     useEffect(() => {
         let timeout;
         if (loadingSearch) {
@@ -496,6 +505,27 @@ export default () => {
             clearTimeout(timeout);
         };
     }, [loadingSearch]);
+///Loading
+    useEffect(() => {
+        let timeout;
+        if (loading) {
+            Swal.fire({
+                title: lang["loading"],
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        } else {
+            timeout = setTimeout(() => {
+                Swal.close();
+            }, 10);
+        }
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [loading]);
 
 
     const handleSearchClick = () => {
@@ -1028,13 +1058,6 @@ export default () => {
             timeout = setTimeout(() => {
                 Swal.close();
             }, 1000);
-
-            // Swal.fire({
-            //     title: lang["success"],
-            //     icon: 'success',
-            //     timer: 2000,
-            //     showConfirmButton: false
-            // });
         }
     }, [loadingExportFile]);
 
@@ -1186,7 +1209,6 @@ export default () => {
                                         } */}
                                         <h5 class="mt-4 mb-2">{lang["select export type"]}:</h5>
                                         <div className="ml-4">
-
                                             <label>
                                                 <input
                                                     type="checkbox"
@@ -1205,9 +1227,7 @@ export default () => {
                                                 />
                                                 <span className="ml-2">CSV</span>
                                             </label>
-
                                         </div>
-
                                         <h5 class="mt-4 mb-2">{lang["preview data"]}: </h5>
                                         {selectedFields && selectedFields.length > 0 || selectedStats.length > 0 ?
                                             (
@@ -1257,7 +1277,6 @@ export default () => {
                                                 </table>
                                             </div>
                                         ) : null}
-
                                     </form>
                                 </div>
                                 <div class="modal-footer">
@@ -1291,7 +1310,6 @@ export default () => {
                                 </div>
                                 <div class="modal-body">
                                     <form>
-
                                         <div>
                                             <CustomFileInput />
                                         </div>
@@ -1346,7 +1364,6 @@ export default () => {
                                                                                                         {apiViewFields.map((header, index) => (
                                                                                                             <th key={index} class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
                                                                                                         ))}
-
                                                                                                     </tr>
                                                                                                 </thead>
                                                                                                 <tbody>
@@ -1969,10 +1986,8 @@ export default () => {
                                         </div>
                                         <div class="table_section padding_infor_info_layout2">
                                             <div class="col-md-12">
-
                                                 <div class="col-md-12">
                                                     <div class="table_section">
-
                                                         {dataStatis?.map((statis, index) => {
                                                             const { display_name, type, data } = statis;
                                                             if (type == "text") {
@@ -1992,8 +2007,6 @@ export default () => {
 
                                                     </div>
                                                 </div>
-
-
                                             </div>
                                         </div>
                                     </div>
