@@ -2160,6 +2160,19 @@ class ConsumeApi extends Controller {
             const sumerize = await Table.__findCriteria__({ position: "sumerize" })
             await Database.delete(`${table_alias}`, query)
 
+            const cache = await Cache.getData(`${ table_alias }-periods`)
+            const periods = cache.value;
+
+            for( let i = 0; i < periods.length; i++ ){
+                const period = periods[i]
+                if( period.position == primaryRecord.position ){
+                    periods[i].total -= 1
+                    break;
+                }
+            }
+
+            await Cache.setData( `${ table_alias }-periods`, periods )
+
             const originData = primaryRecord;
 
             const calculates = this.API.calculates.valueOrNot()
@@ -3392,6 +3405,9 @@ class ConsumeApi extends Controller {
                     for (let h = 0; h < amount; h++) {
                         positions.push(position)
                         periods[j].total += 1
+                        if( positions.length >= data.length ){
+                            break;
+                        }
                     }
                 }
             }
