@@ -137,9 +137,11 @@ export default () => {
                 },
                 body: JSON.stringify(uploadedJson),
             });
-
+            clearTimeout(loadingTimeout);
+            isLoaded = true;
+            setLoadingImport(false);
             if (response.ok) {
-                setLoadingImport(false)
+              
                 Swal.fire({
                     title: lang["success"],
                     text: lang["success.content"],
