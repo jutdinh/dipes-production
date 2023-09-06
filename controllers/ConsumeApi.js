@@ -563,7 +563,7 @@ class ConsumeApi extends Controller {
             let partitions = [];
             const dataLimitation = await Database.selectFields(mainTable.table_alias, { position: "sumerize" }, ["total"])
             const stringifiedPeriods = await Cache.getData(`${tables[0].table_alias}-periods`)
-            const periods = stringifiedPeriods.value
+            const periods = stringifiedPeriods?.value
             if (stringifiedPeriods && periods.length > 0) {
                 partitions = periods
             } else {
@@ -629,9 +629,8 @@ class ConsumeApi extends Controller {
                         const currentDataLength = redundantPartition.total
                         data_counter += currentDataLength;
                         tmpDataFrom -= currentDataLength
-                        // console.log(630, data_counter, found, finale_raw_data_counter)
-                        if (data_counter > datafrom && !found) {
-                            // redundantPartitions.push( ...redundantPartitionData )
+                        // console.log(630, data_counter, found, finale_raw_data_counter, tmpDataFrom)
+                        if (data_counter > datafrom && !found) {                           
                             // console.log(655, currentDataLength, redundantPartition.total)
                             finale_raw_data_counter += (currentDataLength - redundantPartition.total)
                             found = true
@@ -641,10 +640,8 @@ class ConsumeApi extends Controller {
                             finale_raw_data_counter += redundantPartition.total
                             // console.log(656, finale_raw_data_counter)
 
-                            const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { ...redundantQuery, $and: [...$and, { position: partitions[i].position }] })
-                            // console.log(660, redundantPartitionData)
+                            const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { ...redundantQuery, $and: [...$and, { position: partitions[i].position }] })                            
                             redundantPartitions.push({
-
                                 position: partitions[i].position,
                                 total: redundantPartitionData.length,
                                 data: redundantPartitionData,
@@ -660,7 +657,7 @@ class ConsumeApi extends Controller {
             // console.log( redundantPartitions.length)
 
             if (redundantPartitions.length > 0) {
-
+                
                 const partitions = this.PRECISE_PARTITIONS(redundantPartitions, tmpDataFrom + 1, dataPerBreak)
                 const keySortedTables = this.sortTablesByKeys(tables)
                 const cacheData = {}
@@ -674,9 +671,7 @@ class ConsumeApi extends Controller {
 
                 for (let i = 0; i < partitions.length; i++) {
                     data.push(...partitions[i].data) // P[i]                        
-                }
-
-
+                }               
 
                 const finaleData = data
 
@@ -2780,7 +2775,7 @@ class ConsumeApi extends Controller {
         this.writeReq(req)
         const { table_id, start_index, criteria, require_count, exact, api_id } = req.body;
 
-        const [projects, tables, fields] = await Promise.all([this.#__projects.findAll(), this.#__tables.findAll(), this.#__fields.findAll()])
+        const [tables, fields] = await Promise.all([this.#__tables.findAll(), this.#__fields.findAll()])
 
         const table = tables.find(tb => tb.id == table_id)
 
@@ -3369,7 +3364,7 @@ class ConsumeApi extends Controller {
                     if (valid) {
                         record[field.fomular_alias] = result;
                     } else {
-                        record[field.fomular_alias] = "Invalid data type";
+                        record[field.fomular_alias] = "NULL";
                     }
                 })
             })
