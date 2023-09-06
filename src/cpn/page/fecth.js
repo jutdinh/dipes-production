@@ -454,7 +454,7 @@ export default () => {
             .then(res => {
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
-                console.log(74, res)
+                // console.log(74, res)
                 if (success) {
                     setApiData(data.filter(record => record != undefined));
                     setApiDataName(fields);
@@ -520,7 +520,7 @@ export default () => {
         } else {
             timeout = setTimeout(() => {
                 Swal.close();
-            }, 10);
+            }, 500);
         }
         return () => {
             clearTimeout(timeout);

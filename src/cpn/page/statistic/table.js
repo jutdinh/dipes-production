@@ -14,6 +14,7 @@ export default (props) => {
     // console.log(props)
     const { display_name, type } = statis;
     const { headers, values } = data;
+    // console.log(props)
     const [display, setDisplay] = useState(headers.slice(0, RECORD_PER_PAGE))
     const [currentPage, setCurrentPage] = useState(0)
     const totalPages = Math.ceil(headers.length / RECORD_PER_PAGE);
@@ -271,7 +272,11 @@ export default (props) => {
     const paginate = (nextPage) => {
         setCurrentPage(nextPage)
     }
-
+    useEffect(() => {
+        setDisplay(headers.slice(0, RECORD_PER_PAGE));
+        setCurrentPage(0); 
+    }, [data]); 
+    
     // console.log(props.data.values.length)
     return (
         <>
