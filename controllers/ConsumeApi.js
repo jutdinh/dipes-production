@@ -629,18 +629,27 @@ class ConsumeApi extends Controller {
                         const currentDataLength = redundantPartition.total
                         data_counter += currentDataLength;
                         tmpDataFrom -= currentDataLength
-                        // console.log(630, data_counter, found, finale_raw_data_counter, tmpDataFrom)
-                        if (data_counter > datafrom && !found) {                           
-                            // console.log(655, currentDataLength, redundantPartition.total)
-                            finale_raw_data_counter += (currentDataLength - redundantPartition.total)
+                        // console.log(630, data_counter, found, finale_raw_data_counter, tmpDataFrom )
+                        if (tmpDataFrom < 0 && !found) {                           
+                            const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { position: partitions[i].position  })                            
+                            const data = redundantPartitionData.slice( redundantPartitionData.length + tmpDataFrom, redundantPartitionData.length )
+                            // console.log(636, redundantPartitionData.length + tmpDataFrom, redundantPartitionData.length)
+                            redundantPartitions.push({
+                                position: partitions[i].position,
+                                total: data.length,
+                                data: data,
+                            })                        
                             found = true
+                            finale_raw_data_counter += data.length
+                            continue;
                         }
 
                         if (finale_raw_data_counter < dataPerBreak && found) {
                             finale_raw_data_counter += redundantPartition.total
                             // console.log(656, finale_raw_data_counter)
 
-                            const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { ...redundantQuery, $and: [...$and, { position: partitions[i].position }] })                            
+                            const redundantPartitionData = await Database.selectAll(mainTable.table_alias, {  position: partitions[i].position })                            
+
                             redundantPartitions.push({
                                 position: partitions[i].position,
                                 total: redundantPartitionData.length,
@@ -756,7 +765,7 @@ class ConsumeApi extends Controller {
         }
 
         const indices = this.generatePeriodIndex(fromIndex)
-        console.log(indices)
+        // console.log(indices)
         let paramQueries = [];
 
         if (params.length > 0) {
@@ -3429,7 +3438,7 @@ class ConsumeApi extends Controller {
 
             sumerize.total += data.length
 
-            console.log(sumerize)
+            // console.log(sumerize)
 
             const calculates = this.API.calculates.valueOrNot()
             const statistics = this.API.statistic.valueOrNot()
