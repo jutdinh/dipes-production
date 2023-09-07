@@ -70,7 +70,9 @@ export default () => {
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     }
     const location = useLocation();
-
+    const goToHomePage = () => {
+        navigate(`/page/${url}`);
+    };
     useEffect(() => {
 
         setSearchValues({});
@@ -876,7 +878,10 @@ export default () => {
                             <div class="full graph_head d-flex">
                                 <div class="heading1 margin_0 ">
                                     {/* <h5>{page?.components?.[0]?.component_name}</h5> */}
-                                    <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.title} <i class="fa fa-chevron-right"></i> Import data</h5>
+                         
+                                    <h5> <label class="pointer"onClick={() => goToHomePage()}>
+                                        <a title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1"></i></a>{page?.title}
+                                    </label> <i class="fa fa-chevron-right"></i>  Import data</h5>
                                 </div>
                             </div>
                             <div className={`table_section padding_infor_info ${isImporting ? 'loading' : ''}`}>
