@@ -1014,7 +1014,76 @@ class ConsumeApi extends Controller {
             tearedBody.push(tearedObject)
         }
 
-        this.res.status(200).send({ msg: "POST nè", tearedBody })
+
+        const sortedTables = this.sortTablesByKeys(tables)
+        const sortedBody = []
+        for( let i = 0 ; i < sortedTables.length; i++ ){
+            const tb = sortedTables[i]
+            const corespondingTable = tearedBody.find( body => body.table_id == tb.id )
+            const slaves = this.detectAllSlave(tb)
+            const { data } = corespondingTable              
+            
+
+            for( let j = 0 ; j < slaves.length; j++ ){
+                const slave = slaves[j]
+                const { foreign_keys } = slave
+                for( let h = 0 ; h < sortedBody.length; h++ ){
+                    const body = sortedBody[h]
+                    
+                    if( body.table_id != undefined && body.table_id == slave.id ){
+                        const foreign_key = foreign_keys.find( key => key.table_id == tb.id )
+                        if( foreign_key ){
+                            const { field_id, ref_field_id } = foreign_key;
+                            const field = this.getField(field_id)
+                            const ref_field = this.getField( ref_field_id )
+                            body.data[`${ field.fomular_alias }`] = data[`${ ref_field.fomular_alias }`]                            
+                        }
+                    }
+                }
+            }
+            sortedBody.push( corespondingTable )
+        }
+
+
+        for( let i = 0 ; i < sortedBody.length; i++ ){
+            const body = sortedBody[i]
+            const table = this.getTable( body.table_id )
+            const slaves = this.detectAllSlave( table )
+
+            for( let j = 0; j < slaves.length; j++ ){
+                const slave = slaves[j]
+
+                for( let h = 0 ; h < sortedBody.length; h++ ){
+                    const body = sortedBody[h]
+                    if( body.table_id != undefined && body.table_id == slave.id ){                        
+                        sortedBody[h].data = { ...sortedBody[i].data, ...body.data }
+                    }
+                }
+            } 
+        }
+
+        // primary key check
+
+        const primaryKeyValuesSelectFunc = []
+        for( let i = 0 ; i < sortedBody.length; i++ ){
+            const { table_id, data } = sortedBody[i]
+            const table = this.getTable( table_id )
+
+            const { primary_key } = table
+            const primaryQuery = {}
+            const primaryFields = this.getFields( primary_key )
+            for( let j = 0 ; j < primaryFields.length; j++  ){
+                const field = primaryFields[j]
+                primaryQuery[field.fomular_alias] = data[field.fomular_alias]
+            } 
+            primaryKeyValuesSelectFunc.push(
+                Database.selectAll( table.table_alias, primaryQuery )
+            )
+        }
+
+        const primaryKeyValues = await Promise.all( primaryKeyValuesSelectFunc )
+
+        this.res.status(200).send({ msg: "POST nè", sortedBody, primaryKeyValues })
         return
     }
 
@@ -1180,27 +1249,13 @@ class ConsumeApi extends Controller {
                 queries.push(Database.selectAll(`${thatTable.table_alias}`, query))
             }
             const allKeys = await Promise.all(queries)
-
+            // console.log(allKeys)
             const primaryRecord = allKeys[0];
-            const primaryUnfiltedData = primaryRecord[0]?.data ? primaryRecord[0].data : [];
-
-
-            const truePrimaryRecord = primaryUnfiltedData.filter(record => {
-                let primaryFound = true
-
-                for (let i = 0; i < primaryFields.length; i++) {
-                    if (record[primaryFields[i].fomular_alias] != data[primaryFields[i].fomular_alias]) {
-                        primaryFound = false
-                    }
-                }
-                return primaryFound
-            })
-
-
 
             const foreignRecords = allKeys.slice(1, allKeys.length)
-            const atLeastOneForeignisInvalid = foreignRecords.filter(record => record == undefined)
-            if ((!primaryRecord || truePrimaryRecord.length == 0) && atLeastOneForeignisInvalid.length == 0) {
+            const atLeastOneForeignisInvalid = foreignRecords.filter(record => record == undefined || record.length == 0 )
+
+            if ((primaryRecord && primaryRecord.length == 0 ) && atLeastOneForeignisInvalid.length == 0) {
 
                 for (let i = 0; i < tearedBody.length; i++) {
                     const { table_alias, data } = tearedBody[i]
@@ -1859,10 +1914,12 @@ class ConsumeApi extends Controller {
                 return Database.selectAll(foreignTable.table_alias, { [`${ref.fomular_alias}`]: data[field.fomular_alias] ? data[field.fomular_alias] : data[ref.fomular_alias] })
             }))
 
+            console.log(1917, foreignData)
+
             let areForeignDataValid = true
 
             for (let i = 0; i < foreignData.length; i++) {
-                if (foreignData[i] && (foreignData.length == 0 || foreignData.length == undefined)) {
+                if (foreignData[i].length == 0) {
                     areForeignDataValid = false
                 }
             }
