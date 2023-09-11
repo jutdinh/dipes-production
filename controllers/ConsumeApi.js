@@ -272,7 +272,7 @@ class ConsumeApi extends Controller {
          * In case of success: { valid: true  , result: <CorrespondingValueAfterParsing> }
          * In case of failure: { valid: false , reason: <String> }
          */
-        if (value !== undefined) {
+        if (value !== undefined && value !== "") {
             const { MAX, MIN } = field;
             switch (type) {
                 case "INT":
@@ -630,15 +630,15 @@ class ConsumeApi extends Controller {
                         data_counter += currentDataLength;
                         tmpDataFrom -= currentDataLength
                         // console.log(630, data_counter, found, finale_raw_data_counter, tmpDataFrom )
-                        if (tmpDataFrom < 0 && !found) {                           
-                            const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { position: partitions[i].position  })                            
-                            const data = redundantPartitionData.slice( redundantPartitionData.length + tmpDataFrom, redundantPartitionData.length )
+                        if (tmpDataFrom < 0 && !found) {
+                            const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { position: partitions[i].position })
+                            const data = redundantPartitionData.slice(redundantPartitionData.length + tmpDataFrom, redundantPartitionData.length)
                             // console.log(636, redundantPartitionData.length + tmpDataFrom, redundantPartitionData.length)
                             redundantPartitions.push({
                                 position: partitions[i].position,
                                 total: data.length,
                                 data: data,
-                            })                        
+                            })
                             found = true
                             finale_raw_data_counter += data.length
                             continue;
@@ -648,7 +648,7 @@ class ConsumeApi extends Controller {
                             finale_raw_data_counter += redundantPartition.total
                             // console.log(656, finale_raw_data_counter)
 
-                            const redundantPartitionData = await Database.selectAll(mainTable.table_alias, {  position: partitions[i].position })                            
+                            const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { position: partitions[i].position })
 
                             redundantPartitions.push({
                                 position: partitions[i].position,
@@ -666,7 +666,7 @@ class ConsumeApi extends Controller {
             // console.log( redundantPartitions.length)
 
             if (redundantPartitions.length > 0) {
-                
+
                 const partitions = this.PRECISE_PARTITIONS(redundantPartitions, tmpDataFrom + 1, dataPerBreak)
                 const keySortedTables = this.sortTablesByKeys(tables)
                 const cacheData = {}
@@ -680,7 +680,7 @@ class ConsumeApi extends Controller {
 
                 for (let i = 0; i < partitions.length; i++) {
                     data.push(...partitions[i].data) // P[i]                        
-                }               
+                }
 
                 const finaleData = data
 
@@ -1014,76 +1014,250 @@ class ConsumeApi extends Controller {
             tearedBody.push(tearedObject)
         }
 
+        let typeError = false;
+        const errorFields = []
+        const existedPrimaryKeys = []
+        const foreignConflicts = []
 
+        for (let i = 0; i < tearedBody.length; i++) {
+            const object = tearedBody[i]
+            const { table_id, data } = object;
+            const fields = this.getFieldsByTableId(table_id)
+            const table = this.getTable(table_id)
+            const { foreign_keys } = table;
+
+            for (let j = 0; j < fields.length; j++) {
+                const { id, fomular_alias, field_name } = fields[j]
+
+                const isThisFieldForeign = foreign_keys.find(key => key.field_id == id)
+
+                if (isThisFieldForeign) {
+                    fields[j].NULL = true
+                }
+                const validate = this.parseType(fields[j], data[fomular_alias])
+                const { valid, result, reason } = validate;
+                if (valid) {
+                    tearedBody[i].data[fomular_alias] = result
+                } else {
+                    errorFields.push({ field: `${fomular_alias}-${field_name}`, value: data[fomular_alias], reason })
+                    typeError = true;
+                }
+
+            }
+        }
         const sortedTables = this.sortTablesByKeys(tables)
         const sortedBody = []
-        for( let i = 0 ; i < sortedTables.length; i++ ){
-            const tb = sortedTables[i]
-            const corespondingTable = tearedBody.find( body => body.table_id == tb.id )
-            const slaves = this.detectAllSlave(tb)
-            const { data } = corespondingTable              
-            
+        if (!typeError) {
 
-            for( let j = 0 ; j < slaves.length; j++ ){
-                const slave = slaves[j]
-                const { foreign_keys } = slave
-                for( let h = 0 ; h < sortedBody.length; h++ ){
-                    const body = sortedBody[h]
-                    
-                    if( body.table_id != undefined && body.table_id == slave.id ){
-                        const foreign_key = foreign_keys.find( key => key.table_id == tb.id )
-                        if( foreign_key ){
-                            const { field_id, ref_field_id } = foreign_key;
-                            const field = this.getField(field_id)
-                            const ref_field = this.getField( ref_field_id )
-                            body.data[`${ field.fomular_alias }`] = data[`${ ref_field.fomular_alias }`]                            
+            for (let i = 0; i < sortedTables.length; i++) {
+                const tb = sortedTables[i]
+                const corespondingTable = tearedBody.find(body => body.table_id == tb.id)
+                const slaves = this.detectAllSlave(tb)
+                const { data } = corespondingTable
+
+
+                for (let j = 0; j < slaves.length; j++) {
+                    const slave = slaves[j]
+                    const { foreign_keys } = slave
+                    for (let h = 0; h < sortedBody.length; h++) {
+                        const body = sortedBody[h]
+
+                        if (body.table_id != undefined && body.table_id == slave.id) {
+                            const foreign_key = foreign_keys.find(key => key.table_id == tb.id)
+                            if (foreign_key) {
+                                const { field_id, ref_field_id } = foreign_key;
+                                const field = this.getField(field_id)
+                                const ref_field = this.getField(ref_field_id)
+                                body.data[`${field.fomular_alias}`] = data[`${ref_field.fomular_alias}`]
+                            }
+                        }
+                    }
+                }
+                sortedBody.push(corespondingTable)
+            }
+
+
+            for (let i = 0; i < sortedBody.length; i++) {
+                const body = sortedBody[i]
+                const table = this.getTable(body.table_id)
+                const slaves = this.detectAllSlave(table)
+
+                for (let j = 0; j < slaves.length; j++) {
+                    const slave = slaves[j]
+
+                    for (let h = 0; h < sortedBody.length; h++) {
+                        const body = sortedBody[h]
+                        if (body.table_id != undefined && body.table_id == slave.id) {
+                            sortedBody[h].data = { ...sortedBody[i].data, ...body.data }
                         }
                     }
                 }
             }
-            sortedBody.push( corespondingTable )
-        }
+
+            // primary key check
+
+            const primaryKeyValuesSelectFunc = []
+            for (let i = 0; i < sortedBody.length; i++) {
+                const { table_id, data } = sortedBody[i]
+                const table = this.getTable(table_id)
+
+                const { primary_key } = table
+                const primaryQuery = {}
+                const primaryFields = this.getFields(primary_key)
+                for (let j = 0; j < primaryFields.length; j++) {
+                    const field = primaryFields[j]
+                    primaryQuery[field.fomular_alias] = data[field.fomular_alias]
+                }
+                primaryKeyValuesSelectFunc.push(
+                    Database.selectAll(table.table_alias, primaryQuery)
+                )
+            }
+
+            const primaryKeyValues = await Promise.all(primaryKeyValuesSelectFunc)
 
 
-        for( let i = 0 ; i < sortedBody.length; i++ ){
-            const body = sortedBody[i]
-            const table = this.getTable( body.table_id )
-            const slaves = this.detectAllSlave( table )
+            for (let i = 0; i < sortedBody.length; i++) {
+                const primaryValues = primaryKeyValues[i]
 
-            for( let j = 0; j < slaves.length; j++ ){
-                const slave = slaves[j]
+                if (primaryValues && primaryValues.length > 0) {
+                    const { table_id } = sortedBody[i]
+                    const table = this.getTable(table_id)
 
-                for( let h = 0 ; h < sortedBody.length; h++ ){
-                    const body = sortedBody[h]
-                    if( body.table_id != undefined && body.table_id == slave.id ){                        
-                        sortedBody[h].data = { ...sortedBody[i].data, ...body.data }
+                    const conflictObject = {
+                        'table': table.table_name,
+                        'key': primaryValues
+                    }
+                    existedPrimaryKeys.push(conflictObject)
+                }
+            }
+
+            if (existedPrimaryKeys.length == 0) {
+                // foreign check
+
+                for (let i = 0; i < sortedBody.length; i++) {
+
+                    const { table_id, data } = sortedBody[i]
+                    const table = this.getTable(table_id)
+                    const { foreign_keys } = table;
+
+                    const referenceTables = foreign_keys.map(key => {
+                        return {
+                            table: this.getTable(key.table_id),
+                            field: this.getField(key.field_id)
+                        }
+                    })
+
+                    for (let j = 0; j < referenceTables.length; j++) {
+                        const refTable = referenceTables[j].table
+                        const slaveField = referenceTables[j].field
+                        const corespondingTearedBody = sortedBody.find(body => body.table_id == refTable.id)
+
+                        if (!corespondingTearedBody) {
+                            const { table_alias, primary_key } = refTable
+                            const primaryQuery = {}
+                            const primaryFields = this.getFields(primary_key)
+                            if (primaryFields.length == 1) {
+                                const field = primaryFields[0]
+                                primaryQuery[field.fomular_alias] = data[slaveField.fomular_alias]
+
+                                const corespondingPrimaryData = await Database.selectAll(table_alias, primaryQuery)
+                                if (corespondingPrimaryData.length == 0) {
+                                    foreignConflicts.push({
+                                        field: slaveField.fomular_alias,
+                                        references: field.fomular_alias,
+                                        value: data[slaveField.fomular_alias]
+                                    })
+                                }
+                            } else {
+                                foreignConflicts.push({
+                                    table: refTable.table_name,
+                                    error: `Cấu hình khóa ngoại không hợp lệ`
+                                })
+                            }
+                        }
                     }
                 }
-            } 
+            }
         }
+        let success = true
+        let msg = ""
+        if (errorFields.length == 0 && existedPrimaryKeys.length == 0 && foreignConflicts.length == 0) {
+            for (let i = 0; i < sortedBody.length; i++) {
+                const { table_alias, data } = sortedBody[i]
 
-        // primary key check
+                let cache = await Cache.getData(`${table_alias}-periods`)
+                if (!cache) {
+                    await Cache.setData(`${table_alias}-periods`, [])
+                    cache = {
+                        key: `${table_alias}-periods`,
+                        value: []
+                    }
+                }
+                const periods = cache.value
+                let found = false;
+                let targetPosition = ""
+                let tartgetPositionObject = {}
+                let targetPositionIndex = 0
+                for (let j = 0; j < periods.length; j++) {
+                    if (!found) {
+                        const { position, total } = periods[j]
+                        if (total < TOTAL_DATA_PER_PARTITION) {
+                            targetPosition = position
+                            tartgetPositionObject = periods[j]
+                            targetPositionIndex = j
+                            found = true;
+                        }
+                    }
+                }
 
-        const primaryKeyValuesSelectFunc = []
-        for( let i = 0 ; i < sortedBody.length; i++ ){
-            const { table_id, data } = sortedBody[i]
-            const table = this.getTable( table_id )
+                if (found) {
 
-            const { primary_key } = table
-            const primaryQuery = {}
-            const primaryFields = this.getFields( primary_key )
-            for( let j = 0 ; j < primaryFields.length; j++  ){
-                const field = primaryFields[j]
-                primaryQuery[field.fomular_alias] = data[field.fomular_alias]
-            } 
-            primaryKeyValuesSelectFunc.push(
-                Database.selectAll( table.table_alias, primaryQuery )
-            )
+                    data.position = targetPosition
+                    await Database.insert(`${table_alias}`, data)
+                    tartgetPositionObject.total += 1
+                    periods[targetPositionIndex] = tartgetPositionObject
+
+
+                } else {
+                    const newPosition = this.translateColIndexToName(periods.length)
+                    const serializedData = []
+                    serializedData.push(data);
+
+                    const newPartition = {
+                        position: newPosition,
+                        total: 1
+                    }
+                    data.position = newPosition
+                    await Database.insert(`${table_alias}`, data)
+                    periods.push(newPartition)
+                }
+
+                await Cache.setData(`${table_alias}-periods`, periods)
+                const sum = await Database.select(table_alias, { position: "sumerize" })
+                if (sum) {
+                    await Database.update(table_alias, { position: "sumerize" }, { total: sum.total + 1 })
+                } else {
+                    const newSumerize = {
+                        position: "sumerize",
+                        total: 1
+                    }
+                    await Database.insert(table_alias, newSumerize)
+                }
+
+
+            }
+        } else {
+            success = false
         }
-
-        const primaryKeyValues = await Promise.all( primaryKeyValuesSelectFunc )
-
-        this.res.status(200).send({ msg: "POST nè", sortedBody, primaryKeyValues })
+        this.res.status(200).send({
+            msg: "POST nè",
+            success,
+            conflict: {
+                type: errorFields,
+                primary: existedPrimaryKeys,
+                foreign: foreignConflicts
+            }
+        })
         return
     }
 
@@ -1253,9 +1427,9 @@ class ConsumeApi extends Controller {
             const primaryRecord = allKeys[0];
 
             const foreignRecords = allKeys.slice(1, allKeys.length)
-            const atLeastOneForeignisInvalid = foreignRecords.filter(record => record == undefined || record.length == 0 )
+            const atLeastOneForeignisInvalid = foreignRecords.filter(record => record == undefined || record.length == 0)
 
-            if ((primaryRecord && primaryRecord.length == 0 ) && atLeastOneForeignisInvalid.length == 0) {
+            if ((primaryRecord && primaryRecord.length == 0) && atLeastOneForeignisInvalid.length == 0) {
 
                 for (let i = 0; i < tearedBody.length; i++) {
                     const { table_alias, data } = tearedBody[i]
@@ -1467,269 +1641,109 @@ class ConsumeApi extends Controller {
             }
         }
 
+        const tearedBody = []
         const primaryKeys = {}
         const foreignKeys = {}
 
-
-        const rawAPIFields = this.API.fields.valueOrNot()
-        const apiFields = this.getFields(rawAPIFields.map(field => field.id));
-        const dbFields = this.fields
         for (let i = 0; i < tables.length; i++) {
-            const { primary_key, foreign_keys, table_alias } = tables[i]
+            const { primary_key, foreign_keys, table_alias, body, id, fields } = tables[i]
+            const tearedObject = { table_id: id, table_alias, data: {} }
+
             primaryKeys[table_alias] = primary_key ? primary_key : []
             foreignKeys[table_alias] = foreign_keys ? foreign_keys : []
-        }
 
-        const rawData = []
-        for (let i = 0; i < tables.length; i++) {
-            const table = tables[i];
-            const queriesDataFromParams = paramQueries.filter(tb => tb.table_id == table.id);
-
-            let query = {}
-            for (let j = 0; j < queriesDataFromParams.length; j++) {
-                query = { ...query, ...queriesDataFromParams[j].query }
-            }
-
-            const { id, table_alias, table_name, primary_key, foreign_keys } = table;
-            const model = new Model(table_alias);
-            const Table = model.getModel();
-            const data = await Table.__findAll__(query);
-            rawData.push({ table_id: id, table_alias, table_name, primary_key, foreign_keys, data })
-        }
-
-        rawData.sort((a, b) => a.data.length > b.data.length ? 1 : -1)
-        let mergedRawData = rawData[0].data;
-
-        for (let i = 1; i < rawData.length; i++) { /* Loop over the whole raw data collection */
-            const newMergedData = [];
-            const currentData = rawData[i].data;
-            for (let j = 0; j < mergedRawData.length; j++) {
-                for (let h = 0; h < currentData.length; h++) {
-                    const record = { ...mergedRawData[j], ...currentData[h] }
-                    delete record._id
-                    newMergedData.push(record)
-                }
-            }
-            mergedRawData = newMergedData
-        }
-
-        let filteringData = removeDuplicate(mergedRawData);
-
-
-        if (filteringData.length > 0) {
-
-            const tearedBody = []
-            const primaryKeys = {}
-            const foreignKeys = {}
-
-            for (let i = 0; i < tables.length; i++) {
-                const { primary_key, foreign_keys, table_alias, body, id, fields } = tables[i]
-                const tearedObject = { table_id: id, table_alias, data: {} }
-
-                primaryKeys[table_alias] = primary_key ? primary_key : []
-                foreignKeys[table_alias] = foreign_keys ? foreign_keys : []
-
-                for (let j = 0; j < body.length; j++) {
-                    const field = body[j]
-                    const { fomular_alias } = field;
-                    const { DATATYPE, AUTO_INCREMENT, PATTERN, id } = field;
-                    if (this.req.body[fomular_alias] != undefined) {
-                        const primaryKey = primaryKeys[table_alias].find(key => key == id)
-                        if (primaryKey) {
-                            const foreignKey = foreignKeys[table_alias].find(key => key.field_id == id)
-                            if (foreignKey) {
-                                tearedObject.data[fomular_alias] = this.req.body[fomular_alias]
-                            } else {
-                                if (Fields.isIntFamily(DATATYPE) && AUTO_INCREMENT) {
-                                    tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(table_alias, PATTERN)
-                                } else {
-                                    tearedObject.data[fomular_alias] = this.req.body[fomular_alias]
-                                }
-                                // tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament( table_alias, PATTERN )
-                            }
-                        } else {
+            for (let j = 0; j < body.length; j++) {
+                const field = body[j]
+                const { fomular_alias } = field;
+                const { DATATYPE, AUTO_INCREMENT, PATTERN, id } = field;
+                let isAutoIncreTriggerd = false;
+                if (this.req.body[fomular_alias] != undefined) {
+                    const primaryKey = primaryKeys[table_alias].find(key => key == id)
+                    if (primaryKey) {
+                        const foreignKey = foreignKeys[table_alias].find(key => key.field_id == id)
+                        if (foreignKey) {
                             tearedObject.data[fomular_alias] = this.req.body[fomular_alias]
-                        }
-                    } else {
-                        if (Fields.isIntFamily(DATATYPE) && AUTO_INCREMENT) {
-                            const foreignKey = foreignKeys[table_alias].find(key => key.field_id == id)
-                            if (foreignKey) {
-                                const foreignField = this.getField(foreignKey.ref_field_id);
-                                const foreignTable = this.getTable(foreignField.table_id);
-                                tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(foreignTable.table_alias, PATTERN)
-                            } else {
+                        } else {
+                            if (Fields.isIntFamily(DATATYPE) && AUTO_INCREMENT) {
                                 tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(table_alias, PATTERN)
-                            }
-                        } else {
-                            tearedObject.data[fomular_alias] = this.req.body[fomular_alias]
-                        }
-                    }
-                }
-                tearedBody.push(tearedObject)
-            }
-
-            for (let i = 0; i < tearedBody.length; i++) {
-                const object = tearedBody[i]
-                const { table_id, table_alias, data } = object;
-                const primary_key = primaryKeys[table_alias]
-                const foreign_keys = foreignKeys[table_alias]
-
-                const foreignFields = this.getFields(foreign_keys.map(key => key.field_id))
-                const primaryFields = this.getFields(primary_key);
-                tearedBody[i]["key_fields"] = { foreignFields, primaryFields }
-
-                for (let j = 0; j < primaryFields.length; j++) {
-                    const { fomular_alias, id } = primaryFields[j]
-                    if (data[fomular_alias] != undefined) {
-                        for (let h = 0; h < tables.length; h++) {
-                            const { table_alias } = tables[h]
-                            const fk = foreignKeys[table_alias]
-                            const key = fk.find(k => k.ref_field_id == id)
-                            if (key) {
-                                const { field_id, table_id, ref_field_id } = key;
-                                const field = this.getField(field_id);
-                                const table = this.getTable(field.table_id);
-                                const foreignTable = tearedBody.find(tb => tb.table_alias == table.table_alias)
-
-                                if (foreignTable) {
-                                    const { table_alias } = foreignTable
-                                    const foreignTearedObject = tearedBody.find(tb => tb.table_alias == table_alias);
-                                    const index = tearedBody.indexOf(foreignTearedObject);
-                                    tearedBody[index].data[field.fomular_alias] = data[fomular_alias]
-                                }
+                                isAutoIncreTriggerd = true
+                            } else {
+                                tearedObject.data[fomular_alias] = this.req.body[fomular_alias]
                             }
                         }
-                    }
-                }
-
-                for (let j = 0; j < foreignFields.length; j++) {
-                    const { id, fomular_alias } = foreignFields[j]
-
-                    const key = foreign_keys.find(k => k.field_id == id);
-                    if (data[fomular_alias] != undefined) {
-                        if (key) {
-                            const { field_id, table_id, ref_field_id } = key;
-                            const field = this.getField(ref_field_id);
-                            const table = this.getTable(field.table_id);
-                            const foreignTable = tearedBody.find(tb => tb.table_alias == table.table_alias)
-                            if (foreignTable) {
-                                const { table_alias } = foreignTable
-                                const foreignTearedObject = tearedBody.find(tb => tb.table_alias == table_alias);
-                                const index = tearedBody.indexOf(foreignTearedObject);
-                                tearedBody[index].data[field.fomular_alias] = data[fomular_alias]
-
-                            }
-                        }
-                    }
-                }
-            }
-
-
-
-            for (let j = 0; j < paramQueries.length; j++) {
-                const { query } = paramQueries[j]
-
-                for (let h = 0; h < tearedBody.length; h++) {
-                    tearedBody[h].data = { ...tearedBody[h].data, ...query }
-                }
-            }
-
-
-            let typeError = false;
-            let foreignConflict = false;
-
-            for (let i = 0; i < tearedBody.length; i++) {
-                const object = tearedBody[i]
-                const { table_id, data } = object;
-                const fields = this.getFieldsByTableId(table_id)
-                tearedBody[i].errorFields = [];
-
-                for (let j = 0; j < fields.length; j++) {
-                    const { fomular_alias } = fields[j]
-                    const validate = this.parseType(fields[j], data[fomular_alias])
-
-                    const { valid, result, reason } = validate;
-                    if (valid) {
-                        tearedBody[i].data[fomular_alias] = result
                     } else {
-                        tearedBody[i].errorFields.push({ field: fields[j], value: data[fomular_alias], reason })
-                        typeError = true;
+                        tearedObject.data[fomular_alias] = this.req.body[fomular_alias]
+                    }
+                } else {
+                    if (Fields.isIntFamily(DATATYPE) && AUTO_INCREMENT) {
+                        const foreignKey = foreignKeys[table_alias].find(key => key.field_id == id)
+                        if (foreignKey) {
+                            const foreignField = this.getField(foreignKey.ref_field_id);
+                            const foreignTable = this.getTable(foreignField.table_id);
+                            tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(foreignTable.table_alias, PATTERN)
+                        } else {
+                            tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(table_alias, PATTERN)
+                            isAutoIncreTriggerd = true
+                        }
+                    } else {
+                        tearedObject.data[fomular_alias] = this.req.body[fomular_alias]
                     }
                 }
             }
-
-            for (let i = 0; i < tearedBody.length; i++) {
-                const { table_id, table_alias, data, key_fields } = tearedBody[i]
-                const foreign_keys = foreignKeys[table_alias]
-                const { foreignFields } = key_fields;
-                for (let j = 0; j < foreign_keys.length; j++) {
-                    const foreignKey = foreign_keys[j]
-                    const foreignField = foreignFields.find(field => field.id == foreignKey.field_id);
-                    const foreignTable = this.getTable(foreignKey.table_id)
-                    const primaryField = this.getField(foreignKey.ref_field_id)
-                    const query = {}
-                    query[primaryField.fomular_alias] = data[foreignField.fomular_alias]
-                    if (query[primaryField.fomular_alias] != undefined) {
-                        const model = new Model(foreignTable.table_alias)
-                        const Table = model.getModel()
-                        const foreignData = await Table.__findAll__(query);
-
-                        if (foreignData.length == 0) {
-                            foreignConflict = true
-                        }
-                        const hotForeignTable = tearedBody.find(tb => tb.table_id == foreignKey.table_id);
-                        if (hotForeignTable) {
-                            const primaryTableData = hotForeignTable.data;
-                            const primaryData = primaryTableData[primaryField.fomular_alias];
-
-                            if (primaryData == data[foreignField.fomular_alias]) {
-                                foreignConflict = false; // not tested
-                            }
-                        }
-                    }
-                }
-            }
-
-
-            let newUpdateValues = []
-
-            if (!foreignConflict) {
-                for (let j = 0; j < tearedBody.length; j++) {
-                    const { data, key_fields, table_id } = tearedBody[j]
-                    const table = tables.find(tb => tb.id == table_id)
-                    const { body, params, table_alias } = table
-
-                    const model = new Model(table_alias)
-                    const Table = model.getModel()
-
-                    const { primaryFields } = key_fields
-                    let updateData = {}
-                    let updateCriteria = {}
-                    body.map(field => {
-                        const query = {}
-                        if (data[field.fomular_alias] != undefined) {
-                            query[field.fomular_alias] = data[field.fomular_alias];
-                        }
-                        updateData = { ...updateData, ...query }
-                    })
-
-                    params.map(field => {
-                        const query = {}
-                        if (data[field.fomular_alias] != undefined) {
-                            query[field.fomular_alias] = data[field.fomular_alias];
-                        }
-                        updateCriteria = { ...updateCriteria, ...query }
-                    })
-                    await Table.__manualUpdate__(updateCriteria, updateData)
-                }
-            }
-
-            this.res.status(200).send({ paramQueries, filteringData, typeError, foreignConflict, tearedBody, newUpdateValues })
-
-        } else {
-            this.res.status(200).send({ filteringData })
+            tearedBody.push(tearedObject)
         }
 
+        const sortedTables = this.sortTablesByKeys( tables )
+        let mergedParams = {}
+        paramQueries.map( ({ query }) => { mergedParams = {...mergedParams, ...query} } )
+        const sortedBody = []
+
+        // MERGE ANY PRIMARY KEY IF FOUND
+        for( let i = 0 ; i < sortedTables.length; i++ ){
+            const { id, primary_key } = sortedTables[i]
+            const corespondingBody = tearedBody.find( body => body.table_id == id )
+            
+            const primaryFields = this.getFields(primary_key)
+            primaryFields.map( field => {
+                if( mergedParams[field.fomular_alias] != undefined ){
+                    corespondingBody.data[ field.fomular_alias ] = mergedParams[field.fomular_alias] 
+                }
+            })
+            sortedBody.push( corespondingBody )
+        }
+
+        // MERGE FOREIGN KEYS IF FOUND & FILL MASTER DATA IF IT's UNDEFINED
+
+        for( let i = 0 ; i < sortedTables.length; i++ ){
+            const { id, foreign_keys } = sortedTables[i]
+            const corespondingBody = tearedBody.find( body => body.table_id == id )
+
+            foreign_keys.map( key => {
+                const { field_id, table_id, ref_field_id } = key;
+                const field = this.getField(field_id)
+                const ref_field = this.getField(ref_field_id)
+                if( mergedParams[field.fomular_alias] != undefined ){
+                    corespondingBody.data[field.fomular_alias] = mergedParams[field.fomular_alias]
+
+                    for( let h = 0 ; h < sortedBody.length; h++ ){
+                        if( sortedBody[h].table_id == table_id ){
+                            sortedBody[h].data[ref_field.fomular_alias] = mergedParams[field.fomular_alias]
+                        }
+                    }                    
+                }
+                if(  mergedParams[ref_field.fomular_alias] != undefined ){
+                    corespondingBody.data[ref_field.fomular_alias] = mergedParams[ref_field.fomular_alias]
+                }                
+            })
+        }
+
+        for( let i = 0 ; i < sortedBody.length; i++ ){
+            const { table_id, data } = sortedBody[i]
+
+            /** LIST ALL QUERY RESULT  AND UPDATE */
+        }
+
+        this.res.status(200).send({ sortedBody })
     }
 
     findSlaveRecursive = (table, master) => {
@@ -1921,6 +1935,10 @@ class ConsumeApi extends Controller {
             for (let i = 0; i < foreignData.length; i++) {
                 if (foreignData[i].length == 0) {
                     areForeignDataValid = false
+                }else{
+                    const foreignRecord = foreignData[i][0]
+                    const keys = Object.keys( foreignRecord )
+                    keys.map( key => data[key] = foreignRecord[key] )
                 }
             }
 
@@ -2221,18 +2239,18 @@ class ConsumeApi extends Controller {
             const sumerize = await Table.__findCriteria__({ position: "sumerize" })
             await Database.delete(`${table_alias}`, query)
 
-            const cache = await Cache.getData(`${ table_alias }-periods`)
+            const cache = await Cache.getData(`${table_alias}-periods`)
             const periods = cache.value;
 
-            for( let i = 0; i < periods.length; i++ ){
+            for (let i = 0; i < periods.length; i++) {
                 const period = periods[i]
-                if( period.position == primaryRecord.position ){
+                if (period.position == primaryRecord.position) {
                     periods[i].total -= 1
                     break;
                 }
             }
 
-            await Cache.setData( `${ table_alias }-periods`, periods )
+            await Cache.setData(`${table_alias}-periods`, periods)
 
             const originData = primaryRecord;
 
@@ -2924,7 +2942,7 @@ class ConsumeApi extends Controller {
 
                 for (let i = 0; i < periods.length; i++) {
                     const period = periods[i]
-                    const { position } = period;                    
+                    const { position } = period;
                     const data = await Database.selectAll(table.table_alias, { position })
                     csvData.push(...data.map(record => {
                         const tmp = {}
@@ -3090,7 +3108,7 @@ class ConsumeApi extends Controller {
                         })
 
                         return tmp
-                    }))                    
+                    }))
                 }
             } else {
                 const keys = Object.keys(criteria)
@@ -3466,7 +3484,7 @@ class ConsumeApi extends Controller {
                     for (let h = 0; h < amount; h++) {
                         positions.push(position)
                         periods[j].total += 1
-                        if( positions.length >= data.length ){
+                        if (positions.length >= data.length) {
                             break;
                         }
                     }

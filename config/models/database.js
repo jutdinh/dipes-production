@@ -116,7 +116,7 @@ class Mongo {
         
         const data = await new Promise( (resolve, reject) => {
             if( criteria != undefined){
-                this.dbo.collection( table ).find(query).toArray((err, result) => {             
+                this.dbo.collection( table ).find(query, { projection: { "_id": 0 } }).toArray((err, result) => {             
                     if( result ){
                         if(result.length <= 1){                        
                             resolve( result[0] )
@@ -159,11 +159,11 @@ class Mongo {
         
         const data = await new Promise( (resolve, reject) => {
             if( criteria != undefined){
-                this.dbo.collection( table ).find(query).toArray((err, result) => {                            
+                this.dbo.collection( table ).find(query, { projection: { "_id": 0 } }).toArray((err, result) => {                            
                     resolve( result )
                 })
             }else{
-                this.dbo.collection( table ).find().toArray((err, result) => {
+                this.dbo.collection( table ).find({}, { projection: { "_id": 0 } }).toArray((err, result) => {
                     resolve( result )
                 })
             }
@@ -174,7 +174,7 @@ class Mongo {
     selectFrom = async (table, query, from, to) => {        
         const data = await new Promise( (resolve, reject) => {
 
-            this.dbo.collection( table ).find(query, { skip: from }).limit( to - from ).toArray((err, result) => {
+            this.dbo.collection( table ).find(query, { skip: from, projection: { "_id": 0 } }).limit( to - from ).toArray((err, result) => {
                 resolve( result )
             })            
 
@@ -200,7 +200,7 @@ class Mongo {
 
         const query = criteria
         
-        const projection = {}
+        const projection = { "_id": 0 }
         fields.map( field => { projection[field] = 1 } )
         
         const data = await new Promise( (resolve, reject) => {
