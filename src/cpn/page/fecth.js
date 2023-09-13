@@ -819,11 +819,13 @@ export default () => {
 
 
     const currentApi = apiViewData
+   
+    
     const paginateApi = (pageNumber) => {
         setCurrentPageApi(pageNumber);
         const startAt = (pageNumber - 1) * rowsPerPageApi;
-        callApiView(startAt);
-    }
+        callApiView(startAt, rowsPerPageApi);    
+    };
 
 
 
@@ -831,11 +833,16 @@ export default () => {
     const totalPagesApi = Math.ceil(limit / rowsPerPageApi) || 1;
 
 
+    // useEffect(() => {
+    //     callApiView((currentPageApi - 1) * rowsPerPageApi, rowsPerPageApi);
+    // }, [currentPageApi, matchingPage]);
+
     useEffect(() => {
-        callApiView((currentPageApi - 1) * rowsPerPageApi, rowsPerPageApi);
-    }, [currentPageApi, matchingPage]);
-
-
+        if (matchingPage !== undefined) {
+            setCurrentPageApi(1);
+            callApiView(0, rowsPerPageApi);
+        }
+    }, [matchingPage]);
 
 
 
