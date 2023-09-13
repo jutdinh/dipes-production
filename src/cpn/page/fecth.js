@@ -416,7 +416,7 @@ export default () => {
         if (Object.keys(searchValues).length !== 0) {
             loadingTimeoutSearch = setTimeout(() => {
                 setLoadingSearch(true);
-            }, 150);
+            }, 310);
         }
 
         loadingTimeout = setTimeout(() => {
@@ -508,7 +508,7 @@ export default () => {
     ///Loading
     useEffect(() => {
         let timeout;
-        if (loading) {
+        if (!loadingSearch && loading) {
             Swal.fire({
                 title: lang["loading"],
                 allowEscapeKey: false,
@@ -529,6 +529,7 @@ export default () => {
 
 
     const handleSearchClick = () => {
+        // console.log("aaaaaaa")
         setCurrentPage(1);
         if (currentPage === 1) {
             callApi(true);
@@ -1806,7 +1807,8 @@ export default () => {
                                                                                                     />
                                                                                                 </th>
                                                                                             ))}
-                                                                                            <th className="align-center header-cell" style={{ minWidth: "100px" }}>
+                                                                                            <th className="align-center header-cell" onClick={handleSearchClick} style={{ minWidth: "100px" }}>
+                                                                                                
                                                                                                 <i className="fa fa-search size-24 pointer mb-2" title={lang["search"]}></i>
                                                                                             </th>
                                                                                         </tr>
