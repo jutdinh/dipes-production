@@ -9,10 +9,16 @@ const { Accounts, AccountsRecord } = require('../models/Accounts');
 const { EventLogsRecord } = require( '../models/EventLogs' );
 const { Projects } = require('../models/Projects');
 
+const { Privileges } = require('../models/privileges');
+const { Tables } = require('../models/Tables');
+
+
 class Auth extends Controller {
     #__accounts = undefined
     #__default = Accounts.__defaultAccount;
     #__projects = new Projects()
+    #__privileges = new Privileges()
+    #__tables = new Tables()
 
     constructor(){
         super();        
@@ -251,7 +257,20 @@ class Auth extends Controller {
                             Account.makeFirstAva();
                             await Account.save();
 
-                           
+                            const tables = await this.#__tables.findAll();
+                            const isAdmin = role == "ad";
+                            const privileges = tables.map( table => {
+                                return {
+                                    username: Account.username.value(),
+                                    table_id: table.id,
+                                    read: true,
+                                    write: isAdmin,
+                                    modify: isAdmin,
+                                    purge: isAdmin
+                                }
+                            })
+
+                            await this.#__privileges.insertMany( privileges )
                             await this.saveLog(
                                 "info", 
                                 req.ip,
@@ -638,6 +657,29 @@ class Auth extends Controller {
                 context.content = "Request body không hợp lệ"
                 context.status = "0x4501039"
             }
+        }else{
+            context.content = "Token không hợp lệ"
+            context.status = "0x4501040"
+        }
+        res.status(200).send(context)
+    }
+
+
+
+    changeUserPrivileges = async (req, res) => {
+        const verified = await this.verifyToken(req);  
+
+        const context = {
+            success: false,
+            content: "",
+            data: {},
+            status: 200
+
+        }
+        if( verified ){        
+            const decodedToken = this.decodeToken( req.header("Authorization") );
+            console.log(decodedToken)
+
         }else{
             context.content = "Token không hợp lệ"
             context.status = "0x4501040"

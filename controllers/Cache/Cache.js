@@ -12,7 +12,7 @@ class Cache {
     }
 
     setData = async ( key, value ) => {  
-        console.log(key, value)     
+        // console.log(key, value)     
         const oldValue = await Database.selectAll(CACHE, { key })
         if( oldValue && oldValue.length > 0 ){
             if( oldValue.length != 1 ){

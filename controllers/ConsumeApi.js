@@ -13,7 +13,8 @@ const { translateUnicodeToBlanText, formatDecNum } = require('../functions/auto_
 const fastcsv = require('fast-csv')
 const XLSX = require('xlsx-js-style');
 
-const Cache = require('./Cache/Cache')
+const Cache = require('./Cache/Cache');
+const { Privileges } = require('../models/privileges');
 
 const RESULT_PER_SEARCH_PAGE = 15
 const DEFAULT_ERROR_CALCLATED_VALUE = "NaN"
@@ -24,6 +25,7 @@ class ConsumeApi extends Controller {
     #__tables = new Tables();
     #__fields = new Fields();
     #__projects = new Projects()
+    #__privileges = new Privileges()
 
     constructor() {
         super();
@@ -35,7 +37,6 @@ class ConsumeApi extends Controller {
 
     consume = async (req, res, api_id) => {
         this.writeReq(req)
-
         const start = new Date()
 
         const { url, method } = req;
@@ -115,78 +116,121 @@ class ConsumeApi extends Controller {
         this.writeReq(req)
         const start = new Date()
 
-        const { url, method } = req;
-        this.url = decodeURI(url);
-        const [api, projects, tables, fields] = await Promise.all([this.#__apis.find({ api_id }), this.#__projects.findAll(), this.#__tables.findAll(), this.#__fields.findAll()])
-        if (api && api.api_method == method.toLowerCase() && api.status) {
-            const Api = new ApisRecord(api)
-            const project = projects[0]
-            this.project = project;
+        const verified = await this.verifyToken( req )
+        
+        if( verified ){
 
-            this.API = Api;
+            const user = this.decodeToken( req.header("Authorization") )
+            const { url, method } = req;
+            this.url = decodeURI(url);
+            const [api, projects, tables, fields, privileges] = await Promise.all([
+                this.#__apis.find({ api_id }), 
+                this.#__projects.findAll(), 
+                this.#__tables.findAll(), 
+                this.#__fields.findAll(),
+                this.#__privileges.findAll({ username: user.username })
+            ])
+            if (api && api.api_method == method.toLowerCase() && api.status) {
+                const Api = new ApisRecord(api)
+                const project = projects[0]
+                this.project = project;
+    
+                this.API = Api;
+    
+                this.req = req;
+                this.res = res;
+                this.fields = fields;
+                this.tables = tables.map(table => {
+                    const { id } = table;
+                    table.fields = fields.filter(field => field.table_id == id)
+                    return table
+                });                
+                
+                const apiTables = api.tables.map( table_id => this.tables.find( tb => tb.id == table_id ) );
+                let isGranted;
+    
+                if (project) {
+                    const { project_type } = project
+                    if (project_type == "database") {
+                        switch (api.api_method) {
+                            case "get":
+                                isGranted = this.hasEnoughPrivileges( apiTables, ["read"], privileges )
+                                if( isGranted ){
+                                    await this.GET_UI()
+                                    const end = new Date()
+                                    console.log("PROCCESS IN : " + `${end - start} `)
+                                }else{
+                                    res.status(200).send({ succes: false, content: "Không có quyền truy cập" })
+                                }
+                                break;
+    
+                            case "post":
+                                isGranted = this.hasEnoughPrivileges( apiTables, ["write"], privileges )                                
+                                if( isGranted ){
+                                    await this.POST_UI()                                    
+                                    const end = new Date()
+                                    console.log("PROCCESS IN : " + `${end - start} `)
+                                }else{
+                                    res.status(200).send({ succes: false, content: "Không có quyền truy cập" })
+                                }
+                                break;
 
+                            case "put":
 
+                                isGranted = this.hasEnoughPrivileges( apiTables, ["modify"], privileges )                                
+                                if( isGranted ){                                    
+                                    await this.PUT_UI()
+                                    const end = new Date()
+                                    console.log("PROCCESS IN : " + `${end - start} `)
+                                }else{
+                                    res.status(200).send({ succes: false, content: "Không có quyền truy cập" })
+                                }
+                                break;
+                            case "delete":
+                                isGranted = this.hasEnoughPrivileges( apiTables, ["purge"], privileges )                                
+                                if( isGranted ){                                    
+                                    await this.DELETE_UI()
+                                    const end = new Date()
+                                    console.log("PROCCESS IN : " + `${end - start} `)
+                                }else{
+                                    res.status(200).send({ succes: false, content: "Không có quyền truy cập" })
+                                }
 
-            this.req = req;
-            this.res = res;
-            this.fields = fields;
-            this.tables = tables.map(table => {
-                const { id } = table;
-                table.fields = fields.filter(field => field.table_id == id)
-                return table
-            });
-
-
-            if (project) {
-                const { project_type } = project
-                if (project_type == "database") {
-                    switch (api.api_method) {
-                        case "get":
-                            await this.GET_UI()
-                            const end = new Date()
-                            console.log("PROCCESS IN : " + `${end - start} `)
-                            break;
-
-                        case "post":
-                            await this.POST_UI()
-                            break;
-                        case "put":
-                            await this.PUT_UI()
-                            break;
-                        case "delete":
-                            await this.DELETE_UI()
-                            break;
-                        default:
-                            this.res.status(200).send("Not found nè")
-                            break;
-
+                                break;
+                            default:
+                                this.res.status(200).send("Not found nè")
+                                break;
+    
+                        }
+                    } else {
+                        switch (api.api_method) {
+                            case "get":
+                                await this.REMOTE_GET()
+                                break;
+    
+                            case "post":
+                                await this.REMOTE_POST()
+                                break;
+                            case "put":
+                                await this.REMOTE_PUT()
+                                break;
+                            case "delete":
+                                await this.REMOTE_DELETE()
+                                break;
+                            default:
+                                this.res.status(200).send("Not found nè")
+                                break;
+    
+                        }
                     }
                 } else {
-                    switch (api.api_method) {
-                        case "get":
-                            await this.REMOTE_GET()
-                            break;
-
-                        case "post":
-                            await this.REMOTE_POST()
-                            break;
-                        case "put":
-                            await this.REMOTE_PUT()
-                            break;
-                        case "delete":
-                            await this.REMOTE_DELETE()
-                            break;
-                        default:
-                            this.res.status(200).send("Not found nè")
-                            break;
-
-                    }
+                    res.status(200).send({ succes: false, content: "Not found" })
                 }
             } else {
                 res.status(200).send({ succes: false, content: "Not found" })
             }
-        } else {
-            res.status(200).send({ succes: false, content: "Not found" })
+        }else{
+            res.status(200).send({ succes: false, content: "Token khum hợp lệ" })
         }
     }
 
@@ -934,7 +978,7 @@ class ConsumeApi extends Controller {
         }
 
         this.res.status(200).send({
-            msg: "GET nè",
+            msg: "GET",
             success: true,
             fields: [...displayFields, ...calculateDisplay],
             data: filtedData,
@@ -1183,7 +1227,33 @@ class ConsumeApi extends Controller {
         let msg = ""
         if (errorFields.length == 0 && existedPrimaryKeys.length == 0 && foreignConflicts.length == 0) {
             for (let i = 0; i < sortedBody.length; i++) {
-                const { table_alias, data } = sortedBody[i]
+                const { table_alias, table_id, data } = sortedBody[i]
+
+                const table = this.getTable( table_id )
+                const { foreign_keys } = table;
+
+
+                for( let j = 0 ; j < foreign_keys.length; j++ ){
+                    const { field_id, table_id, ref_field_id } = foreign_keys[j]                                       
+                    const corespondingBody = sortedBody.find( body => body.table_id == table_id )
+
+                    if( !corespondingBody ){
+                        const table = this.getTable( table_id )
+                        const field = this.getField(field_id)
+                        const ref_field = this.getField( ref_field_id )                        
+                        const foreignData = await Database.selectAll( table.table_alias, { [ref_field.fomular_alias]: data[ field.fomular_alias ] } )
+                        if( foreignData.length > 0 ){
+
+                            delete foreignData[0].position
+    
+                            const keys = Object.keys( foreignData[0] )
+                            keys.map( key => {
+                                data[key] = foreignData[0][key]
+                            })
+                        }
+                    }
+                }
+
 
                 let cache = await Cache.getData(`${table_alias}-periods`)
                 if (!cache) {
@@ -1250,7 +1320,7 @@ class ConsumeApi extends Controller {
             success = false
         }
         this.res.status(200).send({
-            msg: "POST nè",
+            msg: "POST",
             success,
             conflict: {
                 type: errorFields,
@@ -1602,7 +1672,7 @@ class ConsumeApi extends Controller {
             }
 
         }
-        this.res.status(200).send({ msg: "POST nè", typeError, primaryConflict, foreignConflict })
+        this.res.status(200).send({ msg: "POST", typeError, primaryConflict, foreignConflict })
     }
 
 
@@ -1644,6 +1714,7 @@ class ConsumeApi extends Controller {
         const tearedBody = []
         const primaryKeys = {}
         const foreignKeys = {}
+        let typeError = false
 
         for (let i = 0; i < tables.length; i++) {
             const { primary_key, foreign_keys, table_alias, body, id, fields } = tables[i]
@@ -1656,7 +1727,7 @@ class ConsumeApi extends Controller {
                 const field = body[j]
                 const { fomular_alias } = field;
                 const { DATATYPE, AUTO_INCREMENT, PATTERN, id } = field;
-                let isAutoIncreTriggerd = false;
+
                 if (this.req.body[fomular_alias] != undefined) {
                     const primaryKey = primaryKeys[table_alias].find(key => key == id)
                     if (primaryKey) {
@@ -1665,14 +1736,24 @@ class ConsumeApi extends Controller {
                             tearedObject.data[fomular_alias] = this.req.body[fomular_alias]
                         } else {
                             if (Fields.isIntFamily(DATATYPE) && AUTO_INCREMENT) {
-                                tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(table_alias, PATTERN)
+                                // tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(table_alias, PATTERN)
                                 isAutoIncreTriggerd = true
                             } else {
-                                tearedObject.data[fomular_alias] = this.req.body[fomular_alias]
+                                const { valid, result } = this.parseType(field, this.req.body[fomular_alias])
+                                if (valid) {
+                                    tearedObject.data[fomular_alias] = result
+                                } else {
+                                    typeError = true
+                                }
                             }
                         }
                     } else {
-                        tearedObject.data[fomular_alias] = this.req.body[fomular_alias]
+                        const { valid, result } = this.parseType(field, this.req.body[fomular_alias])
+                        if (valid) {
+                            tearedObject.data[fomular_alias] = result
+                        } else {
+                            typeError = true
+                        }
                     }
                 } else {
                     if (Fields.isIntFamily(DATATYPE) && AUTO_INCREMENT) {
@@ -1680,70 +1761,265 @@ class ConsumeApi extends Controller {
                         if (foreignKey) {
                             const foreignField = this.getField(foreignKey.ref_field_id);
                             const foreignTable = this.getTable(foreignField.table_id);
-                            tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(foreignTable.table_alias, PATTERN)
+                            // tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(foreignTable.table_alias, PATTERN)
                         } else {
-                            tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(table_alias, PATTERN)
+                            // tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(table_alias, PATTERN)
                             isAutoIncreTriggerd = true
                         }
                     } else {
-                        tearedObject.data[fomular_alias] = this.req.body[fomular_alias]
+                        const { valid, result } = this.parseType(field, this.req.body[fomular_alias])
+                        if (valid) {
+                            tearedObject.data[fomular_alias] = result
+                        } else {
+                            typeError = true
+                        }
                     }
                 }
             }
             tearedBody.push(tearedObject)
         }
 
-        const sortedTables = this.sortTablesByKeys( tables )
-        let mergedParams = {}
-        paramQueries.map( ({ query }) => { mergedParams = {...mergedParams, ...query} } )
-        const sortedBody = []
+        if( !typeError ){
 
-        // MERGE ANY PRIMARY KEY IF FOUND
-        for( let i = 0 ; i < sortedTables.length; i++ ){
-            const { id, primary_key } = sortedTables[i]
-            const corespondingBody = tearedBody.find( body => body.table_id == id )
-            
-            const primaryFields = this.getFields(primary_key)
-            primaryFields.map( field => {
-                if( mergedParams[field.fomular_alias] != undefined ){
-                    corespondingBody.data[ field.fomular_alias ] = mergedParams[field.fomular_alias] 
-                }
-            })
-            sortedBody.push( corespondingBody )
-        }
-
-        // MERGE FOREIGN KEYS IF FOUND & FILL MASTER DATA IF IT's UNDEFINED
-
-        for( let i = 0 ; i < sortedTables.length; i++ ){
-            const { id, foreign_keys } = sortedTables[i]
-            const corespondingBody = tearedBody.find( body => body.table_id == id )
-
-            foreign_keys.map( key => {
-                const { field_id, table_id, ref_field_id } = key;
-                const field = this.getField(field_id)
-                const ref_field = this.getField(ref_field_id)
-                if( mergedParams[field.fomular_alias] != undefined ){
-                    corespondingBody.data[field.fomular_alias] = mergedParams[field.fomular_alias]
-
-                    for( let h = 0 ; h < sortedBody.length; h++ ){
-                        if( sortedBody[h].table_id == table_id ){
-                            sortedBody[h].data[ref_field.fomular_alias] = mergedParams[field.fomular_alias]
+            const sortedTables = this.sortTablesByKeys(tables)
+            let mergedParams = {}
+            paramQueries.map(({ query }) => { mergedParams = { ...mergedParams, ...query } })
+            const sortedBody = []
+    
+            // MERGE ANY PRIMARY KEY IF FOUND
+            for (let i = 0; i < sortedTables.length; i++) {
+                const { id, primary_key } = sortedTables[i]
+                const corespondingBody = tearedBody.find(body => body.table_id == id)
+    
+                const primaryFields = this.getFields(primary_key)
+                primaryFields.map(field => {
+                    if (mergedParams[field.fomular_alias] != undefined) {
+                        corespondingBody.data[field.fomular_alias] = mergedParams[field.fomular_alias]
+                    }
+                })
+                sortedBody.push(corespondingBody)
+            }
+    
+            // MERGE FOREIGN KEYS IF FOUND & FILL MASTER DATA IF IT's UNDEFINED
+    
+            for (let i = 0; i < sortedTables.length; i++) {
+                const { id, foreign_keys } = sortedTables[i]
+                const corespondingBody = tearedBody.find(body => body.table_id == id)
+    
+                foreign_keys.map(key => {
+                    const { field_id, table_id, ref_field_id } = key;
+                    const field = this.getField(field_id)
+                    const ref_field = this.getField(ref_field_id)
+                    if (mergedParams[field.fomular_alias] != undefined) {
+                        corespondingBody.data[field.fomular_alias] = mergedParams[field.fomular_alias]
+    
+                        for (let h = 0; h < sortedBody.length; h++) {
+                            if (sortedBody[h].table_id == table_id) {
+                                sortedBody[h].data[ref_field.fomular_alias] = mergedParams[field.fomular_alias]
+                            }
                         }
-                    }                    
+                    }
+                    if (mergedParams[ref_field.fomular_alias] != undefined) {
+                        corespondingBody.data[field.fomular_alias] = mergedParams[ref_field.fomular_alias]
+                    }
+                })
+            }
+    
+            for (let i = 0; i < sortedBody.length; i++) {
+                const body = sortedBody[i]
+                const table = this.getTable(body.table_id)
+                const slaves = this.detectAllSlave(table)
+    
+                for (let j = 0; j < slaves.length; j++) {
+                    const slave = slaves[j]
+    
+                    for (let h = 0; h < sortedBody.length; h++) {
+                        const body = sortedBody[h]
+                        if (body.table_id != undefined && body.table_id == slave.id) {
+                            sortedBody[h].data = { ...sortedBody[i].data, ...body.data }
+                        }
+                    }
                 }
-                if(  mergedParams[ref_field.fomular_alias] != undefined ){
-                    corespondingBody.data[ref_field.fomular_alias] = mergedParams[ref_field.fomular_alias]
-                }                
+            }
+    
+            let areAllQueriesReturnAtLeastOneRecord = true
+            for (let i = 0; i < sortedBody.length; i++) {
+                const { table_id, data } = sortedBody[sortedBody.length - i - 1]
+    
+                const table = this.getTable(table_id)
+                const { table_alias, primary_key } = table;
+                const primaryFields = this.getFields(primary_key)
+                const updateQuery = {}
+    
+                primaryFields.map(field => {
+                    const { fomular_alias } = field;
+                    if (data[fomular_alias] != undefined) {
+                        updateQuery[fomular_alias] = data[fomular_alias]
+                    }
+                })
+    
+                const masters = this.detectAllMaster(table)
+                const existedMasters = masters.filter(master => sortedBody.find(body => body.table_id == master.id))
+    
+                existedMasters.map(master => {
+                    const corespondingBody = sortedBody.find(tb => tb.table_id == master.id)
+                    const { table_id, data } = corespondingBody
+                    const { primary_key } = master;
+    
+                    const primaryFields = this.getFields(primary_key)
+                    primaryFields.map(field => {
+                        const { fomular_alias } = field;
+                        if (data[fomular_alias] != undefined) {
+                            updateQuery[fomular_alias] = data[fomular_alias]
+                        }
+                    })
+                })
+    
+                const queryResult = await Database.count(table_alias, updateQuery);
+                if (queryResult == 0) {
+                    areAllQueriesReturnAtLeastOneRecord = false
+                    break;
+                }
+            }
+    
+            if (areAllQueriesReturnAtLeastOneRecord) {    
+    
+                let areAllForeignKeyValid = true
+    
+                for (let i = 0; i < sortedBody.length; i++) {
+                    const { table_id, data } = sortedBody[sortedBody.length - i - 1]
+    
+                    const table = this.getTable(table_id)
+                    const { table_alias, foreign_keys } = table;
+    
+                    const outsideMasters = foreign_keys.filter(key => {
+                        const { table_id } = key;
+                        const corespondingBody = sortedBody.find(body => body.table_id == table_id)
+                        return !corespondingBody
+                    })
+    
+                    for (let j = 0; j < outsideMasters.length; j++) {
+                        if (areAllForeignKeyValid) {
+                            const { table_id, field_id, ref_field_id } = outsideMasters[j]
+                            const table = this.getTable(table_id)
+                            const field = this.getField(field_id)
+                            const ref_field = this.getField(ref_field_id)
+                            const foreignData = await Database.selectAll(table.table_alias, { [ref_field.fomular_alias]: data[field.fomular_alias] })
+                            if (foreignData.length == 0) {
+                                areAllForeignKeyValid = false
+                            } else {
+                                delete foreignData[0].position
+                                sortedBody[sortedBody.length - i - 1].data = { ...data, ...foreignData[0] }
+                            }
+                        }
+                    }
+                }
+    
+                if (areAllForeignKeyValid) {
+    
+                    for (let i = 0; i < sortedBody.length; i++) {
+                        const { table_id, data } = sortedBody[sortedBody.length - i - 1]
+    
+                        const table = this.getTable(table_id)
+                        const { table_alias, primary_key, foreign_keys } = table;
+                        const primaryFields = this.getFields(primary_key)
+                        const updateQuery = {}
+    
+                        primaryFields.map(field => {
+                            const { fomular_alias } = field;
+                            if (data[fomular_alias] != undefined) {
+                                updateQuery[fomular_alias] = data[fomular_alias]
+                            }
+                        })
+    
+    
+                        const masters = this.detectAllMaster(table)
+                        const existedMasters = masters.filter(master => sortedBody.find(body => body.table_id == master.id))
+    
+                        existedMasters.map(master => {
+                            const corespondingBody = sortedBody.find(tb => tb.table_id == master.id)
+                            const { table_id, data } = corespondingBody
+                            const { primary_key, foreign_keys } = master;
+    
+                            const primaryFields = this.getFields(primary_key)
+                            primaryFields.map(field => {
+                                const { fomular_alias } = field;
+                                if (data[fomular_alias] != undefined) {
+                                    updateQuery[fomular_alias] = data[fomular_alias]
+                                }
+                            })
+                        })
+    
+                        // const queryResult = await Database.count(table_alias, updateQuery);
+                        const slaves = this.detectAllSlave(table)
+                        console.log(`${table.table_name} => `, slaves.map(slave => slave.table_name).join(', '))
+    
+                        foreign_keys.map( key => {
+                            const { field_id, table_id, ref_field_id } = key;
+                            const field = this.getField( field_id )
+                            const ref_field = this.getField( ref_field_id )
+
+                            data[ ref_field.fomular_alias ] = data[ field.fomular_alias ]
+                        })
+    
+                        await Database.update(table_alias, updateQuery, { ...data })
+    
+                        // if (queryResult == 1) {
+                        //     await Promise.all(slaves.map(slave => {
+                        //         return Database.update(slave.table_alias, updateQuery, { ...data })
+                        //     }))
+                        // } else {
+                        // }
+                        const targetRecords = await Database.selectAll(table_alias, updateQuery)                           
+
+                        // console.log(targetRecords)
+                        targetRecords.map(record => {
+                            delete record.position
+                        })
+
+                        for (let j = 0; j < targetRecords.length; j++) {
+                            const record = targetRecords[j]
+                            const recordUpdateQuery = {}
+
+                            primaryFields.map(field => {
+                                const { fomular_alias } = field;
+                                if (record[fomular_alias] != undefined) {
+                                    recordUpdateQuery[fomular_alias] = record[fomular_alias]
+                                }
+                            })
+                            await Promise.all(slaves.map(slave => {
+                                return Database.update(slave.table_alias, recordUpdateQuery, { ...record })
+                            }))
+                        }
+                    }
+                    this.res.status(200).send({ sortedBody })
+                } else {
+                    this.res.status(200).send({
+                        success: false,
+                        errors: {
+                            'type': 'foreign keys',
+                            'description': 'Some datasets have invalid foreign keys'
+                        }
+                    })
+                }
+            } else {
+                this.res.status(200).send({
+                    success: false,
+                    errors: {
+                        'type': 'not found',
+                        'description': 'Some params return empty dataset'
+                    }
+                })
+            }
+        }else{
+            this.res.status(200).send({
+                success: false,
+                errors: {
+                    'type': 'type error',
+                    'description': 'Some fields have invalid data type'
+                }
             })
         }
-
-        for( let i = 0 ; i < sortedBody.length; i++ ){
-            const { table_id, data } = sortedBody[i]
-
-            /** LIST ALL QUERY RESULT  AND UPDATE */
-        }
-
-        this.res.status(200).send({ sortedBody })
     }
 
     findSlaveRecursive = (table, master) => {
@@ -1780,6 +2056,24 @@ class ConsumeApi extends Controller {
             }
         }
         return slaves
+    }
+
+
+    detectAllMaster = (slave) => {
+        const tables = this.tables;
+        const masters = []
+
+        for (let i = 0; i < tables.length; i++) {
+            const table = tables[i]
+
+            const slaves = this.detectAllSlave(table)
+            const isAMaster = slaves.find(tb => tb.id == slave.id)
+
+            if (isAMaster) {
+                masters.push(table)
+            }
+        }
+        return masters
     }
 
     PUT_UI = async () => {
@@ -1928,17 +2222,15 @@ class ConsumeApi extends Controller {
                 return Database.selectAll(foreignTable.table_alias, { [`${ref.fomular_alias}`]: data[field.fomular_alias] ? data[field.fomular_alias] : data[ref.fomular_alias] })
             }))
 
-            console.log(1917, foreignData)
-
             let areForeignDataValid = true
 
             for (let i = 0; i < foreignData.length; i++) {
                 if (foreignData[i].length == 0) {
                     areForeignDataValid = false
-                }else{
+                } else {
                     const foreignRecord = foreignData[i][0]
-                    const keys = Object.keys( foreignRecord )
-                    keys.map( key => data[key] = foreignRecord[key] )
+                    const keys = Object.keys(foreignRecord)
+                    keys.map(key => data[key] = foreignRecord[key])
                 }
             }
 
@@ -2091,85 +2383,83 @@ class ConsumeApi extends Controller {
                 return
             }
         }
+        const table = tables[0]
+        let query = {}
 
-        const primaryKeys = {}
-        const foreignKeys = {}
-
-        const dbFields = this.fields
-        for (let i = 0; i < tables.length; i++) {
-            const { primary_key, foreign_keys, table_alias } = tables[i]
-            primaryKeys[table_alias] = primary_key ? primary_key : []
-            foreignKeys[table_alias] = foreign_keys ? foreign_keys : []
+        for (let i = 0; i < paramQueries.length; i++) {
+            const paramQuery = paramQueries[i].query;
+            query = { ...query, ...paramQuery }
         }
 
-        const rawData = []
-        for (let i = 0; i < tables.length; i++) {
-            const table = tables[i];
-            const queriesDataFromParams = paramQueries.filter(tb => tb.table_id == table.id);
+        const { primary_key, foreign_keys, fields, table_alias } = table;
+        const indexQuery = {}
+        const primaryFields = this.getFields(primary_key)
 
-            let query = {}
-            for (let j = 0; j < queriesDataFromParams.length; j++) {
-                query = { ...query, ...queriesDataFromParams[j].query }
-            }
 
-            const { id, table_alias, table_name, primary_key, foreign_keys } = table;
-            const model = new Model(table_alias);
-            const Table = model.getModel();
-            const data = await Table.__findAll__(query);
-            rawData.push({ table_id: id, table_alias, table_name, primary_key, foreign_keys, data })
-        }
+        primaryFields.map(field => {
+            indexQuery[field.fomular_alias] = query[field.fomular_alias]
+        })
 
-        rawData.sort((a, b) => a.data.length > b.data.length ? 1 : -1)
-        let mergedRawData = rawData[0].data;
+        const keys = Object.keys(query)
+        const formatedQuery = {}
+        const itemQuery = {}
+        keys.map(key => {
+            const qr = {}
+            formatedQuery[`${key}`] = query[key]
+        })
 
-        for (let i = 1; i < rawData.length; i++) { /* Loop over the whole raw data collection */
-            const newMergedData = [];
-            const currentData = rawData[i].data;
-            for (let j = 0; j < mergedRawData.length; j++) {
-                for (let h = 0; h < currentData.length; h++) {
-                    const record = { ...mergedRawData[j], ...currentData[h] }
-                    delete record._id
-                    newMergedData.push(record)
+        const model = new Model(table_alias);
+        const Table = model.getModel();
+
+        const doesThisKeyExist = await Database.selectAll(table_alias, formatedQuery)
+        const primaryRecord = doesThisKeyExist[0];
+
+        
+        if (primaryRecord ) {
+
+            const slaves = this.detectAllSlave( table )        
+            const slaveryBoundRecords = await Promise.all( slaves.map( slave => Database.count( slave.table_alias, formatedQuery ) ) )
+            const isBoundBySlaves = slaveryBoundRecords.find( count => count > 0 )        
+            
+            if( !isBoundBySlaves ){
+
+                const sumerize = await Table.__findCriteria__({ position: "sumerize" })
+                await Database.delete(`${table_alias}`, query)
+    
+                const cache = await Cache.getData(`${table_alias}-periods`)
+                const periods = cache.value;
+    
+                for (let i = 0; i < periods.length; i++) {
+                    const period = periods[i]
+                    if (period.position == primaryRecord.position) {
+                        periods[i].total -= 1
+                        break;
+                    }
                 }
-            }
-            mergedRawData = newMergedData
+                await Cache.setData(`${table_alias}-periods`, periods)
+                await Table.__manualUpdate__({ position: "sumerize" }, { total: sumerize.total - 1 })  
+                
+                this.res.status(200).send({ success: true, 
+                    errors: {} 
+                })
+            }else{
+                // slaveries bound
+                this.res.status(200).send({ success: false, 
+                    errors: {
+                        type: "relation violating",
+                        description: "Foreign key violation"
+                    } 
+                })
+            }            
+        }else{
+            // primary record not found
+            this.res.status(200).send({ success: false, 
+                errors: {
+                    type: "not found",
+                    description: "Target record(s) not found"
+                } 
+            })
         }
-
-        let filteringData = removeDuplicate(mergedRawData);
-
-        for (let i = 0; i < rawData.length; i++) {
-            const { foreign_keys, table_name } = rawData[i];
-            for (let j = 0; j < foreign_keys.length; j++) {
-                const key = foreign_keys[j];
-                const { field_id, table_id, ref_field_id } = key;
-                const thisField = dbFields.find(field => field.id == field_id);
-                const thatField = dbFields.find(field => field.id == ref_field_id);
-                if (thisField && thatField) {
-                    filteringData = filteringData.filter(record => record[thisField.fomular_alias] == record[thatField.fomular_alias])
-                }
-            }
-        }
-
-        let filtedData = filteringData;
-
-        for (let i = 0; i < tables.length; i++) {
-            const table = tables[i]
-            const { primary_key } = table;
-            const primaryFields = this.getFields(primary_key)
-            const model = new Model(table.table_alias)
-            const Table = model.getModel()
-
-            for (let h = 0; h < filtedData.length; h++) {
-                const record = filtedData[h];
-                const query = {}
-                for (let j = 0; j < primaryFields.length; j++) {
-                    const field = primaryFields[j]
-                    query[field.fomular_alias] = record[field.fomular_alias]
-                }
-                await Table.__deleteObjects__(query)
-            }
-        }
-        this.res.status(200).send({ success: true, filtedData })
     }
 
     DELETE_UI = async () => {
@@ -2236,122 +2526,141 @@ class ConsumeApi extends Controller {
         if (primaryRecord) {
 
 
-            const sumerize = await Table.__findCriteria__({ position: "sumerize" })
-            await Database.delete(`${table_alias}`, query)
+            const slaves = this.detectAllSlave( table )        
+            const slaveryBoundRecords = await Promise.all( slaves.map( slave => Database.count( slave.table_alias, formatedQuery ) ) )
+            const isBoundBySlaves = slaveryBoundRecords.find( count => count > 0 )
 
-            const cache = await Cache.getData(`${table_alias}-periods`)
-            const periods = cache.value;
+            if( !isBoundBySlaves ){
 
-            for (let i = 0; i < periods.length; i++) {
-                const period = periods[i]
-                if (period.position == primaryRecord.position) {
-                    periods[i].total -= 1
-                    break;
-                }
-            }
-
-            await Cache.setData(`${table_alias}-periods`, periods)
-
-            const originData = primaryRecord;
-
-            const calculates = this.API.calculates.valueOrNot()
-            const statistics = this.API.statistic.valueOrNot()
-
-            if (calculates && calculates.length > 0) {
-                const keys = Object.keys(originData)
-                keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
-
-                for (let i = 0; i < calculates.length; i++) {
-                    const { fomular_alias, fomular } = calculates[i]
-                    let originResult = fomular
-                    keys.map(key => {
-                        originResult = originResult.replaceAll(key, originData[key])
-                    })
-                    try {
-                        originData[fomular_alias] = eval(originResult)
-                    } catch {
-                        originData[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
-                    }
-                }
-            }
-
-            if (statistics && statistics.length > 0) {
                 const sumerize = await Table.__findCriteria__({ position: "sumerize" })
-                const statisSum = sumerize
-                for (let i = 0; i < statistics.length; i++) {
-                    const statis = statistics[i]
-                    const { fomular_alias, field, group_by, fomular } = statis;
-                    const stringifyGroupKey = group_by.map(group => originData[group]).join("_")
-                    const statisField = statisSum[fomular_alias];
-
-                    if (!statisField) {
-                        if (group_by && group_by.length > 0) {
-                            statisSum[fomular_alias] = {}
-                        } else {
-                            statisSum[fomular_alias] = 0
-                        }
+                await Database.delete(`${table_alias}`, query)
+    
+                const cache = await Cache.getData(`${table_alias}-periods`)
+                const periods = cache.value;
+    
+                for (let i = 0; i < periods.length; i++) {
+                    const period = periods[i]
+                    if (period.position == primaryRecord.position) {
+                        periods[i].total -= 1
+                        break;
                     }
-
-                    if (fomular == "SUM") {
-                        if (typeof (originData[field]) == "number") {
-                            if (group_by && group_by.length > 0) {
-                                if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                    statisSum[fomular_alias][stringifyGroupKey] = 0
-                                } else {
-                                    statisSum[fomular_alias][stringifyGroupKey] = statisSum[fomular_alias][stringifyGroupKey] - originData[field]
-                                }
-                            } else {
-                                statisSum[fomular_alias] = statisSum[fomular_alias] - originData[field]
-                            }
-                        }
-                    }
-
-                    if (fomular == "AVERAGE") {
-                        if (typeof (originData[field]) == "number") {
-                            if (group_by && group_by.length > 0) {
-
-                                if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                    statisSum[fomular_alias][stringifyGroupKey] = {
-                                        total: 0,
-                                        value: 0
-                                    }
-                                } else {
-                                    if (statisSum.total - 1 <= 0) {
-                                        delete statisSum[fomular_alias][stringifyGroupKey]
-                                    } else {
-                                        statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total - originData[field]) / (statisSum[fomular_alias][stringifyGroupKey].total - 1)
-                                        statisSum[fomular_alias][stringifyGroupKey].total -= 1
-                                    }
-                                }
-                            } else {
-                                if (statisSum.total - 1 == 0) {
-                                    delete statisSum[fomular_alias]
-                                } else {
-                                    statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total - originData[field]) / (statisSum.total - 1)
-                                }
-                            }
-                        }
-                    }
-
-                    if (fomular == "COUNT") {
-                        if (group_by && group_by.length > 0) {
-                            const oldGroup = group_by.map(group => originData[group]).join("_")
-
-                            statisSum[fomular_alias][oldGroup] -= 1
-                            if (statisSum[fomular_alias][oldGroup] == 0) {
-                                delete statisSum[fomular_alias][oldGroup]
-                            }
+                }
+    
+                await Cache.setData(`${table_alias}-periods`, periods)
+    
+                const originData = primaryRecord;
+    
+                const calculates = this.API.calculates.valueOrNot()
+                const statistics = this.API.statistic.valueOrNot()
+    
+                if (calculates && calculates.length > 0) {
+                    const keys = Object.keys(originData)
+                    keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
+    
+                    for (let i = 0; i < calculates.length; i++) {
+                        const { fomular_alias, fomular } = calculates[i]
+                        let originResult = fomular
+                        keys.map(key => {
+                            originResult = originResult.replaceAll(key, originData[key])
+                        })
+                        try {
+                            originData[fomular_alias] = eval(originResult)
+                        } catch {
+                            originData[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
                         }
                     }
                 }
-                await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
+    
+                if (statistics && statistics.length > 0) {
+                    const sumerize = await Table.__findCriteria__({ position: "sumerize" })
+                    const statisSum = sumerize
+                    for (let i = 0; i < statistics.length; i++) {
+                        const statis = statistics[i]
+                        const { fomular_alias, field, group_by, fomular } = statis;
+                        const stringifyGroupKey = group_by.map(group => originData[group]).join("_")
+                        const statisField = statisSum[fomular_alias];
+    
+                        if (!statisField) {
+                            if (group_by && group_by.length > 0) {
+                                statisSum[fomular_alias] = {}
+                            } else {
+                                statisSum[fomular_alias] = 0
+                            }
+                        }
+    
+                        if (fomular == "SUM") {
+                            if (typeof (originData[field]) == "number") {
+                                if (group_by && group_by.length > 0) {
+                                    if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                                        statisSum[fomular_alias][stringifyGroupKey] = 0
+                                    } else {
+                                        statisSum[fomular_alias][stringifyGroupKey] = statisSum[fomular_alias][stringifyGroupKey] - originData[field]
+                                    }
+                                } else {
+                                    statisSum[fomular_alias] = statisSum[fomular_alias] - originData[field]
+                                }
+                            }
+                        }
+    
+                        if (fomular == "AVERAGE") {
+                            if (typeof (originData[field]) == "number") {
+                                if (group_by && group_by.length > 0) {
+    
+                                    if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                                        statisSum[fomular_alias][stringifyGroupKey] = {
+                                            total: 0,
+                                            value: 0
+                                        }
+                                    } else {
+                                        if (statisSum.total - 1 <= 0) {
+                                            delete statisSum[fomular_alias][stringifyGroupKey]
+                                        } else {
+                                            statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total - originData[field]) / (statisSum[fomular_alias][stringifyGroupKey].total - 1)
+                                            statisSum[fomular_alias][stringifyGroupKey].total -= 1
+                                        }
+                                    }
+                                } else {
+                                    if (statisSum.total - 1 == 0) {
+                                        delete statisSum[fomular_alias]
+                                    } else {
+                                        statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total - originData[field]) / (statisSum.total - 1)
+                                    }
+                                }
+                            }
+                        }
+    
+                        if (fomular == "COUNT") {
+                            if (group_by && group_by.length > 0) {
+                                const oldGroup = group_by.map(group => originData[group]).join("_")
+    
+                                statisSum[fomular_alias][oldGroup] -= 1
+                                if (statisSum[fomular_alias][oldGroup] == 0) {
+                                    delete statisSum[fomular_alias][oldGroup]
+                                }
+                            }
+                        }
+                    }
+                    await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
+                }
+    
+                await Table.__manualUpdate__({ position: "sumerize" }, { total: sumerize.total - 1 })
+                this.res.send({ success: true })
+            }else{
+                this.res.status(200).send({ success: false, 
+                    errors: {
+                        type: "relation violating",
+                        description: "Foreign key violation"
+                    } 
+                })
             }
 
-            await Table.__manualUpdate__({ position: "sumerize" }, { total: sumerize.total - 1 })
-
-            this.res.send({ success: true })
         } else {
-            this.res.send({ success: false })
+            this.res.status(200).send({ success: false, 
+                errors: {
+                    type: "not found",
+                    description: "Target record(s) not found"
+                } 
+            })
         }
     }
 
@@ -2854,55 +3163,91 @@ class ConsumeApi extends Controller {
     //     }
     // }
 
+    hasEnoughPrivileges = (tables, rights, privileges) => {
+        let isGranted = true;
+        for( let i = 0; i < tables.length; i++ ){
+            const table_id = tables[i].id;
+            const tablePrivileges = privileges.filter( pri => pri.table_id == table_id )
+
+            for( let j = 0 ; j < tablePrivileges.length ; j++ ){
+
+                const privilege = tablePrivileges[j]
+                
+                for( let h = 0; h < rights.length; h++ ){
+                    const right = rights[h]
+                    if( !privilege[right] ){
+                        isGranted = false
+                    }
+                }
+            }
+        }
+        return isGranted
+    }
 
     FOREIGNDATA = async (req, res) => {
         this.writeReq(req)
-        const { table_id, start_index, criteria, require_count, exact, api_id } = req.body;
+        
+        const verified = await this.verifyToken( req )
+        
+        if( verified ){
+            const user = this.decodeToken( req.header("Authorization") )
+            const { table_id, start_index, criteria, require_count, exact, api_id } = req.body;    
+            const [tables, fields, privileges] = await Promise.all([
+                this.#__tables.findAll(), 
+                this.#__fields.findAll(), 
+                this.#__privileges.findAll({ username: user.username })
+            ])            
+            const table = tables.find(tb => tb.id == table_id)
+            if (table && req.method.toLowerCase() == "post") {
 
-        const [tables, fields] = await Promise.all([this.#__tables.findAll(), this.#__fields.findAll()])
+                let isGranted = this.hasEnoughPrivileges([table], ["read"], privileges)
+                if( this.isAdmin( user ) || isGranted ){
 
-        const table = tables.find(tb => tb.id == table_id)
-
-        if (table && req.method.toLowerCase() == "post") {
-            const tbFields = fields.filter(f => f.table_id == table_id)
-
-            let api = await this.#__apis.find({ api_id })
-            if (api == undefined) {
-                api = {
-                    id: undefined,
-                    api_id: undefined,
-                    api_name: undefined,
-                    tables: [table.id],
-                    fields: tbFields.map(field => {
-                        return { id: field.id, display_name: field.field_name, fomular_alias: field.fomular_alias }
-                    }),
-                    body: tbFields.map(field => field.id),
-                    params: table.primary_key,
+                    const tbFields = fields.filter(f => f.table_id == table_id)
+        
+                    let api = await this.#__apis.find({ api_id })
+                    if (api == undefined) {
+                        api = {
+                            id: undefined,
+                            api_id: undefined,
+                            api_name: undefined,
+                            tables: [table.id],
+                            fields: tbFields.map(field => {
+                                return { id: field.id, display_name: field.field_name, fomular_alias: field.fomular_alias }
+                            }),
+                            body: tbFields.map(field => field.id),
+                            params: table.primary_key,
+                        }
+                    }
+        
+                    const Api = new ApisRecord(api)
+                    this.API = Api
+                    this.req = req
+                    this.res = res
+        
+                    this.fields = fields;
+                    this.tables = tables.map(table => {
+                        const { id } = table;
+                        table.fields = fields.filter(field => field.table_id == id)
+                        return table
+                    });
+        
+                    if (!criteria || objectComparator(criteria, {})) {
+        
+                        this.API.params.value([])
+                        this.GET_UI(start_index)
+                    } else {
+                        this.req.body = { query: criteria, start_index, require_count, exact }
+                        this.SEARCH()
+                    }
+                } else {
+                    res.status(200).send({ success: false, content: "Không có quyền truy cập API này" })    
                 }
+            }else{
+                res.status(200).send({ success: false, content: "No TABLE Found" })
             }
-
-            const Api = new ApisRecord(api)
-            this.API = Api
-            this.req = req
-            this.res = res
-
-            this.fields = fields;
-            this.tables = tables.map(table => {
-                const { id } = table;
-                table.fields = fields.filter(field => field.table_id == id)
-                return table
-            });
-
-            if (!criteria || objectComparator(criteria, {})) {
-
-                this.API.params.value([])
-                this.GET_UI(start_index)
-            } else {
-                this.req.body = { query: criteria, start_index, require_count, exact }
-                this.SEARCH()
-            }
-        } else {
-            res.status(200).send({ success: false, content: "No TABLE Found" })
+        }else{
+            res.status(200).send({ success: false, content: "Token không hợp lệ" })
         }
     }
 

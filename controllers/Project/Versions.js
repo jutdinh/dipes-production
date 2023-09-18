@@ -11,6 +11,7 @@ const { intValidate } = require('../../functions/validator');
 const { Tables, TablesRecord } = require('../../models/Tables');
 const { Fields, FieldsRecord } = require('../../models/Fields');
 const { Apis, ApisRecord } = require('../../models/Apis');
+const { Privileges, PrivilegesRecord } = require('../../models/privileges')
 
 const { Activation } = require('../../models/Activation');
 const { Database } = require('../../config/models/database');
@@ -25,6 +26,7 @@ class VersionsController extends Controller {
     #__apis = new Apis();    
     #__projects = new Projects()
     #__keys = new Activation();
+    #__privileges = new Privileges()
 
 
     constructor(){
@@ -255,6 +257,67 @@ class VersionsController extends Controller {
         }
     }
 
+    getTable = (tableId) => {
+        const table = this.tables.find(tb => tb.id == tableId)
+        return table;
+    }
+
+    
+    findSlaveRecursive = (table, master) => {
+        const { foreign_keys } = table;
+        const slaveRelation = foreign_keys.find(key => key.table_id == master.id)
+
+        if (slaveRelation) {
+            return true
+        } else {
+            if (foreign_keys.length == 0) {
+                return false
+            } else {
+                let found = false
+                for (let i = 0; i < foreign_keys.length; i++) {
+                    const { table_id } = foreign_keys[i]
+                    const nextMaster = this.getTable(table_id)
+                    if (!found) {
+                        found = this.findSlaveRecursive(nextMaster, master)
+                    }
+                }
+                return found
+            }
+        }
+    }
+
+    detectAllSlave = (master) => {
+        const tables = this.tables;
+        const slaves = []
+        for (let i = 0; i < tables.length; i++) {
+            const table = tables[i]
+            let found = this.findSlaveRecursive(table, master)
+            if (found) {
+                slaves.push(table)
+            }
+        }
+        return slaves
+    }
+
+
+    detectAllMaster = (slave) => {
+        const tables = this.tables;
+        const masters = []
+
+        for (let i = 0; i < tables.length; i++) {
+            const table = tables[i]
+
+            const slaves = this.detectAllSlave(table)
+            const isAMaster = slaves.find(tb => tb.id == slave.id)
+
+            if (isAMaster) {
+                masters.push(table)
+            }
+        }
+        return masters
+    }
+
+
     importDatabase = async ( req, res ) => {
         const { data } = req.body;
 
@@ -266,6 +329,8 @@ class VersionsController extends Controller {
             const keys = await this.#__keys.findAll()
             const key = keys[0]
 
+            
+            
             if( key ){
                 // const project_id = this.getProjectIDFromKey( key )
                 // if( project_id != undefined ){
@@ -284,15 +349,35 @@ class VersionsController extends Controller {
                             await this.#__tables.deleteAll();
                             await this.#__fields.deleteAll();
                             await this.#__projects.deleteAll()
+                            await this.#__privileges.deleteAll()
                     
                             await this.#__tables.insertMany( tables );
                             await this.#__fields.insertMany( newFields );   
-                            await this.#__projects.insertMany( [ project ] )    
-                            
+                            await this.#__projects.insertMany( [ project ] )  
+                            const accounts = await this.#__accounts.findAll()
+                            const privileges = []
+                            this.tables = tables;
+
+
+                            const systemTables = [
+                                { table_alias: "accounts", keys: [ "username" ] },
+                                { table_alias: "table", keys: [ "id" ] },
+                                { table_alias: "privileges", keys: [ "username", "table_id" ] }                                
+                            ]
+
+                            await Promise.all(systemTables.map( (table) => {
+                                const { table_alias, keys } = table
+                                const indexing = {}
+                                keys.map( key => indexing[key] = 1 )
+                                return dbo.collection(`${table_alias}`).createIndex( indexing )
+                            }))
+
+                            /** check indexing and privileges */
+
                             
                             for( let i = 0 ; i < tables.length; i++ ){
                                 const table = tables[i]
-                                const { primary_key, table_alias } = table 
+                                const { primary_key, table_alias, foreign_keys } = table 
                                 const indexing = {}
                                 primary_key.map( field_id => {
                                     const primaryField = fields.find( f => f.id == field_id )
@@ -300,9 +385,46 @@ class VersionsController extends Controller {
                                         indexing[primaryField.fomular_alias] = 1
                                     }
                                 })
-                                await dbo.collection(`${table_alias}`).createIndex( {...indexing,  "position": 1 } )                                
+                                const masters = this.detectAllMaster(table)
+                                for( let j = 0 ; j < masters.length; j++ ){
+                                    const master = masters[j]
+                                    const { primary_key } = master;
+                                    const primary_fields =  fields.filter( field => primary_key.indexOf( field.id ) != -1 );
+                                    const masterIndexing = {}
+                                    primary_fields.map( field => {
+                                        masterIndexing[field.fomular_alias] = 1
+                                    })
+                                    await dbo.collection(`${table_alias}`).createIndex( masterIndexing )                                
+                                }                                
+
+                                await Promise.all( foreign_keys.map( key => {
+                                    const { field_id } = key;
+                                    const field = fields.find( f => f.id == field_id )
+                                    return dbo.collection(`${table_alias}`).createIndex( { [field.fomular_alias]: 1 } )                                
+                                }))
+
+                                if( primary_key.length > 0 ){                                    
+                                    await dbo.collection(`${table_alias}`).createIndex( indexing )                                
+                                }
+                                await dbo.collection(`${table_alias}`).createIndex( { "position": 1 } )     
+                                
+                                
+                                accounts.map( account => {
+                                    const isAdmin = account.role == "ad" ? true : false;
+
+                                    const privilege = {
+                                        username: account.username,
+                                        table_id: table.id,
+                                        read: true,
+                                        write: isAdmin,
+                                        modify: isAdmin,
+                                        purge: isAdmin
+                                    }
+                                    privileges.push( privilege )
+                                })
                             }
 
+                            await this.#__privileges.insertMany( privileges );                              
                             res.status(200).send({ success: true })
                         // }
                         // else{
