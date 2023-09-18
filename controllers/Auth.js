@@ -664,6 +664,16 @@ class Auth extends Controller {
         res.status(200).send(context)
     }
 
+    getPrivilegesOnTables = async ( req, res ) => {
+        const tables = await this.#__tables.findAll()
+        const formatedTables = []
+        for( let i = 0; i < tables.length; i++ ){
+            const table = tables[i]
+            const table_id = table.id;           
+            table.accounts = await this.#__privileges.findAll({ table_id });
+            
+        }
+    }
 
 
     changeUserPrivileges = async (req, res) => {
