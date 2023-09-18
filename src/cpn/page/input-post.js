@@ -13,6 +13,7 @@ import {
 export default () => {
     const dispatch = useDispatch();
     const { id_str } = useParams()
+    const _token = localStorage.getItem("_token");
     const { project_id, version_id, url } = useParams();
     let navigate = useNavigate();
     const { proxy, pages, lang, functions } = useSelector(state => state);
@@ -53,7 +54,12 @@ export default () => {
 
     useEffect(() => {
 
-        fetch(`${proxy()}/apis/api/${id_str}/input_info`).then(res => res.json())
+        fetch(`${proxy()}/apis/api/${id_str}/input_info`,{
+            headers: {
+                Authorization: _token
+            }
+        })
+        .then(res => res.json())
             .then(res => {
                 const { success, api, relatedTables, data } = res;
 
@@ -104,7 +110,7 @@ export default () => {
 
     const [isLoading, setIsLoading] = useState(false);
 
-
+    
 
     const submit = () => {
 
@@ -113,6 +119,7 @@ export default () => {
             fetch(`${proxy()}${result?.components?.[0]?.api_post}`, {
                 method: "POST",
                 headers: {
+                    Authorization: `${_token}`,
                     "content-type": "application/json"
                 },
 

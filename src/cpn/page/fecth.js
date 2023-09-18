@@ -312,11 +312,12 @@ export default () => {
             };
             logCount++;
             // console.log("Sample batch data:", requestBody);
-
+            
             try {
                 const response = await fetch(`${proxy()}${page.components?.[0]?.api_import}`, {
                     method: "POST",
                     headers: {
+                        Authorization: _token,
                         "content-type": "application/json",
                     },
                     body: JSON.stringify(requestBody)
@@ -351,7 +352,11 @@ export default () => {
             // const id_str = page.components?.[0]?.api_post.split('/')[2];
             const id_str = page.components?.[0]?.api_post.split('/')[2];
             // console.log(id_str)
-            fetch(`${proxy()}/apis/api/${id_str}/input_info`)
+            fetch(`${proxy()}/apis/api/${id_str}/input_info`,{
+                headers: {
+                    Authorization: _token
+                }
+            })
                 .then(res => res.json())
                 .then(res => {
                     const { data, success, content } = res;
@@ -451,7 +456,7 @@ export default () => {
             method: "POST",
             headers: {
                 "content-type": "application/json",
-                Authorization: `${_token}`,
+                Authorization: _token,
                 fromIndex: currentPage - 1
             },
             body: JSON.stringify(searchBody)
@@ -588,7 +593,9 @@ export default () => {
         fetch(`${proxy()}${rawParams}`, {
             method: "DELETE",
             headers: {
+                Authorization: _token,
                 "content-type": "application/json"
+              
             }
         }).then(res => res.json()).then(res => {
             const { success, content } = res;
@@ -697,7 +704,11 @@ export default () => {
             const id_str = api_put.split('/')[2]
 
             const response = await new Promise((resolve, reject) => {
-                fetch(`${proxy()}/apis/api/${id_str}/input_info`)
+                fetch(`${proxy()}/apis/api/${id_str}/input_info`,{
+                    headers: {
+                        Authorization: _token
+                    }
+                })
                     .then(res => res.json())
                     .then(res => {
                         const { data, success, content } = res;

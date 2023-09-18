@@ -13,6 +13,7 @@ import {
 export default () => {
     const dispatch = useDispatch();
     const { id_str } = useParams()
+    const _token = localStorage.getItem("_token");
     const { project_id, version_id, url } = useParams();
     let navigate = useNavigate();
     const { proxy, pages, lang } = useSelector(state => state);
@@ -69,6 +70,7 @@ export default () => {
             setData(newData);
         }
     }
+
     const nullCheck = () => {        
         let valid = true;
         for (let i = 0; i < fields.length; i++) {
@@ -83,13 +85,18 @@ export default () => {
         return valid;
     }
 
-
     useEffect(() => {
         const url = window.location;
         const rawParams = url.pathname.split(`/${id_str}/`)[1];
         const paramsList = rawParams.split('/');
         // console.log(rawParams)
-        fetch(`${proxy()}/apis/api/${id_str}/input_info`).then(res => res.json())
+        fetch(`${proxy()}/apis/api/${id_str}/input_info`,
+        {
+            headers: {
+                Authorization: _token
+            }
+        })
+        .then(res => res.json())
             .then(res => {
                 const { success, data } = res;
                 // console.log(res)
@@ -117,14 +124,15 @@ export default () => {
                     setTables(data.tables)
                     setRelatedTables(relatedTables)
 
-                    
-
-                    fetch(`${proxy()}/apis/retrieve/${id_str}/${rawParams}`)
+                    fetch(`${proxy()}/apis/retrieve/${id_str}/${rawParams}`,{
+                        headers: {
+                            Authorization: _token
+                        }
+                    })
                         .then(res => res.json()).then(res => {
                             // console.log(res);
 
                             const { data } = res;
-
                             let initData = data;
                             // console.log(serializeParams)
                             for (let i = 0; i < params.length; i++) {
@@ -134,7 +142,6 @@ export default () => {
                                     return row[fomular_alias] == decodedString
                                 })
                             }
-
                             if (initData[0]) {
                                 const data = {};
                                 apiFields.map(field => {
@@ -167,6 +174,7 @@ export default () => {
             fetch(`${proxy()}/ui/${id_str}/${paramsList.join('/')}`, {
                 method: "PUT",
                 headers: {
+                    Authorization: `${_token}`,
                     "content-type": "application/json"
                 },
 
@@ -220,17 +228,13 @@ export default () => {
                     text: lang["fail.null"],
                     icon: "error",
                     showConfirmButton: true,
-
                 }).then(function () {
                     // Không cần reload trang
                 });
             }
         }
     };
-
-
     return (
-
         <div class="midde_cont">
             <div class="container-fluid">
                 <div class="row column_title">
