@@ -282,6 +282,7 @@ export default () => {
 
             reader.onload = (e) => {
                 try {
+                    const startTime = new Date().getTime();
                     let isValidHeader = true;
                     let modifiedData;
 
@@ -308,11 +309,15 @@ export default () => {
                                         }
                                         return newRow;
                                     });
+                                    const endTime = new Date().getTime();
+                                    const elapsedTime = endTime - startTime;
+                                    // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
                                 // console.log("Parsed CSV Result:", modifiedData);
                             },
                             header: true
                         });
                     } else if (['xlsx', 'xls'].includes(fileExtension)) {
+                        const startTime = new Date().getTime();
                         const workbook = XLSX.read(e.target.result, { type: 'binary' });
                         const sheetName = workbook.SheetNames[0];
                         const json = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
@@ -343,7 +348,9 @@ export default () => {
                             setErrorSelect(lang["Number of rows exceeds the allowable limit"]);
                             return;
                         }
-
+                        const endTime = new Date().getTime();
+                        const elapsedTime = endTime - startTime;
+                        // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
                         // console.log("Parsed Excel Result:", modifiedData);
                     }
 
