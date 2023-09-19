@@ -76,7 +76,7 @@ class Controller {
     }
 
     isAdmin = ( user ) => {
-        if( user.role == permission.ad ){
+        if( user.role == permission.ad || user.role == permission.uad ){
             return true;
         }
         return false

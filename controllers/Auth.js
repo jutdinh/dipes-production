@@ -671,8 +671,13 @@ class Auth extends Controller {
             const table = tables[i]
             const table_id = table.id;           
             table.accounts = await this.#__privileges.findAll({ table_id });
-            
+            for( let j = 0 ; j < table.accounts.length; j++ ){
+                const { username } = table.accounts[j]
+                const account = await this.#__accounts.find({ username })
+                table.accounts[j].account = account;
+            }
         }
+        res.status(200).send({ success: true, tables })
     }
 
 

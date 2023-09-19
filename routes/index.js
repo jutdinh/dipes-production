@@ -7,6 +7,7 @@ const Tables = require('./tables')
 const Fields = require('./fields')
 const Api = require('./api')
 const UI = require('./ui')
+const Privileges = require('./privileges')
 
 module.exports = {
     Auth,
@@ -18,5 +19,6 @@ module.exports = {
     Tables,
     Fields,
     Api,
-    UI
+    UI,
+    Privileges
 }

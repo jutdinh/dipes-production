@@ -38,7 +38,7 @@ app.use( cors() )
 //     console.log("Connected")
 // })
 
-const { Auth, Projects, Versions, Logs, Tasks, Tables, Fields, Api, UI } = require('./routes');
+const { Auth, Projects, Versions, Logs, Tasks, Tables, Fields, Api, UI, Privileges } = require('./routes');
 
 const ConsumeApi = require('./controllers/ConsumeApi');
 
@@ -60,6 +60,7 @@ app.use('/versions', Versions );
 // app.use('/db/fields', Fields );
 app.use('/apis', Api );
 // app.use('/uis', UI );
+app.use('/privileges', Privileges)
 
 app.post('/api/foreign/data', async (req, res) => {
     req.credential = await verifyToken(req)

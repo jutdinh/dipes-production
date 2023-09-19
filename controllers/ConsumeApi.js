@@ -14,7 +14,7 @@ const fastcsv = require('fast-csv')
 const XLSX = require('xlsx-js-style');
 
 const Cache = require('./Cache/Cache');
-const { Privileges } = require('../models/privileges');
+const { Privileges } = require('../models/Privileges');
 
 const RESULT_PER_SEARCH_PAGE = 15
 const DEFAULT_ERROR_CALCLATED_VALUE = "NaN"

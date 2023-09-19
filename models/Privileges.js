@@ -30,7 +30,7 @@ class Privileges extends Model{
     }
 }   
 class PrivilegesRecord extends Privileges {
-    constructor( { id, username, table_id, select, insert, update, remove } ){
+    constructor( { id, username, table_id, read, write, modify, purge } ){
         super();
         this.setDefaultValue( { id, username, table_id, read, write, modify, purge } )        
     }
