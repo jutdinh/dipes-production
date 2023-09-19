@@ -9,7 +9,7 @@ const { Accounts, AccountsRecord } = require('../models/Accounts');
 const { EventLogsRecord } = require( '../models/EventLogs' );
 const { Projects } = require('../models/Projects');
 
-const { Privileges } = require('../models/privileges');
+const { Privileges } = require('../models/Privileges');
 const { Tables } = require('../models/Tables');
 
 

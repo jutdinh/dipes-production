@@ -11,7 +11,7 @@ const { intValidate } = require('../../functions/validator');
 const { Tables, TablesRecord } = require('../../models/Tables');
 const { Fields, FieldsRecord } = require('../../models/Fields');
 const { Apis, ApisRecord } = require('../../models/Apis');
-const { Privileges, PrivilegesRecord } = require('../../models/privileges')
+const { Privileges, PrivilegesRecord } = require('../../models/Privileges')
 
 const { Activation } = require('../../models/Activation');
 const { Database } = require('../../config/models/database');
