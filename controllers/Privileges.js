@@ -22,52 +22,85 @@ class PrivilegesController extends Controller {
     }
 
     getPrivilegesOnTables = async ( req, res ) => {
-        const tables = await this.#__tables.findAll()
-        const accounts = await this.#__accounts.findAll()
-        const formatedTables = []
+        const verified = await this.verifyToken(req);  
 
-        const serializeAccounts = {}
-        accounts.map( account => {
-            serializeAccounts[account.username] = account
-        })
+        const context = {
+            success: false,
+            content: "",
+            data: {},
+            status: 200
 
-        for( let i = 0; i < tables.length; i++ ){
-            const table = tables[i]
-            const table_id = table.id;           
-            table.accounts = await this.#__privileges.findAll({ table_id });
-            for( let j = 0 ; j < table.accounts.length; j++ ){
-                const { username } = table.accounts[j]
-               
-                table.accounts[j].account = serializeAccounts[ username ];
-            }
-            formatedTables.push(table)
         }
-        res.status(200).send({ success: true, tables: formatedTables })
+        if(verified){
+
+            const tables = await this.#__tables.findAll()
+            const accounts = await this.#__accounts.findAll()
+            const formatedTables = []
+    
+            const serializeAccounts = {}
+            accounts.map( account => {
+                serializeAccounts[account.username] = account
+            })
+    
+            for( let i = 0; i < tables.length; i++ ){
+                const table = tables[i]
+                const table_id = table.id;           
+                table.accounts = await this.#__privileges.findAll({ table_id });
+                for( let j = 0 ; j < table.accounts.length; j++ ){
+                    const { username } = table.accounts[j]
+                   
+                    table.accounts[j].account = serializeAccounts[ username ];
+                }
+                formatedTables.push(table)
+            }
+            context.success = true 
+            context.data = formatedTables 
+        }else{
+            context.content = "Token không hợp lệ"
+            context.status = "0x4501040"
+        }
+        res.status(200).send( context )
     }
 
 
     getPrivilegesOnUsers = async ( req, res ) => { // in process
-        const accounts = await this.#__accounts.findAll()
-        const tables = await this.#__tables.findAll()
+        const verified = await this.verifyToken(req);  
 
-        const serializeTables = {}
-        tables.map( table => {
-            serializeTables[`${ table.id }`] = table
-        })
+        const context = {
+            success: false,
+            content: "",
+            data: {},
+            status: 200
 
-        const formatedAccounts = []
-        for( let i = 0; i < accounts.length; i++ ){
-            const account = accounts[i]
-            const username = account.username;           
-            account.privileges = await this.#__privileges.findAll({ username })
-
-            for( let j = 0 ; j < account.privileges.length; j++ ){
-                account.privileges[j].table = serializeTables[ account.privileges[j].table_id ]
-            }
-
-            formatedAccounts.push(account)
         }
-        res.status(200).send({ success: true, accounts: formatedAccounts })
+        if(verified){
+
+            const accounts = await this.#__accounts.findAll()
+            const tables = await this.#__tables.findAll()
+    
+            const serializeTables = {}
+            tables.map( table => {
+                serializeTables[`${ table.id }`] = table
+            })
+    
+            const formatedAccounts = []
+            for( let i = 0; i < accounts.length; i++ ){
+                const account = accounts[i]
+                const username = account.username;           
+                account.privileges = await this.#__privileges.findAll({ username })
+    
+                for( let j = 0 ; j < account.privileges.length; j++ ){
+                    account.privileges[j].table = serializeTables[ account.privileges[j].table_id ]
+                }    
+                formatedAccounts.push(account)
+            }  
+            context.success = true 
+            context.data = formatedAccounts
+        }else{
+            context.content = "Token không hợp lệ"
+            context.status = "0x4501040"
+        }
+        res.status(200).send( context )
     }
 
 
@@ -91,7 +124,7 @@ class PrivilegesController extends Controller {
                 if( privilege ){
                     const Privilege = new PrivilegesRecord( {...privilege, ...privileges} )                    
                     await Privilege.save()
-                    
+
                     context.success = true; 
                     context.content = "Thay đổi thành công"
                     context.status = "0x4501029" 
@@ -111,5 +144,3 @@ class PrivilegesController extends Controller {
     }
 }
 module.exports = PrivilegesController
-
-    
