@@ -1021,8 +1021,7 @@ class ConsumeApi extends Controller {
                             tearedObject.data[fomular_alias] = this.req.body[fomular_alias]
                         } else {
                             if (Fields.isIntFamily(DATATYPE) && AUTO_INCREMENT) {
-                                tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(table_alias, PATTERN)
-                                isAutoIncreTriggerd = true
+                                tearedObject.data[fomular_alias] = await this.makeAutoIncreament(table_alias, PATTERN)
                             } else {
                                 tearedObject.data[fomular_alias] = this.req.body[fomular_alias]
                             }
@@ -1036,10 +1035,9 @@ class ConsumeApi extends Controller {
                         if (foreignKey) {
                             const foreignField = this.getField(foreignKey.ref_field_id);
                             const foreignTable = this.getTable(foreignField.table_id);
-                            tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(foreignTable.table_alias, PATTERN)
+                            tearedObject.data[fomular_alias] = await this.makeAutoIncreament(foreignTable.table_alias, PATTERN)
                         } else {
-                            tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(table_alias, PATTERN)
-                            isAutoIncreTriggerd = true
+                            tearedObject.data[fomular_alias] = await this.makeAutoIncreament(table_alias, PATTERN)
                         }
                     } else {
                         tearedObject.data[fomular_alias] = this.req.body[fomular_alias]
@@ -1324,6 +1322,7 @@ class ConsumeApi extends Controller {
 
 
     makeAutoIncreament = async (table_alias, pattern, distance = 0) => {
+        console.log(table_alias)
         const auto_id = await Database.getAutoIncrementId(`${table_alias}-id`)
         const number = auto_id + distance
         let result = pattern
@@ -1978,12 +1977,12 @@ class ConsumeApi extends Controller {
                                     recordUpdateQuery[fomular_alias] = record[fomular_alias]
                                 }
                             })
-                            await Promise.all(slaves.map(slave => {
+                            Promise.all(slaves.map(slave => {
                                 return Database.update(slave.table_alias, recordUpdateQuery, { ...record })
                             }))
                         }
                     }
-                    this.res.status(200).send({ sortedBody })
+                    this.res.status(200).send({ success: true })
                 } else {
                     this.res.status(200).send({
                         success: false,
