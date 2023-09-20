@@ -18,10 +18,12 @@ import {
 } from '../inputs search';
 
 import StatisTable from './statistic/table'
+import { FunnelChart } from "recharts";
 
 export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
-
+    const stringifiedUser = localStorage.getItem("user");
+    const _user = JSON.parse(stringifiedUser) || {}
 
     const { formatNumberWithCommas } = functions
 
@@ -312,7 +314,7 @@ export default () => {
             };
             logCount++;
             // console.log("Sample batch data:", requestBody);
-            
+
             try {
                 const response = await fetch(`${proxy()}${page.components?.[0]?.api_import}`, {
                     method: "POST",
@@ -338,8 +340,30 @@ export default () => {
             }
         }
     };
+    const [dataPrivileges, setDataPrivileges] = useState([]);
+    useEffect(() => {
 
+        fetch(`${proxy()}/privileges/accounts`, {
+            headers: {
+                Authorization: _token
+            }
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success, data, activated, status, content } = resp;
+                console.log(11, resp)
+                if (success && data.length > 0) {
+                    const dataUser = data.find(item => item.username === _user.username);
+                    console.log(_user.username)
+                    console.log(dataUser)
+                    setDataPrivileges(dataUser?.privileges)
+                }
+            })
 
+    }, [])
+    console.log(dataPrivileges)
+    const dataCheck = dataPrivileges?.find(item => item.table_id === dataTable_id);
+    console.log(dataCheck)
     useEffect(() => {
 
         importData()
@@ -352,7 +376,7 @@ export default () => {
             // const id_str = page.components?.[0]?.api_post.split('/')[2];
             const id_str = page.components?.[0]?.api_post.split('/')[2];
             // console.log(id_str)
-            fetch(`${proxy()}/apis/api/${id_str}/input_info`,{
+            fetch(`${proxy()}/apis/api/${id_str}/input_info`, {
                 headers: {
                     Authorization: _token
                 }
@@ -480,7 +504,7 @@ export default () => {
                     } else if (!requireCount && currentCount != null) {
                         setSumerize(currentCount);
                     }
-                }else{
+                } else {
                     setApiData([]);
                 }
 
@@ -597,7 +621,7 @@ export default () => {
             headers: {
                 Authorization: _token,
                 "content-type": "application/json"
-              
+
             }
         }).then(res => res.json()).then(res => {
             const { success, content } = res;
@@ -706,7 +730,7 @@ export default () => {
             const id_str = api_put.split('/')[2]
 
             const response = await new Promise((resolve, reject) => {
-                fetch(`${proxy()}/apis/api/${id_str}/input_info`,{
+                fetch(`${proxy()}/apis/api/${id_str}/input_info`, {
                     headers: {
                         Authorization: _token
                     }
@@ -1526,10 +1550,13 @@ export default () => {
                                     </div>
 
                                     {statusActive ? (
-                                        <div class="ml-auto  mt-2 pointer" onClick={() => redirectToInput()} data-toggle="modal" title={lang["btn.create"]}>
 
-                                            <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
-                                        </div>
+                                        <>
+                                            {dataCheck && dataCheck?.write ?
+                                                <div className="ml-auto mt-2 pointer" onClick={() => redirectToInput()} data-toggle="modal" title={lang["btn.create"]}>
+                                                    <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
+                                                </div> : null}
+                                        </>
                                     ) : null}
                                     {
                                         current && current.length > 0 ? (
@@ -1544,9 +1571,10 @@ export default () => {
                                         <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
 
                                     </div>
-                                    <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
-                                        <FontAwesomeIcon icon={faFileImport} className="icon-import" />
-                                    </div>
+                                    {dataCheck && dataCheck?.write ?
+                                        <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
+                                            <FontAwesomeIcon icon={faFileImport} className="icon-import" />
+                                        </div> : null}
 
                                 </div>
                                 <div class="full inner_elements">
@@ -1606,8 +1634,13 @@ export default () => {
                                                                                                                             ))}
                                                                                                                             <td class="align-center" style={{ minWidth: "80px" }}>
 
-                                                                                                                                <i class="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
-                                                                                                                                <i class="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                                                                {dataCheck && dataCheck?.modify ?
+                                                                                                                                    <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
+                                                                                                                                    : null}
+
+                                                                                                                                {dataCheck && dataCheck?.purge ?
+                                                                                                                                    <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                                                                    : null}
                                                                                                                             </td>
                                                                                                                         </tr>)
                                                                                                                 } else {
@@ -1691,7 +1724,7 @@ export default () => {
                                                                                                                     />
                                                                                                                 </th>
                                                                                                             ))}
-                                                                                                            <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size pointer icon-margin mb-2" title={lang["search"]}></i></th>
+                                                                                                            <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size-24 pointer icon-margin mb-2" title={lang["search"]}></i></th>
                                                                                                         </tr>
 
                                                                                                     </thead>
@@ -1770,11 +1803,16 @@ export default () => {
                                                         </div>
 
                                                         {statusActive ? (
-                                                            <div class="ml-auto mt-2 pointer" onClick={() => redirectToInput()} data-toggle="modal" title={lang["btn.create"]}>
+                                                            <>
+                                                                {dataCheck && dataCheck?.write ?
+                                                                    <div className="ml-auto mt-2 pointer" onClick={() => redirectToInput()} data-toggle="modal" title={lang["btn.create"]}>
+                                                                        <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
+                                                                    </div> : null}
+                                                            </>
 
-                                                                <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
-                                                            </div>
                                                         ) : null}
+
+
                                                         {
                                                             current && current.length > 0 ? (
                                                                 <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcel" title={lang["export_excel_csv"]}>
@@ -1788,9 +1826,13 @@ export default () => {
                                                             <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
 
                                                         </div>
-                                                        <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
-                                                            <FontAwesomeIcon icon={faFileImport} className="icon-import" />
-                                                        </div>
+
+                                                        {dataCheck && dataCheck?.write ?
+                                                            <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
+                                                                <FontAwesomeIcon icon={faFileImport} className="icon-import" />
+                                                            </div> : null}
+
+
 
 
                                                     </div>
@@ -1850,8 +1892,14 @@ export default () => {
                                                                                                         </td>
                                                                                                     ))}
                                                                                                     <td className="align-center cell" style={{ minWidth: "80px" }}>
-                                                                                                        <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
-                                                                                                        <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                                        {dataCheck && dataCheck?.modify ?
+                                                                                                            <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
+                                                                                                            : null}
+
+                                                                                                        {dataCheck && dataCheck?.purge ?
+                                                                                                            <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                                            : null}
+
                                                                                                     </td>
                                                                                                 </tr>
                                                                                             );
@@ -1940,7 +1988,7 @@ export default () => {
                                                                                         />
                                                                                     </th>
                                                                                 ))}
-                                                                                <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size pointer icon-margin mb-2" title={lang["search"]}></i></th>
+                                                                                <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size-24 pointer icon-margin mb-2" title={lang["search"]}></i></th>
                                                                             </tr>
 
                                                                         </thead>
