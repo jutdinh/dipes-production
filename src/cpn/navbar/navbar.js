@@ -77,6 +77,15 @@ export default () => {
                ) : null}
 
                {user.role === "ad" || user.role === "uad" ? (
+                  <li className="navbar-item">
+                     <NavLink to="/privileges" activeClassName="nav-active">
+                        <i class="fa fa-users icon-user"></i>
+                        <span>{lang["privileges manager"]}</span>
+                     </NavLink>
+                  </li>
+               ) : null}
+
+               {user.role === "ad" || user.role === "uad" ? (
                   <li>
                      <a href="#dashboard" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
                         <i class="fa fa-dashboard yellow_color"></i>

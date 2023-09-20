@@ -208,7 +208,7 @@ export default (props) => {
                                             <h5>{lang["profile user"]}</h5>
                                         </div>
                                         {user.role !== "uad" ? (
-                                            <i className="fa fa-edit size pointer" data-toggle="modal" data-target="#editMember"></i>
+                                            <i className="fa fa-edit size-24 icon-edit pointer" data-toggle="modal" data-target="#editMember"></i>
                                         ) : null}
 
                                     </div>
@@ -281,7 +281,7 @@ export default (props) => {
                                             <div class="full dis_flex center_text">
                                                 <div className="profile_img" onClick={handleClick}>
                                                     <img
-                                                        width="180"
+                                                        width="80"
                                                         className="rounded-circle"
                                                         src={profile.avatar && profile.avatar.length < 255 ? (proxy() + profile.avatar) : profile.avatar}
                                                         alt="#"

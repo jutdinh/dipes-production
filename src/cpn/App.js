@@ -15,7 +15,8 @@ import { Navigation, PageNotFound } from './navigations';
 import { Login, SignUp, SignOut } from './auth';
 import { Settings } from './settings';
 import { Projects, ProjectsCard, ProjectDetail } from './projects';
-import { ListUser, Profile } from './users';
+import { ListUser, Profile, Permission, PermissionDetail } from './users';
+
 import { Tasks } from './tasks';
 import { Logs } from './logs';
 import { Tables, Field, UpdateField } from './tables';
@@ -131,8 +132,11 @@ function App() {
         {/* <Route path="/logs" element={<Navigation Child={Logs} />} /> */}
         <Route path="/users" element={<Navigation Child={ListUser} />} />
         <Route path="/users/profile" element={<Navigation Child={Profile} />} />
+        <Route path="/privileges" element={<Navigation Child={Permission} />} />
+        <Route path="/privileges/detail" element={<Navigation Child={PermissionDetail} />} />
         <Route path="/settings" element={<Navigation Child={Settings} />} />
         <Route path="/active" element={<Navigation Child={Active_Key} />} />
+       
        
         <Route path="/sitemap" element={<Navigation Child={SiteMap} />} />
 

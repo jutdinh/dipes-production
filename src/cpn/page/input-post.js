@@ -119,7 +119,7 @@ export default () => {
             fetch(`${proxy()}${result?.components?.[0]?.api_post}`, {
                 method: "POST",
                 headers: {
-                    Authorization: `${_token}`,
+                    Authorization: _token,
                     "content-type": "application/json"
                 },
 

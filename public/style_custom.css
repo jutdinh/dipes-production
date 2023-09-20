@@ -14,8 +14,21 @@
 }
 
 
+.circle-image_list_user {
+    border-radius: 100%;
+    width: 28px;
+}
+.profile_contacts_list_user {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 3px;
+    padding-bottom: 1px;
+    /* min-height: 50px; */
+    display: inline-block;
+    vertical-align: middle;
 
-
+}
 .copy-alert {
     display: flex;
     align-items: center;

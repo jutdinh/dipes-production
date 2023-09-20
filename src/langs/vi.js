@@ -296,7 +296,10 @@ export default {
     "import data": "Import dữ liệu",
     "value": "Giá trị",
     "criteria": "Tiêu chí",
-    "importing": "Đang nhập dữ liệu"
+    "importing": "Đang nhập dữ liệu",
+    "privileges manager": "Quản lý quyền",
+    "avatar": "Ảnh đại diện",
+    "table name": "Tên bảng"
 
 
 

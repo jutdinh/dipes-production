@@ -179,7 +179,7 @@ export default () => {
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="white_shd full margin_bottom_30">
+                        <div class="white_shd full">
 
                             {statusActive ? (
                                 <div className="pot">

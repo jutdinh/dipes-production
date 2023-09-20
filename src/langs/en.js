@@ -22,7 +22,7 @@ export default {
     "user info": "Hi",
     "projects manager": "Project Manager",
     "project list": "Project List",
-    "accounts manager": "Accounts Manager",
+    "accounts manager": "Accounts Management",
     "profile": "Profile",
     "accounts list": "Account list",
     "report": "Reports",
@@ -302,7 +302,10 @@ export default {
     "import data": "Import Data",
     "value": "Value",
     "criteria": "Criteria",
-    "importing": "Importing data"
+    "importing": "Importing data",
+    "privileges manager": "Permission Management",
+    "avatar": "Avatar",
+    "table name": "Table name"
 
 }
 

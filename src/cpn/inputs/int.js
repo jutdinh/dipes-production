@@ -10,7 +10,7 @@ import { AsyncPaginate } from 'react-select-async-paginate';
 export default (props) => {
     const { field, changeTrigger, related, table, defaultValue, selectOption } = props;
     const selectRef = useRef(null);
-
+    const _token = localStorage.getItem("_token");
     const [current, setCurrent] = useState(defaultValue ? defaultValue : "")
     const [fields, setFields] = useState([])
     const [height, setHeight] = useState(0)
@@ -45,6 +45,7 @@ export default (props) => {
                 fetch(`${proxy()}/api/foreign/data`, {
                     method: "POST",
                     headers: {
+                        Authorization: _token,
                         "content-type": "application/json",
 
                     },
@@ -90,6 +91,7 @@ export default (props) => {
                         fetch(`${proxy()}/api/foreign/data`, {
                             method: "POST",
                             headers: {
+                                Authorization: _token,
                                 "content-type": "application/json",
 
                             },
@@ -140,6 +142,7 @@ export default (props) => {
         const response = await fetch(`${proxy()}/api/foreign/data`, {
             method: "POST",
             headers: {
+                Authorization: _token,
                 "content-type": "application/json",
             },
             body: JSON.stringify(dataBody)
@@ -165,7 +168,7 @@ export default (props) => {
 
         let hasMoreValue;
 
-       
+
 
         if (dataWithoutNull.length === 0) {
             hasMoreValue = false;
@@ -257,7 +260,7 @@ export default (props) => {
         // console.log("Before update: ", selectedValue);
         setSelectedValue(option);
         // console.log("After update: ", selectedValue);
-        fieldChangeData({ target: { value: option.value } }); 
+        fieldChangeData({ target: { value: option.value } });
     };
 
     const [isLoading, setIsLoading] = useState(false);
@@ -296,6 +299,7 @@ export default (props) => {
                 const response = await fetch(`${proxy()}/api/foreign/data`, {
                     method: "POST",
                     headers: {
+                        Authorization: _token,
                         "content-type": "application/json",
                     },
                     body: JSON.stringify(dataBody)
@@ -367,8 +371,6 @@ export default (props) => {
                                     <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
 
                                     <AsyncPaginate
-                                        // defaultOptions
-                                        // key={ Math.random()}
                                         loadOptions={loadOptions}
                                         onChange={handleChange}
                                         isSearchable={true}
@@ -382,7 +384,9 @@ export default (props) => {
                                         additional={{
                                             page: 0,
                                         }}
+                                        allowCreateWhileLoading={false} // Không cho phép tạo mới khi đang tải dữ liệu
                                     />
+
                                 </div>
                             </form>
                         </div>
@@ -441,7 +445,7 @@ export default (props) => {
                             <div className="form-group">
                                 <label>{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
                                 <AsyncPaginate
-                                    
+
                                     loadOptions={loadOptions}
                                     onChange={handleChange}
                                     isSearchable={true}
