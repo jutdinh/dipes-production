@@ -585,24 +585,16 @@ class ConsumeApi extends Controller {
                 foreignKeys.push(...tb.foreign_keys)
             })
 
-            const dbo = await Database.getDBO()
-
             const mainTable = tables[0]
             const paramQuery = paramQueries.filter(q => q.table_id == mainTable.id)
 
-            const sideQueries = paramQuery.map(sideQuery => {
+            const sideQueries = {}
+            paramQuery.map(sideQuery => {
                 const { query } = sideQuery;
                 const keys = Object.keys(query)
-                return { [`data.${keys[0]}`]: query[keys[0]] }
+                return sideQueries[`${keys[0]}`] = query[keys[0]] 
             })
 
-            const itemsFilterQuery = paramQuery.map(sideQuery => {
-                const { query } = sideQuery;
-                const keys = Object.keys(query)
-                return { $in: [`$$item.${keys[0]}`, [query[keys[0]]]] }
-            })
-
-            const mainTableQuery = { $and: [{ position: { $ne: "sumerize" } }, ...sideQueries] };
 
             let partitions = [];
             const dataLimitation = await Database.selectFields(mainTable.table_alias, { position: "sumerize" }, ["total"])
@@ -621,39 +613,40 @@ class ConsumeApi extends Controller {
                 let finale_raw_data_counter = 0;
                 let found = false
                 for (let i = 0; i < partitions.length; i++) {
-                    const redundantQuery = { ...mainTableQuery }
-                    const $and = redundantQuery["$and"]
-                    const redundantPartition = await dbo.collection(mainTable.table_alias).aggregate([
-                        { $match: { ...redundantQuery, $and: [...$and, { position: partitions[i].position }] } },
-                        {
-                            $project: {
-                                data: {
-                                    $filter: {
-                                        input: "$data",
-                                        as: "item",
-                                        cond: {
-                                            $and: itemsFilterQuery
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    ]).toArray()
+  
+      
+                    const redundantPartition = partitions[i]
 
-                    if (redundantPartition[0] && redundantPartition[0].data) {
-                        const currentDataLength = redundantPartition[0].data.length
+                    if (redundantPartition && redundantPartition.total) {
+                        const currentDataLength = redundantPartition.total
                         data_counter += currentDataLength;
-                        // console.log(data_counter, found, finale_raw_data_counter)
-                        if (data_counter > datafrom && !found) {
-                            redundantPartitions.push(...redundantPartition)
-                            finale_raw_data_counter += currentDataLength - redundantPartition[0].data.length
+                        tmpDataFrom -= currentDataLength
+                        // console.log(630, data_counter, found, finale_raw_data_counter, tmpDataFrom )
+                        if (tmpDataFrom < 0 && !found) {
+                            const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { position: partitions[i].position, ...sideQueries })
+                            const data = redundantPartitionData.slice(redundantPartitionData.length + tmpDataFrom, redundantPartitionData.length)
+                            console.log(636,  { position: partitions[i].position, ...sideQueries })
+                            redundantPartitions.push({
+                                position: partitions[i].position,
+                                total: data.length,
+                                data: data,
+                            })
                             found = true
+                            finale_raw_data_counter += data.length
+                            continue;
                         }
 
                         if (finale_raw_data_counter < dataPerBreak && found) {
-                            // console.log(finale_raw_data_counter)
-                            finale_raw_data_counter += redundantPartition[0].data.length
-                            redundantPartitions.push(...redundantPartition)
+                            finale_raw_data_counter += redundantPartition.total
+                            // console.log(656, finale_raw_data_counter)
+
+                            const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { position: partitions[i].position, ...sideQueries })
+
+                            redundantPartitions.push({
+                                position: partitions[i].position,
+                                total: redundantPartitionData.length,
+                                data: redundantPartitionData,
+                            })
                             if (finale_raw_data_counter >= dataPerBreak) {
                                 break;
                             }
@@ -665,8 +658,6 @@ class ConsumeApi extends Controller {
                 let finale_raw_data_counter = 0;
                 let found = false
                 for (let i = 0; i < partitions.length; i++) {
-                    const redundantQuery = { ...mainTableQuery }
-                    const $and = redundantQuery["$and"]
                     const redundantPartition = partitions[i]
 
                     if (redundantPartition && redundantPartition.total) {

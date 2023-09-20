@@ -3,6 +3,8 @@ const { Activation, ActivationRecord } = require('../models/Activation')
 const { Controller } = require('../config/controllers');
 var exec = require('child_process').exec;
 
+require('dotenv').config()
+
 class ActivationClass extends Controller {
     #__keys = new Activation()
     constructor() {
@@ -22,38 +24,38 @@ class ActivationClass extends Controller {
         })
     }
 
-    // getMachineID = async () => {
-    //     const machineId = await new Promise((resolve, reject) => {
-    //         exec("echo 'Mylan@123' | sudo -S dmidecode -s system-uuid", (err, stdout, stderr) => {
-    //             console.log({ err, stdout, stderr })
-    //             if (typeof (stdout) == 'string') {
-    //                 const splitted = stdout.split('\n')
-    //                 resolve(splitted[0])
-    //             } else {
-    //                 resolve("UNKNOWN UUID")
-    //             }
-    //         });
-    //     })
-    //     return machineId;
-    // }
+    getMachineID = async () => {
+        const machineId = await new Promise((resolve, reject) => {
+            exec(`echo '${process.env.LINUX_PWD}' | sudo -S dmidecode -s system-uuid`, (err, stdout, stderr) => {
+                console.log({ err, stdout, stderr })
+                if (typeof (stdout) == 'string') {
+                    const splitted = stdout.split('\n')
+                    resolve(splitted[0])
+                } else {
+                    resolve("UNKNOWN UUID")
+                }
+            });
+        })
+        return machineId;
+    }
 
 
 
     
-        getMachineID = async () => {
-            const machineId = await new Promise((resolve, reject) => {
-                exec("wmic path win32_computersystemproduct get uuid", (err, stdout, stderr) => {
-                    if (typeof (stdout) == 'string') {
-                        const rawID = stdout.split("\n")[1]
-                        const id = rawID.split(' ')[0]
-                        resolve(id)
-                    } else {
-                        resolve("UNKNOWN UUID")
-                    }
-                });
-            })
-            return machineId;
-        }
+        // getMachineID = async () => {
+        //     const machineId = await new Promise((resolve, reject) => {
+        //         exec("wmic path win32_computersystemproduct get uuid", (err, stdout, stderr) => {
+        //             if (typeof (stdout) == 'string') {
+        //                 const rawID = stdout.split("\n")[1]
+        //                 const id = rawID.split(' ')[0]
+        //                 resolve(id)
+        //             } else {
+        //                 resolve("UNKNOWN UUID")
+        //             }
+        //         });
+        //     })
+        //     return machineId;
+        // }
     
 
 
