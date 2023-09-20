@@ -2697,11 +2697,37 @@ class ConsumeApi extends Controller {
     }
 
     REMOTE_PUT = async () => {
+        const remoteURL = this.generateRemoteURL()
+        const response = await new Promise((resolve, reject) => {
+            fetch(remoteURL, {
+                method: "PUT",
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify(body)
+            }).then(res => res.json()).then(res => {
+                resolve(res)
+            })
+        })
 
+        this.res.status(200).send(response)
     }
 
     REMOTE_DELETE = async () => {
+        const remoteURL = this.generateRemoteURL()
+        const response = await new Promise((resolve, reject) => {
+            fetch(remoteURL, {
+                method: "DELETE",
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify(body)
+            }).then(res => res.json()).then(res => {
+                resolve(res)
+            })
+        })
 
+        this.res.status(200).send(response)
     }
 
 
@@ -3154,24 +3180,34 @@ class ConsumeApi extends Controller {
     // }
 
     hasEnoughPrivileges = (tables, rights, privileges) => {
-        let isGranted = true;
-        for( let i = 0; i < tables.length; i++ ){
-            const table_id = tables[i].id;
-            const tablePrivileges = privileges.filter( pri => pri.table_id == table_id )
 
-            for( let j = 0 ; j < tablePrivileges.length ; j++ ){
+        if( tables.length && tables.length > 0 ){
 
-                const privilege = tablePrivileges[j]
-                
-                for( let h = 0; h < rights.length; h++ ){
-                    const right = rights[h]
-                    if( !privilege[right] ){
-                        isGranted = false
+            let isGranted = true;
+            for( let i = 0; i < tables.length; i++ ){
+                const table_id = tables[i].id;
+                const tablePrivileges = privileges.filter( pri => pri.table_id == table_id )
+    
+                for( let j = 0 ; j < tablePrivileges.length ; j++ ){
+    
+                    const privilege = tablePrivileges[j]
+                    for( let h = 0; h < rights.length; h++ ){
+                        const right = rights[h]
+                        console.log(tables[i].table)
+                        console.log( privilege[right] )
+                        console.log(privilege)
+                        console.log(right)
+                        if( !privilege[right] ){
+                            isGranted = false
+                        }
                     }
                 }
             }
+
+            return isGranted
+        }else{
+            return false
         }
-        return isGranted
     }
 
     FOREIGNDATA = async (req, res) => {
@@ -3186,30 +3222,35 @@ class ConsumeApi extends Controller {
                 this.#__tables.findAll(), 
                 this.#__fields.findAll(), 
                 this.#__privileges.findAll({ username: user.username })
-            ])            
-            const table = tables.find(tb => tb.id == table_id)
-            if (table && req.method.toLowerCase() == "post") {
-
-                let isGranted = this.hasEnoughPrivileges([table], ["read"], privileges)
-                if( this.isAdmin( user ) || isGranted ){
-
-                    const tbFields = fields.filter(f => f.table_id == table_id)
-        
-                    let api = await this.#__apis.find({ api_id })
-                    if (api == undefined) {
-                        api = {
-                            id: undefined,
-                            api_id: undefined,
-                            api_name: undefined,
-                            tables: [table.id],
-                            fields: tbFields.map(field => {
-                                return { id: field.id, display_name: field.field_name, fomular_alias: field.fomular_alias }
-                            }),
-                            body: tbFields.map(field => field.id),
-                            params: table.primary_key,
-                        }
+            ])   
+            
+            const table = tables.find( tb => tb.id == table_id )
+          
+            if (table && req.method.toLowerCase() == "post") {                
+                // console.log(3220, privileges)
+                const tbFields = fields.filter(f => f.table_id == table_id)
+    
+                let api = await this.#__apis.find({ api_id })
+                if (api == undefined) {
+                    api = {
+                        id: undefined,
+                        api_id: undefined,
+                        api_name: undefined,
+                        tables: [table.id],
+                        fields: tbFields.map(field => {
+                            return { id: field.id, display_name: field.field_name, fomular_alias: field.fomular_alias }
+                        }),
+                        body: tbFields.map(field => field.id),
+                        params: table.primary_key,
                     }
-        
+                }
+
+                const api_table = tables.find( tb => tb.id == api.tables[0] )
+
+                let isGranted = this.hasEnoughPrivileges([api_table], ["read"], privileges)
+
+                if( this.isAdmin( user ) || isGranted ){
+                                        
                     const Api = new ApisRecord(api)
                     this.API = Api
                     this.req = req
@@ -3229,10 +3270,11 @@ class ConsumeApi extends Controller {
                     } else {
                         this.req.body = { query: criteria, start_index, require_count, exact }
                         this.SEARCH()
-                    }
+                    }                
                 } else {
                     res.status(200).send({ success: false, content: "Không có quyền truy cập API này" })    
                 }
+
             }else{
                 res.status(200).send({ success: false, content: "No TABLE Found" })
             }
