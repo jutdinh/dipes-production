@@ -480,6 +480,8 @@ export default () => {
                     } else if (!requireCount && currentCount != null) {
                         setSumerize(currentCount);
                     }
+                }else{
+                    setApiData([]);
                 }
 
                 const endTime = new Date().getTime();

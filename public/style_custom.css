@@ -13,10 +13,15 @@
     text-overflow: ellipsis;
 }
 
-
+.graph_head {
+    padding: 15px 25px 5px;
+    float: left;
+    width: 100%;
+    border-bottom: solid #f3f3f3 2px;
+}
 .circle-image_list_user {
     border-radius: 100%;
-    width: 28px;
+    width: 32px;
 }
 .profile_contacts_list_user {
     display: flex;

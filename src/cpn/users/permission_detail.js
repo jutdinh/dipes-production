@@ -2,13 +2,17 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExport, faFileImport, faDownload, faSquarePlus, faCirclePlus } from '@fortawesome/free-solid-svg-icons';
 export default (props) => {
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const params = new URLSearchParams(window.location.search);
     const username = params.get('username');
-    console.log(username)
+    let navigate = useNavigate();
+    const goToHomePage = () => {
+        navigate(`/privileges`);
+    };
     const [showModal, setShowModal] = useState(false);
     const _token = localStorage.getItem("_token");
     const stringifiedUser = localStorage.getItem("user");
@@ -333,151 +337,153 @@ export default (props) => {
                 </div>
                 <div class="row column1">
                     <div class="col-md-12">
-                        <div class="white_shd full margin_bottom_30">
-                            <div class="heading1 margin_0">
+                        <div class="white_shd full">
+                            <div class="white_shd full ">
                                 <div class="full graph_head">
                                     <div class="heading1 margin_0">
-                                        <div className="row justify-content-end">
-                                            <div className="col-auto">
-                                                <h5>Tên tài khoản được phân quyền: {username}</h5>
-                                            </div>
+                                    <h5><label class="pointer" onClick={() => goToHomePage()}>
+                                            <a title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 nav-item nav-link"></i></a>Tên tài khoản được phân quyền: {username}
+                                        </label></h5>
+                                    </div>
+
+                                    </div>
+                                    </div>
+                     
+                                
+
+
+                                {/* List user */}
+                                <div class="full price_table padding_infor_info">
+                                    <div class="col-md-12">
+                                        <div class="table-responsive mb-2">
+                                            {
+                                                currentData && currentData.length > 0 ? (
+                                                    <>
+                                                        <table className="table table">
+                                                            <thead>
+                                                                <tr className="color-tr">
+                                                                    <th className="font-weight-bold" style={{ width: "30px" }} scope="col">
+                                                                        {lang["log.no"]}
+                                                                    </th>
+                                                                    <th className="font-weight-bold" scope="col">
+                                                                        {lang["table name"]}
+                                                                    </th>
+                                                                    <th className="font-weight-bold" style={{ width: "400px" }} scope="col">
+                                                                        {lang["permission"]}
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {currentData.map((data, index) => (
+                                                                    <tr key={index}>
+                                                                        <td>{indexOfFirstUser + index + 1}</td>
+                                                                        <td>{data.table.table_name}</td>
+                                                                        <td>
+                                                                            <label className="pointer">
+                                                                                <input
+                                                                                    className="ml-4 mr-2 pointer"
+                                                                                    type="checkbox"
+                                                                                    checked={data.read}
+                                                                                    onChange={() => handleCheckboxChange(index, 'read')}
+                                                                                />
+                                                                                Read
+                                                                            </label>
+                                                                         <label className="pointer">
+                                                                                <input
+                                                                                    className="ml-4 mr-2 pointer"
+                                                                                    type="checkbox"
+                                                                                    checked={data.write}
+                                                                                    onChange={() => handleCheckboxChange(index, 'write')}
+                                                                                />
+                                                                                Write
+                                                                            </label>
+                                                                         <label className="pointer">
+                                                                                <input
+                                                                                    className="ml-4 mr-2 pointer"
+                                                                                    type="checkbox"
+                                                                                    checked={data.modify}
+                                                                                    onChange={() => handleCheckboxChange(index, 'modify')}
+                                                                                />
+                                                                                Modify
+                                                                            </label>
+                                                                         <label className="pointer ">
+                                                                                <input
+                                                                                    className="ml-4 mr-2 pointer"
+                                                                                    type="checkbox"
+                                                                                    checked={data.purge}
+                                                                                    onChange={() => handleCheckboxChange(index, 'purge')}
+                                                                                />
+                                                                                Purge
+                                                                            </label>
+
+                                                                        </td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </>
+                                                ) : (
+                                                    <div class="d-flex justify-content-center align-items-center w-100 responsive-div">
+                                                        {lang["not found user"]}
+                                                    </div>
+                                                )
+                                            }
+                                        </div>
+                                        <div className="d-flex justify-content-between align-items-center mb-2">
+                                            <p>
+                                                {lang["show"]} {indexOfFirstUser + 1}-{Math.min(indexOfLastUser, data.length)} {lang["of"]} {data.length} {lang["results"]}
+                                            </p>
+                                            <nav aria-label="Page navigation example">
+                                                <ul className="pagination mb-0">
+                                                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                        <button className="page-link" onClick={() => paginate(1)}>
+                                                            &#8810;
+                                                        </button>
+                                                    </li>
+                                                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                        <button className="page-link" onClick={() => paginate(Math.max(1, currentPage - 1))}>
+                                                            &laquo;
+                                                        </button>
+                                                    </li>
+                                                    {currentPage > 2 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                    {Array(totalPages).fill().map((_, index) => {
+                                                        if (
+                                                            index + 1 === currentPage ||
+                                                            (index + 1 >= currentPage - 1 && index + 1 <= currentPage + 1)
+                                                        ) {
+                                                            return (
+                                                                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                                    <button className="page-link" onClick={() => paginate(index + 1)}>
+                                                                        {index + 1}
+                                                                    </button>
+                                                                </li>
+                                                            );
+                                                        }
+                                                        return null;  // Đảm bảo trả về null nếu không có gì được hiển thị
+                                                    })}
+                                                    {currentPage < totalPages - 1 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                        <button className="page-link" onClick={() => paginate(Math.min(totalPages, currentPage + 1))}>
+                                                            &raquo;
+                                                        </button>
+                                                    </li>
+                                                    {/* Nút đến trang cuối */}
+                                                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                        <button className="page-link" onClick={() => paginate(totalPages)}>
+                                                            &#8811;
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </nav>
                                         </div>
                                     </div>
+
+
                                 </div>
-                            </div>
-
-                            {/* List user */}
-                            <div class="full price_table padding_infor_info">
-                                <div class="col-md-12">
-                                    <div class="table-responsive mb-2">
-                                        {
-                                            currentData && currentData.length > 0 ? (
-                                                <>
-                                                    <table className="table table">
-                                                        <thead>
-                                                            <tr className="color-tr">
-                                                                <th className="font-weight-bold" style={{ width: "30px" }} scope="col">
-                                                                    {lang["log.no"]}
-                                                                </th>
-                                                                <th className="font-weight-bold" scope="col">
-                                                                    {lang["table name"]}
-                                                                </th>
-                                                                <th className="font-weight-bold" style={{ width: "400px" }} scope="col">
-                                                                    {lang["permission"]}
-                                                                </th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {currentData.map((data, index) => (
-                                                                <tr key={index}>
-                                                                    <td>{indexOfFirstUser + index + 1}</td>
-                                                                    <td>{data.table.table_name}</td>
-                                                                    <td>
-                                                                        <label>
-                                                                            <input
-                                                                                className="ml-4 mr-2"
-                                                                                type="checkbox"
-                                                                                checked={data.read}
-                                                                                onChange={() => handleCheckboxChange(index, 'read')}
-                                                                            />
-                                                                            Read
-                                                                        </label>
-                                                                        <label>
-                                                                            <input
-                                                                                className="ml-4 mr-2"
-                                                                                type="checkbox"
-                                                                                checked={data.write}
-                                                                                onChange={() => handleCheckboxChange(index, 'write')}
-                                                                            />
-                                                                            Write
-                                                                        </label>
-                                                                        <label>
-                                                                            <input
-                                                                                className="ml-4 mr-2"
-                                                                                type="checkbox"
-                                                                                checked={data.modify}
-                                                                                onChange={() => handleCheckboxChange(index, 'modify')}
-                                                                            />
-                                                                            Modify
-                                                                        </label>
-                                                                        <label>
-                                                                            <input
-                                                                                className="ml-4 mr-2"
-                                                                                type="checkbox"
-                                                                                checked={data.purge}
-                                                                                onChange={() => handleCheckboxChange(index, 'purge')}
-                                                                            />
-                                                                            Purge
-                                                                        </label>
-                                                                        
-                                                                    </td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
-                                                </>
-                                            ) : (
-                                                <div class="d-flex justify-content-center align-items-center w-100 responsive-div">
-                                                    {lang["not found user"]}
-                                                </div>
-                                            )
-                                        }
-                                    </div>
-                                    <div className="d-flex justify-content-between align-items-center mb-2">
-                                        <p>
-                                            {lang["show"]} {indexOfFirstUser + 1}-{Math.min(indexOfLastUser, data.length)} {lang["of"]} {data.length} {lang["results"]}
-                                        </p>
-                                        <nav aria-label="Page navigation example">
-                                            <ul className="pagination mb-0">
-                                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                    <button className="page-link" onClick={() => paginate(1)}>
-                                                        &#8810;
-                                                    </button>
-                                                </li>
-                                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                    <button className="page-link" onClick={() => paginate(Math.max(1, currentPage - 1))}>
-                                                        &laquo;
-                                                    </button>
-                                                </li>
-                                                {currentPage > 2 && <li className="page-item"><span className="page-link">...</span></li>}
-                                                {Array(totalPages).fill().map((_, index) => {
-                                                    if (
-                                                        index + 1 === currentPage ||
-                                                        (index + 1 >= currentPage - 1 && index + 1 <= currentPage + 1)
-                                                    ) {
-                                                        return (
-                                                            <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                                                                <button className="page-link" onClick={() => paginate(index + 1)}>
-                                                                    {index + 1}
-                                                                </button>
-                                                            </li>
-                                                        );
-                                                    }
-                                                    return null;  // Đảm bảo trả về null nếu không có gì được hiển thị
-                                                })}
-                                                {currentPage < totalPages - 1 && <li className="page-item"><span className="page-link">...</span></li>}
-                                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                                                    <button className="page-link" onClick={() => paginate(Math.min(totalPages, currentPage + 1))}>
-                                                        &raquo;
-                                                    </button>
-                                                </li>
-                                                {/* Nút đến trang cuối */}
-                                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                                                    <button className="page-link" onClick={() => paginate(totalPages)}>
-                                                        &#8811;
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </nav>
-                                    </div>
-                                </div>
-
-
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    )
+            )
 }

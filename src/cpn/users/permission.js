@@ -348,14 +348,14 @@ export default (props) => {
                         <div class="page_title d-flex align-items-center">
                             <h4 class="ml-1">{lang["privileges manager"]}</h4>
 
-                            {statusActive ? (
+                            {/* {statusActive ? (
                                 <button type="button" class="btn btn-primary custom-buttonadd ml-auto mr-4" data-toggle="modal" data-target="#quoteForm">
                                     <i class="fa fa-plus"></i>
                                 </button>
                                 // <div class="ml-auto pointer" data-toggle="modal" data-target="#quoteForm" title="Add">
                                 //     <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
                                 // </div>
-                            ) : null}
+                            ) : null} */}
 
                         </div>
                     </div>
@@ -374,180 +374,7 @@ export default (props) => {
                                     </div>
                                 </div>
                             </div> */}
-                            {/* Modal add */}
-                            <div class="modal fade" id="quoteForm" tabindex="-1" role="dialog" aria-labelledby="quoteForm" aria-hidden="true">
-                                <div class="modal-dialog modal-lg modal-dialog-center" role="document">
-                                    <div class="modal-content p-md-3">
-                                        <div class="modal-header">
-                                            <h4 class="modal-title">{lang["adduser.title"]} </h4>
-                                            <button class="close" type="button" onClick={handleCloseModal} data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form>
-                                                <div class="row">
-                                                    <div class="form-group col-lg-6">
-                                                        <label class="font-weight-bold text-small" for="firstname">{lang["fullname"]}<span className='red_star ml-1'>*</span></label>
-                                                        <input type="text" class="form-control" value={user.fullname} onChange={
-                                                            (e) => { setUser({ ...user, fullname: e.target.value }) }
-                                                        } placeholder={lang["p.fullname"]} />
-                                                        {errorMessagesadd.fullname && <span class="error-message">{errorMessagesadd.fullname}</span>}
-                                                    </div>
-                                                    <div class="form-group col-lg-6">
-                                                        <label class="font-weight-bold text-small" for="firstname">{lang["username"]}<span className='red_star ml-1'>*</span></label>
-                                                        <input type="text" class="form-control" value={user.username} onChange={
-                                                            (e) => { setUser({ ...user, username: e.target.value }) }
-                                                        } placeholder={lang["p.username"]} />
-                                                        {errorMessagesadd.username && <span class="error-message">{errorMessagesadd.username}</span>}
-                                                    </div>
-                                                    <div class="form-group col-lg-6">
-                                                        <label class="font-weight-bold text-small" for="lastname">{lang["password"]}<span className='red_star ml-1'>*</span></label>
-                                                        <input type="password" class="form-control" value={user.password} onChange={
-                                                            (e) => { setUser({ ...user, password: e.target.value }) }
-                                                        } placeholder={lang["p.password"]} />
-                                                        {errorMessagesadd.password && <span class="error-message">{errorMessagesadd.password}</span>}
-                                                    </div>
-                                                    <div class="form-group col-lg-6">
-                                                        <label class="font-weight-bold text-small" for="lastname">{lang["re-password"]}<span className='red_star ml-1'>*</span></label>
-                                                        <input
-                                                            type="password"
-                                                            class="form-control"
-                                                            value={user.confirmPassword}
-                                                            onChange={(e) => {
-                                                                setUser({ ...user, confirmPassword: e.target.value });
-                                                            }}
-                                                            placeholder={lang["p.re-password"]}
-                                                        />
-                                                        {errorMessagesadd.confirmPassword && <span class="error-message">{errorMessagesadd.confirmPassword}</span>}
-                                                    </div>
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="font-weight-bold text-small" for="email">{lang["email"]}<span class="red_star ml-1">*</span></label>
-                                                        <input type="email" class="form-control" value={user.email} onChange={
-                                                            (e) => { setUser({ ...user, email: e.target.value }) }
-                                                        } placeholder={lang["p.email"]} />
-                                                        {errorMessagesadd.email && <span class="error-message">{errorMessagesadd.email}</span>}
-                                                    </div>
-                                                    <div class="form-group col-lg-6">
-                                                        <label class="font-weight-bold text-small" for="phone">{lang["phone"]}<span class="red_star ml-1">*</span></label>
-                                                        <input type="phone" class="form-control" value={user.phone} onChange={
-                                                            (e) => { setUser({ ...user, phone: e.target.value }) }
-                                                        } placeholder={lang["p.phone"]} />
-                                                        {errorMessagesadd.phone && <span class="error-message">{errorMessagesadd.phone}</span>}
-                                                    </div>
-                                                    <div class="form-group col-lg-6">
-                                                        <label class="font-weight-bold text-small" for="projecttype">{lang["permission"]}<span class="red_star ml-1">*</span></label>
-                                                        <select className="form-control" name="role" value={user.role} onChange={handleChange} >
-                                                            <option value="">{lang["p.permission"]}</option>
-                                                            {users.role === "ad" ? (
-                                                                roles.slice(0, 4).map(role => (
-                                                                    <option key={role.id} value={role.value}>{role.label}</option>
-                                                                ))
-                                                            ) : (
-                                                                roles.map(role => (
-                                                                    <option key={role.id} value={role.value}>{role.label}</option>
-                                                                ))
-                                                            )}
-                                                        </select>
-                                                        {errorMessagesadd.role && <span className="error-message">{errorMessagesadd.role}</span>}
-                                                    </div>
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="font-weight-bold text-small" for="projectdetail">{lang["address"]}<span class="red_star ml-1">*</span></label>
-                                                        <textarea maxlength="500" rows="5" type="text" class="form-control" value={user.address} onChange={
-                                                            (e) => { setUser({ ...user, address: e.target.value }) }
-                                                        } placeholder={lang["p.address"]} />
-                                                        {errorMessagesadd.address && <span class="error-message">{errorMessagesadd.address}</span>}
-                                                    </div>
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="font-weight-bold text-small" for="projectdetail">{lang["note"]}</label>
-                                                        <textarea maxlength="500" rows="5" type="text" class="form-control" value={user.note} onChange={
-                                                            (e) => { setUser({ ...user, note: e.target.value }) }
-                                                        } placeholder={lang["p.note"]} />
-                                                    </div>
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" onClick={submit} class="btn btn-success">{lang["btn.create"]}</button>
-                                            <button type="button" onClick={handleCloseModal} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {/* Modal edit */}
-                            <div class="modal fade" tabindex="-1" role="dialog" id="myEditmodal" aria-labelledby="edit" aria-hidden="true">
-                                <div class="modal-dialog modal-lg modal-dialog-center" role="document">
-                                    <div class="modal-content p-md-3">
-                                        <div class="modal-header">
-                                            <h4 class="modal-title">{lang["edituser.title"]} </h4>
-
-                                            <button class="close" type="button" onClick={handleCloseModal} data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form>
-                                                <div class="row">
-                                                    <div class="form-group col-lg-6">
-                                                        <label class="font-weight-bold text-small" for="firstname">{lang["fullname"]}<span className='red_star ml-1'>*</span></label>
-                                                        <input type="text" class="form-control" value={editUser.fullname} onChange={
-                                                            (e) => { setEditUser({ ...editUser, fullname: e.target.value }) }
-                                                        } placeholder={lang["p.fullname"]} />
-                                                        {errorMessagesedit.fullname && <span class="error-message">{errorMessagesedit.fullname}</span>}
-                                                    </div>
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="font-weight-bold text-small" for="email">{lang["email"]}<span class="red_star ml-1">*</span></label>
-                                                        <input type="email" class="form-control" value={editUser.email} onChange={
-                                                            (e) => { setEditUser({ ...editUser, email: e.target.value }) }
-                                                        } placeholder={lang["p.email"]} />
-                                                        {errorMessagesedit.email && <span class="error-message">{errorMessagesedit.email}</span>}
-                                                    </div>
-                                                    <div class="form-group col-lg-6">
-                                                        <label class="font-weight-bold text-small" for="phone">{lang["phone"]}<span class="red_star ml-1">*</span></label>
-                                                        <input type="phone" class="form-control" value={editUser.phone} onChange={
-                                                            (e) => { setEditUser({ ...editUser, phone: e.target.value }) }
-                                                        } placeholder={lang["p.phone"]} />
-                                                        {errorMessagesedit.phone && <span class="error-message">{errorMessagesedit.phone}</span>}
-                                                    </div>
-                                                    <div class="form-group col-lg-6">
-                                                        <label class="font-weight-bold text-small" htmlFor="sel1">{lang["permission"]} <span className='red_star'>*</span></label>
-                                                        <select className="form-control" name="role" value={editUser.role} onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}>
-
-                                                            {users.role === "ad" ? (
-                                                                roles.slice(0, 4).map(role => (
-                                                                    <option key={role.id} value={role.value}>{role.label}</option>
-                                                                ))
-                                                            ) : (
-                                                                roles.map(role => (
-                                                                    <option key={role.id} value={role.value}>{role.label}</option>
-                                                                ))
-                                                            )}
-                                                        </select>
-                                                        {errorMessagesedit.role && <span class="error-message">{errorMessagesedit.role}</span>}
-                                                    </div>
-
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="font-weight-bold text-small" for="projectdetail">{lang["address"]}<span class="red_star ml-1">*</span></label>
-                                                        <textarea maxlength="500" rows="5" type="text" class="form-control" value={editUser.address} onChange={
-                                                            (e) => { setEditUser({ ...editUser, address: e.target.value }) }
-                                                        } placeholder={lang["p.address"]} />
-                                                        {errorMessagesedit.address && <span class="error-message">{errorMessagesedit.address}</span>}
-                                                    </div>
-                                                    <div class="form-group col-lg-12">
-                                                        <label class="font-weight-bold text-small" for="projectdetail">{lang["note"]}</label>
-                                                        <textarea maxlength="500" rows="5" type="text" class="form-control" value={editUser.note} onChange={
-                                                            (e) => { setEditUser({ ...editUser, note: e.target.value }) }
-                                                        } placeholder={lang["p.note"]} />
-
-                                                    </div>
-
-                                                </div>
-                                            </form>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" onClick={submitUpdate} class="btn btn-success">{lang["btn.update"]}</button>
-                                            <button type="button" onClick={handleCloseModal} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                     
                             {/* List user */}
                             <div class="full price_table padding_infor_info">
                                 <div class="col-md-12">
@@ -581,7 +408,7 @@ export default (props) => {
                                                                     <td class="align-center">
                                                                         {/* <i class="fa fa-edit icon-edit pointer size-24" onClick={() => handleUpdateUser(profile)} data-toggle="modal" data-target="#myEditmodal"></i>
                                                                         <i class="fa fa-trash-o icon-delete pointer  size-24 ml-2" onClick={() => handleDeleteUser(profile)}></i> */}
-                                                                        <button class="btn btn-primary" onClick={() => redirectTo(profile)}> Nhấn </button>
+                                                                        <button class="btn btn-primary" onClick={() => redirectTo(profile)}>{lang["viewdetail"]}</button>
                                                                     </td>
                                                                 </tr>
                                                             ))}
