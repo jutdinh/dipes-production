@@ -79,7 +79,9 @@ export default () => {
                {user.role === "ad" || user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/privileges" activeClassName="nav-active">
-                        <i class="fa fa-users icon-user"></i>
+                        
+                        <i class="fa fa-lock icon-privileges"></i>
+
                         <span>{lang["privileges manager"]}</span>
                      </NavLink>
                   </li>

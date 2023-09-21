@@ -116,8 +116,7 @@ export default (props) => {
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
                 // console.log(resp)
-                if(success)
-                {
+                if (success) {
                     setData(data)
                 }
             })
@@ -323,7 +322,7 @@ export default (props) => {
     const redirectTo = (profile) => {
         window.location.href = `/privileges/detail?username=${profile.username}`;
     }
-    
+
     const admins = profiles.filter(profile => profile.role === 'ad');
     const projectManagers = profiles.filter(profile => profile.role === 'pm');
     const implementers = profiles.filter(profile => profile.role === 'pd');
@@ -360,7 +359,7 @@ export default (props) => {
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="row column1">
                     <div class="col-md-12">
                         <div class="white_shd full margin_bottom_30">
@@ -374,102 +373,110 @@ export default (props) => {
                                     </div>
                                 </div>
                             </div> */}
-                     
+
                             {/* List user */}
                             <div class="full price_table padding_infor_info">
                                 <div class="col-md-12">
-                                    <div class="table-responsive mb-2">
-                                        {
-                                            currentUser && currentUser.length > 0 ? (
-                                                <>
-                                                    <table class="table table ">
-                                                        <thead>
-                                                            <tr class="color-tr">
-                                                                <th class="font-weight-bold" style={{ width: "30px" }} scope="col">{lang["log.no"]}</th>
-                                                                <th class="font-weight-bold" scope="col">{lang["username"]}</th>
-                                                                <th class="font-weight-bold" style={{ width: "300px" }} scope="col">{lang["fullname"]}</th>
-                                                                <th class="font-weight-bold align-center" style={{ width: "130px" }} scope="col">{lang["avatar"]}</th>
-                                                                {
-                                                                    ["pm", "ad", "uad"].indexOf(auth.role) != -1 &&
-                                                                    <th class="font-weight-bold align-center" style={{ width: "150px" }}>{lang["log.action"]}</th>
-                                                                }
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {currentUser.map((profile, index) => (
-                                                                <tr key={index}>
-                                                                    <td>{indexOfFirstUser + index + 1}</td>
-                                                                    <td>{profile.username}</td>
-                                                                    <td>{profile.fullname}</td>
-                                                                    <td class="align-center">{
-                                                                        <div class="profile_contacts_list_user ">
-                                                                            <img class="img-responsive circle-image_list_user" src={proxy() + profile.avatar} alt="#" />
-                                                                        </div>}</td>
-                                                                    <td class="align-center">
-                                                                        {/* <i class="fa fa-edit icon-edit pointer size-24" onClick={() => handleUpdateUser(profile)} data-toggle="modal" data-target="#myEditmodal"></i>
+                                    {data && data.length > 0 ?
+                                        <>
+                                            <div class="table-responsive mb-2">
+                                                {
+                                                    currentUser && currentUser.length > 0 ? (
+                                                        <>
+                                                            <table class="table table ">
+                                                                <thead>
+                                                                    <tr class="color-tr">
+                                                                        <th class="font-weight-bold" style={{ width: "30px" }} scope="col">{lang["log.no"]}</th>
+                                                                        <th class="font-weight-bold" scope="col">{lang["username"]}</th>
+                                                                        <th class="font-weight-bold" style={{ width: "300px" }} scope="col">{lang["fullname"]}</th>
+                                                                        <th class="font-weight-bold align-center" style={{ width: "130px" }} scope="col">{lang["avatar"]}</th>
+                                                                        {
+                                                                            ["pm", "ad", "uad"].indexOf(auth.role) != -1 &&
+                                                                            <th class="font-weight-bold align-center" style={{ width: "150px" }}>{lang["log.action"]}</th>
+                                                                        }
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    {currentUser.map((profile, index) => (
+                                                                        <tr key={index}>
+                                                                            <td>{indexOfFirstUser + index + 1}</td>
+                                                                            <td>{profile.username}</td>
+                                                                            <td>{profile.fullname}</td>
+                                                                            <td class="align-center">{
+                                                                                <div class="profile_contacts_list_user ">
+                                                                                    <img class="img-responsive circle-image_list_user" src={proxy() + profile.avatar} alt="#" />
+                                                                                </div>}</td>
+                                                                            <td class="align-center">
+                                                                                {/* <i class="fa fa-edit icon-edit pointer size-24" onClick={() => handleUpdateUser(profile)} data-toggle="modal" data-target="#myEditmodal"></i>
                                                                         <i class="fa fa-trash-o icon-delete pointer  size-24 ml-2" onClick={() => handleDeleteUser(profile)}></i> */}
-                                                                        <button class="btn btn-primary" onClick={() => redirectTo(profile)}>{lang["viewdetail"]}</button>
-                                                                    </td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
-                                                </>
-                                            ) : (
-                                                <div class="d-flex justify-content-center align-items-center w-100 responsive-div">
-                                                    {lang["not found user"]}
-                                                </div>
-                                            )
-                                        }
-                                    </div>
-                                    <div className="d-flex justify-content-between align-items-center mb-2">
-                                        <p>
-                                            {lang["show"]} {indexOfFirstUser + 1}-{Math.min(indexOfLastUser, profiles.length)} {lang["of"]} {profiles.length} {lang["results"]}
-                                        </p>
-                                        <nav aria-label="Page navigation example">
-                                            <ul className="pagination mb-0">
-                                                {/* Nút đến trang đầu */}
-                                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                    <button className="page-link" onClick={() => paginate(1)}>
-                                                        &#8810;
-                                                    </button>
-                                                </li>
-                                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                    <button className="page-link" onClick={() => paginate(Math.max(1, currentPage - 1))}>
-                                                        &laquo;
-                                                    </button>
-                                                </li>
-                                                {currentPage > 2 && <li className="page-item"><span className="page-link">...</span></li>}
-                                                {Array(totalPages).fill().map((_, index) => {
-                                                    if (
-                                                        index + 1 === currentPage ||
-                                                        (index + 1 >= currentPage - 1 && index + 1 <= currentPage + 1)
-                                                    ) {
-                                                        return (
-                                                            <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                                                                <button className="page-link" onClick={() => paginate(index + 1)}>
-                                                                    {index + 1}
-                                                                </button>
-                                                            </li>
-                                                        );
-                                                    }
-                                                    return null;  // Đảm bảo trả về null nếu không có gì được hiển thị
-                                                })}
-                                                {currentPage < totalPages - 1 && <li className="page-item"><span className="page-link">...</span></li>}
-                                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                                                    <button className="page-link" onClick={() => paginate(Math.min(totalPages, currentPage + 1))}>
-                                                        &raquo;
-                                                    </button>
-                                                </li>
-                                                {/* Nút đến trang cuối */}
-                                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                                                    <button className="page-link" onClick={() => paginate(totalPages)}>
-                                                        &#8811;
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </nav>
-                                    </div>
+                                                                                <button class="btn btn-primary" onClick={() => redirectTo(profile)}>{lang["viewdetail"]}</button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    ))}
+                                                                </tbody>
+                                                            </table>
+                                                        </>
+                                                    ) : (
+                                                        <div class="d-flex justify-content-center align-items-center w-100 responsive-div">
+                                                            {lang["not found user"]}
+                                                        </div>
+                                                    )
+                                                }
+                                            </div>
+                                            <div className="d-flex justify-content-between align-items-center mb-2">
+                                                <p>
+                                                    {lang["show"]} {indexOfFirstUser + 1}-{Math.min(indexOfLastUser, profiles.length)} {lang["of"]} {profiles.length} {lang["results"]}
+                                                </p>
+                                                <nav aria-label="Page navigation example">
+                                                    <ul className="pagination mb-0">
+                                                        {/* Nút đến trang đầu */}
+                                                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                            <button className="page-link" onClick={() => paginate(1)}>
+                                                                &#8810;
+                                                            </button>
+                                                        </li>
+                                                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                            <button className="page-link" onClick={() => paginate(Math.max(1, currentPage - 1))}>
+                                                                &laquo;
+                                                            </button>
+                                                        </li>
+                                                        {currentPage > 2 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                        {Array(totalPages).fill().map((_, index) => {
+                                                            if (
+                                                                index + 1 === currentPage ||
+                                                                (index + 1 >= currentPage - 1 && index + 1 <= currentPage + 1)
+                                                            ) {
+                                                                return (
+                                                                    <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                                        <button className="page-link" onClick={() => paginate(index + 1)}>
+                                                                            {index + 1}
+                                                                        </button>
+                                                                    </li>
+                                                                );
+                                                            }
+                                                            return null;  // Đảm bảo trả về null nếu không có gì được hiển thị
+                                                        })}
+                                                        {currentPage < totalPages - 1 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                            <button className="page-link" onClick={() => paginate(Math.min(totalPages, currentPage + 1))}>
+                                                                &raquo;
+                                                            </button>
+                                                        </li>
+                                                        {/* Nút đến trang cuối */}
+                                                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                            <button className="page-link" onClick={() => paginate(totalPages)}>
+                                                                &#8811;
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </nav>
+                                            </div></>
+                                        : <div class="d-flex justify-content-center align-items-center w-100 responsive-div">
+                                            {lang["not found user"]}
+                                        </div>
+
+                                    }
+
                                 </div>
 
 

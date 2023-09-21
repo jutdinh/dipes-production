@@ -282,9 +282,10 @@ export default (props) => {
                                                 <div className="profile_img" onClick={handleClick}>
                                                     <img
                                                         width="80"
-                                                        className="rounded-circle"
+                                                        className="rounded-circle pointer"
                                                         src={profile.avatar && profile.avatar.length < 255 ? (proxy() + profile.avatar) : profile.avatar}
                                                         alt="#"
+                                                        title={lang["select file"]}
                                                     />
                                                     <input type="file"
                                                         accept='image/*'

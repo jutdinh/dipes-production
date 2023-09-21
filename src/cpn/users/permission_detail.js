@@ -342,7 +342,7 @@ export default (props) => {
                                 <div class="full graph_head">
                                     <div class="heading1 margin_0">
                                     <h5><label class="pointer" onClick={() => goToHomePage()}>
-                                            <a title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 nav-item nav-link"></i></a>Tên tài khoản được phân quyền: {username}
+                                            <a title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 nav-item nav-link"></i></a>{lang["privileges"]}
                                         </label></h5>
                                     </div>
 
@@ -354,6 +354,9 @@ export default (props) => {
 
                                 {/* List user */}
                                 <div class="full price_table padding_infor_info">
+                                    <div class="col-md-12 mt-1 mb-2 font-weight-bold ">
+                                    {lang["privileges username"]}: {username}
+                                    </div>
                                     <div class="col-md-12">
                                         <div class="table-responsive mb-2">
                                             {
@@ -386,7 +389,7 @@ export default (props) => {
                                                                                     checked={data.read}
                                                                                     onChange={() => handleCheckboxChange(index, 'read')}
                                                                                 />
-                                                                                Read
+                                                                               {lang["read"]}
                                                                             </label>
                                                                          <label className="pointer">
                                                                                 <input
@@ -395,7 +398,7 @@ export default (props) => {
                                                                                     checked={data.write}
                                                                                     onChange={() => handleCheckboxChange(index, 'write')}
                                                                                 />
-                                                                                Write
+                                                                                {lang["write"]}
                                                                             </label>
                                                                          <label className="pointer">
                                                                                 <input
@@ -404,7 +407,7 @@ export default (props) => {
                                                                                     checked={data.modify}
                                                                                     onChange={() => handleCheckboxChange(index, 'modify')}
                                                                                 />
-                                                                                Modify
+                                                                                {lang["modify"]}
                                                                             </label>
                                                                          <label className="pointer ">
                                                                                 <input
@@ -413,7 +416,8 @@ export default (props) => {
                                                                                     checked={data.purge}
                                                                                     onChange={() => handleCheckboxChange(index, 'purge')}
                                                                                 />
-                                                                                Purge
+                                                                                
+                                                                                {lang["purge"]}
                                                                             </label>
 
                                                                         </td>

@@ -351,7 +351,7 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-            
+
                 if (success && data.length > 0) {
                     const dataUser = data.find(item => item.username === _user.username);
                     // console.log(_user.username)
@@ -506,6 +506,7 @@ export default () => {
                     }
                 } else {
                     setApiData([]);
+                    setApiDataName([])
                 }
 
                 const endTime = new Date().getTime();
@@ -1374,7 +1375,7 @@ export default () => {
                     </div>
                     {matchingPage ? (
                         <div class="col-md-12">
-                            <div class="white_shd full margin_bottom_30">
+                            <div class="white_shd full ">
                                 <div class="full graph_head_cus d-flex">
                                     <div class="heading1_cus margin_0 ">
                                         <div class="tab_style2">
@@ -1498,7 +1499,7 @@ export default () => {
                         </div>
                     ) : layoutId === "0" ? (
                         <div class="col-md-12">
-                            <div class="white_shd full margin_bottom_30">
+                            <div class="white_shd full">
                                 <div class="full graph_head_cus d-flex">
                                     <div class="heading1_cus margin_0 ">
                                         <div class="tab_style2">
@@ -1580,22 +1581,32 @@ export default () => {
                                         ) : null
                                     }
 
-                                    <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcelEx" title={lang["export data example"]}>
-                                        <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
 
-                                    </div>
                                     {
                                         _user.role === "uad"
                                             ?
-                                            <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
-                                                <FontAwesomeIcon icon={faFileImport} className="icon-import" />
-                                            </div>
-                                            :
-                                            (dataCheck && dataCheck?.write)
-                                                ?
+                                            <>
+                                                <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcelEx" title={lang["export data example"]}>
+                                                    <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
+
+                                                </div>
                                                 <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
                                                     <FontAwesomeIcon icon={faFileImport} className="icon-import" />
                                                 </div>
+                                            </>
+
+                                            :
+                                            (dataCheck && dataCheck?.write)
+                                                ?
+                                                <>
+                                                    <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcelEx" title={lang["export data example"]}>
+                                                        <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
+
+                                                    </div>
+                                                    <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
+                                                        <FontAwesomeIcon icon={faFileImport} className="icon-import" />
+                                                    </div></>
+
                                                 :
                                                 null
                                     }
@@ -1832,7 +1843,7 @@ export default () => {
                     ) : (
                         <>
                             <div class="col-md-12">
-                                <div class="white_shd full margin_bottom_30">
+                                <div class="white_shd full">
                                     <div class="tab_style2">
                                         <div class="tabbar">
                                             <nav>
@@ -1870,22 +1881,34 @@ export default () => {
                                                             ) : null
                                                         }
 
-                                                        <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcelEx" title={lang["export data example"]}>
-                                                            <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
 
-                                                        </div>
                                                         {
                                                             _user.role === "uad"
                                                                 ?
-                                                                <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
-                                                                    <FontAwesomeIcon icon={faFileImport} className="icon-import" />
-                                                                </div>
-                                                                :
-                                                                (dataCheck && dataCheck?.write)
-                                                                    ?
+
+                                                                <>
+                                                                    <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcelEx" title={lang["export data example"]}>
+                                                                        <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
+
+                                                                    </div>
                                                                     <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
                                                                         <FontAwesomeIcon icon={faFileImport} className="icon-import" />
                                                                     </div>
+                                                                </>
+
+                                                                :
+                                                                (dataCheck && dataCheck?.write)
+                                                                    ?
+                                                                    <>
+                                                                        <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcelEx" title={lang["export data example"]}>
+                                                                            <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
+
+                                                                        </div>
+                                                                        <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
+                                                                            <FontAwesomeIcon icon={faFileImport} className="icon-import" />
+                                                                        </div>
+                                                                    </>
+
                                                                     :
                                                                     null
                                                         }

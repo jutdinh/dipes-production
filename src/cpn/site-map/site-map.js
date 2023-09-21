@@ -68,46 +68,46 @@ export default () => {
     })
     useEffect(() => {
         // assuming auth is defined somewhere in this component
-        if (auth.role === 'pd') {
+        if (auth.role == 'pd') {
             setTree(prevTree => ({
                 ...prevTree,
-                children: prevTree.children.filter(item =>
-                    item.leaf !== "Import" &&
-                    item.leaf !== lang["activation"] &&
-                    item.leaf !== lang["accounts manager"] &&
+                children: prevTree.children.filter(item => 
+                    item.leaf !== "Import" && 
+                    item.leaf !== lang["activation"] && 
+                    item.leaf !== lang["accounts manager"]&&
                     item.leaf !== lang["diagram"]
                 )
             }));
         }
     }, [auth.role]);
 
-    const RenderVines = (branch, depth, id, vine = "cyan") => {
-        if (depth != 0) {
-            const branchLeft = branch.offsetLeft // ? ( branch.offsetLeft * depth ) : 0;
-            const branchTop = branch.offsetTop;
-            const brachBottom = document.getElementById("branch" + id) != null ? document.getElementById("branch" + id).offsetHeight : 35;//Linh.Tran_230711: 35 default one node
+    const RenderVines = ( branch, depth, id, vine="cyan" ) => {
+        if( depth != 0 ){
+            const branchLeft    = branch.offsetLeft // ? ( branch.offsetLeft * depth ) : 0;
+            const branchTop     = branch.offsetTop;
+            const brachBottom   = document.getElementById("branch" + id)!=null? document.getElementById("branch" + id).offsetHeight: 35;//Linh.Tran_230711: 35 default one node
             //const brachName     = document.getElementById("branch" + id)!=null? document.getElementById("branch" + id).offsetHeight:"";
-
-            return (
+    
+            return ( 
                 /*       
                 <svg className="vines" style={{ top: `-${ branchTop }px`, left: -25 }}>
                     <path d={` M ${ branchLeft } ${ branchTop + 20 } L ${ 0 } ${ branchTop + 20 } M ${ 0 } ${ branchTop + 20 } L ${ 0 } ${ 0 }`} stroke={vine} strokeWidth="2" fill="none" />        
                 </svg>
                 */
-                <svg className="vines" style={{ top: `-${branchTop + 45}px`, left: -30 }}>
-                    <path d={`  M ${0 + 5} ${0 + 30} 
-                                L ${0 + 5} ${branchTop + 10 + 45}
-                                c ${0} ${0 + 10} ${0 + 10} ${0 + 10} 10 10
-                                L ${branchLeft + 5} ${branchTop + 10 + 45 + 10}
-                                M ${0 + 5} ${0} 
-                                L ${0 + 5} ${brachBottom + 15}
+                <svg className="vines" style={{ top: `-${ branchTop + 45 }px`, left: -30 }}>
+                    <path d={`  M ${ 0 + 5 } ${ 0 + 30 } 
+                                L ${ 0 + 5 } ${ branchTop + 10 + 45}
+                                c ${0} ${ 0 + 10 } ${0 + 10} ${ 0 + 10 } 10 10
+                                L ${ branchLeft  + 5 } ${ branchTop + 10 + 45 + 10}
+                                M ${ 0 + 5 } ${ 0 } 
+                                L ${ 0  + 5 } ${ brachBottom + 15 }
                             `} stroke={vine} strokeWidth="2" fill="none" />
-
+                            
                     <b>{brachBottom}</b>
                 </svg>
-
+                
             );
-        } else {
+        }else{
             return null
         }
     }
@@ -139,7 +139,8 @@ export default () => {
     useEffect(() => {
 
         if (statusActive) {
-            if (pages) {
+            if(pages){
+
                 const branch = {
                     leaf: lang["manage data"],
                     background: "purple",
@@ -160,17 +161,28 @@ export default () => {
                     branch.children.push(child)
                 })
                 const newTree = tree;
-      
-                // newTree.children.push({ leaf: "Site map", link: "/sitemap", })
-                if (auth.role == "ad" || auth.role === "uad") {
-                    newTree.children.push(branch)
-                } else {
+                if( auth.role == "ad" || auth.role === "uad" ){
+                    
+                    const doesManageBranchExist = newTree.children.find( branch => branch.leaf == lang["manage data"] )
+                    if( doesManageBranchExist ){
+                        const index = newTree.children.indexOf( doesManageBranchExist )
+                        if( newTree.children[ index ].children.length == 0 ){
+                            newTree.children[ index ].children.push(...branch.children)
+                        }
+                    }else{
+                        newTree.children.push( branch )
+                    }                
+                }else{
                     newTree.children.push(...branch.children)
                 }
+                // newTree.children.push({ leaf: "Site map", link: "/sitemap", })
+                
                 setTree({ ...newTree })
+            
             }
         }
-    }, [statusActive])
+    }, [pages, statusActive])
+    
     return (
         <div class="midde_cont">
             <div class="container-fluid">

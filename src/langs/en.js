@@ -258,7 +258,7 @@ export default {
     "site map": "Sitemap",
     "not found user": "No users yet",
     "not found data": "Not found",
-    "not found": "Not fount",
+    "not found": "Not found",
     "activate.key": "Activation key",
     "profile.empty": "Please fill in the information",
     "create": "Add",
@@ -305,7 +305,13 @@ export default {
     "importing": "Importing data",
     "privileges manager": "Permission Management",
     "avatar": "Avatar",
-    "table name": "Table name"
+    "table name": "Table name",
+    "privileges": "Account privileges",
+    "privileges username": "Account name",
+    "read": "Read",
+    "write": "Write",
+    "modify": "Modify",
+    "purge": "Purge"
 
 }
 

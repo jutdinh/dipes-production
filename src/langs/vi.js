@@ -299,7 +299,15 @@ export default {
     "importing": "Đang nhập dữ liệu",
     "privileges manager": "Quản lý quyền",
     "avatar": "Ảnh đại diện",
-    "table name": "Tên bảng"
+    "table name": "Tên bảng",
+    "privileges": "Phân quyền tài khoản",
+    "privileges username": "Tài khoản",
+    "read": "Xem",
+    "write": "Thêm",
+    "modify": "Sửa",
+    "purge": "Xóa"
+
+
 
 
 
