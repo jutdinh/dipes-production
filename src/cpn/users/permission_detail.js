@@ -120,7 +120,7 @@ export default (props) => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                console.log(resp)
+                // console.log(resp)
                 if (success) {
                     const user = data.find(item => item.username === username);
                     setData(user.privileges)
@@ -129,7 +129,7 @@ export default (props) => {
 
     }, [])
 
-    console.log(data)
+    // console.log(data)
     const handleChange = (e) => {
         const { name, value } = e.target;
         setUser(prevUser => ({
@@ -276,7 +276,7 @@ export default (props) => {
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const totalPages = Math.ceil(data.length / rowsPerPage);
-    console.log(data)
+    // console.log(data)
 
     const updatePermissionsAPI = (newData) => {
 
@@ -289,7 +289,7 @@ export default (props) => {
             }
 
         }
-        console.log(requestBody)
+        // console.log(requestBody)
         fetch(`${proxy()}/privileges/account/${newData.username}/${newData.table_id}`, {
             method: "PUT",
             headers: {
@@ -301,7 +301,7 @@ export default (props) => {
             .then((res) => res.json())
             .then((resp) => {
                 const { success, content, data, status } = resp;
-                console.log(resp)
+                // console.log(resp)
                 // functions.showApiResponseMessage(status)
             });
 
@@ -311,7 +311,7 @@ export default (props) => {
     const handleCheckboxChange = async (index, permissionType) => {
         const newData = { ...currentData[index] };
         newData[permissionType] = !newData[permissionType];
-        console.log(newData)
+        // console.log(newData)
         // Gọi API để cập nhật trạng thái
         try {
             await updatePermissionsAPI(newData);

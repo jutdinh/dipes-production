@@ -24,7 +24,7 @@ export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
-
+    // console.log(_user)
     const { formatNumberWithCommas } = functions
 
     const { openTab, renderDateTimeByFormat } = functions
@@ -146,7 +146,7 @@ export default () => {
 
     const layoutId = page.components?.[0].layout_id;
     // console.log(layoutId)
-    const tableClassName = layoutId === 0 ? "table table-striped" : "table table-hover";
+    const tableClassName = layoutId === 0 ? "table" : "table table-hover";
 
 
     const CustomFileInput = ({ onChange, ...props }) => {
@@ -351,19 +351,19 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                console.log(11, resp)
+            
                 if (success && data.length > 0) {
                     const dataUser = data.find(item => item.username === _user.username);
-                    console.log(_user.username)
-                    console.log(dataUser)
+                    // console.log(_user.username)
+                    // console.log(dataUser)
                     setDataPrivileges(dataUser?.privileges)
                 }
             })
 
     }, [])
-    console.log(dataPrivileges)
+    // console.log(dataPrivileges)
     const dataCheck = dataPrivileges?.find(item => item.table_id === dataTable_id);
-    console.log(dataCheck)
+    // console.log(dataCheck)
     useEffect(() => {
 
         importData()
@@ -402,8 +402,8 @@ export default () => {
                 })
         }
     }, [page, dataTable_id])
-    console.log(dataTable_id)
-    console.log(page)
+    // console.log(dataTable_id)
+    // console.log(page)
     const handleCloseModal = () => {
         setSelectedFields([]);
         setSelectedStats([]);
@@ -489,7 +489,7 @@ export default () => {
             .then(res => {
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
-                console.log(74, res)
+                // console.log(74, res)
                 if (success) {
                     setApiData(data.filter(record => record != undefined));
                     setApiDataName(fields);
@@ -571,7 +571,7 @@ export default () => {
             callApi(true);
         }
     }
-    console.log(currentPage)
+
 
     const redirectToInput = () => {
         if (errorLoadConfig) {
@@ -824,7 +824,7 @@ export default () => {
                 .then(res => res.json())
                 .then(res => {
                     const { success, content, data, fields, limit } = res;
-                    console.log(res)
+                    // console.log(res)
                     if (data && data.length > 0) {
 
                         setLimit(limit)
@@ -886,7 +886,7 @@ export default () => {
         }
     }, [matchingPage]);
 
-    console.log(matchingPage)
+    // console.log(matchingPage)
 
     const [selectedFields, setSelectedFields] = useState([]);/// fields
     const [selectedStats, setSelectedStats] = useState([]);
@@ -1552,10 +1552,23 @@ export default () => {
                                     {statusActive ? (
 
                                         <>
-                                            {dataCheck && dataCheck?.write ?
-                                                <div className="ml-auto mt-2 pointer" onClick={() => redirectToInput()} data-toggle="modal" title={lang["btn.create"]}>
-                                                    <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
-                                                </div> : null}
+                                            {
+                                                _user.role === "uad"
+                                                    ?
+                                                    <div className="ml-auto mt-2 pointer" onClick={() => redirectToInput()} data-toggle="modal" title={lang["btn.create"]}>
+                                                        <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
+                                                    </div>
+                                                    :
+                                                    (dataCheck && dataCheck?.write)
+                                                        ?
+                                                        <div className="ml-auto mt-2 pointer" onClick={() => redirectToInput()} data-toggle="modal" title={lang["btn.create"]}>
+                                                            <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
+                                                        </div>
+                                                        :
+                                                        null
+                                            }
+
+
                                         </>
                                     ) : null}
                                     {
@@ -1571,10 +1584,23 @@ export default () => {
                                         <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
 
                                     </div>
-                                    {dataCheck && dataCheck?.write ?
-                                        <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
-                                            <FontAwesomeIcon icon={faFileImport} className="icon-import" />
-                                        </div> : null}
+                                    {
+                                        _user.role === "uad"
+                                            ?
+                                            <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
+                                                <FontAwesomeIcon icon={faFileImport} className="icon-import" />
+                                            </div>
+                                            :
+                                            (dataCheck && dataCheck?.write)
+                                                ?
+                                                <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
+                                                    <FontAwesomeIcon icon={faFileImport} className="icon-import" />
+                                                </div>
+                                                :
+                                                null
+                                    }
+
+
 
                                 </div>
                                 <div class="full inner_elements">
@@ -1633,14 +1659,28 @@ export default () => {
                                                                                                                                 <td key={header.fomular_alias} className="cell">{renderData(header, row)}</td>
                                                                                                                             ))}
                                                                                                                             <td class="align-center" style={{ minWidth: "80px" }}>
-
-                                                                                                                                {dataCheck && dataCheck?.modify ?
-                                                                                                                                    <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
-                                                                                                                                    : null}
-
-                                                                                                                                {dataCheck && dataCheck?.purge ?
-                                                                                                                                    <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
-                                                                                                                                    : null}
+                                                                                                                                {
+                                                                                                                                    _user.role === "uad"
+                                                                                                                                        ?
+                                                                                                                                        <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                                                                        :
+                                                                                                                                        (dataCheck && dataCheck?.modify)
+                                                                                                                                            ?
+                                                                                                                                            <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                                                                            :
+                                                                                                                                            null
+                                                                                                                                }
+                                                                                                                                {
+                                                                                                                                    _user.role === "uad"
+                                                                                                                                        ?
+                                                                                                                                        <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                                                                        :
+                                                                                                                                        (dataCheck && dataCheck?.purge)
+                                                                                                                                            ?
+                                                                                                                                            <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                                                                            :
+                                                                                                                                            null
+                                                                                                                                }
                                                                                                                             </td>
                                                                                                                         </tr>)
                                                                                                                 } else {
@@ -1802,15 +1842,23 @@ export default () => {
                                                             <h5>{page?.components?.[0]?.component_name}</h5>
                                                         </div>
 
-                                                        {statusActive ? (
-                                                            <>
-                                                                {dataCheck && dataCheck?.write ?
+                                                        {
+                                                            _user.role === "uad"
+                                                                ?
+                                                                <div className="ml-auto mt-2 pointer" onClick={() => redirectToInput()} data-toggle="modal" title={lang["btn.create"]}>
+                                                                    <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
+                                                                </div>
+                                                                :
+                                                                (dataCheck && dataCheck?.write)
+                                                                    ?
                                                                     <div className="ml-auto mt-2 pointer" onClick={() => redirectToInput()} data-toggle="modal" title={lang["btn.create"]}>
                                                                         <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
-                                                                    </div> : null}
-                                                            </>
+                                                                    </div>
+                                                                    :
+                                                                    null
+                                                        }
 
-                                                        ) : null}
+
 
 
                                                         {
@@ -1826,11 +1874,22 @@ export default () => {
                                                             <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
 
                                                         </div>
+                                                        {
+                                                            _user.role === "uad"
+                                                                ?
+                                                                <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
+                                                                    <FontAwesomeIcon icon={faFileImport} className="icon-import" />
+                                                                </div>
+                                                                :
+                                                                (dataCheck && dataCheck?.write)
+                                                                    ?
+                                                                    <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
+                                                                        <FontAwesomeIcon icon={faFileImport} className="icon-import" />
+                                                                    </div>
+                                                                    :
+                                                                    null
+                                                        }
 
-                                                        {dataCheck && dataCheck?.write ?
-                                                            <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
-                                                                <FontAwesomeIcon icon={faFileImport} className="icon-import" />
-                                                            </div> : null}
 
 
 
@@ -1892,13 +1951,30 @@ export default () => {
                                                                                                         </td>
                                                                                                     ))}
                                                                                                     <td className="align-center cell" style={{ minWidth: "80px" }}>
-                                                                                                        {dataCheck && dataCheck?.modify ?
-                                                                                                            <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
-                                                                                                            : null}
+                                                                                                        {
+                                                                                                            _user.role === "uad"
+                                                                                                                ?
+                                                                                                                <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
+                                                                                                                :
+                                                                                                                (dataCheck && dataCheck?.modify)
+                                                                                                                    ?
+                                                                                                                    <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
+                                                                                                                    :
+                                                                                                                    null
+                                                                                                        }
+                                                                                                        {
+                                                                                                            _user.role === "uad"
+                                                                                                                ?
+                                                                                                                <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                                                :
+                                                                                                                (dataCheck && dataCheck?.purge)
+                                                                                                                    ?
+                                                                                                                    <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                                                    :
+                                                                                                                    null
+                                                                                                        }
 
-                                                                                                        {dataCheck && dataCheck?.purge ?
-                                                                                                            <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
-                                                                                                            : null}
+
 
                                                                                                     </td>
                                                                                                 </tr>

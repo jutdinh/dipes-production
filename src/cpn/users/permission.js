@@ -115,7 +115,7 @@ export default (props) => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                console.log(resp)
+                // console.log(resp)
                 if(success)
                 {
                     setData(data)
@@ -336,7 +336,7 @@ export default (props) => {
     const indexOfLastUser = currentPage * rowsPerPage;
     const indexOfFirstUser = indexOfLastUser - rowsPerPage;
     const currentUser = data.slice(indexOfFirstUser, indexOfLastUser);
-    console.log(currentUser)
+    // console.log(currentUser)
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const totalPages = Math.ceil(profiles.length / rowsPerPage);
 
