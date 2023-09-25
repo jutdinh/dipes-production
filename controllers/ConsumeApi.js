@@ -147,6 +147,7 @@ class ConsumeApi extends Controller {
                 });                
                 
                 const apiTables = api.tables.map( table_id => this.tables.find( tb => tb.id == table_id ) );
+                console.log(api)
                 let isGranted;
     
                 if (project) {
@@ -785,7 +786,8 @@ class ConsumeApi extends Controller {
         const PARAMS_PLACE = 3
         const tables = this.tearTablesAndFieldsToObjects()
         const params = this.getFields(this.API.params.valueOrNot())
-        const fromIndex = defaultFromIndex ? defaultFromIndex : this.req.header(`fromIndex`)
+        const fromIndex = defaultFromIndex ? defaultFromIndex : this.req.header(`start_index`)
+        console.log(fromIndex)
         if (!this.periods) {
             const start = new Date()
             const periods = await Cache.getData(`${tables[0].table_alias}-periods`)
@@ -798,7 +800,7 @@ class ConsumeApi extends Controller {
             const end = new Date()
             console.log(`GET CACHE PARTITION IN: ${end - start}`)
         }
-
+        
         const indices = this.generatePeriodIndex(fromIndex)
         // console.log(indices)
         let paramQueries = [];
@@ -3246,7 +3248,7 @@ class ConsumeApi extends Controller {
                 }
 
                 const api_table = tables.find( tb => tb.id == api.tables[0] )
-
+                console.log(  )
                 let isGranted = this.hasEnoughPrivileges([api_table], ["read"], privileges)
 
                 if( this.isAdmin( user ) || isGranted ){
