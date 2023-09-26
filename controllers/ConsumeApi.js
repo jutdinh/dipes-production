@@ -2794,7 +2794,7 @@ class ConsumeApi extends Controller {
             req.body.query = {...criteria}
             delete req.body.criteria
 
-            this.SEARCH_BROADCAST()
+            this.SEARCH()
         } else {
             res.status(200).send({ success: false, content: "No API Found" })
         }
@@ -3153,12 +3153,14 @@ class ConsumeApi extends Controller {
                     for( let i = 0; i < fields.length; i++ ){
                         const { table_id } = fields[i]
 
-                        if( table_id == table.id ){
+                        if( table_id != table.id || isThisFieldForeign() ){
 
+                            // if foreign key => search on this table
+
+
+                            // else search on master table
                         }else{
-
-
-                            
+                            // search on master table then search on this table
                         }
                     }
 
