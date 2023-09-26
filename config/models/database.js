@@ -171,10 +171,10 @@ class Mongo {
         return data
     }
 
-    selectFrom = async (table, query, from, to) => {        
+    selectFrom = async (table, query, from, to) => {                
         const data = await new Promise( (resolve, reject) => {
 
-            this.dbo.collection( table ).find(query, { skip: from, projection: { "_id": 0 } }).limit( to - from ).toArray((err, result) => {
+            this.dbo.collection( table ).find(query, { skip: from, projection: { "_id": 0 } }).limit( to - from ).toArray((err, result) => {                                                
                 resolve( result )
             })            
 

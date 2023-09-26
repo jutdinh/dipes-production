@@ -298,6 +298,14 @@ class ConsumeApi extends Controller {
         return fields
     }
 
+    getFieldsByAlias = (fieldAliases) => {
+        const fields = fieldAliases.map( alias => {
+            const field = this.fields.find(f => f.fomular_alias == alias)
+            return field
+        }).filter( f => f != undefined )
+        return fields
+    }
+
     getField = (fieldId) => {
         const field = this.fields.find(fd => fieldId == fd.id)
         return field
@@ -765,7 +773,7 @@ class ConsumeApi extends Controller {
                     msg: "Successfully retrieved data",
                     success: true,
                     total: finaleData.length,
-                    limit: dataLimitation[0]?.total,
+                    count: dataLimitation[0]?.total,
                     data: filtedData,
                     fields: [...displayFields, ...calculateDisplay],
                 })
@@ -776,7 +784,7 @@ class ConsumeApi extends Controller {
                     total: [],
                     data: [],
                     fields,
-                    limit: dataLimitation[0]?.total
+                    count: dataLimitation[0]?.total
                 })
             }
         }
@@ -787,7 +795,7 @@ class ConsumeApi extends Controller {
         const tables = this.tearTablesAndFieldsToObjects()
         const params = this.getFields(this.API.params.valueOrNot())
         const fromIndex = defaultFromIndex ? defaultFromIndex : this.req.header(`start_index`)
-        console.log(fromIndex)
+        
         if (!this.periods) {
             const start = new Date()
             const periods = await Cache.getData(`${tables[0].table_alias}-periods`)
@@ -2782,7 +2790,11 @@ class ConsumeApi extends Controller {
                 return table
             });
 
-            this.SEARCH()
+            const { criteria } = req.body;
+            req.body.query = {...criteria}
+            delete req.body.criteria
+
+            this.SEARCH_BROADCAST()
         } else {
             res.status(200).send({ success: false, content: "No API Found" })
         }
@@ -2895,19 +2907,47 @@ class ConsumeApi extends Controller {
             const cache = await Cache.getData(`${table.table_alias}-periods`)
             let partitions = cache ? cache.value : []
 
-            const statistics = this.API.statistic.valueOrNot()
+            const statistics = this.API.statistic.valueOrNot()           
             const statisData = {}
             const calculates = this.API.calculates.valueOrNot();
 
 
 
             const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)
-            let count;
 
+            for (let j = 0; j < data.length; j++) {
+                if (result.length == RESULT_PER_SEARCH_PAGE) {
+                    if (!require_count) {
+                        break;
+                    }
+                }
+                const record = data[j]
+
+                const keys = Object.keys(record)
+
+                keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
+
+                for (let i = 0; i < calculates.length; i++) {
+                    const { fomular_alias, fomular } = calculates[i]
+                    let result = fomular;
+                    keys.map(key => {
+                        /* replace the goddamn fomular with its coresponding value in record values */
+                        result = result.replaceAll(key, record[key])
+                    })
+                    try {
+                        record[fomular_alias] = eval(result)
+                    } catch {
+                        record[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
+                    }
+                }
+
+                result.push(record)
+            }
+
+            let count;
             if (require_count) {
                 count = await Database.count(table.table_alias, formatedQuery)
             }
-
 
             for (let j = 0; j < data.length; j++) {
                 if (result.length == RESULT_PER_SEARCH_PAGE) {
@@ -3022,6 +3062,110 @@ class ConsumeApi extends Controller {
                 }
                 statistic.push(statisRecord)
             })
+            
+
+
+            this.res.send({
+                success: true,
+                total: result.length,
+                result,
+                fields: [...fields, ...calculates],
+                data: result,
+                count: count,
+                statistic
+            })
+        } else {
+            this.req.body = {
+                table_id: table.id,
+                start_index: 0,
+                criteria: {},
+                require_count: false,
+                exact: false,
+                api_id: undefined
+            }
+            this.FOREIGNDATA(this.req, this.res)
+        }
+    }
+
+    SEARCH_BROADCAST = async () => {
+        const tables = this.tearTablesAndFieldsToObjects()
+
+        const table = tables[0]
+
+        const { query, start_index, require_count, exact } = this.req.body;
+
+        const start = (start_index ? start_index : 0) * RESULT_PER_SEARCH_PAGE
+        const end = start + RESULT_PER_SEARCH_PAGE
+
+        const keys = Object.keys(query)
+        const fields = this.getFieldsByTableId(table.id)
+        const result = []
+        let index = 0
+        let count = 0;
+
+
+        const isAtLeastOneCriteriaIsNotNull = keys.filter(key => {
+            const value = query[key];
+            return value
+        })
+
+        if (isAtLeastOneCriteriaIsNotNull.length > 0) {
+
+            const formatedQuery = { $and: [] }
+            keys.map(key => {
+                const qr = {}
+                qr[`${key}`] = { $regex: query[key] }
+                formatedQuery["$and"].push(qr)
+            })
+            const regexMatches = { $and: [] }
+
+
+            const cache = await Cache.getData(`${table.table_alias}-periods`)
+            let partitions = cache ? cache.value : []
+
+            const statistics = this.API.statistic.valueOrNot()
+            const statisData = {}
+            const calculates = this.API.calculates.valueOrNot();
+            const statistic = {}
+
+            const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)
+            let count;
+
+            if (require_count) {
+                const field_fomular_alias =  Object.keys(query)
+                const fields = this.getFieldsByAlias( field_fomular_alias )
+                const thisTableFields = this.getFieldsByTableId( table.id )
+
+                if( fields.length > 0 ){
+                    const tables = []
+                    fields.map( f => {
+                        const { table_id } = f;
+                        const table = this.getTable( table_id );
+                        if( table ){
+                            const existedTable = tables.find( tb => tb.id == table_id )
+                            if(!existedTable){
+                                tables.push( table )
+                            }
+                        }
+                    })
+                    
+
+                    for( let i = 0; i < fields.length; i++ ){
+                        const { table_id } = fields[i]
+
+                        if( table_id == table.id ){
+
+                        }else{
+
+
+                            
+                        }
+                    }
+
+                }
+            }     
+            
+            const result = data
 
             this.res.send({
                 success: true,
