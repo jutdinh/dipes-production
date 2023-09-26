@@ -2913,36 +2913,7 @@ class ConsumeApi extends Controller {
 
 
 
-            const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)
-
-            for (let j = 0; j < data.length; j++) {
-                if (result.length == RESULT_PER_SEARCH_PAGE) {
-                    if (!require_count) {
-                        break;
-                    }
-                }
-                const record = data[j]
-
-                const keys = Object.keys(record)
-
-                keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
-
-                for (let i = 0; i < calculates.length; i++) {
-                    const { fomular_alias, fomular } = calculates[i]
-                    let result = fomular;
-                    keys.map(key => {
-                        /* replace the goddamn fomular with its coresponding value in record values */
-                        result = result.replaceAll(key, record[key])
-                    })
-                    try {
-                        record[fomular_alias] = eval(result)
-                    } catch {
-                        record[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
-                    }
-                }
-
-                result.push(record)
-            }
+            const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)            
 
             let count;
             if (require_count) {
