@@ -338,7 +338,7 @@ class Mongo {
         if( query == undefined ){
             criteria = {}
         }
-        const countResult = await this.dbo.collection( table ).find( criteria ).count();
+        const countResult = await this.dbo.collection( table ).countDocuments(criteria);
         return countResult
     }
 }

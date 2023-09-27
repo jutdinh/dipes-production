@@ -316,6 +316,14 @@ class ConsumeApi extends Controller {
         return table;
     }
 
+    isFieldForeign = ( field, table ) => {
+        const { id } = field;
+        const { foreign_keys } = table
+
+        const fk = foreign_keys.find( key => key.field_id == id )
+        return fk;
+    }
+
     parseType = (field, value) => {
 
         const type = field.DATATYPE
@@ -2794,7 +2802,7 @@ class ConsumeApi extends Controller {
             req.body.query = {...criteria}
             delete req.body.criteria
 
-            this.SEARCH()
+            this.SEARCH_BROADCAST()
         } else {
             res.status(200).send({ success: false, content: "No API Found" })
         }
@@ -3085,65 +3093,154 @@ class ConsumeApi extends Controller {
             const formatedQuery = { $and: [] }
             keys.map(key => {
                 const qr = {}
-                qr[`${key}`] = { $regex: query[key] }
-                formatedQuery["$and"].push(qr)
+                
+                const [field] = this.getFieldsByAlias([key])
+
+                if( field ){
+
+                    const { DATATYPE, AUTO_INCREMENT } = field;
+                    if( Fields.stringFamily.indexOf( DATATYPE ) != -1 || ( Fields.intFamily.indexOf( DATATYPE ) != -1 && AUTO_INCREMENT ) ){                        
+                        qr[`${key}`] = { $regex: query[key] } //approximate
+                        // qr[`${key}`] = query[key] // exact
+                    }else{
+                        qr[`${key}`] = query[key]
+                    }
+
+                    formatedQuery["$and"].push(qr)
+                }
+
             })
-            const regexMatches = { $and: [] }
-
-
-            const cache = await Cache.getData(`${table.table_alias}-periods`)
-            let partitions = cache ? cache.value : []
-
+            
+            const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)            
+            let count = 0;
+            
             const statistics = this.API.statistic.valueOrNot()
             const statisData = {}
             const calculates = this.API.calculates.valueOrNot();
-            const statistic = {}
-
-            const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)
-            let count;
-
+            const statistic = []
             if (require_count) {
-                const field_fomular_alias =  Object.keys(query)
-                const fields = this.getFieldsByAlias( field_fomular_alias )
-                const thisTableFields = this.getFieldsByTableId( table.id )
-
-                if( fields.length > 0 ){
-                    const tables = []
-                    fields.map( f => {
-                        const { table_id } = f;
-                        const table = this.getTable( table_id );
-                        if( table ){
-                            const existedTable = tables.find( tb => tb.id == table_id )
-                            if(!existedTable){
-                                tables.push( table )
+                
+                count = await Database.count( table.table_alias, formatedQuery )
+                console.log("COUNT", count)
+                for( let i = 0 ; i < count; i+= 10000 ){
+                    const tmpData = await Database.selectFrom(table.table_alias, formatedQuery, i, i+10000 )
+                    console.log(tmpData.length)
+                    for (let j = 0; j < tmpData.length; j++) {                        
+                        const record = tmpData[j]
+        
+                        const keys = Object.keys(record)
+        
+                        keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
+        
+                        for (let k = 0; k < calculates.length; k++) {
+                            const { fomular_alias, fomular } = calculates[k]
+                            let result = fomular;
+                            keys.map(key => {
+                                /* replace the goddamn fomular with its coresponding value in record values */
+                                result = result.replaceAll(key, record[key])
+                            })
+                            try {
+                                record[fomular_alias] = eval(result)
+                            } catch {
+                                record[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
                             }
-                        }
-                    })
-                    
-
-                    for( let i = 0; i < fields.length; i++ ){
-                        const { table_id } = fields[i]
-
-                        if( table_id != table.id || isThisFieldForeign() ){
-
-                            // if foreign key => search on this table
-
-
-                            // else search on master table
-                        }else{
-                            // search on master table then search on this table
-                        }
+                        }      
+        
+                        statistics.map(statis => {
+                            const { field, fomular_alias, fomular, group_by } = statis;
+                            const statisRecord = statisData[fomular_alias]
+        
+                            const stringifiedKey = group_by.map(group => record[group]).join("_")
+        
+                            if (!statisRecord) {
+                                if (group_by && group_by.length > 0) {
+                                    statisData[fomular_alias] = {}
+                                } else {
+                                    statisData[fomular_alias] = 0
+                                }
+                            }
+        
+                            if (fomular == "SUM") {
+                                if (group_by && group_by.length > 0) {
+        
+                                    if (!statisData[fomular_alias][stringifiedKey]) {
+                                        statisData[fomular_alias][stringifiedKey] = record[field]
+                                    } else {
+                                        statisData[fomular_alias][stringifiedKey] += record[field]
+                                    }
+                                } else {
+                                    statisData[fomular_alias] += record[field]
+                                }
+                            }
+        
+                            if (fomular == "AVERAGE") {
+                                if (group_by && group_by.length > 0) {
+        
+                                    if (!statisData[fomular_alias][stringifiedKey]) {
+                                        statisData[fomular_alias][stringifiedKey] = {
+                                            total: 1,
+                                            value: record[field]
+                                        }
+                                    } else {
+                                        statisData[fomular_alias][stringifiedKey].value = (statisData[fomular_alias][stringifiedKey].value * statisData[fomular_alias][stringifiedKey].total + record[field]) / (statisData[fomular_alias][stringifiedKey].total + 1)
+                                        statisData[fomular_alias][stringifiedKey].total += 1
+                                    }
+                                } else {
+                                    statisData[fomular_alias] = (statisData[fomular_alias] * (count - 1) + record[field]) / count
+                                }
+                            }
+        
+                            if (fomular == "COUNT") {
+                                if (group_by && group_by.length > 0) {
+        
+                                    if (!statisData[fomular_alias][stringifiedKey]) {
+                                        statisData[fomular_alias][stringifiedKey] = 1
+                                    } else {
+                                        statisData[fomular_alias][stringifiedKey] += 1
+                                    }
+                                } else {
+                                    statisData[fomular_alias] += 1
+                                }
+                            }
+                        })
                     }
-
+        
+                    
+                    statistics.map(statis => {
+                        const { display_name, fomular_alias, group_by, fomular } = statis;
+                        const statisRecord = { display_name }
+                        if (group_by && group_by.length > 0) {
+                            const rawData = statisData[fomular_alias]
+                            if (rawData != undefined) {
+                                if (fomular == "AVERAGE") {
+                                    const headers = Object.keys(rawData)
+                                    const values = Object.values(rawData).map(({ total, value }) => value)
+        
+                                    statisRecord["data"] = { headers, values }
+                                    statisRecord["type"] = "table"
+                                } else {
+                                    const headers = Object.keys(rawData)
+                                    const values = Object.values(rawData)
+                                    statisRecord["data"] = { headers, values }
+                                    statisRecord["type"] = "table"
+                                }
+                            }
+                        } else {
+                            statisRecord["type"] = "text"
+                            statisRecord["data"] = statisData[fomular_alias]
+                        }
+                        statistic.push(statisRecord)
+                    })
                 }
             }     
+
+
             
             const result = data
 
             this.res.send({
                 success: true,
-                total: result.length,
-                result,
+                total: result.length,                
                 fields: [...fields, ...calculates],
                 data: result,
                 count: count,

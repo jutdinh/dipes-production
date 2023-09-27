@@ -24,6 +24,10 @@ class Fields extends Model{
         "EMAIL", "PHONE"
     ]
 
+    static stringFamily = [
+        "CHAR", "TEXT", "EMAIL", "PHONE"
+    ]
+
     static intFamily = [
         "INT", "INT UNSIGNED",
         "BIGINT", "BIGINT UNSIGNED"
