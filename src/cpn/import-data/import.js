@@ -356,6 +356,7 @@ export default () => {
                         </div>
                     </div>
                 </div>
+                
                 {statusActive ? (
                     <>
                         <div class="row margin_top_30">

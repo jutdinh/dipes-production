@@ -269,7 +269,7 @@ export default (props) => {
 
 
     const [currentPage, setCurrentPage] = useState(1);
-    const rowsPerPage = 15;
+    const rowsPerPage = 12;
     const indexOfLastUser = currentPage * rowsPerPage;
     const indexOfFirstUser = indexOfLastUser - rowsPerPage;
     const currentData = data.slice(indexOfFirstUser, indexOfLastUser);

@@ -12,6 +12,23 @@ export default () => {
    const [uis, setUis] = useState([]);
    const [isOpen, setIsOpen] = useState(false);
    // console.log(pages)
+   const [isExpanded, setIsExpanded] = useState(true);
+
+   useEffect(() => {
+      const savedState = localStorage.getItem('menuExpanded');
+      if (savedState !== null) {
+          setIsExpanded(savedState === 'true');
+      }
+  }, []);
+  
+  useEffect(() => {
+   localStorage.setItem('menuExpanded', isExpanded ? 'true' : 'false');
+}, [isExpanded]);
+
+const toggleMenu = (event) => {
+   event.preventDefault();
+   setIsExpanded(prevState => !prevState);
+};
 
    const OpenTab = (url) => {
       window.location.href = `/fetch/${url}`;
@@ -79,7 +96,7 @@ export default () => {
                {user.role === "ad" || user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/privileges" activeClassName="nav-active">
-                        
+
                         <i class="fa fa-lock icon-privileges"></i>
 
                         <span>{lang["privileges manager"]}</span>
@@ -89,11 +106,12 @@ export default () => {
 
                {user.role === "ad" || user.role === "uad" ? (
                   <li>
-                     <a href="#dashboard" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                     <a href="#dashboard" onClick={toggleMenu}aria-expanded="false" class="dropdown-toggle">
                         <i class="fa fa-dashboard yellow_color"></i>
                         <span>{lang["data management"]}</span>
+                        <i class="fa "></i>
                      </a>
-                     <ul class="collapse list-unstyled show nav-custom scrollable " id="dashboard">
+                     <ul className={`collapse list-unstyled ${isExpanded ? 'show' : ''} scrollable`} id="dashboard">
                         {pages && pages.map((ui, index) => (
                            ui.status ? (
                               <li key={index} className="navbar-item">
@@ -106,7 +124,9 @@ export default () => {
                         ))}
                      </ul>
                   </li>
+
                ) : null}
+
                <div class="scrollable_user">
                   {user.role === "pd" ? (
                      <li>

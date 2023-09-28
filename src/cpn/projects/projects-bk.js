@@ -1,1 +1,0 @@
-{ "success": true, "content": "Một vài người dùng không được thêm vào vì họ đã bị xóa hoặc khum khả dụng!", "data": { "failAccounts": [{ "username": "a", "reason": "Người dùng này đã tồn tại trong dự án" }, { "username": "becong", "reason": "Người dùng này đã tồn tại trong dự án" }, { "username": "su1", "reason": "Người dùng này đã tồn tại trong dự án" }] }, "status": 200 }

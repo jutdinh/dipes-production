@@ -26,3 +26,14 @@
         display: none;
     }
 }
+
+@media (max-width: 767px) {
+    .step-indicator {
+        flex-direction: column; 
+    }
+
+    .step {
+        margin: 5px 0;
+        max-width: 100%;
+    }
+}

@@ -14,19 +14,13 @@ import { Import } from './import-data';
 import { Navigation, PageNotFound } from './navigations';
 import { Login, SignUp, SignOut } from './auth';
 import { Settings } from './settings';
-import { Projects, ProjectsCard, ProjectDetail } from './projects';
 import { ListUser, Profile, Permission, PermissionDetail } from './users';
-
-import { Tasks } from './tasks';
 import { Logs } from './logs';
 import { Tables, Field, UpdateField } from './tables';
-import { Apis, CreateApi, UpdateAi,StatisticalField} from './api';
-import { UI, CreateUi} from './ui'
-import updateApi from './api/update-api';
 import { Diagram } from './diagram';
 import  Active_Key from "./active_key/active";
 import { Fetch, InputPost, InputPut, ImportData } from './page';
-
+import  {Active_Helpdesk, Table_Key}  from "./page/step"
 import "../css/index.scss";
 import { SiteMap } from './site-map';
 
@@ -116,19 +110,11 @@ function App() {
         <Route path="/signout" element={<SignOut />} />
         {/* <Route path="/" element={<Navigation Child={Home} />} /> */}
         <Route path="/" element={<Navigation Child={Import} />} />
-        <Route path="/projects" element={<Navigation Child={Projects} />} />
-        <Route path="/projects/:project_id" element={<Navigation Child={ProjectsCard} />} />
-        <Route path="/projects/detail/:project_id" element={<Navigation Child={ProjectDetail} />} />
-        <Route path="/projects/task/:project_id" element={<Navigation Child={Tasks} />} />
+       
         <Route path="/diagram_db" element={<Navigation Child={Tables} />} />
-        <Route path="/projects/:version_id/tables/field" element={<Navigation Child={Field} />} />
-        <Route path="/projects/:version_id/table/:table_id" element={<Navigation Child={UpdateField} />} />
-        <Route path="/projects/:version_id/apis" element={<Navigation Child={Apis} />} />
-        <Route path="/projects/:version_id/apis/create" element={<Navigation Child={CreateApi} />} />
-        <Route path="/projects/:version_id/apis/update/:api_id" element={<Navigation Child={updateApi} />} />
+      
 
-        <Route path="/projects/:version_id/uis" element={<Navigation Child={UI} />} />
-        <Route path="/projects/:version_id/uis/create" element={<Navigation Child={CreateUi} />} />
+      
         {/* <Route path="/logs" element={<Navigation Child={Logs} />} /> */}
         <Route path="/users" element={<Navigation Child={ListUser} />} />
         <Route path="/users/profile" element={<Navigation Child={Profile} />} />
@@ -136,12 +122,13 @@ function App() {
         <Route path="/privileges/detail" element={<Navigation Child={PermissionDetail} />} />
         <Route path="/settings" element={<Navigation Child={Settings} />} />
         <Route path="/active" element={<Navigation Child={Active_Key} />} />
-       
+        <Route path="/step" element={<Navigation Child={Active_Helpdesk} />} />
+        <Route path="/table_key" element={<Navigation Child={Table_Key} />} />
        
         <Route path="/sitemap" element={<Navigation Child={SiteMap} />} />
 
         <Route exac path="/page/:url/apis/api/:id_str/input_info" element={ < Navigation Child={InputPost} /> } />
-        <Route path="/page/put/api/:id_str/*" element={ < Navigation Child={InputPut} /> } />
+        <Route path="/page/:url/put/api/:id_str/*" element={ < Navigation Child={InputPut} /> } />
         <Route exac path="/page/:url" element={ < Navigation Child={Fetch} /> } />
         <Route exac path="/page/:url/import" element={ < Navigation Child={ImportData} /> } />
         {/* <Route exac path="/diagram" element={ < Navigation Child={Diagram} /> } /> */}

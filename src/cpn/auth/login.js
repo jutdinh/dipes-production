@@ -113,7 +113,7 @@ export default () => {
                         <div className="login_section">
                             <div className="logo_login">
                                 <div className="center">
-                                    <img width="210" src="images/logo/logo.png" alt="#" />
+                                   <h2>ĐĂNG NHẬP</h2>
                                 </div>
                             </div>
                             <div className="login_form">

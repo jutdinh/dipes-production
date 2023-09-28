@@ -188,6 +188,23 @@ export default () => {
                 })
         }
     }, [page, dataTable_id])
+
+    useEffect(() => {
+        if (page && page.components) {
+            fetch(`${proxy()}${page.components?.[0]?.api_get}`)
+                .then(res => res.json())
+                .then(res => {
+                    const { data, success, fields, content } = res;
+                    if (success) {
+                        setApiDataName(fields)
+                    }
+                    callApi()
+                })
+        }
+    }, [page, dataTable_id])
+
+console.log(apiDataName)
+
     useEffect(() => {
         if (pages && pages.length > 0) {
             const result = pages.find(page => page.url === `/${url}`);
