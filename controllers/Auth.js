@@ -179,29 +179,52 @@ class Auth extends Controller {
                     
             const projects = await this.#__projects.findAll({})
             let imported = false;
+            let project_type = undefined
+            let remoteDomain;
             if( projects != undefined && projects.length > 0 ){
                 imported = true
+                const project = projects[0]
+                project_type = project.project_type
+                remoteDomain = project.proxy_server
             }
-            
-            if( user != undefined ){
-                const Account = new AccountsRecord(user);
-                const data = Account.get();
-                const token = this.makeToken( data );    
-    
-                await this.saveLog("info", req.ip, "__login", `__username ${ Account.username.value() }`, Account.username.value() )
-                
-                res.status(200).send({ success: true, content: "Đăng nhập thành công", data: { token, data, imported }  })
+
+            if( project_type ==  "api" ){
+                const response = await new Promise( (resolve, reject) => {
+                    fetch(`${remoteDomain}/auth/login`, {
+                        method: "POST",
+                        headers: {
+                            'content-type': "application/json",
+                        },
+                        body: JSON.stringify({ account: req.body.account })
+                    }).then( res => res.json() ).then( res => {
+                        resolve( res )
+                    })
+                })
+                console.log( response )
+                res.status(200).send(response)
             }else{
-                if( username.toLowerCase() == this.#__default.username  && password == this.#__default.password){
-                    const data = { ...this.#__default, password: undefined }                
-                    const token = this.makeToken(data);
+
+                if( user != undefined ){
+                    const Account = new AccountsRecord(user);
+                    const data = Account.get();
+                    const token = this.makeToken( data );    
+        
+                    await this.saveLog("info", req.ip, "__login", `__username ${ Account.username.value() }`, Account.username.value() )
                     
-    
                     res.status(200).send({ success: true, content: "Đăng nhập thành công", data: { token, data, imported }  })
-                }else{                
-                    res.status(200).send({ success: false, content: "Thông tin đăng nhập không chính xác" })
+                }else{
+                    if( username.toLowerCase() == this.#__default.username  && password == this.#__default.password){
+                        const data = { ...this.#__default, password: undefined }                
+                        const token = this.makeToken(data);
+                        
+        
+                        res.status(200).send({ success: true, content: "Đăng nhập thành công", data: { token, data, imported }  })
+                    }else{                
+                        res.status(200).send({ success: false, content: "Thông tin đăng nhập không chính xác" })
+                    }
                 }
             }
+            
         }else{
             res.status(200).send({ success: false, content: "Một số trường có dữ liệu không hợp lệ" })
         }      

@@ -13,6 +13,8 @@ const { Fields, FieldsRecord } = require('../../models/Fields');
 const { Apis, ApisRecord } = require('../../models/Apis');
 const { Privileges, PrivilegesRecord } = require('../../models/Privileges')
 
+const { Statistics, StatisticsRecord } = require('../../models/Statistics')
+
 const { Activation } = require('../../models/Activation');
 const { Database } = require('../../config/models/database');
 
@@ -566,6 +568,66 @@ class VersionsController extends Controller {
             console.log("Table not found")
         }
     }
+
+    resetStatis = async () => {
+        const Statis = new Statistics();
+        const model = Statis.getModel()
+        const tableName = model.__getTableName__()
+
+        await Database.update( tableName, {}, { calculates: [], statistic: [] } )
+    }
+
+
+    saveStatisticInfor = async (api) => {
+        const { tables, calculates, statistic } = api
+        const table_id = tables[0];
+        const Statis = new Statistics()
+        const table = await Statis.find({ table_id })
+        // console.log(table)
+        if( !table ){
+            const statisConfig = new StatisticsRecord({
+                table_id,
+                statistic,
+                calculates
+            })
+            // console.log("INSERT")
+            await statisConfig.save()
+        }else{
+            const statisConfig = new StatisticsRecord( table )
+            const tableCalculates = statisConfig.calculates.valueOrNot() 
+            
+            for( let i = 0; i < calculates.length; i++ ){
+                const calculate = calculates[i]
+
+                const oldCal = tableCalculates.find( c => c.fomular_alias == calculate.fomular_alias )
+                if( oldCal ){
+                    const index = tableCalculates.indexOf( oldCal )
+                    tableCalculates[index] = calculate
+                    // console.log("REPLACE CALCULATE")
+                }else{
+                    tableCalculates.push( calculate )
+                }
+            }
+            statisConfig.calculates.value( tableCalculates )
+
+
+            const tableStatistics = statisConfig.statistic.valueOrNot() 
+            for( let i = 0; i < statistic.length; i++ ){
+                const statis = statistic[i]
+
+                const oldCal = tableStatistics.find( c => c.fomular_alias == statis.fomular_alias )
+                if( oldCal ){
+                    const index = tableStatistics.indexOf( oldCal )
+                    tableStatistics[index] = statis
+                    // console.log("REPLACE STATIS")
+                }else{
+                    tableStatistics.push( statis )
+                }
+            }
+            statisConfig.statistic.value( tableStatistics )
+            await statisConfig.save()
+        }
+    }
     
     importAPI = async ( req, res ) => {
         const { data } = req.body;
@@ -589,7 +651,10 @@ class VersionsController extends Controller {
                     return false
                 })               
                 await this.#__apis.insertMany(apis)
-                
+                await this.resetStatis()
+                for( let i = 0 ; i < syncAPIs.length; i++ ){
+                    await this.saveStatisticInfor(syncAPIs[i])
+                }                
                 for( let i = 0 ; i < syncAPIs.length; i++ ){
                     await this.synchronizeAPIData(syncAPIs[i])
                 }

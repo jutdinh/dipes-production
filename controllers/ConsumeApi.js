@@ -774,6 +774,42 @@ class ConsumeApi extends Controller {
                     return { fomular_alias, display_name }
                 })
 
+                const model = new Model(mainTable.table_alias);
+                const Table = model.getModel();
+
+                const sumerize = await Table.__findCriteria__({ position: "sumerize" })
+                const statistic = this.API.statistic.valueOrNot()
+                const statistics = []
+
+                if (sumerize && !objectComparator(sumerize, {})) {
+                    statistic.map(statis => {
+                        const { display_name, fomular_alias, fomular, group_by } = statis;
+                        const statisRecord = { display_name }
+                        if (group_by && group_by.length > 0) {
+                            const rawData = sumerize[fomular_alias]
+                            if (rawData != undefined) {
+                                if (fomular == "AVERAGE") {
+                                    const headers = Object.keys(rawData)
+                                    const values = Object.values(rawData).map(({ total, value }) => value)
+
+                                    statisRecord["data"] = { headers, values }
+                                    statisRecord["type"] = "table"
+                                } else {
+                                    const headers = Object.keys(rawData)
+                                    const values = Object.values(rawData)
+                                    statisRecord["data"] = { headers, values }
+                                    statisRecord["type"] = "table"
+                                }
+                            }
+                        } else {
+                            statisRecord["type"] = "text"
+                            statisRecord["data"] = sumerize[fomular_alias]
+                        }
+                        statistics.push(statisRecord)
+                    })
+                }
+
+                
 
                 const endTime = new Date()
                 console.log("API CALL IN " + `${endTime - startTime}`)
@@ -784,6 +820,7 @@ class ConsumeApi extends Controller {
                     count: dataLimitation[0]?.total,
                     data: filtedData,
                     fields: [...displayFields, ...calculateDisplay],
+                    statistic: statistics
                 })
             } else {
                 this.res.status(200).send({
@@ -2685,9 +2722,14 @@ class ConsumeApi extends Controller {
     }
 
     REMOTE_GET = async () => {
-        const remoteURL = this.generateRemoteURL()
+        const remoteURL = this.generateRemoteURL()        
+        console.log(this.req.headers)
         const response = await new Promise((resolve, reject) => {
-            fetch(remoteURL).then(res => res.json()).then(res => {
+            fetch(remoteURL, {
+                headers: {
+                    Authorization: this.req.header("Authorization")
+                }
+            }).then(res => res.json()).then(res => {
                 resolve(res)
             })
         })
@@ -3206,32 +3248,32 @@ class ConsumeApi extends Controller {
                     }
         
                     
-                    statistics.map(statis => {
-                        const { display_name, fomular_alias, group_by, fomular } = statis;
-                        const statisRecord = { display_name }
-                        if (group_by && group_by.length > 0) {
-                            const rawData = statisData[fomular_alias]
-                            if (rawData != undefined) {
-                                if (fomular == "AVERAGE") {
-                                    const headers = Object.keys(rawData)
-                                    const values = Object.values(rawData).map(({ total, value }) => value)
-        
-                                    statisRecord["data"] = { headers, values }
-                                    statisRecord["type"] = "table"
-                                } else {
-                                    const headers = Object.keys(rawData)
-                                    const values = Object.values(rawData)
-                                    statisRecord["data"] = { headers, values }
-                                    statisRecord["type"] = "table"
-                                }
-                            }
-                        } else {
-                            statisRecord["type"] = "text"
-                            statisRecord["data"] = statisData[fomular_alias]
-                        }
-                        statistic.push(statisRecord)
-                    })
                 }
+                statistics.map(statis => {
+                    const { display_name, fomular_alias, group_by, fomular } = statis;
+                    const statisRecord = { display_name }
+                    if (group_by && group_by.length > 0) {
+                        const rawData = statisData[fomular_alias]
+                        if (rawData != undefined) {
+                            if (fomular == "AVERAGE") {
+                                const headers = Object.keys(rawData)
+                                const values = Object.values(rawData).map(({ total, value }) => value)
+    
+                                statisRecord["data"] = { headers, values }
+                                statisRecord["type"] = "table"
+                            } else {
+                                const headers = Object.keys(rawData)
+                                const values = Object.values(rawData)
+                                statisRecord["data"] = { headers, values }
+                                statisRecord["type"] = "table"
+                            }
+                        }
+                    } else {
+                        statisRecord["type"] = "text"
+                        statisRecord["data"] = statisData[fomular_alias]
+                    }
+                    statistic.push(statisRecord)
+                })
             }     
 
 
