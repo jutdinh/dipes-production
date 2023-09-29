@@ -27,7 +27,7 @@
     }
 }
 
-@media (max-width: 767px) {
+/* @media (max-width: 767px) {
     .step-indicator {
         flex-direction: column; 
     }
@@ -35,5 +35,16 @@
     .step {
         margin: 5px 0;
         max-width: 100%;
+    }
+} */
+@media (max-width: 600px) {
+    .step-item {
+        width: 100%; 
+    }
+    .step-arrow-right.step-active .step-link:after, 
+    .step-arrow-both.step-active .step-link:before,
+    .step-arrow-both.step-active .step-link:after {
+        display: none; 
+       
     }
 }

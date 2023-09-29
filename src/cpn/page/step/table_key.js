@@ -62,14 +62,34 @@ function Active_Helpdesk() {
                             <div class="table-responsive">
 
                               <>
-                                <table class="table table ">
+                                <table class="table table  ">
                                   <thead>
                                     <tr class="color-tr" style={{ height: "40px" }}>
-                                      <th class="font-weight-bold" style={{ width: "20px" }} scope="col">ID</th>
-                                      <th class="font-weight-bold" style={{ width: "300px" }} scope="col">Tên dòng máy</th>
-                                      <th class="font-weight-bold" style={{ width: "150px" }} scope="col">Số LOT</th>
-                                      <th class="font-weight-bold" style={{ width: "250px" }} scope="col">UUID</th>
-                                      <th class="font-weight-bold align-center" style={{ width: "350px" }} scope="col">Key</th>
+                                      <th class="font-weight-bold" style={{ width: "20px" }} scope="col">ID </th>
+                                      <th class="font-weight-bold"  style={{ maxWidth: "350px", minWidth: "200px" }}scope="col">
+                                        <div className="th-container">
+                                          Tên dòng máy
+                                          <i className="fa fa-filter icon-view size-18" />
+                                        </div>
+                                      </th>
+
+
+                                      <th class="font-weight-bold" style={{ width: "180px" }} scope="col">
+                                        <div className="th-container">
+                                          Số LOT
+                                          <i className="fa fa-filter icon-view size-18" />
+                                        </div>
+                                      </th>
+                                      <th class="font-weight-bold" style={{ width: "320px" }} scope="col"><div className="th-container">
+                                        UUID
+                                        <i className="fa fa-filter icon-view size-18" />
+                                      </div>
+                                      </th>
+                                      <th class="font-weight-bold align-center" style={{ maxWidth: "350px", minWidth: "300px" }} scope="col"><div className="th-container">
+                                        Key
+                                      
+                                      </div>
+                                      </th>
                                       {/* <th class="font-weight-bold align-center" style={{ width: "350px" }} scope="col">Thao tác</th> */}
                                     </tr>
                                   </thead>
@@ -266,7 +286,7 @@ function Active_Helpdesk() {
 
                                     </tr>
                                     <tr>
-                                      <td></td>
+                                      <td style={{height: "200px"}}></td>
                                     </tr>
 
                                   </tbody>
@@ -292,7 +312,7 @@ function Active_Helpdesk() {
                                     </button>
                                   </li>
                                   <li cclassName={`page-item active`}>
-                                    <button className="page-link" >
+                                    <button className="page-link active" >
                                       1
                                     </button>
                                   </li>

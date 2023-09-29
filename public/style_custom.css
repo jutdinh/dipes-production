@@ -37,7 +37,10 @@
     padding: 0;
     list-style-type: none;
     border: 1px solid #ccc;
+    display: flex;  /* Chuyển sang dạng flex layout */
+    flex-wrap: wrap;  /* Cho phép flex items tự động xuống hàng khi không đủ không gian */
 }
+
 
 .step-list:before, .step-list:after {
     content: "";
@@ -51,7 +54,7 @@
 .step-item {
     display: inline-block;
     width: 50%;
-    float: left;
+    /* float: left; */
     text-align: center;
     text-transform: uppercase;
     font-size: 14px;
@@ -59,7 +62,7 @@
 }
 
 .step-active {
-    background: forestgreen;
+    background: #1F8A70;
     color: #fff;
 }
 .step-active .step-link {
@@ -79,7 +82,7 @@
     position: absolute;
     border-style: solid;
     border-width: 20px;
-    border-color: transparent transparent transparent forestgreen;
+    border-color: transparent transparent transparent #1F8A70;
     right: -40px;
 }
 
@@ -88,7 +91,7 @@
     position: absolute;
     border-style: solid;
     border-width: 20px;
-    border-color: transparent transparent transparent forestgreen;
+    /* border-color: transparent transparent transparent forestgreen; */ /* Mũi tên dạng khuyết ở bên phải */
     right: -40px;
 }
 
@@ -97,10 +100,20 @@
     position: absolute;
     border-style: solid;
     border-width: 20px;
-    border-color: forestgreen forestgreen forestgreen transparent; /* Mũi tên dạng khuyết ở bên trái */
+    border-color: #1F8A70#1F8A70 #1F8A70 transparent; /* Mũi tên dạng khuyết ở bên trái */
     left: -40px;
 }
 
+.th-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.icon-view {
+    margin-left: auto; 
+}
 
 
 
@@ -133,7 +146,10 @@
 .pl-10 {
     padding-left: 10px !important;
 }
-
+.mlr-5{
+    margin-left:  5px;
+    margin-right: 5px;
+}
 .p-20 {
     padding-left: 20px !important;
     padding-right: 20px !important;

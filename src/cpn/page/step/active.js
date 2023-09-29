@@ -51,11 +51,9 @@ function Active_Helpdesk() {
           <div class="col-md-12">
             <div class="white_shd full margin_bottom_30">
               <div class="full price_table padding_infor_info">
-
                 <div className="container justify-content-center mt-3">
 
-
-                  <div className="step-indicator">
+                  <div className="step-indicator mlr-5">
                     <ul className="step-list">
                       <li className={`step-item ${!isActivated ? "step-active" : ""} step-arrow-right`}>
                         <a className="step-link">Step 1: Thông Tin Máy In</a>
@@ -65,9 +63,6 @@ function Active_Helpdesk() {
                       </li>
                     </ul>
                   </div>
-
-
-
 
                   {!isActivated ? (
                     <div class="row justify-content-center mt-5">
@@ -109,7 +104,7 @@ function Active_Helpdesk() {
                                     position: 'absolute',
                                     top: '10%',
                                     left: '40%',
-                                    transform: 'translate(10px, -50%)',
+                                    transform: 'translate(10px, -40%)',
                                     zIndex: 1
                                   }}>
                                     <i className='fa fa-check-circle mr-1 mt-1'></i>Copied

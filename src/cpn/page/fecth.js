@@ -40,12 +40,16 @@ export default () => {
     const [loadingExportFile, setLoadingExportFile] = useState(false);
     const [loadingSearch, setLoadingSearch] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [loadingResult, setLoadingResult] = useState(false);
+    console.log("trạng thái loadl", loadingResult)
     const [uploadedJson, setUploadedJson] = useState(null);
+    const [dataLength, setDataLength] = useState(0);
 
+
+
+
+    console.log(48, dataLength)
     const [apiDataName, setApiDataName] = useState([])
-    const [apiDataNameExport, setApiDataNameExport] = useState([])
-
-
     const [dataStatis, setDataStatis] = useState([])
     const [statusActive, setStatusActive] = useState(false);
     const [errorLoadConfig, setErrorLoadConfig] = useState(false);
@@ -69,7 +73,7 @@ export default () => {
 
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     }
-    // console.log(dataStatis)
+    console.log(dataStatis)
     const formatNumberSize = (num) => {
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     }
@@ -149,7 +153,7 @@ export default () => {
     }, [page, url])
 
     const layoutId = page.components?.[0].layout_id;
-    // console.log(layoutId)
+    console.log(layoutId)
     const tableClassName = layoutId === 0 ? "table" : "table table-hover";
 
 
@@ -367,7 +371,7 @@ export default () => {
     }, [])
     // console.log(dataPrivileges)
     const dataCheck = dataPrivileges?.find(item => item.table_id === dataTable_id);
-    // console.log(dataCheck)
+    console.log(dataCheck)
     useEffect(() => {
 
         importData()
@@ -388,18 +392,21 @@ export default () => {
                 .then(res => res.json())
                 .then(res => {
                     const { data, success, content } = res;
-                    console.log(res)
+                    // console.log(res)
                     if (success) {
                         setDataTables(data.tables)
                         setDataTableID(data.tables[0].id)
-                        setApiDataNameExport(data.body)
                         setDataFields(data.body)
                         setLoaded(true)
                     }
                     // if (dataTable_id !== null) {
                     //     callApi()
                     // }
-                    // setApi(api);                                                             
+
+
+
+                    // setApi(api);
+
                 })
         }
     }, [page, dataTable_id])
@@ -444,173 +451,131 @@ export default () => {
     const [previousSearchValues, setPreviousSearchValues] = useState({});
     const [currentCount, setCurrentCount] = useState(null);
 
-    // const callApi = (requireCount = false) => {
-    //     const startTime = new Date().getTime();
-    //     let loadingTimeout;
-    //     let loadingTimeoutSearch;
-    //     if (Object.keys(searchValues).length !== 0) {
-    //         loadingTimeoutSearch = setTimeout(() => {
-    //             setLoadingSearch(true);
-    //         }, 310);
-    //     }
 
-    //     loadingTimeout = setTimeout(() => {
-    //         setLoading(true)
-    //     }, 300);
+    const callApi = async (requireCount = false) => {
+        while (!loadingResult) {
+            const startTime = new Date().getTime();
+            let loadingTimeout;
+            let loadingTimeoutSearch;
+            if (Object.keys(searchValues).length !== 0) {
+                loadingTimeoutSearch = setTimeout(() => {
+                    setLoadingSearch(true);
+                }, 310);
+            }
 
-    //     if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
-    //         setPreviousSearchValues(searchValues);
-    //         requireCount = true;
-    //     }
-    //     const searchBody = {
-    //         table_id: dataTable_id,
-    //         start_index: currentPage - 1,
-    //         criteria: searchValues,
-    //         require_count: requireCount,
-    //         api_id: page.components?.[0]?.api_get.split('/')[2]
-    //         // exact: true
-    //     }
-    //     // console.log(searchBody)
-    //     fetch(`${proxy()}/api/foreign/data`, {
-    //         method: "POST",
-    //         headers: {
-    //             "content-type": "application/json",
-    //             Authorization: _token,
-    //             fromIndex: currentPage - 1
-    //         },
-    //         body: JSON.stringify(searchBody)
-    //     })
-    //         .then(res => res.json())
-    //         .then(res => {
-    //             const { success, content, data, result, total, fields, count, sumerize } = res;
-    //             const statisticValues = res.statistic;
-    //             console.log(74, res)
-    //             if (success) {
-    //                 // setApiData(data.filter(record => record != undefined));
-    //                 setApiDataName(fields);
-    //                 setDataStatis(statisticValues);
-    //                 setLoaded(true);
+            loadingTimeout = setTimeout(() => {
 
-    //                 if (count !== undefined && requireCount) {
-    //                     setCurrentCount(count);
-    //                     setSumerize(count);
-    //                 } else if (sumerize !== undefined) {
-    //                     setSumerize(sumerize);
-    //                 } else if (!requireCount && currentCount != null) {
-    //                     setSumerize(currentCount);
-    //                 }
-    //             } else {
-    //                 setApiData([]);
-    //                 setApiDataName([])
-    //             }
+                setLoading(true)
+            }, 300);
 
-    //             const endTime = new Date().getTime();
-    //             const elapsedTime = endTime - startTime;
-    //             clearTimeout(loadingTimeout);
-    //             clearTimeout(loadingTimeoutSearch);// Clear the timeout
-    //             setLoadingSearch(false);
-    //             setLoading(false)
-    //             // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
-    //         });
-    // };
 
-    const callApi = (requireCount = false) => {
-        const startTime = new Date().getTime();
-        let loadingTimeout;
-        let loadingTimeoutSearch;
-        if (Object.keys(searchValues).length !== 0) {
-            loadingTimeoutSearch = setTimeout(() => {
-                setLoadingSearch(true);
-            }, 310);
-        }
+            if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
+                setPreviousSearchValues(searchValues);
+                requireCount = true;
+            }
 
-        loadingTimeout = setTimeout(() => {
-            setLoading(true)
-        }, 300);
+            const searchBody = {
+                table_id: dataTable_id,
+                start_index: currentPage - 1,
+                criteria: searchValues,
+                require_count: false,
+                api_id: page.components?.[0]?.api_get.split('/')[2]
+                // exact: true
+            }
 
-        if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
-            setPreviousSearchValues(searchValues);
-            requireCount = true;
-        }
-        const searchBody = {
-            table_id: dataTable_id,
-            start_index: currentPage - 1,
-            criteria: searchValues,
-            require_count: false,
-            api_id: page.components?.[0]?.api_get.split('/')[2]
-            // exact: true
-        }
-        console.log(searchBody)
-        fetch(`${proxy()}${page.components?.[0]?.api_search}`, {
-            method: "POST",
-            headers: {
-                "content-type": "application/json",
-                Authorization: _token,
-                fromIndex: currentPage - 1
-            },
-            body: JSON.stringify(searchBody)
-        })
-            .then(res => res.json())
-            .then(res => {
-                const { success, content, data, result, total, fields, count, sumerize } = res;
-                const statisticValues = res.statistic;
-                console.log(74, res)
-                if (success) {
-                    setApiData(data.filter(record => record != undefined));
-                    setApiDataName(fields);
-                    setDataStatis(statisticValues);
-                    setLoaded(true);
+            console.log(45465466, searchBody)
 
-                    if (count !== undefined && requireCount) {
-                        setCurrentCount(count);
-                        setSumerize(count);
-                    } else if (sumerize !== undefined) {
-                        setSumerize(sumerize);
-                    } else if (!requireCount && currentCount != null) {
-                        setSumerize(currentCount);
+            fetch(`${proxy()}/api/foreign/data`, {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                    Authorization: _token,
+                    fromIndex: currentPage - 1
+                },
+                body: JSON.stringify(searchBody)
+            })
+                .then(res => res.json())
+                .then(res => {
+
+                    const { success, content, data, result, total, fields, count, sumerize } = res;
+                    const statisticValues = res.statistic;
+                    console.log(74, res)
+                    if (success) {
+                        setApiData(data.filter(record => record != undefined));
+                        setApiDataName(fields);
+                        setDataStatis(statisticValues);
+                        setLoaded(true);
+
+
+                        const filteredData = data.filter(record => record != undefined);
+                        const combinedData = [...apiData, ...filteredData];
+                        // Lưu độ dài dữ liệu vào state khác (giả sử state đó là dataLength)
+                        setDataLength(combinedData.length);
+
+
+                        if (count !== undefined && requireCount) {
+                            setCurrentCount(count);
+                            setSumerize(count);
+                        } else if (sumerize !== undefined) {
+                            setSumerize(sumerize);
+                        } else if (!requireCount && currentCount != null) {
+                            setSumerize(currentCount);
+                        }
+
+
+
+
+                    } else {
+                        setApiData([]);
+                        setApiDataName([])
                     }
-                } else {
-                    setApiData([]);
-                    setApiDataName([])
-                }
 
-                const endTime = new Date().getTime();
-                const elapsedTime = endTime - startTime;
-                clearTimeout(loadingTimeout);
-                clearTimeout(loadingTimeoutSearch);// Clear the timeout
-                setLoadingSearch(false);
-                setLoading(false)
-                // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
-            });
+                    const endTime = new Date().getTime();
+                    const elapsedTime = endTime - startTime;
+
+                    clearTimeout(loadingTimeout);
+                    clearTimeout(loadingTimeoutSearch);// Clear the timeout
+                    setLoadingSearch(false);
+                    setLoading(false)
+                    // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                });
+        }
     };
-    const callApiCount= (requireCount = false) => {
+    // G
+    const callApiCount = (requireCount = false) => {
         const startTime = new Date().getTime();
         let loadingTimeout;
         let loadingTimeoutSearch;
-        if (Object.keys(searchValues).length !== 0) {
-            loadingTimeoutSearch = setTimeout(() => {
-                // setLoadingSearch(true);
-            }, 310);
-        }
+        // if (Object.keys(searchValues).length !== 0) {
+        //     loadingTimeoutSearch = setTimeout(() => {
+        //         setLoadingSearch(true);
+        //     }, 310);
+        // }
 
-        loadingTimeout = setTimeout(() => {
-            setLoading(true)
-        }, 300);
+        // loadingTimeout = setTimeout(() => {
+
+        //     // setLoading(true)
+        //     setLoadingResult(true)
+        // }, 300);
+        setLoadingResult(true)
 
         if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
             setPreviousSearchValues(searchValues);
             requireCount = true;
         }
+
         const searchBody = {
             table_id: dataTable_id,
             start_index: currentPage - 1,
             criteria: searchValues,
-            require_count: requireCount,
+            require_count: true,
             api_id: page.components?.[0]?.api_get.split('/')[2]
             // exact: true
         }
+
         console.log(searchBody)
-        fetch(`${proxy()}${page.components?.[0]?.api_search}`, {
+
+        fetch(`${proxy()}/api/foreign/data`, {
             method: "POST",
             headers: {
                 "content-type": "application/json",
@@ -625,10 +590,10 @@ export default () => {
                 const statisticValues = res.statistic;
                 console.log(74, res)
                 if (success) {
-                    setApiData(data.filter(record => record != undefined));
-                    setApiDataName(fields);
-                    setDataStatis(statisticValues);
-                    setLoaded(true);
+                    // setApiData(data.filter(record => record != undefined));
+                    // setApiDataName(fields);
+                    // setDataStatis(statisticValues);
+                    // setLoaded(true);
 
                     if (count !== undefined && requireCount) {
                         setCurrentCount(count);
@@ -638,6 +603,7 @@ export default () => {
                     } else if (!requireCount && currentCount != null) {
                         setSumerize(currentCount);
                     }
+
                 } else {
                     setApiData([]);
                     setApiDataName([])
@@ -645,31 +611,18 @@ export default () => {
 
                 const endTime = new Date().getTime();
                 const elapsedTime = endTime - startTime;
+
                 clearTimeout(loadingTimeout);
                 clearTimeout(loadingTimeoutSearch);// Clear the timeout
-                setLoadingSearch(false);
-                setLoading(false)
+                setLoadingResult(false)
+                // setLoadingSearch(false);
+                // setLoading(false)
                 // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
             });
     };
     useEffect(() => {
         if (page && page.components) {
-            fetch(`${proxy()}${page.components?.[0]?.api_get}`,{
-                headers: {
-                    Authorization: _token,
-                }
-            })
-                .then(res => res.json())
-                .then(res => {
-                    const { data, success, fields, content, count } = res;
-                    console.log(res)
-                    if (success) {
-                        setApiDataName(fields)
-                        setSumerize(count);
-                        setApiData(data.filter(record => record != undefined));
-                    }
-
-                })
+            callApiView()
         }
     }, [page, dataTable_id])
 
@@ -722,10 +675,10 @@ export default () => {
         // console.log("aaaaaaa")
         setCurrentPage(1);
         if (currentPage === 1) {
-            callApi()
-            callApiCount(true);
+            callApi();
+            callApiCount()
+            // setApiData([])
             setSumerize(0)
-
         }
     }
 
@@ -910,7 +863,7 @@ export default () => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                openTab(`${url}/put/api/${id_str}/${stringifiedParams}?myParam=${url}`)
+                openTab(`/page/${url}/put/api/${id_str}/${stringifiedParams}?myParam=${url}`)
 
             }
         } else {
@@ -965,31 +918,39 @@ export default () => {
 
     // useEffect(() => {
     //     if (page.components?.[0]?.api_get != undefined) {
-    //         callApi();
+    //         callApiView();
+
     //     }
     // }, [currentPage])
 
     const callApiView = (startAt = 0, amount = 15) => {
-        if (matchingPage) {
-            const apiGet = matchingPage.components?.[0]?.api_get;
-            fetch(`${proxy()}${apiGet}`, {
-                headers: {
-                    'start-at': startAt,
-                    'data-amount': amount
-                }
-            })
-                .then(res => res.json())
-                .then(res => {
-                    const { success, content, data, fields, limit } = res;
-                    // console.log(res)
-                    if (data && data.length > 0) {
-
-                        setLimit(limit)
-                        setApiViewData(data)
-                        setApiViewFields(fields)
-                    }
-                });
+        const headerApi = {
+            Authorization: _token,
+            'start-at': startAt,
+            'data-amount': amount
         }
+        console.log(headerApi)
+        const apiGet = page.components?.[0]?.api_get;
+        fetch(`${proxy()}${apiGet}`, {
+            headers: headerApi
+        })
+
+            .then(res => res.json())
+            .then(res => {
+                const { success, content, data, count, fields, limit, statistic } = res;
+                console.log(res)
+                if (data && data.length > 0) {
+                    setApiData(data.filter(record => record != undefined));
+                    setApiDataName(fields);
+                    setDataStatis(statistic);
+
+                    setSumerize(count)
+                    // setLimit(limit)
+                    // setApiViewData(data)
+                    // setApiViewFields(fields)
+                }
+            });
+
     }
 
 
@@ -1006,7 +967,13 @@ export default () => {
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
     const current = apiData
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    const paginate = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        const startAt = (pageNumber - 1) * loadingResult ? rowsPerPage : 1;
+        callApiView(startAt, rowsPerPage);
+    };
+
     const totalPages = Math.ceil(sumerize / rowsPerPage) || 1;
 
     //view api 
@@ -1036,12 +1003,12 @@ export default () => {
     //     callApiView((currentPageApi - 1) * rowsPerPageApi, rowsPerPageApi);
     // }, [currentPageApi, matchingPage]);
 
-    useEffect(() => {
-        if (matchingPage !== undefined) {
-            setCurrentPageApi(1);
-            callApiView(0, rowsPerPageApi);
-        }
-    }, [matchingPage]);
+    // useEffect(() => {
+    //     if (matchingPage !== undefined) {
+    //         setCurrentPageApi(1);
+    //         callApiView(0, rowsPerPageApi);
+    //     }
+    // }, [matchingPage]);
 
     // console.log(matchingPage)
 
@@ -1093,7 +1060,7 @@ export default () => {
     }
 
     const exportToCSV = (csvData) => {
-        const selectedHeaders = apiDataNameExport;
+        const selectedHeaders = apiDataName;
         function styleHeaders(ws) {
             const headerStyle = {
                 fill: {
@@ -1655,7 +1622,7 @@ export default () => {
                                 </div>
                             </div>
                         </div>
-                    ) : layoutId === "0" ? (
+                    ) : layoutId === 0 ? (
                         <div class="col-md-12">
                             <div class="white_shd full">
                                 <div class="full graph_head_cus d-flex">
@@ -1831,11 +1798,11 @@ export default () => {
                                                                                                                                 {
                                                                                                                                     _user.role === "uad"
                                                                                                                                         ?
-                                                                                                                                        <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                                                                        <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
                                                                                                                                         :
                                                                                                                                         (dataCheck && dataCheck?.modify)
                                                                                                                                             ?
-                                                                                                                                            <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                                                                            <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
                                                                                                                                             :
                                                                                                                                             null
                                                                                                                                 }
@@ -1860,7 +1827,18 @@ export default () => {
                                                                                                     </table>
                                                                                                 </div>
                                                                                                 <div className="d-flex justify-content-between align-items-center">
-                                                                                                    <p>{lang["show"]} {formatNumber(indexOfFirst + 1)} - {formatNumber(indexOfFirst + apiData?.length)} {lang["of"]} {formatNumber(sumerize)} {lang["results"]}</p>
+                                                                                                    <p>
+                                                                                                        {lang["show"]} {formatNumber(indexOfFirst + 1)} - {formatNumber(indexOfFirst + apiData?.length)} {lang["of"]}
+                                                                                                        {loadingResult ?
+                                                                                                            <img
+                                                                                                                width={20}
+                                                                                                                className="mb-1"
+                                                                                                                src="/images/icon/load.gif"
+                                                                                                                alt="Loading..."
+                                                                                                            ></img>
+                                                                                                            : formatNumber(sumerize)} {lang["results"]}
+                                                                                                    </p>
+
                                                                                                     <nav aria-label="Page navigation example">
                                                                                                         <ul className="pagination mb-0">
                                                                                                             <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
@@ -2167,8 +2145,22 @@ export default () => {
                                                                                 </tbody>
                                                                             </table>
                                                                         </div>
+
+
+
+
+
                                                                         <div className="d-flex justify-content-between align-items-center">
-                                                                            <p>{lang["show"]} {formatNumber(indexOfFirst + 1)} - {formatNumber(indexOfFirst + apiData?.length)} {lang["of"]} {formatNumber(sumerize)} {lang["results"]}</p>
+                                                                            <p>
+                                                                                {lang["show"]} {formatNumber(indexOfFirst + 1)} - {formatNumber(indexOfFirst + apiData?.length)} {lang["of"]}  {loadingResult ? <img
+                                                                                    width={20}
+                                                                                    className="mb-1"
+                                                                                    src="/images/icon/load.gif"
+                                                                                    alt="Loading..."
+                                                                                ></img>
+                                                                                    : formatNumber(sumerize)} {lang["results"]}
+                                                                            </p>
+
                                                                             <nav aria-label="Page navigation example">
                                                                                 <ul className="pagination mb-0">
                                                                                     <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
