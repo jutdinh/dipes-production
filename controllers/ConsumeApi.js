@@ -3307,7 +3307,7 @@ class ConsumeApi extends Controller {
 
         const table = tables[0]
 
-        const { query, start_index, require_count, exact } = this.req.body;
+        const { query, start_index, require_count, require_statistic , exact } = this.req.body;
 
         const start = (start_index ? start_index : 0) * RESULT_PER_SEARCH_PAGE
         const end = start + RESULT_PER_SEARCH_PAGE
@@ -3329,16 +3329,16 @@ class ConsumeApi extends Controller {
             const formatedQuery = { $and: [] }
             keys.map(key => {
                 const qr = {}
-
+                
                 const [field] = this.getFieldsByAlias([key])
 
-                if (field) {
+                if( field ){
 
                     const { DATATYPE, AUTO_INCREMENT } = field;
-                    if (Fields.stringFamily.indexOf(DATATYPE) != -1 || (Fields.intFamily.indexOf(DATATYPE) != -1 && AUTO_INCREMENT)) {
-                        // qr[`${key}`] = { $regex: query[key] } //approximate
-                        qr[`${key}`] = query[key] // exact
-                    } else {
+                    if( Fields.stringFamily.indexOf( DATATYPE ) != -1 || ( Fields.intFamily.indexOf( DATATYPE ) != -1 && AUTO_INCREMENT ) ){                        
+                        qr[`${key}`] = { $regex: query[key] } //approximate
+                        // qr[`${key}`] = query[key] // exact
+                    }else{
                         qr[`${key}`] = query[key]
                     }
 
@@ -3346,30 +3346,35 @@ class ConsumeApi extends Controller {
                 }
 
             })
-
-            const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)
+            
+            const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)            
             let count = 0;
-
+            
             const statistics = this.API.statistic.valueOrNot()
             const statisData = {}
             const calculates = this.API.calculates.valueOrNot();
             const statistic = []
             if (require_count) {
+                count = await Database.count( table.table_alias, formatedQuery )                
+                console.log("REQ COUNT", count)
+            }
 
-                count = await Database.count(table.table_alias, formatedQuery)
-                console.log("COUNT", count)
-                if (statistics.length > 0) {
+            if( require_statistic ){
+                count = await Database.count( table.table_alias, formatedQuery )
+                console.log("REQ STATIS", count)
+                
+                if( statistics.length > 0 ){
 
-                    for (let i = 0; i < count; i += 10000) {
-                        const tmpData = await Database.selectFrom(table.table_alias, formatedQuery, i, i + 10000)
-
-                        for (let j = 0; j < tmpData.length; j++) {
+                    for( let i = 0 ; i < count; i+= 10000 ){
+                        const tmpData = await Database.selectFrom(table.table_alias, formatedQuery, i, i+10000 )
+                        
+                        for (let j = 0; j < tmpData.length; j++) {                        
                             const record = tmpData[j]
-
+            
                             const keys = Object.keys(record)
-
+            
                             keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
-
+            
                             for (let k = 0; k < calculates.length; k++) {
                                 const { fomular_alias, fomular } = calculates[k]
                                 let result = fomular;
@@ -3382,14 +3387,14 @@ class ConsumeApi extends Controller {
                                 } catch {
                                     record[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
                                 }
-                            }
-
+                            }      
+            
                             statistics.map(statis => {
                                 const { field, fomular_alias, fomular, group_by } = statis;
                                 const statisRecord = statisData[fomular_alias]
-
+            
                                 const stringifiedKey = group_by.map(group => record[group]).join("_")
-
+            
                                 if (!statisRecord) {
                                     if (group_by && group_by.length > 0) {
                                         statisData[fomular_alias] = {}
@@ -3397,10 +3402,10 @@ class ConsumeApi extends Controller {
                                         statisData[fomular_alias] = 0
                                     }
                                 }
-
+            
                                 if (fomular == "SUM") {
                                     if (group_by && group_by.length > 0) {
-
+            
                                         if (!statisData[fomular_alias][stringifiedKey]) {
                                             statisData[fomular_alias][stringifiedKey] = record[field]
                                         } else {
@@ -3410,10 +3415,10 @@ class ConsumeApi extends Controller {
                                         statisData[fomular_alias] += record[field]
                                     }
                                 }
-
+            
                                 if (fomular == "AVERAGE") {
                                     if (group_by && group_by.length > 0) {
-
+            
                                         if (!statisData[fomular_alias][stringifiedKey]) {
                                             statisData[fomular_alias][stringifiedKey] = {
                                                 total: 1,
@@ -3427,10 +3432,10 @@ class ConsumeApi extends Controller {
                                         statisData[fomular_alias] = (statisData[fomular_alias] * (count - 1) + record[field]) / count
                                     }
                                 }
-
+            
                                 if (fomular == "COUNT") {
                                     if (group_by && group_by.length > 0) {
-
+            
                                         if (!statisData[fomular_alias][stringifiedKey]) {
                                             statisData[fomular_alias][stringifiedKey] = 1
                                         } else {
@@ -3441,9 +3446,8 @@ class ConsumeApi extends Controller {
                                     }
                                 }
                             })
-                        }
-
-
+                        }            
+                        
                     }
                     statistics.map(statis => {
                         const { display_name, fomular_alias, group_by, fomular } = statis;
@@ -3454,7 +3458,7 @@ class ConsumeApi extends Controller {
                                 if (fomular == "AVERAGE") {
                                     const headers = Object.keys(rawData)
                                     const values = Object.values(rawData).map(({ total, value }) => value)
-
+        
                                     statisRecord["data"] = { headers, values }
                                     statisRecord["type"] = "table"
                                 } else {
@@ -3474,12 +3478,9 @@ class ConsumeApi extends Controller {
             }
 
 
-
-
-
-            data.map(record => {
+            data.map( record => {
                 const keys = Object.keys(record)
-
+            
                 keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
 
                 for (let k = 0; k < calculates.length; k++) {
@@ -3494,14 +3495,14 @@ class ConsumeApi extends Controller {
                     } catch {
                         record[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
                     }
-                }
+                } 
             })
 
             const result = data
 
             this.res.send({
                 success: true,
-                total: result.length,
+                total: result.length,                
                 fields: [...fields, ...calculates],
                 data: result,
                 count: count,
