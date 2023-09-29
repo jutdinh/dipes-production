@@ -15,6 +15,7 @@ const XLSX = require('xlsx-js-style');
 
 const Cache = require('./Cache/Cache');
 const { Privileges } = require('../models/Privileges');
+const { Statistics, StatisticsRecord } = require('../models/Statistics');
 
 const RESULT_PER_SEARCH_PAGE = 15
 const DEFAULT_ERROR_CALCLATED_VALUE = "NaN"
@@ -26,6 +27,7 @@ class ConsumeApi extends Controller {
     #__fields = new Fields();
     #__projects = new Projects()
     #__privileges = new Privileges()
+    #__statistics = new Statistics()
 
     constructor() {
         super();
@@ -116,17 +118,17 @@ class ConsumeApi extends Controller {
         this.writeReq(req)
         const start = new Date()
 
-        const verified = await this.verifyToken( req )
-        
-        if( verified ){
+        const verified = await this.verifyToken(req)
 
-            const user = this.decodeToken( req.header("Authorization") )
+        if (verified) {
+
+            const user = this.decodeToken(req.header("Authorization"))
             const { url, method } = req;
             this.url = decodeURI(url);
             const [api, projects, tables, fields, privileges] = await Promise.all([
-                this.#__apis.find({ api_id }), 
-                this.#__projects.findAll(), 
-                this.#__tables.findAll(), 
+                this.#__apis.find({ api_id }),
+                this.#__projects.findAll(),
+                this.#__tables.findAll(),
                 this.#__fields.findAll(),
                 this.#__privileges.findAll({ username: user.username })
             ])
@@ -134,9 +136,9 @@ class ConsumeApi extends Controller {
                 const Api = new ApisRecord(api)
                 const project = projects[0]
                 this.project = project;
-    
+
                 this.API = Api;
-    
+
                 this.req = req;
                 this.res = res;
                 this.fields = fields;
@@ -144,56 +146,56 @@ class ConsumeApi extends Controller {
                     const { id } = table;
                     table.fields = fields.filter(field => field.table_id == id)
                     return table
-                });                
-                
-                const apiTables = api.tables.map( table_id => this.tables.find( tb => tb.id == table_id ) );
+                });
+
+                const apiTables = api.tables.map(table_id => this.tables.find(tb => tb.id == table_id));
                 console.log(api)
                 let isGranted;
-    
+
                 if (project) {
                     const { project_type } = project
                     if (project_type == "database") {
                         switch (api.api_method) {
                             case "get":
-                                isGranted = this.hasEnoughPrivileges( apiTables, ["read"], privileges )
-                                if( isGranted ){
+                                isGranted = this.hasEnoughPrivileges(apiTables, ["read"], privileges)
+                                if (isGranted) {
                                     await this.GET_UI()
                                     const end = new Date()
                                     console.log("PROCCESS IN : " + `${end - start} `)
-                                }else{
+                                } else {
                                     res.status(200).send({ succes: false, content: "Không có quyền truy cập" })
                                 }
                                 break;
-    
+
                             case "post":
-                                isGranted = this.hasEnoughPrivileges( apiTables, ["write"], privileges )                                
-                                if( isGranted ){
-                                    await this.POST_UI()                                    
+                                isGranted = this.hasEnoughPrivileges(apiTables, ["write"], privileges)
+                                if (isGranted) {
+                                    await this.POST_UI()
                                     const end = new Date()
                                     console.log("PROCCESS IN : " + `${end - start} `)
-                                }else{
+                                } else {
                                     res.status(200).send({ succes: false, content: "Không có quyền truy cập" })
                                 }
                                 break;
 
                             case "put":
 
-                                isGranted = this.hasEnoughPrivileges( apiTables, ["modify"], privileges )                                
-                                if( isGranted ){                                    
+                                isGranted = this.hasEnoughPrivileges(apiTables, ["modify"], privileges)
+                                if (isGranted) {
                                     await this.PUT_UI()
                                     const end = new Date()
                                     console.log("PROCCESS IN : " + `${end - start} `)
-                                }else{
+                                } else {
                                     res.status(200).send({ succes: false, content: "Không có quyền truy cập" })
                                 }
                                 break;
                             case "delete":
-                                isGranted = this.hasEnoughPrivileges( apiTables, ["purge"], privileges )                                
-                                if( isGranted ){                                    
+                                isGranted = this.hasEnoughPrivileges(apiTables, ["purge"], privileges)
+                                if (isGranted) {
                                     await this.DELETE_UI()
                                     const end = new Date()
                                     console.log("PROCCESS IN : " + `${end - start} `)
-                                }else{
+                                } else {
                                     res.status(200).send({ succes: false, content: "Không có quyền truy cập" })
                                 }
 
@@ -201,14 +203,14 @@ class ConsumeApi extends Controller {
                             default:
                                 this.res.status(200).send("Not found nè")
                                 break;
-    
+
                         }
                     } else {
                         switch (api.api_method) {
                             case "get":
                                 await this.REMOTE_GET()
                                 break;
-    
+
                             case "post":
                                 await this.REMOTE_POST()
                                 break;
@@ -221,7 +223,7 @@ class ConsumeApi extends Controller {
                             default:
                                 this.res.status(200).send("Not found nè")
                                 break;
-    
+
                         }
                     }
                 } else {
@@ -230,7 +232,7 @@ class ConsumeApi extends Controller {
             } else {
                 res.status(200).send({ succes: false, content: "Not found" })
             }
-        }else{
+        } else {
             res.status(200).send({ succes: false, content: "Token khum hợp lệ" })
         }
     }
@@ -299,10 +301,10 @@ class ConsumeApi extends Controller {
     }
 
     getFieldsByAlias = (fieldAliases) => {
-        const fields = fieldAliases.map( alias => {
+        const fields = fieldAliases.map(alias => {
             const field = this.fields.find(f => f.fomular_alias == alias)
             return field
-        }).filter( f => f != undefined )
+        }).filter(f => f != undefined)
         return fields
     }
 
@@ -316,11 +318,11 @@ class ConsumeApi extends Controller {
         return table;
     }
 
-    isFieldForeign = ( field, table ) => {
+    isFieldForeign = (field, table) => {
         const { id } = field;
         const { foreign_keys } = table
 
-        const fk = foreign_keys.find( key => key.field_id == id )
+        const fk = foreign_keys.find(key => key.field_id == id)
         return fk;
     }
 
@@ -609,12 +611,13 @@ class ConsumeApi extends Controller {
             paramQuery.map(sideQuery => {
                 const { query } = sideQuery;
                 const keys = Object.keys(query)
-                return sideQueries[`${keys[0]}`] = query[keys[0]] 
+                return sideQueries[`${keys[0]}`] = query[keys[0]]
             })
 
 
             let partitions = [];
             const dataLimitation = await Database.selectFields(mainTable.table_alias, { position: "sumerize" }, ["total"])
+            
             const stringifiedPeriods = await Cache.getData(`${tables[0].table_alias}-periods`)
             const periods = stringifiedPeriods?.value
             if (stringifiedPeriods && periods.length > 0) {
@@ -630,8 +633,8 @@ class ConsumeApi extends Controller {
                 let finale_raw_data_counter = 0;
                 let found = false
                 for (let i = 0; i < partitions.length; i++) {
-  
-      
+
+
                     const redundantPartition = partitions[i]
 
                     if (redundantPartition && redundantPartition.total) {
@@ -642,7 +645,7 @@ class ConsumeApi extends Controller {
                         if (tmpDataFrom < 0 && !found) {
                             const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { position: partitions[i].position, ...sideQueries })
                             const data = redundantPartitionData.slice(redundantPartitionData.length + tmpDataFrom, redundantPartitionData.length)
-                            console.log(636,  { position: partitions[i].position, ...sideQueries })
+                            // console.log(636, { position: partitions[i].position, ...sideQueries })
                             redundantPartitions.push({
                                 position: partitions[i].position,
                                 total: data.length,
@@ -722,7 +725,7 @@ class ConsumeApi extends Controller {
                 const partitions = this.PRECISE_PARTITIONS(redundantPartitions, tmpDataFrom + 1, dataPerBreak)
                 const keySortedTables = this.sortTablesByKeys(tables)
                 const cacheData = {}
-
+                
                 keySortedTables.map(table => {
                     cacheData[table.table_alias] = []
                 })
@@ -809,7 +812,7 @@ class ConsumeApi extends Controller {
                     })
                 }
 
-                
+
 
                 const endTime = new Date()
                 console.log("API CALL IN " + `${endTime - startTime}`)
@@ -840,7 +843,7 @@ class ConsumeApi extends Controller {
         const tables = this.tearTablesAndFieldsToObjects()
         const params = this.getFields(this.API.params.valueOrNot())
         const fromIndex = defaultFromIndex ? defaultFromIndex : this.req.header(`start_index`)
-        
+
         if (!this.periods) {
             const start = new Date()
             const periods = await Cache.getData(`${tables[0].table_alias}-periods`)
@@ -853,7 +856,7 @@ class ConsumeApi extends Controller {
             const end = new Date()
             console.log(`GET CACHE PARTITION IN: ${end - start}`)
         }
-        
+
         const indices = this.generatePeriodIndex(fromIndex)
         // console.log(indices)
         let paramQueries = [];
@@ -1273,25 +1276,25 @@ class ConsumeApi extends Controller {
             for (let i = 0; i < sortedBody.length; i++) {
                 const { table_alias, table_id, data } = sortedBody[i]
 
-                const table = this.getTable( table_id )
+                const table = this.getTable(table_id)
                 const { foreign_keys } = table;
 
 
-                for( let j = 0 ; j < foreign_keys.length; j++ ){
-                    const { field_id, table_id, ref_field_id } = foreign_keys[j]                                       
-                    const corespondingBody = sortedBody.find( body => body.table_id == table_id )
+                for (let j = 0; j < foreign_keys.length; j++) {
+                    const { field_id, table_id, ref_field_id } = foreign_keys[j]
+                    const corespondingBody = sortedBody.find(body => body.table_id == table_id)
 
-                    if( !corespondingBody ){
-                        const table = this.getTable( table_id )
+                    if (!corespondingBody) {
+                        const table = this.getTable(table_id)
                         const field = this.getField(field_id)
-                        const ref_field = this.getField( ref_field_id )                        
-                        const foreignData = await Database.selectAll( table.table_alias, { [ref_field.fomular_alias]: data[ field.fomular_alias ] } )
-                        if( foreignData.length > 0 ){
+                        const ref_field = this.getField(ref_field_id)
+                        const foreignData = await Database.selectAll(table.table_alias, { [ref_field.fomular_alias]: data[field.fomular_alias] })
+                        if (foreignData.length > 0) {
 
                             delete foreignData[0].position
-    
-                            const keys = Object.keys( foreignData[0] )
-                            keys.map( key => {
+
+                            const keys = Object.keys(foreignData[0])
+                            keys.map(key => {
                                 data[key] = foreignData[0][key]
                             })
                         }
@@ -1357,6 +1360,94 @@ class ConsumeApi extends Controller {
                     }
                     await Database.insert(table_alias, newSumerize)
                 }
+
+
+                const Statis = await this.#__statistics.findAll({ table_id })
+                const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id })
+
+                const statistic = statis.statistic.valueOrNot()
+                const calculates = statis.calculates.valueOrNot()
+
+                const statisSum = await Database.select(table_alias, { position: "sumerize" })
+
+                for (let i = 0; i < calculates.length; i++) {
+                    const { fomular_alias, fomular } = calculates[i]
+                    let result = fomular;
+                    const keys = Object.keys(data)
+                    keys.map(key => {
+                        /* replace the goddamn fomular with its coresponding value in record values */
+                        result = result.replaceAll(key, data[key])
+                    })
+                    try {
+                        data[fomular_alias] = eval(result)
+                    } catch {
+                        data[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
+                    }
+                }
+                for (let i = 0; i < statistic.length; i++) {
+                    const statis = statistic[i]
+                    const { fomular_alias, field, group_by, fomular } = statis;
+                    const stringifyGroupKey = group_by.map(group => data[group]).join("_")
+                    const statisField = statisSum[fomular_alias];
+                    if (!statisField) {
+                        if (group_by && group_by.length > 0) {
+                            statisSum[fomular_alias] = {}
+                        } else {
+                            statisSum[fomular_alias] = 0
+                        }
+                    }
+                    if (fomular == "SUM") {
+                        if (typeof (data[field]) == "number") {
+                            if (group_by && group_by.length > 0) {
+
+                                if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                                    statisSum[fomular_alias][stringifyGroupKey] = data[field]
+                                } else {
+                                    statisSum[fomular_alias][stringifyGroupKey] += data[field]
+                                }
+                            } else {
+                                statisSum[fomular_alias] += data[field]
+                            }
+                        }
+                    }
+
+                    if (fomular == "AVERAGE") {
+                        if (typeof (data[field]) == "number") {
+                            if (group_by && group_by.length > 0) {
+
+                                if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                                    statisSum[fomular_alias][stringifyGroupKey] = {
+                                        total: 1,
+                                        value: data[field]
+                                    }
+                                } else {
+                                    if (statisSum[fomular_alias][stringifyGroupKey].value) {
+                                        statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total + data[field]) / (statisSum[fomular_alias][stringifyGroupKey].total + 1)
+                                    } else {
+                                        statisSum[fomular_alias][stringifyGroupKey].value = data[field]
+                                    }
+                                    statisSum[fomular_alias][stringifyGroupKey].total += 1
+                                }
+                            } else {
+                                statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total + data[field]) / (statisSum.total + 1)
+                            }
+                        }
+                    }
+
+                    if (fomular == "COUNT") {
+                        if (group_by && group_by.length > 0) {
+
+                            if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                                statisSum[fomular_alias][stringifyGroupKey] = 1
+                            } else {
+                                statisSum[fomular_alias][stringifyGroupKey] += 1
+                            }
+                        } else {
+                            statisSum[fomular_alias] += 1
+                        }
+                    }
+                }
+                await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
 
 
             }
@@ -1487,8 +1578,11 @@ class ConsumeApi extends Controller {
         let primaryConflict = false;
         let foreignConflict = false;
 
-        const statistic = this.API.statistic.valueOrNot()
-        const calculates = this.API.calculates.valueOrNot()
+        const Statis = await this.#__statistics.findAll({ table_id: tables[0].id })
+        const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id: tables[0].id })
+
+        const statistic = statis.statistic.valueOrNot()
+        const calculates = statis.calculates.valueOrNot()
 
         for (let i = 0; i < tearedBody.length; i++) {
             const object = tearedBody[i]
@@ -1620,8 +1714,6 @@ class ConsumeApi extends Controller {
                         }
                         await Database.insert(table_alias, newSumerize)
                     }
-
-
 
 
 
@@ -1824,18 +1916,18 @@ class ConsumeApi extends Controller {
             tearedBody.push(tearedObject)
         }
 
-        if( !typeError ){
+        if (!typeError) {
 
             const sortedTables = this.sortTablesByKeys(tables)
             let mergedParams = {}
             paramQueries.map(({ query }) => { mergedParams = { ...mergedParams, ...query } })
             const sortedBody = []
-    
+
             // MERGE ANY PRIMARY KEY IF FOUND
             for (let i = 0; i < sortedTables.length; i++) {
                 const { id, primary_key } = sortedTables[i]
                 const corespondingBody = tearedBody.find(body => body.table_id == id)
-    
+
                 const primaryFields = this.getFields(primary_key)
                 primaryFields.map(field => {
                     if (mergedParams[field.fomular_alias] != undefined) {
@@ -1844,20 +1936,20 @@ class ConsumeApi extends Controller {
                 })
                 sortedBody.push(corespondingBody)
             }
-    
+
             // MERGE FOREIGN KEYS IF FOUND & FILL MASTER DATA IF IT's UNDEFINED
-    
+
             for (let i = 0; i < sortedTables.length; i++) {
                 const { id, foreign_keys } = sortedTables[i]
                 const corespondingBody = tearedBody.find(body => body.table_id == id)
-    
+
                 foreign_keys.map(key => {
                     const { field_id, table_id, ref_field_id } = key;
                     const field = this.getField(field_id)
                     const ref_field = this.getField(ref_field_id)
                     if (mergedParams[field.fomular_alias] != undefined) {
                         corespondingBody.data[field.fomular_alias] = mergedParams[field.fomular_alias]
-    
+
                         for (let h = 0; h < sortedBody.length; h++) {
                             if (sortedBody[h].table_id == table_id) {
                                 sortedBody[h].data[ref_field.fomular_alias] = mergedParams[field.fomular_alias]
@@ -1869,15 +1961,15 @@ class ConsumeApi extends Controller {
                     }
                 })
             }
-    
+
             for (let i = 0; i < sortedBody.length; i++) {
                 const body = sortedBody[i]
                 const table = this.getTable(body.table_id)
                 const slaves = this.detectAllSlave(table)
-    
+
                 for (let j = 0; j < slaves.length; j++) {
                     const slave = slaves[j]
-    
+
                     for (let h = 0; h < sortedBody.length; h++) {
                         const body = sortedBody[h]
                         if (body.table_id != undefined && body.table_id == slave.id) {
@@ -1886,31 +1978,31 @@ class ConsumeApi extends Controller {
                     }
                 }
             }
-    
+
             let areAllQueriesReturnAtLeastOneRecord = true
             for (let i = 0; i < sortedBody.length; i++) {
                 const { table_id, data } = sortedBody[sortedBody.length - i - 1]
-    
+
                 const table = this.getTable(table_id)
                 const { table_alias, primary_key } = table;
                 const primaryFields = this.getFields(primary_key)
                 const updateQuery = {}
-    
+
                 primaryFields.map(field => {
                     const { fomular_alias } = field;
                     if (data[fomular_alias] != undefined) {
                         updateQuery[fomular_alias] = data[fomular_alias]
                     }
                 })
-    
+
                 const masters = this.detectAllMaster(table)
                 const existedMasters = masters.filter(master => sortedBody.find(body => body.table_id == master.id))
-    
+
                 existedMasters.map(master => {
                     const corespondingBody = sortedBody.find(tb => tb.table_id == master.id)
                     const { table_id, data } = corespondingBody
                     const { primary_key } = master;
-    
+
                     const primaryFields = this.getFields(primary_key)
                     primaryFields.map(field => {
                         const { fomular_alias } = field;
@@ -1919,30 +2011,30 @@ class ConsumeApi extends Controller {
                         }
                     })
                 })
-    
+
                 const queryResult = await Database.count(table_alias, updateQuery);
                 if (queryResult == 0) {
                     areAllQueriesReturnAtLeastOneRecord = false
                     break;
                 }
             }
-    
-            if (areAllQueriesReturnAtLeastOneRecord) {    
-    
+
+            if (areAllQueriesReturnAtLeastOneRecord) {
+
                 let areAllForeignKeyValid = true
-    
+
                 for (let i = 0; i < sortedBody.length; i++) {
                     const { table_id, data } = sortedBody[sortedBody.length - i - 1]
-    
+
                     const table = this.getTable(table_id)
                     const { table_alias, foreign_keys } = table;
-    
+
                     const outsideMasters = foreign_keys.filter(key => {
                         const { table_id } = key;
                         const corespondingBody = sortedBody.find(body => body.table_id == table_id)
                         return !corespondingBody
                     })
-    
+
                     for (let j = 0; j < outsideMasters.length; j++) {
                         if (areAllForeignKeyValid) {
                             const { table_id, field_id, ref_field_id } = outsideMasters[j]
@@ -1959,33 +2051,35 @@ class ConsumeApi extends Controller {
                         }
                     }
                 }
-    
+
                 if (areAllForeignKeyValid) {
-    
+
                     for (let i = 0; i < sortedBody.length; i++) {
                         const { table_id, data } = sortedBody[sortedBody.length - i - 1]
-    
+
                         const table = this.getTable(table_id)
                         const { table_alias, primary_key, foreign_keys } = table;
                         const primaryFields = this.getFields(primary_key)
                         const updateQuery = {}
-    
+
+                        const thisTableFields = this.getFieldsByTableId(table_id)
+
                         primaryFields.map(field => {
                             const { fomular_alias } = field;
                             if (data[fomular_alias] != undefined) {
                                 updateQuery[fomular_alias] = data[fomular_alias]
                             }
                         })
-    
-    
+
+
                         const masters = this.detectAllMaster(table)
                         const existedMasters = masters.filter(master => sortedBody.find(body => body.table_id == master.id))
-    
+
                         existedMasters.map(master => {
                             const corespondingBody = sortedBody.find(tb => tb.table_id == master.id)
                             const { table_id, data } = corespondingBody
                             const { primary_key, foreign_keys } = master;
-    
+
                             const primaryFields = this.getFields(primary_key)
                             primaryFields.map(field => {
                                 const { fomular_alias } = field;
@@ -1994,28 +2088,30 @@ class ConsumeApi extends Controller {
                                 }
                             })
                         })
-    
-                        // const queryResult = await Database.count(table_alias, updateQuery);
+
+                        const originDatas = await Database.selectAll(table_alias, updateQuery);                        
+                        console.log(updateQuery)
+
                         const slaves = this.detectAllSlave(table)
                         console.log(`${table.table_name} => `, slaves.map(slave => slave.table_name).join(', '))
-    
-                        foreign_keys.map( key => {
-                            const { field_id, table_id, ref_field_id } = key;
-                            const field = this.getField( field_id )
-                            const ref_field = this.getField( ref_field_id )
 
-                            data[ ref_field.fomular_alias ] = data[ field.fomular_alias ]
+                        foreign_keys.map(key => {
+                            const { field_id, table_id, ref_field_id } = key;
+                            const field = this.getField(field_id)
+                            const ref_field = this.getField(ref_field_id)
+
+                            data[ref_field.fomular_alias] = data[field.fomular_alias]
                         })
-    
+
                         await Database.update(table_alias, updateQuery, { ...data })
-    
+
                         // if (queryResult == 1) {
                         //     await Promise.all(slaves.map(slave => {
                         //         return Database.update(slave.table_alias, updateQuery, { ...data })
                         //     }))
                         // } else {
                         // }
-                        const targetRecords = await Database.selectAll(table_alias, updateQuery)                           
+                        const targetRecords = await Database.selectAll(table_alias, updateQuery)
 
                         // console.log(targetRecords)
                         targetRecords.map(record => {
@@ -2036,7 +2132,115 @@ class ConsumeApi extends Controller {
                                 return Database.update(slave.table_alias, recordUpdateQuery, { ...record })
                             }))
                         }
+                        const Statis = await this.#__statistics.findAll({ table_id })
+                        const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id })
+
+                        const statistics = statis.statistic.valueOrNot()
+                        const calculates = statis.calculates.valueOrNot()
+
+                        console.log(data)
+                        for( let br  = 0 ; br < originDatas.length; br++ ){
+                            const originData = originDatas[br];
+                            console.log(originData)
+    
+                            if (calculates && calculates.length > 0) {
+                                const keys = Object.keys(data)
+                                keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
+            
+                                for (let i = 0; i < calculates.length; i++) {
+                                    const { fomular_alias, fomular } = calculates[i]
+                                    let result = fomular;
+                                    let originResult = fomular
+                                    keys.map(key => {
+                                        result = result.replaceAll(key, data[key])
+                                        originResult = originResult.replaceAll(key, originData[key])
+                                    })
+                                    try {
+                                        data[fomular_alias] = eval(result)
+                                    } catch {
+                                        data[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
+                                    }
+                                    try {
+                                        originData[fomular_alias] = eval(originResult)
+                                    } catch {
+                                        originData[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
+                                    }
+                                }
+                            }
+            
+                            if (statistics && statistics.length > 0) {
+                                const sumerize = await Database.select(table_alias, { position: "sumerize" })
+                                const statisSum = sumerize
+                                for (let i = 0; i < statistics.length; i++) {
+                                    const statis = statistics[i]
+                                    const { fomular_alias, field, group_by, fomular } = statis;
+                                    const stringifyGroupKey = group_by.map(group => data[group]).join("_")
+                                    const statisField = statisSum[fomular_alias];
+            
+                                    if (!statisField) {
+                                        if (group_by && group_by.length > 0) {
+                                            statisSum[fomular_alias] = {}
+                                        } else {
+                                            statisSum[fomular_alias] = 0
+                                        }
+                                    }
+            
+                                    if (fomular == "SUM") {
+                                        if (typeof (data[field]) == "number") {
+                                            if (group_by && group_by.length > 0) {
+            
+                                                if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                                                    statisSum[fomular_alias][stringifyGroupKey] = data[field]
+                                                } else {
+                                                    statisSum[fomular_alias][stringifyGroupKey] = statisSum[fomular_alias][stringifyGroupKey] - originData[field] + data[field]
+                                                }
+                                            } else {
+                                                statisSum[fomular_alias] = statisSum[fomular_alias][stringifyGroupKey] - originData[field] + data[field]
+                                            }
+                                        }
+                                    }
+            
+                                    if (fomular == "AVERAGE") {
+                                        if (group_by && group_by.length > 0) {
+            
+                                            if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                                                statisSum[fomular_alias][stringifyGroupKey] = {
+                                                    value: data[field],
+                                                    total: 1
+                                                }
+                                            } else {
+                                                statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total - originData[field] + data[field]) / (statisSum[fomular_alias][stringifyGroupKey].total)
+                                                statisSum[fomular_alias][stringifyGroupKey].value += 1
+                                            }
+                                        } else {
+                                            statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total - originData[field] + data[field]) / (statisSum.total)
+                                        }
+                                    }
+            
+                                    if (fomular == "COUNT") {
+                                        if (group_by && group_by.length > 0) {
+                                            const newGroup = stringifyGroupKey;
+                                            const oldGroup = group_by.map(group => originData[group]).join("_")
+                                            if (newGroup != oldGroup) {
+                                                if (!statisSum[fomular_alias][newGroup]) {
+                                                    statisSum[fomular_alias][newGroup] = 1
+                                                } else {
+                                                    statisSum[fomular_alias][newGroup] += 1
+                                                }
+                                                statisSum[fomular_alias][oldGroup] -= 1
+                                                if (statisSum[fomular_alias][oldGroup] == 0) {
+                                                    delete statisSum[fomular_alias][oldGroup]
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
+                            }
+                        }
+
                     }
+
                     this.res.status(200).send({ success: true })
                 } else {
                     this.res.status(200).send({
@@ -2056,7 +2260,7 @@ class ConsumeApi extends Controller {
                     }
                 })
             }
-        }else{
+        } else {
             this.res.status(200).send({
                 success: false,
                 errors: {
@@ -2295,8 +2499,14 @@ class ConsumeApi extends Controller {
 
 
 
-                const calculates = this.API.calculates.valueOrNot()
-                const statistics = this.API.statistic.valueOrNot()
+                const Statis = await this.#__statistics.findAll({ table_id: tables[0].id })
+                const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id: tables[0].id })
+
+                const statistics = statis.statistic.valueOrNot()
+                const calculates = statis.calculates.valueOrNot()
+
+
+
                 if (calculates && calculates.length > 0) {
                     const keys = Object.keys(data)
                     keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
@@ -2459,21 +2669,24 @@ class ConsumeApi extends Controller {
         const doesThisKeyExist = await Database.selectAll(table_alias, formatedQuery)
         const primaryRecord = doesThisKeyExist[0];
 
-        
-        if (primaryRecord ) {
 
-            const slaves = this.detectAllSlave( table )        
-            const slaveryBoundRecords = await Promise.all( slaves.map( slave => Database.count( slave.table_alias, formatedQuery ) ) )
-            const isBoundBySlaves = slaveryBoundRecords.find( count => count > 0 )        
-            
-            if( !isBoundBySlaves ){
+        if (primaryRecord) {
+
+            const slaves = this.detectAllSlave(table)
+            const slaveryBoundRecords = await Promise.all(slaves.map(slave => Database.count(slave.table_alias, formatedQuery)))
+            const isBoundBySlaves = slaveryBoundRecords.find(count => count > 0)
+            console.log(slaveryBoundRecords)
+            if (!isBoundBySlaves) {
 
                 const sumerize = await Table.__findCriteria__({ position: "sumerize" })
-                await Database.delete(`${table_alias}`, query)
-    
+
+                const deletedItems = await Database.selectAll(`${table_alias}`, query)
+                
+                await Database.deleteMany(`${table_alias}`, query)
+
                 const cache = await Cache.getData(`${table_alias}-periods`)
                 const periods = cache.value;
-    
+
                 for (let i = 0; i < periods.length; i++) {
                     const period = periods[i]
                     if (period.position == primaryRecord.position) {
@@ -2482,27 +2695,130 @@ class ConsumeApi extends Controller {
                     }
                 }
                 await Cache.setData(`${table_alias}-periods`, periods)
-                await Table.__manualUpdate__({ position: "sumerize" }, { total: sumerize.total - 1 })  
+                await Table.__manualUpdate__({ position: "sumerize" }, { total: sumerize.total - deletedItems.length })
                 
-                this.res.status(200).send({ success: true, 
-                    errors: {} 
+                const Statis = await this.#__statistics.findAll({ table_id: tables[0].id })
+                const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id: tables[0].id })
+
+                const statistics = statis.statistic.valueOrNot()
+                const calculates = statis.calculates.valueOrNot()
+
+                for( let i = 0 ; i < deletedItems.length; i++ ){
+                    const originData = deletedItems[i]
+
+                    if (calculates && calculates.length > 0) {
+                        const keys = Object.keys(originData)
+                        keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
+
+                        for (let i = 0; i < calculates.length; i++) {
+                            const { fomular_alias, fomular } = calculates[i]
+                            let originResult = fomular
+                            keys.map(key => {
+                                originResult = originResult.replaceAll(key, originData[key])
+                            })
+                            try {
+                                originData[fomular_alias] = eval(originResult)
+                            } catch {
+                                originData[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
+                            }
+                        }
+                    }
+
+                    if (statistics && statistics.length > 0) {
+                        const sumerize = await Table.__findCriteria__({ position: "sumerize" })
+                        const statisSum = sumerize
+                        for (let i = 0; i < statistics.length; i++) {
+                            const statis = statistics[i]
+                            const { fomular_alias, field, group_by, fomular } = statis;
+                            const stringifyGroupKey = group_by.map(group => originData[group]).join("_")
+                            const statisField = statisSum[fomular_alias];
+
+                            if (!statisField) {
+                                if (group_by && group_by.length > 0) {
+                                    statisSum[fomular_alias] = {}
+                                } else {
+                                    statisSum[fomular_alias] = 0
+                                }
+                            }
+
+                            if (fomular == "SUM") {
+                                if (typeof (originData[field]) == "number") {
+                                    if (group_by && group_by.length > 0) {
+                                        if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                                            statisSum[fomular_alias][stringifyGroupKey] = 0
+                                        } else {
+                                            statisSum[fomular_alias][stringifyGroupKey] = statisSum[fomular_alias][stringifyGroupKey] - originData[field]
+                                        }
+                                    } else {
+                                        statisSum[fomular_alias] = statisSum[fomular_alias] - originData[field]
+                                    }
+                                }
+                            }
+
+                            if (fomular == "AVERAGE") {
+                                if (typeof (originData[field]) == "number") {
+                                    if (group_by && group_by.length > 0) {
+
+                                        if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                                            statisSum[fomular_alias][stringifyGroupKey] = {
+                                                total: 0,
+                                                value: 0
+                                            }
+                                        } else {
+                                            if (statisSum.total - 1 <= 0) {
+                                                delete statisSum[fomular_alias][stringifyGroupKey]
+                                            } else {
+                                                statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total - originData[field]) / (statisSum[fomular_alias][stringifyGroupKey].total - 1)
+                                                statisSum[fomular_alias][stringifyGroupKey].total -= 1
+                                            }
+                                        }
+                                    } else {
+                                        if (statisSum.total - 1 == 0) {
+                                            delete statisSum[fomular_alias]
+                                        } else {
+                                            statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total - originData[field]) / (statisSum.total - 1)
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (fomular == "COUNT") {
+                                if (group_by && group_by.length > 0) {
+                                    const oldGroup = group_by.map(group => originData[group]).join("_")
+
+                                    statisSum[fomular_alias][oldGroup] -= 1
+                                    if (statisSum[fomular_alias][oldGroup] == 0) {
+                                        delete statisSum[fomular_alias][oldGroup]
+                                    }
+                                }
+                            }
+                        }
+                        await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
+                    }
+                }
+
+                this.res.status(200).send({
+                    success: true,
+                    errors: {}
                 })
-            }else{
+            } else {
                 // slaveries bound
-                this.res.status(200).send({ success: false, 
+                this.res.status(200).send({
+                    success: false,
                     errors: {
                         type: "relation violating",
                         description: "Foreign key violation"
-                    } 
+                    }
                 })
-            }            
-        }else{
+            }
+        } else {
             // primary record not found
-            this.res.status(200).send({ success: false, 
+            this.res.status(200).send({
+                success: false,
                 errors: {
                     type: "not found",
                     description: "Target record(s) not found"
-                } 
+                }
             })
         }
     }
@@ -2571,18 +2887,18 @@ class ConsumeApi extends Controller {
         if (primaryRecord) {
 
 
-            const slaves = this.detectAllSlave( table )        
-            const slaveryBoundRecords = await Promise.all( slaves.map( slave => Database.count( slave.table_alias, formatedQuery ) ) )
-            const isBoundBySlaves = slaveryBoundRecords.find( count => count > 0 )
+            const slaves = this.detectAllSlave(table)
+            const slaveryBoundRecords = await Promise.all(slaves.map(slave => Database.count(slave.table_alias, formatedQuery)))
+            const isBoundBySlaves = slaveryBoundRecords.find(count => count > 0)
 
-            if( !isBoundBySlaves ){
+            if (!isBoundBySlaves) {
 
                 const sumerize = await Table.__findCriteria__({ position: "sumerize" })
                 await Database.delete(`${table_alias}`, query)
-    
+
                 const cache = await Cache.getData(`${table_alias}-periods`)
                 const periods = cache.value;
-    
+
                 for (let i = 0; i < periods.length; i++) {
                     const period = periods[i]
                     if (period.position == primaryRecord.position) {
@@ -2590,18 +2906,21 @@ class ConsumeApi extends Controller {
                         break;
                     }
                 }
-    
+
                 await Cache.setData(`${table_alias}-periods`, periods)
-    
                 const originData = primaryRecord;
-    
-                const calculates = this.API.calculates.valueOrNot()
-                const statistics = this.API.statistic.valueOrNot()
-    
+
+
+                const Statis = await this.#__statistics.findAll({ table_id: tables[0].id })
+                const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id: tables[0].id })
+
+                const statistics = statis.statistic.valueOrNot()
+                const calculates = statis.calculates.valueOrNot()
+
                 if (calculates && calculates.length > 0) {
                     const keys = Object.keys(originData)
                     keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
-    
+
                     for (let i = 0; i < calculates.length; i++) {
                         const { fomular_alias, fomular } = calculates[i]
                         let originResult = fomular
@@ -2615,7 +2934,7 @@ class ConsumeApi extends Controller {
                         }
                     }
                 }
-    
+
                 if (statistics && statistics.length > 0) {
                     const sumerize = await Table.__findCriteria__({ position: "sumerize" })
                     const statisSum = sumerize
@@ -2624,7 +2943,7 @@ class ConsumeApi extends Controller {
                         const { fomular_alias, field, group_by, fomular } = statis;
                         const stringifyGroupKey = group_by.map(group => originData[group]).join("_")
                         const statisField = statisSum[fomular_alias];
-    
+
                         if (!statisField) {
                             if (group_by && group_by.length > 0) {
                                 statisSum[fomular_alias] = {}
@@ -2632,7 +2951,7 @@ class ConsumeApi extends Controller {
                                 statisSum[fomular_alias] = 0
                             }
                         }
-    
+
                         if (fomular == "SUM") {
                             if (typeof (originData[field]) == "number") {
                                 if (group_by && group_by.length > 0) {
@@ -2646,11 +2965,11 @@ class ConsumeApi extends Controller {
                                 }
                             }
                         }
-    
+
                         if (fomular == "AVERAGE") {
                             if (typeof (originData[field]) == "number") {
                                 if (group_by && group_by.length > 0) {
-    
+
                                     if (!statisSum[fomular_alias][stringifyGroupKey]) {
                                         statisSum[fomular_alias][stringifyGroupKey] = {
                                             total: 0,
@@ -2673,11 +2992,11 @@ class ConsumeApi extends Controller {
                                 }
                             }
                         }
-    
+
                         if (fomular == "COUNT") {
                             if (group_by && group_by.length > 0) {
                                 const oldGroup = group_by.map(group => originData[group]).join("_")
-    
+
                                 statisSum[fomular_alias][oldGroup] -= 1
                                 if (statisSum[fomular_alias][oldGroup] == 0) {
                                     delete statisSum[fomular_alias][oldGroup]
@@ -2687,24 +3006,26 @@ class ConsumeApi extends Controller {
                     }
                     await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
                 }
-    
+
                 await Table.__manualUpdate__({ position: "sumerize" }, { total: sumerize.total - 1 })
                 this.res.send({ success: true })
-            }else{
-                this.res.status(200).send({ success: false, 
+            } else {
+                this.res.status(200).send({
+                    success: false,
                     errors: {
                         type: "relation violating",
                         description: "Foreign key violation"
-                    } 
+                    }
                 })
             }
 
         } else {
-            this.res.status(200).send({ success: false, 
+            this.res.status(200).send({
+                success: false,
                 errors: {
                     type: "not found",
                     description: "Target record(s) not found"
-                } 
+                }
             })
         }
     }
@@ -2722,7 +3043,7 @@ class ConsumeApi extends Controller {
     }
 
     REMOTE_GET = async () => {
-        const remoteURL = this.generateRemoteURL()        
+        const remoteURL = this.generateRemoteURL()
         console.log(this.req.headers)
         const response = await new Promise((resolve, reject) => {
             fetch(remoteURL, {
@@ -2841,7 +3162,7 @@ class ConsumeApi extends Controller {
             });
 
             const { criteria } = req.body;
-            req.body.query = {...criteria}
+            req.body.query = { ...criteria }
             delete req.body.criteria
 
             this.SEARCH_BROADCAST()
@@ -2951,149 +3272,22 @@ class ConsumeApi extends Controller {
                 qr[`${key}`] = { $regex: query[key] }
                 formatedQuery["$and"].push(qr)
             })
-            const regexMatches = { $and: [] }
 
-
-            const cache = await Cache.getData(`${table.table_alias}-periods`)
-            let partitions = cache ? cache.value : []
-
-            const statistics = this.API.statistic.valueOrNot()           
-            const statisData = {}
-            const calculates = this.API.calculates.valueOrNot();
-
-
-
-            const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)            
+            const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)
 
             let count;
             if (require_count) {
                 count = await Database.count(table.table_alias, formatedQuery)
             }
 
-            for (let j = 0; j < data.length; j++) {
-                if (result.length == RESULT_PER_SEARCH_PAGE) {
-                    if (!require_count) {
-                        break;
-                    }
-                }
-                const record = data[j]
-
-                const keys = Object.keys(record)
-
-                keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
-
-                for (let i = 0; i < calculates.length; i++) {
-                    const { fomular_alias, fomular } = calculates[i]
-                    let result = fomular;
-                    keys.map(key => {
-                        /* replace the goddamn fomular with its coresponding value in record values */
-                        result = result.replaceAll(key, record[key])
-                    })
-                    try {
-                        record[fomular_alias] = eval(result)
-                    } catch {
-                        record[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
-                    }
-                }
-
-                result.push(record)
-
-                statistics.map(statis => {
-                    const { field, fomular_alias, fomular, group_by } = statis;
-                    const statisRecord = statisData[fomular_alias]
-
-                    const stringifiedKey = group_by.map(group => record[group]).join("_")
-
-                    if (!statisRecord) {
-                        if (group_by && group_by.length > 0) {
-                            statisData[fomular_alias] = {}
-                        } else {
-                            statisData[fomular_alias] = 0
-                        }
-                    }
-
-                    if (fomular == "SUM") {
-                        if (group_by && group_by.length > 0) {
-
-                            if (!statisData[fomular_alias][stringifiedKey]) {
-                                statisData[fomular_alias][stringifiedKey] = record[field]
-                            } else {
-                                statisData[fomular_alias][stringifiedKey] += record[field]
-                            }
-                        } else {
-                            statisData[fomular_alias] += record[field]
-                        }
-                    }
-
-                    if (fomular == "AVERAGE") {
-                        if (group_by && group_by.length > 0) {
-
-                            if (!statisData[fomular_alias][stringifiedKey]) {
-                                statisData[fomular_alias][stringifiedKey] = {
-                                    total: 1,
-                                    value: record[field]
-                                }
-                            } else {
-                                statisData[fomular_alias][stringifiedKey].value = (statisData[fomular_alias][stringifiedKey].value * statisData[fomular_alias][stringifiedKey].total + record[field]) / (statisData[fomular_alias][stringifiedKey].total + 1)
-                                statisData[fomular_alias][stringifiedKey].total += 1
-                            }
-                        } else {
-                            statisData[fomular_alias] = (statisData[fomular_alias] * (count - 1) + record[field]) / count
-                        }
-                    }
-
-                    if (fomular == "COUNT") {
-                        if (group_by && group_by.length > 0) {
-
-                            if (!statisData[fomular_alias][stringifiedKey]) {
-                                statisData[fomular_alias][stringifiedKey] = 1
-                            } else {
-                                statisData[fomular_alias][stringifiedKey] += 1
-                            }
-                        } else {
-                            statisData[fomular_alias] += 1
-                        }
-                    }
-                })
-            }
-
-            const statistic = []
-            statistics.map(statis => {
-                const { display_name, fomular_alias, group_by, fomular } = statis;
-                const statisRecord = { display_name }
-                if (group_by && group_by.length > 0) {
-                    const rawData = statisData[fomular_alias]
-                    if (rawData != undefined) {
-                        if (fomular == "AVERAGE") {
-                            const headers = Object.keys(rawData)
-                            const values = Object.values(rawData).map(({ total, value }) => value)
-
-                            statisRecord["data"] = { headers, values }
-                            statisRecord["type"] = "table"
-                        } else {
-                            const headers = Object.keys(rawData)
-                            const values = Object.values(rawData)
-                            statisRecord["data"] = { headers, values }
-                            statisRecord["type"] = "table"
-                        }
-                    }
-                } else {
-                    statisRecord["type"] = "text"
-                    statisRecord["data"] = statisData[fomular_alias]
-                }
-                statistic.push(statisRecord)
-            })
-            
-
 
             this.res.send({
                 success: true,
                 total: result.length,
                 result,
-                fields: [...fields, ...calculates],
-                data: result,
-                count: count,
-                statistic
+                fields,
+                data,
+                count: count
             })
         } else {
             this.req.body = {
@@ -3135,16 +3329,16 @@ class ConsumeApi extends Controller {
             const formatedQuery = { $and: [] }
             keys.map(key => {
                 const qr = {}
-                
+
                 const [field] = this.getFieldsByAlias([key])
 
-                if( field ){
+                if (field) {
 
                     const { DATATYPE, AUTO_INCREMENT } = field;
-                    if( Fields.stringFamily.indexOf( DATATYPE ) != -1 || ( Fields.intFamily.indexOf( DATATYPE ) != -1 && AUTO_INCREMENT ) ){                        
-                        qr[`${key}`] = { $regex: query[key] } //approximate
-                        // qr[`${key}`] = query[key] // exact
-                    }else{
+                    if (Fields.stringFamily.indexOf(DATATYPE) != -1 || (Fields.intFamily.indexOf(DATATYPE) != -1 && AUTO_INCREMENT)) {
+                        // qr[`${key}`] = { $regex: query[key] } //approximate
+                        qr[`${key}`] = query[key] // exact
+                    } else {
                         qr[`${key}`] = query[key]
                     }
 
@@ -3152,137 +3346,162 @@ class ConsumeApi extends Controller {
                 }
 
             })
-            
-            const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)            
+
+            const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)
             let count = 0;
-            
+
             const statistics = this.API.statistic.valueOrNot()
             const statisData = {}
             const calculates = this.API.calculates.valueOrNot();
             const statistic = []
             if (require_count) {
-                
-                count = await Database.count( table.table_alias, formatedQuery )
+
+                count = await Database.count(table.table_alias, formatedQuery)
                 console.log("COUNT", count)
-                for( let i = 0 ; i < count; i+= 10000 ){
-                    const tmpData = await Database.selectFrom(table.table_alias, formatedQuery, i, i+10000 )
-                    console.log(tmpData.length)
-                    for (let j = 0; j < tmpData.length; j++) {                        
-                        const record = tmpData[j]
-        
-                        const keys = Object.keys(record)
-        
-                        keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
-        
-                        for (let k = 0; k < calculates.length; k++) {
-                            const { fomular_alias, fomular } = calculates[k]
-                            let result = fomular;
-                            keys.map(key => {
-                                /* replace the goddamn fomular with its coresponding value in record values */
-                                result = result.replaceAll(key, record[key])
-                            })
-                            try {
-                                record[fomular_alias] = eval(result)
-                            } catch {
-                                record[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
-                            }
-                        }      
-        
-                        statistics.map(statis => {
-                            const { field, fomular_alias, fomular, group_by } = statis;
-                            const statisRecord = statisData[fomular_alias]
-        
-                            const stringifiedKey = group_by.map(group => record[group]).join("_")
-        
-                            if (!statisRecord) {
-                                if (group_by && group_by.length > 0) {
-                                    statisData[fomular_alias] = {}
-                                } else {
-                                    statisData[fomular_alias] = 0
+                if (statistics.length > 0) {
+
+                    for (let i = 0; i < count; i += 10000) {
+                        const tmpData = await Database.selectFrom(table.table_alias, formatedQuery, i, i + 10000)
+
+                        for (let j = 0; j < tmpData.length; j++) {
+                            const record = tmpData[j]
+
+                            const keys = Object.keys(record)
+
+                            keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
+
+                            for (let k = 0; k < calculates.length; k++) {
+                                const { fomular_alias, fomular } = calculates[k]
+                                let result = fomular;
+                                keys.map(key => {
+                                    /* replace the goddamn fomular with its coresponding value in record values */
+                                    result = result.replaceAll(key, record[key])
+                                })
+                                try {
+                                    record[fomular_alias] = eval(result)
+                                } catch {
+                                    record[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
                                 }
                             }
-        
-                            if (fomular == "SUM") {
-                                if (group_by && group_by.length > 0) {
-        
-                                    if (!statisData[fomular_alias][stringifiedKey]) {
-                                        statisData[fomular_alias][stringifiedKey] = record[field]
+
+                            statistics.map(statis => {
+                                const { field, fomular_alias, fomular, group_by } = statis;
+                                const statisRecord = statisData[fomular_alias]
+
+                                const stringifiedKey = group_by.map(group => record[group]).join("_")
+
+                                if (!statisRecord) {
+                                    if (group_by && group_by.length > 0) {
+                                        statisData[fomular_alias] = {}
                                     } else {
-                                        statisData[fomular_alias][stringifiedKey] += record[field]
+                                        statisData[fomular_alias] = 0
                                     }
-                                } else {
-                                    statisData[fomular_alias] += record[field]
                                 }
-                            }
-        
-                            if (fomular == "AVERAGE") {
-                                if (group_by && group_by.length > 0) {
-        
-                                    if (!statisData[fomular_alias][stringifiedKey]) {
-                                        statisData[fomular_alias][stringifiedKey] = {
-                                            total: 1,
-                                            value: record[field]
+
+                                if (fomular == "SUM") {
+                                    if (group_by && group_by.length > 0) {
+
+                                        if (!statisData[fomular_alias][stringifiedKey]) {
+                                            statisData[fomular_alias][stringifiedKey] = record[field]
+                                        } else {
+                                            statisData[fomular_alias][stringifiedKey] += record[field]
                                         }
                                     } else {
-                                        statisData[fomular_alias][stringifiedKey].value = (statisData[fomular_alias][stringifiedKey].value * statisData[fomular_alias][stringifiedKey].total + record[field]) / (statisData[fomular_alias][stringifiedKey].total + 1)
-                                        statisData[fomular_alias][stringifiedKey].total += 1
+                                        statisData[fomular_alias] += record[field]
                                     }
-                                } else {
-                                    statisData[fomular_alias] = (statisData[fomular_alias] * (count - 1) + record[field]) / count
                                 }
-                            }
-        
-                            if (fomular == "COUNT") {
-                                if (group_by && group_by.length > 0) {
-        
-                                    if (!statisData[fomular_alias][stringifiedKey]) {
-                                        statisData[fomular_alias][stringifiedKey] = 1
+
+                                if (fomular == "AVERAGE") {
+                                    if (group_by && group_by.length > 0) {
+
+                                        if (!statisData[fomular_alias][stringifiedKey]) {
+                                            statisData[fomular_alias][stringifiedKey] = {
+                                                total: 1,
+                                                value: record[field]
+                                            }
+                                        } else {
+                                            statisData[fomular_alias][stringifiedKey].value = (statisData[fomular_alias][stringifiedKey].value * statisData[fomular_alias][stringifiedKey].total + record[field]) / (statisData[fomular_alias][stringifiedKey].total + 1)
+                                            statisData[fomular_alias][stringifiedKey].total += 1
+                                        }
                                     } else {
-                                        statisData[fomular_alias][stringifiedKey] += 1
+                                        statisData[fomular_alias] = (statisData[fomular_alias] * (count - 1) + record[field]) / count
                                     }
+                                }
+
+                                if (fomular == "COUNT") {
+                                    if (group_by && group_by.length > 0) {
+
+                                        if (!statisData[fomular_alias][stringifiedKey]) {
+                                            statisData[fomular_alias][stringifiedKey] = 1
+                                        } else {
+                                            statisData[fomular_alias][stringifiedKey] += 1
+                                        }
+                                    } else {
+                                        statisData[fomular_alias] += 1
+                                    }
+                                }
+                            })
+                        }
+
+
+                    }
+                    statistics.map(statis => {
+                        const { display_name, fomular_alias, group_by, fomular } = statis;
+                        const statisRecord = { display_name }
+                        if (group_by && group_by.length > 0) {
+                            const rawData = statisData[fomular_alias]
+                            if (rawData != undefined) {
+                                if (fomular == "AVERAGE") {
+                                    const headers = Object.keys(rawData)
+                                    const values = Object.values(rawData).map(({ total, value }) => value)
+
+                                    statisRecord["data"] = { headers, values }
+                                    statisRecord["type"] = "table"
                                 } else {
-                                    statisData[fomular_alias] += 1
+                                    const headers = Object.keys(rawData)
+                                    const values = Object.values(rawData)
+                                    statisRecord["data"] = { headers, values }
+                                    statisRecord["type"] = "table"
                                 }
                             }
-                        })
-                    }
-        
-                    
-                }
-                statistics.map(statis => {
-                    const { display_name, fomular_alias, group_by, fomular } = statis;
-                    const statisRecord = { display_name }
-                    if (group_by && group_by.length > 0) {
-                        const rawData = statisData[fomular_alias]
-                        if (rawData != undefined) {
-                            if (fomular == "AVERAGE") {
-                                const headers = Object.keys(rawData)
-                                const values = Object.values(rawData).map(({ total, value }) => value)
-    
-                                statisRecord["data"] = { headers, values }
-                                statisRecord["type"] = "table"
-                            } else {
-                                const headers = Object.keys(rawData)
-                                const values = Object.values(rawData)
-                                statisRecord["data"] = { headers, values }
-                                statisRecord["type"] = "table"
-                            }
+                        } else {
+                            statisRecord["type"] = "text"
+                            statisRecord["data"] = statisData[fomular_alias]
                         }
-                    } else {
-                        statisRecord["type"] = "text"
-                        statisRecord["data"] = statisData[fomular_alias]
+                        statistic.push(statisRecord)
+                    })
+                }
+            }
+
+
+
+
+
+            data.map(record => {
+                const keys = Object.keys(record)
+
+                keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
+
+                for (let k = 0; k < calculates.length; k++) {
+                    const { fomular_alias, fomular } = calculates[k]
+                    let result = fomular;
+                    keys.map(key => {
+                        /* replace the goddamn fomular with its coresponding value in record values */
+                        result = result.replaceAll(key, record[key])
+                    })
+                    try {
+                        record[fomular_alias] = eval(result)
+                    } catch {
+                        record[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
                     }
-                    statistic.push(statisRecord)
-                })
-            }     
+                }
+            })
 
-
-            
             const result = data
 
             this.res.send({
                 success: true,
-                total: result.length,                
+                total: result.length,
                 fields: [...fields, ...calculates],
                 data: result,
                 count: count,
@@ -3439,23 +3658,23 @@ class ConsumeApi extends Controller {
 
     hasEnoughPrivileges = (tables, rights, privileges) => {
 
-        if( tables.length && tables.length > 0 ){
+        if (tables.length && tables.length > 0) {
 
             let isGranted = true;
-            for( let i = 0; i < tables.length; i++ ){
+            for (let i = 0; i < tables.length; i++) {
                 const table_id = tables[i].id;
-                const tablePrivileges = privileges.filter( pri => pri.table_id == table_id )
-    
-                for( let j = 0 ; j < tablePrivileges.length ; j++ ){
-    
+                const tablePrivileges = privileges.filter(pri => pri.table_id == table_id)
+
+                for (let j = 0; j < tablePrivileges.length; j++) {
+
                     const privilege = tablePrivileges[j]
-                    for( let h = 0; h < rights.length; h++ ){
+                    for (let h = 0; h < rights.length; h++) {
                         const right = rights[h]
                         console.log(tables[i].table)
-                        console.log( privilege[right] )
+                        console.log(privilege[right])
                         console.log(privilege)
                         console.log(right)
-                        if( !privilege[right] ){
+                        if (!privilege[right]) {
                             isGranted = false
                         }
                     }
@@ -3463,31 +3682,31 @@ class ConsumeApi extends Controller {
             }
 
             return isGranted
-        }else{
+        } else {
             return false
         }
     }
 
     FOREIGNDATA = async (req, res) => {
         this.writeReq(req)
-        
-        const verified = await this.verifyToken( req )
-        
-        if( verified ){
-            const user = this.decodeToken( req.header("Authorization") )
-            const { table_id, start_index, criteria, require_count, exact, api_id } = req.body;    
+
+        const verified = await this.verifyToken(req)
+
+        if (verified) {
+            const user = this.decodeToken(req.header("Authorization"))
+            const { table_id, start_index, criteria, require_count, exact, api_id } = req.body;
             const [tables, fields, privileges] = await Promise.all([
-                this.#__tables.findAll(), 
-                this.#__fields.findAll(), 
+                this.#__tables.findAll(),
+                this.#__fields.findAll(),
                 this.#__privileges.findAll({ username: user.username })
-            ])   
-            
-            const table = tables.find( tb => tb.id == table_id )
-          
-            if (table && req.method.toLowerCase() == "post") {                
+            ])
+
+            const table = tables.find(tb => tb.id == table_id)
+
+            if (table && req.method.toLowerCase() == "post") {
                 // console.log(3220, privileges)
                 const tbFields = fields.filter(f => f.table_id == table_id)
-    
+
                 let api = await this.#__apis.find({ api_id })
                 if (api == undefined) {
                     api = {
@@ -3503,40 +3722,40 @@ class ConsumeApi extends Controller {
                     }
                 }
 
-                const api_table = tables.find( tb => tb.id == api.tables[0] )
-                console.log(  )
+                const api_table = tables.find(tb => tb.id == api.tables[0])
+                console.log()
                 let isGranted = this.hasEnoughPrivileges([api_table], ["read"], privileges)
 
-                if( this.isAdmin( user ) || isGranted ){
-                                        
+                if (this.isAdmin(user) || isGranted) {
+
                     const Api = new ApisRecord(api)
                     this.API = Api
                     this.req = req
                     this.res = res
-        
+
                     this.fields = fields;
                     this.tables = tables.map(table => {
                         const { id } = table;
                         table.fields = fields.filter(field => field.table_id == id)
                         return table
                     });
-        
+
                     if (!criteria || objectComparator(criteria, {})) {
-        
+
                         this.API.params.value([])
                         this.GET_UI(start_index)
                     } else {
                         this.req.body = { query: criteria, start_index, require_count, exact }
                         this.SEARCH()
-                    }                
+                    }
                 } else {
-                    res.status(200).send({ success: false, content: "Không có quyền truy cập API này" })    
+                    res.status(200).send({ success: false, content: "Không có quyền truy cập API này" })
                 }
 
-            }else{
+            } else {
                 res.status(200).send({ success: false, content: "No TABLE Found" })
             }
-        }else{
+        } else {
             res.status(200).send({ success: false, content: "Token không hợp lệ" })
         }
     }
