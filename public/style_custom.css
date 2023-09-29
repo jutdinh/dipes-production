@@ -86,14 +86,14 @@
     right: -40px;
 }
 
-.step-arrow-both.step-active .step-link:after {
+/* .step-arrow-both.step-active .step-link:after {
     content: "";
     position: absolute;
     border-style: solid;
     border-width: 20px;
-    /* border-color: transparent transparent transparent forestgreen; */ /* Mũi tên dạng khuyết ở bên phải */
+     border-color: transparent transparent transparent forestgreen; */ /* Mũi tên dạng khuyết ở bên phải 
     right: -40px;
-}
+} */
 
 .step-arrow-both.step-active .step-link:before {
     content: "";

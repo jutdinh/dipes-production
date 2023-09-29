@@ -41,14 +41,9 @@ export default () => {
     const [loadingSearch, setLoadingSearch] = useState(false);
     const [loading, setLoading] = useState(false);
     const [loadingResult, setLoadingResult] = useState(false);
-    console.log("trạng thái loadl", loadingResult)
     const [uploadedJson, setUploadedJson] = useState(null);
-    const [dataLength, setDataLength] = useState(0);
 
 
-
-
-    console.log(48, dataLength)
     const [apiDataName, setApiDataName] = useState([])
     const [dataStatis, setDataStatis] = useState([])
     const [statusActive, setStatusActive] = useState(false);
@@ -89,8 +84,11 @@ export default () => {
 
     useEffect(() => {
 
+
         setSearchValues({});
+        setLoadingResult(false);
     }, [location.pathname]);
+
 
     useEffect(() => {
 
@@ -145,7 +143,7 @@ export default () => {
     }, [pages, url]);
     const matchingPage = apiViewPages?.find(page => page.url === `/${url}`);
 
-    // console.log(apiViewPages)
+    console.log(sumerize)
 
 
     useEffect(() => {
@@ -422,7 +420,7 @@ export default () => {
     // console.log(page)
     //search
     const [currentPage, setCurrentPage] = useState(0);
-    // console.log(currentPage)
+    console.log("Curennt",currentPage)
     const [requireCount, setRequireCount] = useState(true);
     const [searchValues, setSearchValues] = useState({});
     // const timeoutRef = useRef(null);
@@ -437,7 +435,7 @@ export default () => {
                     [fomular_alias]: value
                 };
             }
-        });
+        }); 
     };
 
     useEffect(() => {
@@ -447,102 +445,85 @@ export default () => {
         // console.log(requireCount)
     }, [currentPage]);
 
-    // console.log(2343243243324242, currentPage)
+    console.log(2343243243324242, currentPage-1)
     const [previousSearchValues, setPreviousSearchValues] = useState({});
     const [currentCount, setCurrentCount] = useState(null);
 
 
-    const callApi = async (requireCount = false) => {
-        while (!loadingResult) {
-            const startTime = new Date().getTime();
-            let loadingTimeout;
-            let loadingTimeoutSearch;
-            if (Object.keys(searchValues).length !== 0) {
-                loadingTimeoutSearch = setTimeout(() => {
-                    setLoadingSearch(true);
-                }, 310);
-            }
-
-            loadingTimeout = setTimeout(() => {
-
-                setLoading(true)
-            }, 300);
-
-
-            if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
-                setPreviousSearchValues(searchValues);
-                requireCount = true;
-            }
-
-            const searchBody = {
-                table_id: dataTable_id,
-                start_index: currentPage - 1,
-                criteria: searchValues,
-                require_count: false,
-                api_id: page.components?.[0]?.api_get.split('/')[2]
-                // exact: true
-            }
-
-            console.log(45465466, searchBody)
-
-            fetch(`${proxy()}/api/foreign/data`, {
-                method: "POST",
-                headers: {
-                    "content-type": "application/json",
-                    Authorization: _token,
-                    fromIndex: currentPage - 1
-                },
-                body: JSON.stringify(searchBody)
-            })
-                .then(res => res.json())
-                .then(res => {
-
-                    const { success, content, data, result, total, fields, count, sumerize } = res;
-                    const statisticValues = res.statistic;
-                    console.log(74, res)
-                    if (success) {
-                        setApiData(data.filter(record => record != undefined));
-                        setApiDataName(fields);
-                        setDataStatis(statisticValues);
-                        setLoaded(true);
-
-
-                        const filteredData = data.filter(record => record != undefined);
-                        const combinedData = [...apiData, ...filteredData];
-                        // Lưu độ dài dữ liệu vào state khác (giả sử state đó là dataLength)
-                        setDataLength(combinedData.length);
-
-
-                        if (count !== undefined && requireCount) {
-                            setCurrentCount(count);
-                            setSumerize(count);
-                        } else if (sumerize !== undefined) {
-                            setSumerize(sumerize);
-                        } else if (!requireCount && currentCount != null) {
-                            setSumerize(currentCount);
-                        }
-
-
-
-
-                    } else {
-                        setApiData([]);
-                        setApiDataName([])
-                    }
-
-                    const endTime = new Date().getTime();
-                    const elapsedTime = endTime - startTime;
-
-                    clearTimeout(loadingTimeout);
-                    clearTimeout(loadingTimeoutSearch);// Clear the timeout
-                    setLoadingSearch(false);
-                    setLoading(false)
-                    // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
-                });
+    const callApi = (startIndex = currentPage - 1) => {
+        const startTime = new Date().getTime();
+        let loadingTimeout;
+        let loadingTimeoutSearch;
+        if (Object.keys(searchValues).length !== 0) {
+            loadingTimeoutSearch = setTimeout(() => {
+                setLoadingSearch(true);
+            }, 310);
         }
+
+        loadingTimeout = setTimeout(() => {
+            setLoading(true)
+        }, 300);
+
+        
+
+        const searchBody = {
+            table_id: dataTable_id,
+            start_index: startIndex,
+            criteria: searchValues,
+            require_count: false,
+            require_statistic: false,
+            api_id: page.components?.[0]?.api_get.split('/')[2]
+            // exact: true
+        }
+
+        console.log("ĐÂY LÀ BODY:", searchBody)
+
+        fetch(`${proxy()}${page.components?.[0]?.api_search}`, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                Authorization: _token,
+                fromIndex: currentPage - 1
+            },
+            body: JSON.stringify(searchBody)
+        })
+            .then(res => res.json())
+            .then(res => {
+                const { success, content, data, result, total, fields, count, sumerize } = res;
+                const statisticValues = res.statistic;
+                console.log(74, res)
+                if (success) {
+                    setApiData(data.filter(record => record != undefined));
+                    // setApiDataName(fields);
+                    setDataStatis(statisticValues);
+                    setLoaded(true);
+                    // if (count !== undefined && requireCount) {
+                    //     setCurrentCount(count);
+                    //     setSumerize(count);
+                    // } else if (sumerize !== undefined) {
+                    //     setSumerize(sumerize);
+                    // } else if (!requireCount && currentCount != null) {
+                    //     setSumerize(currentCount);
+                    // }
+                } else {
+                    setApiData([]);
+                    setApiDataName([])
+                }
+
+                const endTime = new Date().getTime();
+                const elapsedTime = endTime - startTime;
+
+                clearTimeout(loadingTimeout);
+                clearTimeout(loadingTimeoutSearch);// Clear the timeout
+                setLoadingSearch(false);
+                setLoading(false)
+                // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+            });
     };
-    // G
+    
+
     const callApiCount = (requireCount = false) => {
+
         const startTime = new Date().getTime();
         let loadingTimeout;
         let loadingTimeoutSearch;
@@ -552,12 +533,12 @@ export default () => {
         //     }, 310);
         // }
 
-        // loadingTimeout = setTimeout(() => {
+        loadingTimeout = setTimeout(() => {
 
-        //     // setLoading(true)
-        //     setLoadingResult(true)
-        // }, 300);
-        setLoadingResult(true)
+            // setLoading(true)
+            setLoadingResult(true)
+        }, 300);
+
 
         if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
             setPreviousSearchValues(searchValues);
@@ -569,13 +550,14 @@ export default () => {
             start_index: currentPage - 1,
             criteria: searchValues,
             require_count: true,
+            require_statistic: false,
             api_id: page.components?.[0]?.api_get.split('/')[2]
             // exact: true
         }
 
         console.log(searchBody)
 
-        fetch(`${proxy()}/api/foreign/data`, {
+        fetch(`${proxy()}${page.components?.[0]?.api_search}`, {
             method: "POST",
             headers: {
                 "content-type": "application/json",
@@ -586,6 +568,8 @@ export default () => {
         })
             .then(res => res.json())
             .then(res => {
+
+
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
                 console.log(74, res)
@@ -603,7 +587,87 @@ export default () => {
                     } else if (!requireCount && currentCount != null) {
                         setSumerize(currentCount);
                     }
+                } else {
+                    setApiData([]);
+                    setApiDataName([])
+                }
 
+                const endTime = new Date().getTime();
+                const elapsedTime = endTime - startTime;
+
+                clearTimeout(loadingTimeout);
+                clearTimeout(loadingTimeoutSearch);// Clear the timeout
+                setLoadingResult(false)
+                // setLoadingSearch(false);
+                // setLoading(false)
+                // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+            });
+    };
+    const callApiStatistic = (requireCount = false) => {
+
+        const startTime = new Date().getTime();
+        let loadingTimeout;
+        let loadingTimeoutSearch;
+        // if (Object.keys(searchValues).length !== 0) {
+        //     loadingTimeoutSearch = setTimeout(() => {
+        //         setLoadingSearch(true);
+        //     }, 310);
+        // }
+
+        loadingTimeout = setTimeout(() => {
+
+            // setLoading(true)
+            setLoadingResult(true)
+        }, 300);
+
+
+        if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
+            setPreviousSearchValues(searchValues);
+            requireCount = true;
+        }
+
+        const searchBody = {
+            table_id: dataTable_id,
+            start_index: currentPage - 1,
+            criteria: searchValues,
+            require_count: false,
+            require_statistic: true,
+            api_id: page.components?.[0]?.api_get.split('/')[2]
+            // exact: true
+        }
+
+        console.log(searchBody)
+
+        fetch(`${proxy()}${page.components?.[0]?.api_search}`, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                Authorization: _token,
+                fromIndex: currentPage - 1
+            },
+            body: JSON.stringify(searchBody)
+        })
+            .then(res => res.json())
+            .then(res => {
+
+
+                const { success, content, data, result, total, fields, count, sumerize } = res;
+                const statisticValues = res.statistic;
+                console.log(74, res)
+                if (success) {
+                    // setApiData(data.filter(record => record != undefined));
+                    // setApiDataName(fields);
+                    // setDataStatis(statisticValues);
+                    // setLoaded(true);
+
+                    if (count !== undefined && requireCount) {
+                        setCurrentCount(count);
+                        setSumerize(count);
+                    } else if (sumerize !== undefined) {
+                        setSumerize(sumerize);
+                    } else if (!requireCount && currentCount != null) {
+                        setSumerize(currentCount);
+                    }
                 } else {
                     setApiData([]);
                     setApiDataName([])
@@ -677,6 +741,7 @@ export default () => {
         if (currentPage === 1) {
             callApi();
             callApiCount()
+            callApiStatistic()
             // setApiData([])
             setSumerize(0)
         }
@@ -929,7 +994,7 @@ export default () => {
             'start-at': startAt,
             'data-amount': amount
         }
-        console.log(headerApi)
+      
         const apiGet = page.components?.[0]?.api_get;
         fetch(`${proxy()}${apiGet}`, {
             headers: headerApi
@@ -938,7 +1003,7 @@ export default () => {
             .then(res => res.json())
             .then(res => {
                 const { success, content, data, count, fields, limit, statistic } = res;
-                console.log(res)
+                // console.log(res)
                 if (data && data.length > 0) {
                     setApiData(data.filter(record => record != undefined));
                     setApiDataName(fields);
@@ -950,10 +1015,7 @@ export default () => {
                     // setApiViewFields(fields)
                 }
             });
-
     }
-
-
 
 
     // useEffect(() => {
@@ -969,10 +1031,16 @@ export default () => {
     const current = apiData
 
     const paginate = (pageNumber) => {
-        setCurrentPage(pageNumber);
-        const startAt = (pageNumber - 1) * loadingResult ? rowsPerPage : 1;
-        callApiView(startAt, rowsPerPage);
+        const startAt = (pageNumber - 1) * rowsPerPage;
+        if (Object.keys(searchValues).length === 0) {
+            callApiView(startAt, rowsPerPage);
+        }
+        else {
+            callApi(pageNumber-1);  
+        }
+        setCurrentPage(pageNumber);  
     };
+    
 
     const totalPages = Math.ceil(sumerize / rowsPerPage) || 1;
 
@@ -1828,7 +1896,7 @@ export default () => {
                                                                                                 </div>
                                                                                                 <div className="d-flex justify-content-between align-items-center">
                                                                                                     <p>
-                                                                                                        {lang["show"]} {formatNumber(indexOfFirst + 1)} - {formatNumber(indexOfFirst + apiData?.length)} {lang["of"]}
+                                                                                                        {lang["show"]} {formatNumber(indexOfFirst + 1)} - {formatNumber(indexOfFirst + apiData?.length)}   {`${lang["of"]} `}
                                                                                                         {loadingResult ?
                                                                                                             <img
                                                                                                                 width={20}
@@ -2132,9 +2200,6 @@ export default () => {
                                                                                                                     :
                                                                                                                     null
                                                                                                         }
-
-
-
                                                                                                     </td>
                                                                                                 </tr>
                                                                                             );
@@ -2145,22 +2210,18 @@ export default () => {
                                                                                 </tbody>
                                                                             </table>
                                                                         </div>
-
-
-
-
-
                                                                         <div className="d-flex justify-content-between align-items-center">
                                                                             <p>
-                                                                                {lang["show"]} {formatNumber(indexOfFirst + 1)} - {formatNumber(indexOfFirst + apiData?.length)} {lang["of"]}  {loadingResult ? <img
-                                                                                    width={20}
-                                                                                    className="mb-1"
-                                                                                    src="/images/icon/load.gif"
-                                                                                    alt="Loading..."
-                                                                                ></img>
+                                                                                {lang["show"]} {formatNumber(indexOfFirst + 1)} - {formatNumber(indexOfFirst + apiData?.length)}   {`${lang["of"]} `}
+                                                                                {loadingResult ?
+                                                                                    <img
+                                                                                        width={20}
+                                                                                        className="mb-1"
+                                                                                        src="/images/icon/load.gif"
+                                                                                        alt="Loading..."
+                                                                                    ></img>
                                                                                     : formatNumber(sumerize)} {lang["results"]}
                                                                             </p>
-
                                                                             <nav aria-label="Page navigation example">
                                                                                 <ul className="pagination mb-0">
                                                                                     <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>

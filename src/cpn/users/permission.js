@@ -471,20 +471,22 @@ export default (props) => {
                                                     </ul>
                                                 </nav>
                                             </div></>
-                                        : <div class="d-flex justify-content-center align-items-center w-100 responsive-div">
-                                            {lang["not found user"]}
-                                        </div>
+                                         : 
+                                        //<div class="d-flex justify-content-center align-items-center w-100 responsive-div">
+                                            <div>
+                                                {lang["not found user"]}
+                                            </div>
 
                                     }
 
-                                </div>
+                                        </div>
 
 
+                            </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    )
+            )
 }
