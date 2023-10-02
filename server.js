@@ -4,7 +4,7 @@ const http = require('http');
 
 const jwt = require('jsonwebtoken');
 
-// const { Server } = require('socket.io');
+const { Server } = require('socket.io');
 const server = http.createServer(app);
 
 const cors = require("cors");
@@ -23,22 +23,18 @@ app.use(bodyparser.json({ limit: "50mb" }));
 app.use( express.static('public') );
 app.use( cors() )
 
-// const io = new Server(server, {
-//   cors: {
-//     origin: "http://localhost:3000",
-//     methods: ["GET", "POST"],
-//   },
-// });
+const io = new Server(server, {
+  cors: {
+    origin: "*"
+  },
+});
 
 
-// io.on("connection", (socket) => {  
-//     socket.on("new-connected", (payload) => {
-//         console.log(payload)
-//     })
-//     console.log("Connected")
-// })
+const { Auth, Projects, Versions, Logs, Tasks, Tables, Fields, Api, UI, Privileges, SocketController } = require('./routes');
 
-const { Auth, Projects, Versions, Logs, Tasks, Tables, Fields, Api, UI, Privileges } = require('./routes');
+io.on("connection", (socket) => {  
+    SocketController(socket)
+})
 
 const ConsumeApi = require('./controllers/ConsumeApi');
 

@@ -8,6 +8,7 @@ const Fields = require('./fields')
 const Api = require('./api')
 const UI = require('./ui')
 const Privileges = require('./privileges')
+const SocketController = require('./socket')
 
 module.exports = {
     Auth,
@@ -20,5 +21,7 @@ module.exports = {
     Fields,
     Api,
     UI,
-    Privileges
+    Privileges,
+
+    SocketController
 }
