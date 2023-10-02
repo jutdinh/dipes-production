@@ -1,5 +1,4 @@
 import { io } from 'socket.io-client';
-// import socketServer from '../proxy';
-// const socketServer = "192.168.15.205:5000"
+import socketServer from '../../proxy';
 
-// export const socket = io(socketServer);
+export const socket = io( socketServer() ? socketServer(): "http://127.0.0.1:5001" );

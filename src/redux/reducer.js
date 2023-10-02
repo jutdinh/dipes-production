@@ -13,7 +13,7 @@ const initState = {
     ...config,
     functions,
     auth: {},
-    // socket,
+    socket,
     tempFields: [],
     tempCounter: 0,
     proxy,

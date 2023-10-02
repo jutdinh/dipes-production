@@ -3,8 +3,9 @@ import { useSelector } from "react-redux"
 import Swal from 'sweetalert2';
 
 export default () => {
+    const { lang, proxy, socket } = useSelector(state => state);
+
     const [auth, setAuth] = useState({})
-    const { lang, proxy } = useSelector(state => state);
     const [rememberMe, setRememberMe] = useState(false);
     const [authError, setAuthError] = useState(null);
 
@@ -16,6 +17,7 @@ export default () => {
     const [statusActive, setStatusActive] = useState(false);
 
     useEffect(() => {
+        
         const storedAccountString = localStorage.getItem("username");
         const storedPwdString = localStorage.getItem("password");
         const storedRememberMe = localStorage.getItem("remember_me") === "true";
@@ -77,6 +79,9 @@ export default () => {
                             window.location.href = `/active`;
                         }
                         if (activated) {
+                            
+                            socket.emit("/dipe-production-user-login", { username: auth.username })
+
                             if (credential.data.role === "ad" || credential.data.role === "uad") {
                                 if (credential.imported) {
                                     window.location = "/users";

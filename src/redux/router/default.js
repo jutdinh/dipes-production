@@ -11,6 +11,9 @@ export default (state, action) => {
         case "setUIPages":
             return setUIPages(state, action);
             break;
+        case "changeSocketURL":
+            return changeSocketURL(state, action)
+            break;
     }
 }
 
@@ -32,3 +35,12 @@ const setUIPages = (state, action) => {
     localStorage.setItem( "ui", stringifiedUI )
     return { ...state, pages }
 } 
+
+
+const changeSocketURL = ( state, action ) => {
+    const { socket } = state 
+    socket.io.uri = action.payload
+    socket.disconnect().connect();
+    state.socket = socket
+    return {...state}
+}

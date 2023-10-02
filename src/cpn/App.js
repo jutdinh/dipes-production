@@ -30,6 +30,7 @@ function App() {
   const _token = localStorage.getItem("_token");
   const { lang, proxy, auth, pages } = useSelector(state => state);
   
+  
   useEffect(() => {
     const specialURLs = ["/login", "/signup", "/signout"]
     const url = window.location.pathname;
@@ -71,6 +72,11 @@ function App() {
       // }    
         
     };
+
+    dispatch({
+      type: 'changeSocketURL',
+      payload: proxy()
+    })
 
     fetchData();
 
