@@ -2,7 +2,6 @@
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExport, faFileImport, faDownload, faSquarePlus, faCirclePlus } from '@fortawesome/free-solid-svg-icons';
-
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from "react-router-dom";
@@ -11,15 +10,14 @@ import Swal from 'sweetalert2';
 import XLSX from 'xlsx-js-style';
 import Papa from 'papaparse';
 import $ from 'jquery'
-import {
-    Varchar, Char, Text, Int,
-    DateInput, TimeInput, DateTimeInput,
-    Decimal, Bool, DataEmail, DataPhone
 
-} from '../inputs search';
-
+import Layout0 from "./layout/layout 0";
 import StatisTable from './statistic/table'
-import { FunnelChart } from "recharts";
+
+
+
+const rowsPerPage = 15;
+
 
 export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
@@ -51,9 +49,9 @@ export default () => {
     const [effectOneCompleted, setEffectOneCompleted] = useState(false);
     const [page, setPage] = useState([]);
     const [apiViewPages, setApiViewPages] = useState([]);
-    const [apiViewData, setApiViewData] = useState([])
+
     const [limit, setLimit] = useState(0)
-    const [apiViewFields, setApiViewFields] = useState([])
+
     const [data, setData] = useState({});
     const [selectedFileType, setSelectedFileType] = useState('xlsx');
     const [dataSearch, setdataSearch] = useState([])
@@ -76,7 +74,6 @@ export default () => {
     const [activeTab, setActiveTab] = useState('nav-home_s2');
 
     useEffect(() => {
-        // Kiểm tra nếu dataStatis tồn tại và activeTab là 'nav-profile_s2' (tab thống kê)
         if (!dataStatis || dataStatis.length === 0 && activeTab === 'nav-profile_s2') {
             setActiveTab('nav-home_s2');
         }
@@ -126,11 +123,10 @@ export default () => {
     }, [])
     useEffect(() => {
         if (pages && pages.length > 0) {
-            // Lọc để chỉ lấy các trang có type là "apiview"
+
             const pagesWithApiView = pages.filter(page => page.type === "apiview");
             setApiViewPages(pagesWithApiView);
 
-            // Lọc để chỉ lấy các trang không có type là "apiview"
             const filteredPages = pages.filter(page => page.type !== "apiview");
 
             const result = filteredPages.find(page => page.url === `/${url}`);
@@ -141,9 +137,6 @@ export default () => {
             }
         }
     }, [pages, url]);
-    const matchingPage = apiViewPages?.find(page => page.url === `/${url}`);
-
-    console.log(sumerize)
 
 
     useEffect(() => {
@@ -153,7 +146,6 @@ export default () => {
     const layoutId = page.components?.[0].layout_id;
     console.log(layoutId)
     const tableClassName = layoutId === 0 ? "table" : "table table-hover";
-
 
     const CustomFileInput = ({ onChange, ...props }) => {
 
@@ -397,14 +389,6 @@ export default () => {
                         setDataFields(data.body)
                         setLoaded(true)
                     }
-                    // if (dataTable_id !== null) {
-                    //     callApi()
-                    // }
-
-
-
-                    // setApi(api);
-
                 })
         }
     }, [page, dataTable_id])
@@ -420,7 +404,7 @@ export default () => {
     // console.log(page)
     //search
     const [currentPage, setCurrentPage] = useState(0);
-    console.log("Curennt",currentPage)
+    console.log("Curennt", currentPage)
     const [requireCount, setRequireCount] = useState(true);
     const [searchValues, setSearchValues] = useState({});
     // const timeoutRef = useRef(null);
@@ -435,7 +419,7 @@ export default () => {
                     [fomular_alias]: value
                 };
             }
-        }); 
+        });
     };
 
     useEffect(() => {
@@ -445,12 +429,12 @@ export default () => {
         // console.log(requireCount)
     }, [currentPage]);
 
-    console.log(2343243243324242, currentPage-1)
+    console.log(2343243243324242, currentPage - 1)
     const [previousSearchValues, setPreviousSearchValues] = useState({});
     const [currentCount, setCurrentCount] = useState(null);
 
 
-    const callApi = (startIndex = currentPage - 1) => {
+    const callApi = (startIndex = currentPage - 1,) => {
         const startTime = new Date().getTime();
         let loadingTimeout;
         let loadingTimeoutSearch;
@@ -463,8 +447,6 @@ export default () => {
         loadingTimeout = setTimeout(() => {
             setLoading(true)
         }, 300);
-
-        
 
         const searchBody = {
             table_id: dataTable_id,
@@ -494,17 +476,16 @@ export default () => {
                 console.log(74, res)
                 if (success) {
                     setApiData(data.filter(record => record != undefined));
-                    // setApiDataName(fields);
+
                     setDataStatis(statisticValues);
                     setLoaded(true);
-                    // if (count !== undefined && requireCount) {
-                    //     setCurrentCount(count);
-                    //     setSumerize(count);
-                    // } else if (sumerize !== undefined) {
-                    //     setSumerize(sumerize);
-                    // } else if (!requireCount && currentCount != null) {
-                    //     setSumerize(currentCount);
-                    // }
+
+                    if (data.length < 15) {
+                        setTotalPages(currentPage);
+                    } else if (currentPage === totalPages) {
+                        setTotalPages(prevTotalPages => prevTotalPages + 1);
+                    }
+
                 } else {
                     setApiData([]);
                     setApiDataName([])
@@ -520,7 +501,6 @@ export default () => {
                 // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
             });
     };
-    
 
     const callApiCount = (requireCount = false) => {
 
@@ -532,13 +512,11 @@ export default () => {
         //         setLoadingSearch(true);
         //     }, 310);
         // }
-
         loadingTimeout = setTimeout(() => {
 
             // setLoading(true)
             setLoadingResult(true)
         }, 300);
-
 
         if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
             setPreviousSearchValues(searchValues);
@@ -556,7 +534,6 @@ export default () => {
         }
 
         console.log(searchBody)
-
         fetch(`${proxy()}${page.components?.[0]?.api_search}`, {
             method: "POST",
             headers: {
@@ -568,7 +545,6 @@ export default () => {
         })
             .then(res => res.json())
             .then(res => {
-
 
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
@@ -733,20 +709,23 @@ export default () => {
             clearTimeout(timeout);
         };
     }, [loading]);
-
+    const handleKeyDown = (event) => {
+        if (event.keyCode === 13) {
+            handleSearchClick();
+        }
+    }
 
     const handleSearchClick = () => {
-        // console.log("aaaaaaa")
         setCurrentPage(1);
         if (currentPage === 1) {
-            callApi();
+
             callApiCount()
+            callApi();
             callApiStatistic()
             // setApiData([])
             setSumerize(0)
         }
     }
-
 
     const redirectToInput = () => {
         if (errorLoadConfig) {
@@ -766,6 +745,7 @@ export default () => {
 
         window.location.href = `${url}/apis/api/${id_str}/input_info`;
     }
+
     const redirectToImportData = () => {
         if (errorLoadConfig) {
             Swal.fire({
@@ -783,6 +763,7 @@ export default () => {
 
         window.location.href = `/page/${url}/import`;
     }
+
     const deleteData = (data) => {
         let rawParams = page.apis.delete;
         // const keys = Object.keys(data);
@@ -975,18 +956,6 @@ export default () => {
             return "Invalid value"
         }
     };
-    const downloadAPI = () => {
-        // console.log(apiData);
-
-    };
-
-
-    // useEffect(() => {
-    //     if (page.components?.[0]?.api_get != undefined) {
-    //         callApiView();
-
-    //     }
-    // }, [currentPage])
 
     const callApiView = (startAt = 0, amount = 15) => {
         const headerApi = {
@@ -994,7 +963,7 @@ export default () => {
             'start-at': startAt,
             'data-amount': amount
         }
-      
+
         const apiGet = page.components?.[0]?.api_get;
         fetch(`${proxy()}${apiGet}`, {
             headers: headerApi
@@ -1017,15 +986,8 @@ export default () => {
             });
     }
 
+    const [totalPages, setTotalPages] = useState(0);
 
-    // useEffect(() => {
-    //     if (apiViewPages) {
-    //         callApiView();
-    //     }
-    // }, [matchingPage]);
-
-
-    const rowsPerPage = 15;
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
     const current = apiData
@@ -1036,56 +998,19 @@ export default () => {
             callApiView(startAt, rowsPerPage);
         }
         else {
-            callApi(pageNumber-1);  
+            callApi(pageNumber - 1);
         }
-        setCurrentPage(pageNumber);  
-    };
-    
-
-    const totalPages = Math.ceil(sumerize / rowsPerPage) || 1;
-
-    //view api 
-    const [currentPageApi, setCurrentPageApi] = useState(1);
-
-    const rowsPerPageApi = 15;
-    const indexOfLastApi = currentPageApi * rowsPerPageApi;
-    const indexOfFirstApi = indexOfLastApi - rowsPerPageApi;
-
-
-    const currentApi = apiViewData
-
-
-    const paginateApi = (pageNumber) => {
-        setCurrentPageApi(pageNumber);
-        const startAt = (pageNumber - 1) * rowsPerPageApi;
-        callApiView(startAt, rowsPerPageApi);
+        setCurrentPage(pageNumber);
     };
 
-
-
-
-    const totalPagesApi = Math.ceil(limit / rowsPerPageApi) || 1;
-
-
-    // useEffect(() => {
-    //     callApiView((currentPageApi - 1) * rowsPerPageApi, rowsPerPageApi);
-    // }, [currentPageApi, matchingPage]);
-
-    // useEffect(() => {
-    //     if (matchingPage !== undefined) {
-    //         setCurrentPageApi(1);
-    //         callApiView(0, rowsPerPageApi);
-    //     }
-    // }, [matchingPage]);
-
-    // console.log(matchingPage)
+    const accurateTotalPages = Math.ceil(sumerize / rowsPerPage);
+    if (totalPages !== accurateTotalPages) {
+        setTotalPages(accurateTotalPages);
+    }
 
     const [selectedFields, setSelectedFields] = useState([]);/// fields
     const [selectedStats, setSelectedStats] = useState([]);
     const [exportType, setExportType] = useState("excel");
-    ////paginate statistic
-
-
 
     // statis fields
     const handleStatsChange = (event) => {
@@ -1106,10 +1031,6 @@ export default () => {
             setSelectedFields(apiDataName.map(header => header.fomular_alias));
         }
         setSelectAll(!selectAll);
-    }
-    if (apiViewPages.length > 0) {
-        // console.log(apiViewPages);
-        // console.log(apiViewPages[0].components?.[0].component_name);
     }
 
     const handleFieldChange = (event) => {
@@ -1213,7 +1134,6 @@ export default () => {
         $('#closeModalExportFileSample').click();
     }
 
-
     const getCurrentDateTimeForFilename = () => {
         const now = new Date();
         const year = now.getFullYear();
@@ -1303,8 +1223,6 @@ export default () => {
         }
     }, [loadingExportFile]);
 
-
-
     const changeTrigger = (field, value) => {
         const newData = data;
         if (value === "true") {
@@ -1316,14 +1234,6 @@ export default () => {
         }
         setData(newData);
     }
-
-    const searchData = () => {
-        // console.log(data)
-    }
-
-    // console.log(searchValues)
-    // console.log(sumerize)
-
 
     return (
         <div class="midde_cont">
@@ -1565,132 +1475,7 @@ export default () => {
                         </div>
                     </div>
                     {/* <Step /> */}
-                    {matchingPage ? (
-                        <div class="col-md-12">
-                            <div class="white_shd full ">
-                                <div class="full graph_head_cus d-flex">
-                                    <div class="heading1_cus margin_0 ">
-                                        <div class="tab_style2">
-                                            <div class="tabbar">
-                                                <nav>
-                                                    <div class="nav nav-tabs" style={{ borderBottomStyle: "0px" }} id="nav-tab" role="tablist">
-                                                        {apiViewData && apiViewData.length > 0 ? (
-                                                            <a class="nav-item nav-link " id="nav-home-tab" data-toggle="tab" href="#nav-home_s2" role="tab" aria-controls="nav-home_s2" ><h5>{matchingPage.components?.[0].component_name}</h5></a>
-                                                        ) :
-                                                            null
-                                                        }
-                                                    </div>
-                                                </nav>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="full inner_elements">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="tab_style2">
-                                                <div class="tabbar padding_infor_info">
-                                                    <div class="tab-content" id="nav-tabContent">
-                                                        <div class="tab-pane fade show active" id="nav-home_s2" role="tabpanel" aria-labelledby="nav-home-tab">
-                                                            <div class="table_section">
-
-                                                                <div class="col-md-12">
-                                                                    {statusActive ? (
-                                                                        <>
-                                                                            {
-                                                                                apiViewData && apiViewData.length > 0 ? (
-                                                                                    <>
-                                                                                        <div class="table-responsive">
-                                                                                            <table className={"table table-hover"} style={{ marginBottom: "10px" }}>
-                                                                                                <thead>
-                                                                                                    <tr class="color-tr">
-                                                                                                        <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
-                                                                                                        {apiViewFields.map((header, index) => (
-                                                                                                            <th key={index} class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
-                                                                                                        ))}
-                                                                                                    </tr>
-                                                                                                </thead>
-                                                                                                <tbody>
-                                                                                                    {currentApi.map((row, index) => {
-                                                                                                        if (row) {
-                                                                                                            return (
-                                                                                                                <tr key={index}>
-                                                                                                                    <td scope="row">{indexOfFirstApi + index + 1}</td>
-                                                                                                                    {apiViewFields.map((header) => (
-                                                                                                                        <td key={header.fomular_alias}>{renderData(header, row)}</td>
-                                                                                                                    ))}
-
-                                                                                                                </tr>)
-                                                                                                        } else {
-                                                                                                            return null
-                                                                                                        }
-                                                                                                    })}
-                                                                                                </tbody>
-                                                                                            </table>
-                                                                                        </div>
-                                                                                        <div className="d-flex justify-content-between align-items-center">
-                                                                                            <p>{lang["show"]} {formatNumber(indexOfFirstApi + 1)} - {formatNumber(indexOfFirstApi + apiViewData?.length)} {lang["of"]} {formatNumber(limit)} {lang["results"]}</p>
-                                                                                            <nav aria-label="Page navigation example">
-                                                                                                <ul className="pagination mb-0">
-                                                                                                    <li className={`page-item ${currentPageApi === 1 ? 'disabled' : ''}`}>
-                                                                                                        <button className="page-link" onClick={() => paginateApi(1)}>
-                                                                                                            &#8810;
-                                                                                                        </button>
-                                                                                                    </li>
-                                                                                                    <li className={`page-item ${currentPageApi === 1 ? 'disabled' : ''}`}>
-                                                                                                        <button className="page-link" onClick={() => paginateApi(currentPageApi - 1)}>
-                                                                                                            &laquo;
-                                                                                                        </button>
-                                                                                                    </li>
-                                                                                                    {currentPageApi > 1 && <li className="page-item"><span className="page-link">...</span></li>}
-                                                                                                    {Array(totalPagesApi).fill().map((_, index) => {
-                                                                                                        if (
-                                                                                                            index + 1 === currentPageApi ||
-                                                                                                            (index + 1 >= currentPageApi - 1 && index + 1 <= currentPageApi + 1)
-                                                                                                        ) {
-                                                                                                            return (
-                                                                                                                <li key={index} className={`page-item ${currentPageApi === index + 1 ? 'active' : ''}`}>
-                                                                                                                    <button className="page-link" onClick={() => paginateApi(index + 1)}>
-                                                                                                                        {index + 1}
-                                                                                                                    </button>
-                                                                                                                </li>
-                                                                                                            )
-                                                                                                        }
-                                                                                                    })}
-                                                                                                    {currentPageApi < totalPagesApi - 1 && <li className="page-item"><span className="page-link">...</span></li>}
-                                                                                                    <li className={`page-item ${currentPageApi === totalPagesApi ? 'disabled' : ''}`}>
-                                                                                                        <button className="page-link" onClick={() => paginateApi(currentPageApi + 1)}>
-                                                                                                            &raquo;
-                                                                                                        </button>
-                                                                                                    </li>
-                                                                                                    <li className={`page-item ${currentPageApi === totalPagesApi ? 'disabled' : ''}`}>
-                                                                                                        <button className="page-link" onClick={() => paginateApi(totalPagesApi)}>
-                                                                                                            &#8811;
-                                                                                                        </button>
-                                                                                                    </li>
-                                                                                                </ul>
-                                                                                            </nav>
-                                                                                        </div>
-                                                                                    </>
-                                                                                ) : (
-                                                                                    null
-                                                                                )
-                                                                            }
-                                                                        </>
-                                                                    ) :
-                                                                        null}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    ) : layoutId === 0 ? (
+                    {layoutId === 0 ? (
                         <div class="col-md-12">
                             <div class="white_shd full">
                                 <div class="full graph_head_cus d-flex">
@@ -1828,22 +1613,23 @@ export default () => {
                                                                                                     <table className={tableClassName} style={{ marginBottom: "10px", width: '100%' }}>
                                                                                                         <thead>
                                                                                                             <tr class="color-tr">
-                                                                                                                <th class="font-weight-bold " style={{ minWidth: "100px" }} scope="col">{lang["log.no"]}</th>
+                                                                                                                <th class="font-weight-bold " style={{ minWidth: "50px" }} scope="col">{lang["log.no"]}</th>
                                                                                                                 {apiDataName.map((header, index) => (
-                                                                                                                    <th key={index} class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
+                                                                                                                    <th key={index} class="font-weight-bold" style={{ minWidth: "200px" }}>{header.display_name ? header.display_name : header.field_name}</th>
                                                                                                                 ))}
                                                                                                                 <th class="font-weight-bold align-center" style={{ minWidth: "100px" }}>{lang["log.action"]}</th>
                                                                                                             </tr>
                                                                                                             <tr>
                                                                                                                 <th></th>
                                                                                                                 {apiDataName.map((header, index) => (
-                                                                                                                    <th key={index}>
+                                                                                                                    <th key={index} className="header-cell" style={{ minWidth: "200px" }}>
                                                                                                                         <input
 
                                                                                                                             type="text"
                                                                                                                             class="form-control"
                                                                                                                             value={searchValues[header.fomular_alias] || ''}
                                                                                                                             onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
+                                                                                                                            onKeyDown={handleKeyDown}
                                                                                                                         />
                                                                                                                     </th>
                                                                                                                 ))}
@@ -1860,7 +1646,7 @@ export default () => {
                                                                                                                         <tr key={index}>
                                                                                                                             <td scope="row" style={{ minWidth: "50px" }} className="cell">{indexOfFirst + index + 1}</td>
                                                                                                                             {apiDataName.map((header) => (
-                                                                                                                                <td key={header.fomular_alias} className="cell">{renderData(header, row)}</td>
+                                                                                                                                <td key={header.fomular_alias} className="cell" style={{ minWidth: "200px" }}>{renderData(header, row)}</td>
                                                                                                                             ))}
                                                                                                                             <td class="align-center" style={{ minWidth: "80px" }}>
                                                                                                                                 {
@@ -1906,7 +1692,6 @@ export default () => {
                                                                                                             ></img>
                                                                                                             : formatNumber(sumerize)} {lang["results"]}
                                                                                                     </p>
-
                                                                                                     <nav aria-label="Page navigation example">
                                                                                                         <ul className="pagination mb-0">
                                                                                                             <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
@@ -1935,16 +1720,18 @@ export default () => {
                                                                                                                 }
                                                                                                             })}
                                                                                                             {currentPage < totalPages - 1 && <li className="page-item"><span className="page-link">...</span></li>}
-                                                                                                            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                                                                            <li className={`page-item ${(currentPage === totalPages) ? 'disabled' : ''}`}>
                                                                                                                 <button className="page-link" onClick={() => paginate(currentPage + 1)}>
                                                                                                                     &raquo;
                                                                                                                 </button>
                                                                                                             </li>
-                                                                                                            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                                                                            <li className={`page-item ${(currentPage === totalPages || sumerize === 0) ? 'disabled' : ''}`}>
                                                                                                                 <button className="page-link" onClick={() => paginate(totalPages)}>
                                                                                                                     &#8811;
                                                                                                                 </button>
                                                                                                             </li>
+
+
                                                                                                         </ul>
                                                                                                     </nav>
                                                                                                 </div>
@@ -2044,11 +1831,17 @@ export default () => {
 
                             </div>
                         </div>
+                        // < Layout0
+                        //     callApiView={callApiView} callApi={callApi} callApiCount={callApiCount} callApiStatistic={callApiStatistic} apiData={apiData} apiDataName={apiDataName}
+                        //     activeTab={activeTab} page={page} statusActive={statusActive} dataCheck={dataCheck}
+                        //     rowsPerPage={rowsPerPage} indexOfLast={indexOfLast}
+                        //     indexOfFirst={indexOfFirst} current={current} paginate={paginate} totalPages={totalPages} sumerize={sumerize} currentPage={currentPage}
+                        // />
                     ) : (
                         <>
                             <div class="col-md-12">
                                 <div class="white_shd full">
-                                    <div class="tab_style2">
+                                    <div class="tab_style2 layout2">
                                         <div class="tabbar">
                                             <nav>
                                                 <div className="nav nav-tabs" style={{ borderBottomStyle: "0px" }} id="nav-tab" role="tablist">
@@ -2116,206 +1909,200 @@ export default () => {
                                                                     :
                                                                     null
                                                         }
-
-
-
-
-
                                                     </div>
                                                 </div>
                                             </nav>
                                         </div>
                                     </div>
-                                    <div class="table_section padding_infor_info_layout2">
+                                    <div class="table_section padding_infor_info_layout2 ">
                                         <div class="col-md-12">
-                                            {statusActive ? (
-                                                <>
-                                                    {
-                                                        loaded ? (
-                                                            current && current.length > 0 ? (
-                                                                <>
-                                                                    <div class="table-responsive">
+                                            <div class="tab-content">
+                                                {statusActive ? (
+                                                    <>
+                                                        {
+                                                            loaded ? (
+                                                                current && current.length > 0 ? (
+                                                                    <>
+                                                                        <div class="table-responsive">
 
-                                                                        <div style={{ overflowX: 'auto' }}>
-                                                                            <table className={tableClassName} style={{ marginBottom: "10px", width: '100%' }}>
-                                                                                <thead>
-                                                                                    <tr className="color-tr">
-                                                                                        <th className="font-weight-bold" style={{ minWidth: "50px" }} scope="col">{lang["log.no"]}</th>
-                                                                                        {apiDataName.map((header, index) => (
-                                                                                            <th key={index} className="font-weight-bold" style={{ minWidth: "200px" }}>
-                                                                                                {header.display_name ? header.display_name : header.field_name}
-                                                                                            </th>
-                                                                                        ))}
-                                                                                        <th className="font-weight-bold align-center " style={{ minWidth: "100px" }}>{lang["log.action"]}</th>
-                                                                                    </tr>
-                                                                                    <tr>
-                                                                                        <th></th>
-                                                                                        {apiDataName.map((header, index) => (
-                                                                                            <th key={index} className="header-cell" style={{ minWidth: "200px" }}>
-                                                                                                <input
-                                                                                                    type="text"
-                                                                                                    className="form-control"
-                                                                                                    value={searchValues[header.fomular_alias] || ''}
-                                                                                                    onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
-                                                                                                />
-                                                                                            </th>
-                                                                                        ))}
-                                                                                        <th className="align-center header-cell" onClick={handleSearchClick} style={{ minWidth: "100px" }}>
+                                                                            <div style={{ overflowX: 'auto' }}>
+                                                                                <table className={tableClassName} style={{ marginBottom: "10px", width: '100%' }}>
+                                                                                    <thead>
+                                                                                        <tr className="color-tr">
+                                                                                            <th className="font-weight-bold" style={{ minWidth: "50px" }} scope="col">{lang["log.no"]}</th>
+                                                                                            {apiDataName.map((header, index) => (
+                                                                                                <th key={index} className="font-weight-bold" style={{ minWidth: "200px" }}>
+                                                                                                    {header.display_name ? header.display_name : header.field_name}
+                                                                                                </th>
+                                                                                            ))}
+                                                                                            <th className="font-weight-bold align-center " style={{ minWidth: "100px" }}>{lang["log.action"]}</th>
+                                                                                        </tr>
+                                                                                        <tr>
+                                                                                            <th></th>
+                                                                                            {apiDataName.map((header, index) => (
+                                                                                                <th key={index} className="header-cell" style={{ minWidth: "200px" }}>
+                                                                                                    <input
+                                                                                                        type="text"
+                                                                                                        className="form-control"
+                                                                                                        value={searchValues[header.fomular_alias] || ''}
+                                                                                                        onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
+                                                                                                        onKeyDown={handleKeyDown}
 
-                                                                                            <i className="fa fa-search size-24 pointer mb-2" title={lang["search"]}></i>
-                                                                                        </th>
-                                                                                    </tr>
-                                                                                </thead>
-                                                                                <tbody>
-                                                                                    {current.map((row, index) => {
-                                                                                        if (row) {
-                                                                                            return (
-                                                                                                <tr key={index}>
-                                                                                                    <td scope="row" className="cell" style={{ minWidth: "50px" }}>{indexOfFirst + index + 1}</td>
-                                                                                                    {apiDataName.map((header) => (
-                                                                                                        <td key={header.fomular_alias} className="cell" style={{ minWidth: "200px" }}>
-                                                                                                            {renderData(header, row)}
-                                                                                                        </td>
-                                                                                                    ))}
-                                                                                                    <td className="align-center cell" style={{ minWidth: "80px" }}>
-                                                                                                        {
-                                                                                                            _user.role === "uad"
-                                                                                                                ?
-                                                                                                                <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
-                                                                                                                :
-                                                                                                                (dataCheck && dataCheck?.modify)
+                                                                                                    />
+                                                                                                </th>
+                                                                                            ))}
+                                                                                            <th className="align-center header-cell" onClick={handleSearchClick} style={{ minWidth: "100px" }}>
+
+                                                                                                <i className="fa fa-search size-24 pointer mb-2" title={lang["search"]}></i>
+                                                                                            </th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        {current.map((row, index) => {
+                                                                                            if (row) {
+                                                                                                return (
+                                                                                                    <tr key={index}>
+                                                                                                        <td scope="row" className="cell" style={{ minWidth: "50px" }}>{indexOfFirst + index + 1}</td>
+                                                                                                        {apiDataName.map((header) => (
+                                                                                                            <td key={header.fomular_alias} className="cell" style={{ minWidth: "200px" }}>
+                                                                                                                {renderData(header, row)}
+                                                                                                            </td>
+                                                                                                        ))}
+                                                                                                        <td className="align-center cell" style={{ minWidth: "80px" }}>
+                                                                                                            {
+                                                                                                                _user.role === "uad"
                                                                                                                     ?
                                                                                                                     <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
                                                                                                                     :
-                                                                                                                    null
-                                                                                                        }
-                                                                                                        {
-                                                                                                            _user.role === "uad"
-                                                                                                                ?
-                                                                                                                <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
-                                                                                                                :
-                                                                                                                (dataCheck && dataCheck?.purge)
+                                                                                                                    (dataCheck && dataCheck?.modify)
+                                                                                                                        ?
+                                                                                                                        <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
+                                                                                                                        :
+                                                                                                                        null
+                                                                                                            }
+                                                                                                            {
+                                                                                                                _user.role === "uad"
                                                                                                                     ?
                                                                                                                     <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
                                                                                                                     :
-                                                                                                                    null
-                                                                                                        }
-                                                                                                    </td>
-                                                                                                </tr>
-                                                                                            );
-                                                                                        } else {
-                                                                                            return null;
-                                                                                        }
-                                                                                    })}
-                                                                                </tbody>
-                                                                            </table>
+                                                                                                                    (dataCheck && dataCheck?.purge)
+                                                                                                                        ?
+                                                                                                                        <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                                                                                                                        :
+                                                                                                                        null
+                                                                                                            }
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                );
+                                                                                            } else {
+                                                                                                return null;
+                                                                                            }
+                                                                                        })}
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                            <div className="d-flex justify-content-between align-items-center">
+                                                                                <p>
+                                                                                    {lang["show"]} {formatNumber(indexOfFirst + 1)} - {formatNumber(indexOfFirst + apiData?.length)}   {`${lang["of"]} `}
+                                                                                    {loadingResult ?
+                                                                                        <img
+                                                                                            width={20}
+                                                                                            className="mb-1"
+                                                                                            src="/images/icon/load.gif"
+                                                                                            alt="Loading..."
+                                                                                        ></img>
+                                                                                        : formatNumber(sumerize)} {lang["results"]}
+                                                                                </p>
+                                                                                <nav aria-label="Page navigation example">
+                                                                                    <ul className="pagination mb-0">
+                                                                                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                                                            <button className="page-link" onClick={() => paginate(1)}>
+                                                                                                &#8810;
+                                                                                            </button>
+                                                                                        </li>
+                                                                                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                                                            <button className="page-link" onClick={() => paginate(currentPage - 1)}>
+                                                                                                &laquo;
+                                                                                            </button>
+                                                                                        </li>
+                                                                                        {currentPage > 1 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                                                        {Array(totalPages).fill().map((_, index) => {
+                                                                                            if (
+                                                                                                index + 1 === currentPage ||
+                                                                                                (index + 1 >= currentPage - 1 && index + 1 <= currentPage + 1)
+                                                                                            ) {
+                                                                                                return (
+                                                                                                    <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                                                                        <button className="page-link" onClick={() => paginate(index + 1)}>
+                                                                                                            {index + 1}
+                                                                                                        </button>
+                                                                                                    </li>
+                                                                                                )
+                                                                                            }
+                                                                                        })}
+                                                                                        {currentPage < totalPages - 1 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                                                        <li className={`page-item ${(currentPage === totalPages) ? 'disabled' : ''}`}>
+                                                                                            <button className="page-link" onClick={() => paginate(currentPage + 1)}>
+                                                                                                &raquo;
+                                                                                            </button>
+                                                                                        </li>
+                                                                                        <li className={`page-item ${(currentPage === totalPages || sumerize === 0) ? 'disabled' : ''}`}>
+                                                                                            <button className="page-link" onClick={() => paginate(totalPages)}>
+                                                                                                &#8811;
+                                                                                            </button>
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                </nav>
+                                                                            </div>
                                                                         </div>
-                                                                        <div className="d-flex justify-content-between align-items-center">
-                                                                            <p>
-                                                                                {lang["show"]} {formatNumber(indexOfFirst + 1)} - {formatNumber(indexOfFirst + apiData?.length)}   {`${lang["of"]} `}
-                                                                                {loadingResult ?
-                                                                                    <img
-                                                                                        width={20}
-                                                                                        className="mb-1"
-                                                                                        src="/images/icon/load.gif"
-                                                                                        alt="Loading..."
-                                                                                    ></img>
-                                                                                    : formatNumber(sumerize)} {lang["results"]}
-                                                                            </p>
-                                                                            <nav aria-label="Page navigation example">
-                                                                                <ul className="pagination mb-0">
-                                                                                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                                                        <button className="page-link" onClick={() => paginate(1)}>
-                                                                                            &#8810;
-                                                                                        </button>
-                                                                                    </li>
-                                                                                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                                                        <button className="page-link" onClick={() => paginate(currentPage - 1)}>
-                                                                                            &laquo;
-                                                                                        </button>
-                                                                                    </li>
-                                                                                    {currentPage > 1 && <li className="page-item"><span className="page-link">...</span></li>}
-                                                                                    {Array(totalPages).fill().map((_, index) => {
-                                                                                        if (
-                                                                                            index + 1 === currentPage ||
-                                                                                            (index + 1 >= currentPage - 1 && index + 1 <= currentPage + 1)
-                                                                                        ) {
-                                                                                            return (
-                                                                                                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                                                                                                    <button className="page-link" onClick={() => paginate(index + 1)}>
-                                                                                                        {index + 1}
-                                                                                                    </button>
-                                                                                                </li>
-                                                                                            )
-                                                                                        }
-                                                                                    })}
-                                                                                    {currentPage < totalPages - 1 && <li className="page-item"><span className="page-link">...</span></li>}
-                                                                                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                                                                                        <button className="page-link" onClick={() => paginate(currentPage + 1)}>
-                                                                                            &raquo;
-                                                                                        </button>
-                                                                                    </li>
-                                                                                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                                                                                        <button className="page-link" onClick={() => paginate(totalPages)}>
-                                                                                            &#8811;
-                                                                                        </button>
-                                                                                    </li>
-                                                                                </ul>
-                                                                            </nav>
-                                                                        </div>
+                                                                    </>
+                                                                ) : (
+                                                                    <div class="table-responsive">
+                                                                        <table className={tableClassName}>
+                                                                            <thead>
+                                                                                <tr class="color-tr">
+                                                                                    <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
+                                                                                    {apiDataName.map((header, index) => (
+                                                                                        <th key={index} class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
+                                                                                    ))}
+                                                                                    <th class="font-weight-bold align-center" style={{ width: "100px" }}>{lang["log.action"]}</th>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                    <th></th>
+                                                                                    {apiDataName.map((header, index) => (
+                                                                                        <th key={index}>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                class="form-control"
+                                                                                                value={searchValues[header.fomular_alias] || ''}
+                                                                                                onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
+                                                                                            />
+                                                                                        </th>
+                                                                                    ))}
+                                                                                    <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size-24 pointer icon-margin mb-2" title={lang["search"]}></i></th>
+                                                                                </tr>
 
-
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td class="font-weight-bold" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
                                                                     </div>
-                                                                </>
+                                                                )
                                                             ) : (
-                                                                <div class="table-responsive">
-
-
-                                                                    <table className={tableClassName}>
-                                                                        <thead>
-                                                                            <tr class="color-tr">
-                                                                                <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
-                                                                                {apiDataName.map((header, index) => (
-                                                                                    <th key={index} class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
-                                                                                ))}
-                                                                                <th class="font-weight-bold align-center" style={{ width: "100px" }}>{lang["log.action"]}</th>
-                                                                            </tr>
-
-                                                                            <tr>
-                                                                                <th></th>
-                                                                                {apiDataName.map((header, index) => (
-                                                                                    <th key={index}>
-                                                                                        <input
-                                                                                            type="text"
-                                                                                            class="form-control"
-                                                                                            value={searchValues[header.fomular_alias] || ''}
-                                                                                            onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
-                                                                                        />
-                                                                                    </th>
-                                                                                ))}
-                                                                                <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size-24 pointer icon-margin mb-2" title={lang["search"]}></i></th>
-                                                                            </tr>
-
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            <tr>
-                                                                                <td class="font-weight-bold" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
-                                                                            </tr>
-                                                                        </tbody>
-                                                                    </table>
-                                                                </div>
+                                                                null
+                                                                // <div class="d-flex justify-content-center align-items-center w-100 responsive-div" >
+                                                                //     <img width={350} className="scaled-hover-target" src="/images/icon/loading.gif" ></img>
+                                                                // </div>
+                                                                // <div>{lang["not found data"]}</div>
                                                             )
-                                                        ) : (
-                                                            null
-                                                            // <div class="d-flex justify-content-center align-items-center w-100 responsive-div" >
-                                                            //     <img width={350} className="scaled-hover-target" src="/images/icon/loading.gif" ></img>
-                                                            // </div>
-                                                            // <div>{lang["not found data"]}</div>
-                                                        )
-                                                    }
-                                                </>
-                                            ) :
-                                                null}
+                                                        }
+                                                    </>
+                                                ) :
+                                                    null}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
