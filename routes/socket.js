@@ -97,5 +97,22 @@ module.exports = (socket) => {
             }
         })
     })
+
+    socket.on("/dipe-production-new-data-added", ( payload ) => {
+        const { data, api_id } = payload;
+        socket.to( api_id ).emit("/dipe-production-new-data-added", { data, api_id } )
+    })
+
+    socket.on("/dipe-production-delete-data", ( payload ) => {
+        const { data, api_id, current_page } = payload;
+        socket.to( api_id ).emit("/dipe-production-delete-data",  { data, api_id, current_page } )
+    })
+
+    socket.on("/dipe-production-update-data", ( payload ) => {
+        const { data, api_id, current_page } = payload;
+        socket.to( api_id ).emit("/dipe-production-update-data",  { data, api_id, current_page } )
+    })
+
+
     // console.log("Connected")
 }
