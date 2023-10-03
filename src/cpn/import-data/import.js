@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { Tables } from ".";
 export default () => {
-    const { lang, proxy, auth, functions } = useSelector(state => state);
+    const { lang, proxy, auth, functions, socket } = useSelector(state => state);
     const [statusActive, setStatusActive] = useState(false);
     const _token = localStorage.getItem("_token");
     const { project_id, version_id } = useParams();
@@ -221,6 +221,7 @@ export default () => {
             });
 
             if (response.ok) {
+                socket.emit("/dipe-production-import-ui")
                 Swal.fire({
                     title: lang["success"],
                     text: lang["success.content"],

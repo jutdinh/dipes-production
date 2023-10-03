@@ -78,8 +78,7 @@ export default () => {
                             setStatusActive(false)
                             window.location.href = `/active`;
                         }
-                        if (activated) {
-                            
+                        if (activated) {                            
                             socket.emit("/dipe-production-user-login", { username: auth.username })
 
                             if (credential.data.role === "ad" || credential.data.role === "uad") {

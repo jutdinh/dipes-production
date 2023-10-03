@@ -28,7 +28,7 @@ function App() {
 
   const dispatch = useDispatch()
   const _token = localStorage.getItem("_token");
-  const { lang, proxy, auth, pages } = useSelector(state => state);
+  const { lang, proxy, auth, pages, socket } = useSelector(state => state);
   
   
   useEffect(() => {
@@ -79,6 +79,18 @@ function App() {
     })
 
     fetchData();
+
+    socket.on("/dipe-production-user-login", ({ username }) => {
+      alert("Bạn vừa bị đá ra")
+      if( user.username == username ){
+        // window.location = '/signout'
+      }
+    })
+
+    socket.on("/dipe-production-import-ui", () => {
+      fetchData()
+      socket.emit("/dipe-production-reconnect-ui")
+    })
 
   }, [])  
 
