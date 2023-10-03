@@ -12,6 +12,7 @@ import Papa from 'papaparse';
 import $ from 'jquery'
 
 import Layout0 from "./layout/layout 0";
+import Layout1 from "./layout/layout 1";
 import StatisTable from './statistic/table'
 
 
@@ -404,7 +405,7 @@ export default () => {
     // console.log(page)
     //search
     const [currentPage, setCurrentPage] = useState(0);
-    console.log("Curennt", currentPage)
+
     const [requireCount, setRequireCount] = useState(true);
     const [searchValues, setSearchValues] = useState({});
     // const timeoutRef = useRef(null);
@@ -438,11 +439,11 @@ export default () => {
         const startTime = new Date().getTime();
         let loadingTimeout;
         let loadingTimeoutSearch;
-        if (Object.keys(searchValues).length !== 0) {
-            loadingTimeoutSearch = setTimeout(() => {
-                setLoadingSearch(true);
-            }, 310);
-        }
+        // if (Object.keys(searchValues).length !== 0) {
+        //     loadingTimeoutSearch = setTimeout(() => {
+        //         setLoadingSearch(true);
+        //     }, 310);
+        // }
 
         loadingTimeout = setTimeout(() => {
             setLoading(true)
@@ -666,7 +667,7 @@ export default () => {
         }
     }, [page, dataTable_id])
 
-
+console.log(loadingSearch)
     //searching
     useEffect(() => {
         let timeout;
@@ -1196,9 +1197,8 @@ export default () => {
                 setLoadingExportFile(false)
             });
     };
-
+// Loading Export
     const [isInitialRender, setIsInitialRender] = useState(true);
-
     useEffect(() => {
         let timeout;
         if (isInitialRender) {
@@ -1476,370 +1476,366 @@ export default () => {
                     </div>
                     {/* <Step /> */}
                     {layoutId === 0 ? (
-                        <div class="col-md-12">
-                            <div class="white_shd full">
-                                <div class="full graph_head_cus d-flex">
-                                    <div class="heading1_cus margin_0 ">
-                                        <div class="tab_style2">
-                                            <div class="tabbar">
-                                                <nav>
-                                                    <div className="nav nav-tabs" style={{ borderBottomStyle: "0px" }} id="nav-tab" role="tablist">
-                                                        {dataStatis && dataStatis.length > 0 ? (
-                                                            <>
-                                                                <a
-                                                                    className={`nav-item nav-link ${activeTab === 'nav-home_s2' ? 'active' : ''}`}
-                                                                    id="nav-home-tab"
-                                                                    data-toggle="tab"
-                                                                    href="#nav-home_s2"
-                                                                    role="tab"
-                                                                    aria-controls="nav-home_s2"
-                                                                    onClick={() => setActiveTab('nav-home_s2')}
-                                                                >
-                                                                    <h5>{page?.components?.[0]?.component_name}</h5>
-                                                                </a>
-                                                                <a
-                                                                    className={`nav-item nav-link ${activeTab === 'nav-profile_s2' ? 'active' : ''}`}
-                                                                    id="nav-profile-tab"
-                                                                    data-toggle="tab"
-                                                                    href="#nav-profile_s2"
-                                                                    role="tab"
-                                                                    aria-controls="nav-profile_s2"
-                                                                    onClick={() => setActiveTab('nav-profile_s2')}
-                                                                >
-                                                                    <h5>{lang["statistic"]}: {page?.components?.[0]?.component_name}</h5>
-                                                                </a>
-                                                            </>
-                                                        ) : (
-                                                            <a
-                                                                className="nav-item nav-link"
-                                                                id="nav-home-tab"
-                                                                data-toggle="tab"
-                                                                href="#nav-home_s2"
-                                                                role="tab"
-                                                                aria-controls="nav-home_s2"
-                                                                onClick={() => setActiveTab('nav-home_s2')}
-                                                            >
-                                                                <h5>{page?.components?.[0]?.component_name}</h5>
-                                                            </a>
-                                                        )}
-                                                    </div>
-                                                </nav>
-                                            </div>
-                                        </div>
-                                    </div>
+                        // <div class="col-md-12">
+                        //     <div class="white_shd full">
+                        //         <div class="full graph_head_cus d-flex">
+                        //             <div class="heading1_cus margin_0 ">
+                        //                 <div class="tab_style2">
+                        //                     <div class="tabbar">
+                        //                         <nav>
+                        //                             <div className="nav nav-tabs" style={{ borderBottomStyle: "0px" }} id="nav-tab" role="tablist">
+                        //                                 {dataStatis && dataStatis.length > 0 ? (
+                        //                                     <>
+                        //                                         <a
+                        //                                             className={`nav-item nav-link ${activeTab === 'nav-home_s2' ? 'active' : ''}`}
+                        //                                             id="nav-home-tab"
+                        //                                             data-toggle="tab"
+                        //                                             href="#nav-home_s2"
+                        //                                             role="tab"
+                        //                                             aria-controls="nav-home_s2"
+                        //                                             onClick={() => setActiveTab('nav-home_s2')}
+                        //                                         >
+                        //                                             <h5>{page?.components?.[0]?.component_name}</h5>
+                        //                                         </a>
+                        //                                         <a
+                        //                                             className={`nav-item nav-link ${activeTab === 'nav-profile_s2' ? 'active' : ''}`}
+                        //                                             id="nav-profile-tab"
+                        //                                             data-toggle="tab"
+                        //                                             href="#nav-profile_s2"
+                        //                                             role="tab"
+                        //                                             aria-controls="nav-profile_s2"
+                        //                                             onClick={() => setActiveTab('nav-profile_s2')}
+                        //                                         >
+                        //                                             <h5>{lang["statistic"]}: {page?.components?.[0]?.component_name}</h5>
+                        //                                         </a>
+                        //                                     </>
+                        //                                 ) : (
+                        //                                     <a
+                        //                                         className="nav-item nav-link"
+                        //                                         id="nav-home-tab"
+                        //                                         data-toggle="tab"
+                        //                                         href="#nav-home_s2"
+                        //                                         role="tab"
+                        //                                         aria-controls="nav-home_s2"
+                        //                                         onClick={() => setActiveTab('nav-home_s2')}
+                        //                                     >
+                        //                                         <h5>{page?.components?.[0]?.component_name}</h5>
+                        //                                     </a>
+                        //                                 )}
+                        //                             </div>
+                        //                         </nav>
+                        //                     </div>
+                        //                 </div>
+                        //             </div>
 
-                                    {statusActive ? (
+                        //             {statusActive ? (
 
-                                        <>
-                                            {
-                                                _user.role === "uad"
-                                                    ?
-                                                    <div className="ml-auto mt-2 pointer" onClick={() => redirectToInput()} data-toggle="modal" title={lang["btn.create"]}>
-                                                        <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
-                                                    </div>
-                                                    :
-                                                    (dataCheck && dataCheck?.write)
-                                                        ?
-                                                        <div className="ml-auto mt-2 pointer" onClick={() => redirectToInput()} data-toggle="modal" title={lang["btn.create"]}>
-                                                            <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
-                                                        </div>
-                                                        :
-                                                        null
-                                            }
-
-
-                                        </>
-                                    ) : null}
-                                    {
-                                        current && current.length > 0 ? (
-                                            <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcel" title={lang["export_excel_csv"]}>
-
-                                                <FontAwesomeIcon icon={faDownload} className="icon-export" />
-                                            </div>
-                                        ) : null
-                                    }
+                        //                 <>
+                        //                     {
+                        //                         _user.role === "uad"
+                        //                             ?
+                        //                             <div className="ml-auto mt-2 pointer" onClick={() => redirectToInput()} data-toggle="modal" title={lang["btn.create"]}>
+                        //                                 <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
+                        //                             </div>
+                        //                             :
+                        //                             (dataCheck && dataCheck?.write)
+                        //                                 ?
+                        //                                 <div className="ml-auto mt-2 pointer" onClick={() => redirectToInput()} data-toggle="modal" title={lang["btn.create"]}>
+                        //                                     <FontAwesomeIcon icon={faSquarePlus} className="icon-add" />
+                        //                                 </div>
+                        //                                 :
+                        //                                 null
+                        //                     }
 
 
-                                    {
-                                        _user.role === "uad"
-                                            ?
-                                            <>
-                                                <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcelEx" title={lang["export data example"]}>
-                                                    <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
+                        //                 </>
+                        //             ) : null}
+                        //             {
+                        //                 current && current.length > 0 ? (
+                        //                     <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcel" title={lang["export_excel_csv"]}>
 
-                                                </div>
-                                                <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
-                                                    <FontAwesomeIcon icon={faFileImport} className="icon-import" />
-                                                </div>
-                                            </>
-
-                                            :
-                                            (dataCheck && dataCheck?.write)
-                                                ?
-                                                <>
-                                                    <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcelEx" title={lang["export data example"]}>
-                                                        <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
-
-                                                    </div>
-                                                    <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
-                                                        <FontAwesomeIcon icon={faFileImport} className="icon-import" />
-                                                    </div></>
-
-                                                :
-                                                null
-                                    }
+                        //                         <FontAwesomeIcon icon={faDownload} className="icon-export" />
+                        //                     </div>
+                        //                 ) : null
+                        //             }
 
 
+                        //             {
+                        //                 _user.role === "uad"
+                        //                     ?
+                        //                     <>
+                        //                         <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcelEx" title={lang["export data example"]}>
+                        //                             <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
 
-                                </div>
-                                <div class="full inner_elements">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="tab_style2">
-                                                <div class="tabbar padding_infor_info">
-                                                    <div class="tab-content" id="nav-tabContent">
-                                                        <div class={`tab-pane fade ${activeTab === 'nav-home_s2' ? 'show active' : ''}`} id="nav-home_s2" role="tabpanel" aria-labelledby="nav-home-tab">
-                                                            <div class="table_section">
-                                                                <div class="col-md-12">
-                                                                    {statusActive ? (
-                                                                        <>
-                                                                            {
-                                                                                loaded ? (
-                                                                                    current && current.length > 0 ? (
-                                                                                        <>
-                                                                                            <div class="table-responsive">
+                        //                         </div>
+                        //                         <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
+                        //                             <FontAwesomeIcon icon={faFileImport} className="icon-import" />
+                        //                         </div>
+                        //                     </>
 
-                                                                                                <div style={{ overflowX: 'auto' }}>
-                                                                                                    <table className={tableClassName} style={{ marginBottom: "10px", width: '100%' }}>
-                                                                                                        <thead>
-                                                                                                            <tr class="color-tr">
-                                                                                                                <th class="font-weight-bold " style={{ minWidth: "50px" }} scope="col">{lang["log.no"]}</th>
-                                                                                                                {apiDataName.map((header, index) => (
-                                                                                                                    <th key={index} class="font-weight-bold" style={{ minWidth: "200px" }}>{header.display_name ? header.display_name : header.field_name}</th>
-                                                                                                                ))}
-                                                                                                                <th class="font-weight-bold align-center" style={{ minWidth: "100px" }}>{lang["log.action"]}</th>
-                                                                                                            </tr>
-                                                                                                            <tr>
-                                                                                                                <th></th>
-                                                                                                                {apiDataName.map((header, index) => (
-                                                                                                                    <th key={index} className="header-cell" style={{ minWidth: "200px" }}>
-                                                                                                                        <input
+                        //                     :
+                        //                     (dataCheck && dataCheck?.write)
+                        //                         ?
+                        //                         <>
+                        //                             <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcelEx" title={lang["export data example"]}>
+                        //                                 <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
 
-                                                                                                                            type="text"
-                                                                                                                            class="form-control"
-                                                                                                                            value={searchValues[header.fomular_alias] || ''}
-                                                                                                                            onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
-                                                                                                                            onKeyDown={handleKeyDown}
-                                                                                                                        />
-                                                                                                                    </th>
-                                                                                                                ))}
-                                                                                                                <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size-24 pointer mb-2" title={lang["search"]}></i></th>
-                                                                                                            </tr>
+                        //                             </div>
+                        //                             <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
+                        //                                 <FontAwesomeIcon icon={faFileImport} className="icon-import" />
+                        //                             </div></>
 
-                                                                                                        </thead>
-                                                                                                        <tbody>
+                        //                         :
+                        //                         null
+                        //             }
 
 
-                                                                                                            {current.map((row, index) => {
-                                                                                                                if (row) {
-                                                                                                                    return (
-                                                                                                                        <tr key={index}>
-                                                                                                                            <td scope="row" style={{ minWidth: "50px" }} className="cell">{indexOfFirst + index + 1}</td>
-                                                                                                                            {apiDataName.map((header) => (
-                                                                                                                                <td key={header.fomular_alias} className="cell" style={{ minWidth: "200px" }}>{renderData(header, row)}</td>
-                                                                                                                            ))}
-                                                                                                                            <td class="align-center" style={{ minWidth: "80px" }}>
-                                                                                                                                {
-                                                                                                                                    _user.role === "uad"
-                                                                                                                                        ?
-                                                                                                                                        <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
-                                                                                                                                        :
-                                                                                                                                        (dataCheck && dataCheck?.modify)
-                                                                                                                                            ?
-                                                                                                                                            <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
-                                                                                                                                            :
-                                                                                                                                            null
-                                                                                                                                }
-                                                                                                                                {
-                                                                                                                                    _user.role === "uad"
-                                                                                                                                        ?
-                                                                                                                                        <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
-                                                                                                                                        :
-                                                                                                                                        (dataCheck && dataCheck?.purge)
-                                                                                                                                            ?
-                                                                                                                                            <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
-                                                                                                                                            :
-                                                                                                                                            null
-                                                                                                                                }
-                                                                                                                            </td>
-                                                                                                                        </tr>)
-                                                                                                                } else {
-                                                                                                                    return null
-                                                                                                                }
-                                                                                                            })}
-                                                                                                        </tbody>
-                                                                                                    </table>
-                                                                                                </div>
-                                                                                                <div className="d-flex justify-content-between align-items-center">
-                                                                                                    <p>
-                                                                                                        {lang["show"]} {formatNumber(indexOfFirst + 1)} - {formatNumber(indexOfFirst + apiData?.length)}   {`${lang["of"]} `}
-                                                                                                        {loadingResult ?
-                                                                                                            <img
-                                                                                                                width={20}
-                                                                                                                className="mb-1"
-                                                                                                                src="/images/icon/load.gif"
-                                                                                                                alt="Loading..."
-                                                                                                            ></img>
-                                                                                                            : formatNumber(sumerize)} {lang["results"]}
-                                                                                                    </p>
-                                                                                                    <nav aria-label="Page navigation example">
-                                                                                                        <ul className="pagination mb-0">
-                                                                                                            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                                                                                <button className="page-link" onClick={() => paginate(1)}>
-                                                                                                                    &#8810;
-                                                                                                                </button>
-                                                                                                            </li>
-                                                                                                            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                                                                                <button className="page-link" onClick={() => paginate(currentPage - 1)}>
-                                                                                                                    &laquo;
-                                                                                                                </button>
-                                                                                                            </li>
-                                                                                                            {currentPage > 1 && <li className="page-item"><span className="page-link">...</span></li>}
-                                                                                                            {Array(totalPages).fill().map((_, index) => {
-                                                                                                                if (
-                                                                                                                    index + 1 === currentPage ||
-                                                                                                                    (index + 1 >= currentPage - 1 && index + 1 <= currentPage + 1)
-                                                                                                                ) {
-                                                                                                                    return (
-                                                                                                                        <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                                                                                                                            <button className="page-link" onClick={() => paginate(index + 1)}>
-                                                                                                                                {index + 1}
-                                                                                                                            </button>
-                                                                                                                        </li>
-                                                                                                                    )
-                                                                                                                }
-                                                                                                            })}
-                                                                                                            {currentPage < totalPages - 1 && <li className="page-item"><span className="page-link">...</span></li>}
-                                                                                                            <li className={`page-item ${(currentPage === totalPages) ? 'disabled' : ''}`}>
-                                                                                                                <button className="page-link" onClick={() => paginate(currentPage + 1)}>
-                                                                                                                    &raquo;
-                                                                                                                </button>
-                                                                                                            </li>
-                                                                                                            <li className={`page-item ${(currentPage === totalPages || sumerize === 0) ? 'disabled' : ''}`}>
-                                                                                                                <button className="page-link" onClick={() => paginate(totalPages)}>
-                                                                                                                    &#8811;
-                                                                                                                </button>
-                                                                                                            </li>
+
+                        //         </div>
+                        //         <div class="full inner_elements">
+                        //             <div class="row">
+                        //                 <div class="col-md-12">
+                        //                     <div class="tab_style2">
+                        //                         <div class="tabbar padding_infor_info">
+                        //                             <div class="tab-content" id="nav-tabContent">
+                        //                                 <div class={`tab-pane fade ${activeTab === 'nav-home_s2' ? 'show active' : ''}`} id="nav-home_s2" role="tabpanel" aria-labelledby="nav-home-tab">
+                        //                                     <div class="table_section">
+                        //                                         <div class="col-md-12">
+                        //                                             {statusActive ? (
+                        //                                                 <>
+                        //                                                     {
+                        //                                                         loaded ? (
+                        //                                                             current && current.length > 0 ? (
+                        //                                                                 <>
+                        //                                                                     <div class="table-responsive">
+
+                        //                                                                         <div style={{ overflowX: 'auto' }}>
+                        //                                                                             <table className={tableClassName} style={{ marginBottom: "10px", width: '100%' }}>
+                        //                                                                                 <thead>
+                        //                                                                                     <tr class="color-tr">
+                        //                                                                                         <th class="font-weight-bold " style={{ minWidth: "50px" }} scope="col">{lang["log.no"]}</th>
+                        //                                                                                         {apiDataName.map((header, index) => (
+                        //                                                                                             <th key={index} class="font-weight-bold" style={{ minWidth: "200px" }}>{header.display_name ? header.display_name : header.field_name}</th>
+                        //                                                                                         ))}
+                        //                                                                                         <th class="font-weight-bold align-center" style={{ minWidth: "100px" }}>{lang["log.action"]}</th>
+                        //                                                                                     </tr>
+                        //                                                                                     <tr>
+                        //                                                                                         <th></th>
+                        //                                                                                         {apiDataName.map((header, index) => (
+                        //                                                                                             <th key={index} className="header-cell" style={{ minWidth: "200px" }}>
+                        //                                                                                                 <input
+
+                        //                                                                                                     type="text"
+                        //                                                                                                     class="form-control"
+                        //                                                                                                     value={searchValues[header.fomular_alias] || ''}
+                        //                                                                                                     onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
+                        //                                                                                                     onKeyDown={handleKeyDown}
+                        //                                                                                                 />
+                        //                                                                                             </th>
+                        //                                                                                         ))}
+                        //                                                                                         <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size-24 pointer mb-2" title={lang["search"]}></i></th>
+                        //                                                                                     </tr>
+
+                        //                                                                                 </thead>
+                        //                                                                                 <tbody>
 
 
-                                                                                                        </ul>
-                                                                                                    </nav>
-                                                                                                </div>
+                        //                                                                                     {current.map((row, index) => {
+                        //                                                                                         if (row) {
+                        //                                                                                             return (
+                        //                                                                                                 <tr key={index}>
+                        //                                                                                                     <td scope="row" style={{ minWidth: "50px" }} className="cell">{indexOfFirst + index + 1}</td>
+                        //                                                                                                     {apiDataName.map((header) => (
+                        //                                                                                                         <td key={header.fomular_alias} className="cell" style={{ minWidth: "200px" }}>{renderData(header, row)}</td>
+                        //                                                                                                     ))}
+                        //                                                                                                     <td class="align-center" style={{ minWidth: "80px" }}>
+                        //                                                                                                         {
+                        //                                                                                                             _user.role === "uad"
+                        //                                                                                                                 ?
+                        //                                                                                                                 <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
+                        //                                                                                                                 :
+                        //                                                                                                                 (dataCheck && dataCheck?.modify)
+                        //                                                                                                                     ?
+                        //                                                                                                                     <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
+                        //                                                                                                                     :
+                        //                                                                                                                     null
+                        //                                                                                                         }
+                        //                                                                                                         {
+                        //                                                                                                             _user.role === "uad"
+                        //                                                                                                                 ?
+                        //                                                                                                                 <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                        //                                                                                                                 :
+                        //                                                                                                                 (dataCheck && dataCheck?.purge)
+                        //                                                                                                                     ?
+                        //                                                                                                                     <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
+                        //                                                                                                                     :
+                        //                                                                                                                     null
+                        //                                                                                                         }
+                        //                                                                                                     </td>
+                        //                                                                                                 </tr>)
+                        //                                                                                         } else {
+                        //                                                                                             return null
+                        //                                                                                         }
+                        //                                                                                     })}
+                        //                                                                                 </tbody>
+                        //                                                                             </table>
+                        //                                                                         </div>
+                        //                                                                         <div className="d-flex justify-content-between align-items-center">
+                        //                                                                             <p>
+                        //                                                                                 {lang["show"]} {formatNumber(indexOfFirst + 1)} - {formatNumber(indexOfFirst + apiData?.length)}   {`${lang["of"]} `}
+                        //                                                                                 {loadingResult ?
+                        //                                                                                     <img
+                        //                                                                                         width={20}
+                        //                                                                                         className="mb-1"
+                        //                                                                                         src="/images/icon/load.gif"
+                        //                                                                                         alt="Loading..."
+                        //                                                                                     ></img>
+                        //                                                                                     : formatNumber(sumerize)} {lang["results"]}
+                        //                                                                             </p>
+                        //                                                                             <nav aria-label="Page navigation example">
+                        //                                                                                 <ul className="pagination mb-0">
+                        //                                                                                     <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                        //                                                                                         <button className="page-link" onClick={() => paginate(1)}>
+                        //                                                                                             &#8810;
+                        //                                                                                         </button>
+                        //                                                                                     </li>
+                        //                                                                                     <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                        //                                                                                         <button className="page-link" onClick={() => paginate(currentPage - 1)}>
+                        //                                                                                             &laquo;
+                        //                                                                                         </button>
+                        //                                                                                     </li>
+                        //                                                                                     {currentPage > 1 && <li className="page-item"><span className="page-link">...</span></li>}
+                        //                                                                                     {Array(totalPages).fill().map((_, index) => {
+                        //                                                                                         if (
+                        //                                                                                             index + 1 === currentPage ||
+                        //                                                                                             (index + 1 >= currentPage - 1 && index + 1 <= currentPage + 1)
+                        //                                                                                         ) {
+                        //                                                                                             return (
+                        //                                                                                                 <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                        //                                                                                                     <button className="page-link" onClick={() => paginate(index + 1)}>
+                        //                                                                                                         {index + 1}
+                        //                                                                                                     </button>
+                        //                                                                                                 </li>
+                        //                                                                                             )
+                        //                                                                                         }
+                        //                                                                                     })}
+                        //                                                                                     {currentPage < totalPages - 1 && <li className="page-item"><span className="page-link">...</span></li>}
+                        //                                                                                     <li className={`page-item ${(currentPage === totalPages) ? 'disabled' : ''}`}>
+                        //                                                                                         <button className="page-link" onClick={() => paginate(currentPage + 1)}>
+                        //                                                                                             &raquo;
+                        //                                                                                         </button>
+                        //                                                                                     </li>
+                        //                                                                                     <li className={`page-item ${(currentPage === totalPages || sumerize === 0) ? 'disabled' : ''}`}>
+                        //                                                                                         <button className="page-link" onClick={() => paginate(totalPages)}>
+                        //                                                                                             &#8811;
+                        //                                                                                         </button>
+                        //                                                                                     </li>
 
 
-                                                                                            </div>
-                                                                                        </>
-                                                                                    ) : (
-                                                                                        <div class="table-responsive">
+                        //                                                                                 </ul>
+                        //                                                                             </nav>
+                        //                                                                         </div>
 
 
-                                                                                            <div style={{ overflowX: 'auto' }}>
-                                                                                                <table className={tableClassName} style={{ marginBottom: "10px", width: '100%' }}>
-                                                                                                    <thead>
-                                                                                                        <tr class="color-tr">
-                                                                                                            <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
-                                                                                                            {apiDataName.map((header, index) => (
-                                                                                                                <th key={index} class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
-                                                                                                            ))}
-                                                                                                            <th class="font-weight-bold align-center" style={{ width: "100px" }}>{lang["log.action"]}</th>
-                                                                                                        </tr>
+                        //                                                                     </div>
+                        //                                                                 </>
+                        //                                                             ) : (
+                        //                                                                 <div class="table-responsive">
 
-                                                                                                        <tr>
-                                                                                                            <th></th>
-                                                                                                            {apiDataName.map((header, index) => (
-                                                                                                                <th key={index}>
-                                                                                                                    <input
-                                                                                                                        type="text"
-                                                                                                                        class="form-control"
-                                                                                                                        value={searchValues[header.fomular_alias] || ''}
-                                                                                                                        onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
-                                                                                                                    />
-                                                                                                                </th>
-                                                                                                            ))}
-                                                                                                            <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size-24 pointer icon-margin mb-2" title={lang["search"]}></i></th>
-                                                                                                        </tr>
 
-                                                                                                    </thead>
-                                                                                                    <tbody>
-                                                                                                        <tr>
-                                                                                                            <td class="font-weight-bold cell" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
-                                                                                                        </tr>
-                                                                                                    </tbody>
-                                                                                                </table>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    )
-                                                                                ) : (
-                                                                                    null
-                                                                                    // <div class="d-flex justify-content-center align-items-center w-100 responsive-div" >
-                                                                                    //     <img width={350} className="scaled-hover-target" src="/images/icon/loading.gif" ></img>
-                                                                                    // </div>
-                                                                                    // <div>{lang["not found data"]}</div>
-                                                                                )
-                                                                            }
-                                                                        </>
-                                                                    ) :
-                                                                        null}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class={`tab-pane fade ${activeTab === 'nav-profile_s2' ? 'show active' : ''}`} id="nav-profile_s2" role="tabpanel" aria-labelledby="nav-profile-tab">
-                                                            {dataStatis && dataStatis.length > 0 ? (
-                                                                <div class="col-md-12">
-                                                                    <div class="table_section">
+                        //                                                                     <div style={{ overflowX: 'auto' }}>
+                        //                                                                         <table className={tableClassName} style={{ marginBottom: "10px", width: '100%' }}>
+                        //                                                                             <thead>
+                        //                                                                                 <tr class="color-tr">
+                        //                                                                                     <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
+                        //                                                                                     {apiDataName.map((header, index) => (
+                        //                                                                                         <th key={index} class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
+                        //                                                                                     ))}
+                        //                                                                                     <th class="font-weight-bold align-center" style={{ width: "100px" }}>{lang["log.action"]}</th>
+                        //                                                                                 </tr>
 
-                                                                        {dataStatis?.map((statis, index) => {
-                                                                            const { display_name, type, data } = statis;
-                                                                            if (type == "text") {
-                                                                                return (
-                                                                                    <div class="col-md-12  col-sm-4 d-flex ">
-                                                                                        <p key={index} className="font-weight-bold ml-auto ">{display_name}: {data && data !== undefined && formatNumber(data.toFixed())}</p>
-                                                                                    </div>
-                                                                                )
-                                                                            }
-                                                                            else if (type == "table") {
-                                                                                return (
-                                                                                    <StatisTable data={data} statis={statis} />
-                                                                                )
-                                                                            }
-                                                                            else return null
-                                                                        })}
+                        //                                                                                 <tr>
+                        //                                                                                     <th></th>
+                        //                                                                                     {apiDataName.map((header, index) => (
+                        //                                                                                         <th key={index}>
+                        //                                                                                             <input
+                        //                                                                                                 type="text"
+                        //                                                                                                 class="form-control"
+                        //                                                                                                 value={searchValues[header.fomular_alias] || ''}
+                        //                                                                                                 onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
+                        //                                                                                             />
+                        //                                                                                         </th>
+                        //                                                                                     ))}
+                        //                                                                                     <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size-24 pointer icon-margin mb-2" title={lang["search"]}></i></th>
+                        //                                                                                 </tr>
 
-                                                                    </div>
-                                                                </div>
+                        //                                                                             </thead>
+                        //                                                                             <tbody>
+                        //                                                                                 <tr>
+                        //                                                                                     <td class="font-weight-bold cell" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
+                        //                                                                                 </tr>
+                        //                                                                             </tbody>
+                        //                                                                         </table>
+                        //                                                                     </div>
+                        //                                                                 </div>
+                        //                                                             )
+                        //                                                         ) : (
+                        //                                                             null
+                        //                                                             // <div class="d-flex justify-content-center align-items-center w-100 responsive-div" >
+                        //                                                             //     <img width={350} className="scaled-hover-target" src="/images/icon/loading.gif" ></img>
+                        //                                                             // </div>
+                        //                                                             // <div>{lang["not found data"]}</div>
+                        //                                                         )
+                        //                                                     }
+                        //                                                 </>
+                        //                                             ) :
+                        //                                                 null}
+                        //                                         </div>
+                        //                                     </div>
+                        //                                 </div>
+                        //                                 <div class={`tab-pane fade ${activeTab === 'nav-profile_s2' ? 'show active' : ''}`} id="nav-profile_s2" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        //                                     {dataStatis && dataStatis.length > 0 ? (
+                        //                                         <div class="col-md-12">
+                        //                                             <div class="table_section">
 
-                                                            ) : null
-                                                            }
-                                                        </div>
+                        //                                                 {dataStatis?.map((statis, index) => {
+                        //                                                     const { display_name, type, data } = statis;
+                        //                                                     if (type == "text") {
+                        //                                                         return (
+                        //                                                             <div class="col-md-12  col-sm-4 d-flex ">
+                        //                                                                 <p key={index} className="font-weight-bold ml-auto ">{display_name}: {data && data !== undefined && formatNumber(data.toFixed())}</p>
+                        //                                                             </div>
+                        //                                                         )
+                        //                                                     }
+                        //                                                     else if (type == "table") {
+                        //                                                         return (
+                        //                                                             <StatisTable data={data} statis={statis} />
+                        //                                                         )
+                        //                                                     }
+                        //                                                     else return null
+                        //                                                 })}
 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                        //                                             </div>
+                        //                                         </div>
 
-                            </div>
-                        </div>
-                        // < Layout0
-                        //     callApiView={callApiView} callApi={callApi} callApiCount={callApiCount} callApiStatistic={callApiStatistic} apiData={apiData} apiDataName={apiDataName}
-                        //     activeTab={activeTab} page={page} statusActive={statusActive} dataCheck={dataCheck}
-                        //     rowsPerPage={rowsPerPage} indexOfLast={indexOfLast}
-                        //     indexOfFirst={indexOfFirst} current={current} paginate={paginate} totalPages={totalPages} sumerize={sumerize} currentPage={currentPage}
-                        // />
+                        //                                     ) : null
+                        //                                     }
+                        //                                 </div>
+
+                        //                             </div>
+                        //                         </div>
+                        //                     </div>
+                        //                 </div>
+                        //             </div>
+                        //         </div>
+
+                        //     </div>
+                        // </div>
+                        < Layout0 activeTab={activeTab} page={page} statusActive={statusActive} dataCheck={dataCheck} />
                     ) : (
                         <>
-                            <div class="col-md-12">
+                            < Layout1 activeTab={activeTab} page={page} statusActive={statusActive} dataCheck={dataCheck} />
+                            {/* <div class="col-md-12">
                                 <div class="white_shd full">
                                     <div class="tab_style2 layout2">
                                         <div class="tabbar">
@@ -2151,7 +2147,7 @@ export default () => {
                                     </div>
                                 </div>
                             ) : null
-                            }
+                            } */}
                         </>
                     )
                     }
