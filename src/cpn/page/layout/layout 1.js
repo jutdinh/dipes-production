@@ -504,18 +504,6 @@ export default (props) => {
         }
     }
     const redirectToInput = () => {
-
-        Swal.fire({
-            title: lang["faild"],
-            text: lang["not found config"],
-            icon: "error",
-            showConfirmButton: true,
-            customClass: {
-                confirmButton: 'swal2-confirm my-confirm-button-class'
-            }
-        })
-        return;
-
         // console.log(page)
         const id_str = page.components?.[0]?.api_post.split('/')[2];
 
@@ -538,7 +526,6 @@ export default (props) => {
                 // console.log(fomular_alias)
 
                 const newData = [];
-
                 fomular_alias.map(alias => {
                     newData.push(data[alias])
                 })
@@ -546,7 +533,6 @@ export default (props) => {
                 // console.log(newData);
                 // Tạo chuỗi newParams bằng cách nối api_delete và ids
                 newParams = `${api_delete}/${newData.join("/")}`;
-
 
             } else {
                 // console.log('Không tìm thấy đối tượng nào có id trong primaryKeys');
@@ -563,7 +549,8 @@ export default (props) => {
             showCancelButton: true,
             confirmButtonText: lang["btn.delete"],
             cancelButtonText: lang["btn.cancel"],
-            confirmButtonColor: 'rgb(209, 72, 81)',
+            confirmButtonColor: 'rgb(209, 72, 81)'
+            
         }).then((result) => {
             if (result.isConfirmed) {
                 fetch(`${proxy()}${newParams}`, {

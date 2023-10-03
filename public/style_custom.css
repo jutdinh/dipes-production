@@ -37,8 +37,8 @@
     padding: 0;
     list-style-type: none;
     border: 1px solid #ccc;
-    display: flex;  /* Chuyển sang dạng flex layout */
-    flex-wrap: wrap;  /* Cho phép flex items tự động xuống hàng khi không đủ không gian */
+    display: flex;  
+    flex-wrap: wrap;  
 }
 
 
@@ -114,12 +114,6 @@
 .icon-view {
     margin-left: auto; 
 }
-
-
-
-  
-
-
  
 /* end step */
 
@@ -160,14 +154,6 @@
     justify-content: flex-end;
     margin-top: 10px;
 }
-
-
-
-
-
-
-
-
 
 .header-cell,
 .cell {
@@ -557,7 +543,6 @@
     display: inline-block;
     line-height: 40px;
     text-align: center;
-    /* Căn giữa văn bản theo chiều ngang */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -585,99 +570,60 @@
 .extra-images-cus-p {
     display: inline-block;
     width: 48px;
-    /* Thay đổi kích thước này để phù hợp */
     height: 48px;
-    /* Thay đổi kích thước này để phù hợp */
-    line-height: 48px;
-    /* Điều chỉnh này để văn bản hiển thị đúng giữa */
+   line-height: 48px;
     border-radius: 100%;
-    /* Tạo hình tròn */
     text-align: center;
-    /* Căn giữa văn bản theo chiều ngang */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-
     color: white;
-    /* Màu của văn bản, thay đổi theo ý thích */
     font-weight: bold;
-    /* Đậm văn bản */
-
 }
 
 .extra-images {
     display: inline-block;
     width: 48px;
-    /* Thay đổi kích thước này để phù hợp */
     height: 48px;
-    /* Thay đổi kích thước này để phù hợp */
     line-height: 48px;
-    /* Điều chỉnh này để văn bản hiển thị đúng giữa */
     border-radius: 50%;
-    /* Tạo hình tròn */
     text-align: center;
-    /* Căn giữa văn bản theo chiều ngang */
     background-color: #8884d8;
-    /* Màu nền, thay đổi theo ý thích */
     color: white;
-    /* Màu của văn bản, thay đổi theo ý thích */
     font-weight: bold;
-    /* Đậm văn bản */
-    /* margin-left: 10px;  */
     margin-left: 1px;
 }
 
 .extra-images-cus {
     display: inline-block;
     width: 35px;
-    /* Thay đổi kích thước này để phù hợp */
     height: 35px;
-    /* Thay đổi kích thước này để phù hợp */
     line-height: 36px;
-    /* Điều chỉnh này để văn bản hiển thị đúng giữa */
     border-radius: 100%;
-    /* Tạo hình tròn */
     text-align: center;
-    /* Căn giữa văn bản theo chiều ngang */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
     max-width: 100%;
     color: white;
-    /* Màu của văn bản, thay đổi theo ý thích */
     font-weight: bold;
-    /* Đậm văn bản */
     margin-left: 2px;
-    /* Khoảng cách giữa các hình ảnh, thay đổi theo ý thích */
-
-
     padding: 0px 2px;
 }
 
 .extra-images-cus-p {
     display: inline-block;
     width: 48px;
-    /* Thay đổi kích thước này để phù hợp */
     height: 48px;
-    /* Thay đổi kích thước này để phù hợp */
     line-height: 48px;
-    /* Điều chỉnh này để văn bản hiển thị đúng giữa */
     border-radius: 100%;
-    /* Tạo hình tròn */
     text-align: center;
-    /* Căn giữa văn bản theo chiều ngang */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-
     color: white;
-    /* Màu của văn bản, thay đổi theo ý thích */
     font-weight: bold;
-    /* Đậm văn bản */
     margin-left: 2px;
-    /* Khoảng cách giữa các hình ảnh, thay đổi theo ý thích */
-
-
     padding: 0px 2px;
 }
 
@@ -1004,7 +950,6 @@ h5 {
 .square {
     position: relative;
     padding-bottom: 100%;
-    /* Chiều cao bằng với chiều rộng */
     overflow: hidden;
 }
 
@@ -1012,7 +957,6 @@ h5 {
     content: "";
     display: block;
     padding-top: 100%;
-    /* Tạo không gian bên trong */
 }
 
 
@@ -1020,7 +964,6 @@ h5 {
 
 .custom-button {
     border-radius: 20px;
-    /* Adjust the value as needed */
 }
 
 .group {
@@ -1120,13 +1063,10 @@ h5 {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-auto-rows: minmax(20px, auto);
-    /* Điều chỉnh kích thước hàng tối thiểu nếu cần */
     grid-gap: 10px;
-    /* Khoảng cách giữa các hàng/cột */
     max-height: 100%;
-    /* Điều chỉnh chiều cao tối đa */
     overflow-y: auto;
-    /* Cuộn nếu nội dung vượt quá chiều cao tối đa */
+
 }
 
 .excel-preview {
@@ -1364,18 +1304,15 @@ h5 {
 
 }
 
-/* Đối với WebKit (Chrome, Safari) */
+
 .div-to-scroll::-webkit-scrollbar {
     width: 5px;
-    /* Chiều rộng của thanh cuộn */
     min-height: 140px;
 }
 
 .user-list-content {
     max-height: 200px;
-
     overflow-y: auto;
-    /* Kích hoạt thanh cuộn khi nội dung vượt quá chiều cao tối đa */
 }
 
 
@@ -1540,12 +1477,12 @@ h5 {
     content: "";
     display: inline-block;
     width: 20px;
-    /* Adjust width as needed */
+
     height: 20px;
-    /* Adjust height as needed */
+  
     background: url('path-to-your-image.jpg') no-repeat center center;
     background-size: contain;
-    /* This will make sure the image fits into the space */
+    
 }
 
 .padding_infor_info-cus {
@@ -1723,7 +1660,6 @@ h5 {
 
 .msg_list li:hover .close-button {
     opacity: 1;
-    /* Dấu X sẽ nhìn thấy khi di chuột qua li */
 }
 
 .dash_blog_inner .list_cont p {
@@ -1768,9 +1704,9 @@ h5 {
 
 .user-popup-content {
     max-height: 200px;
-    /* Giới hạn chiều cao, tùy chỉnh số này cho phù hợp */
+  
     overflow-y: auto;
-    /* Kích hoạt thanh cuộn khi nội dung vượt quá chiều cao tối đa */
+ 
 }
 
 

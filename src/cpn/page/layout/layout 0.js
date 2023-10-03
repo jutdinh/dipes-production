@@ -509,18 +509,7 @@ export default (props) => {
     }
     const redirectToInput = () => {
 
-        Swal.fire({
-            title: lang["faild"],
-            text: lang["not found config"],
-            icon: "error",
-            showConfirmButton: true,
-            customClass: {
-                confirmButton: 'swal2-confirm my-confirm-button-class'
-            }
-        })
-        return;
-
-        // console.log(page)
+       
         const id_str = page.components?.[0]?.api_post.split('/')[2];
 
         window.location.href = `${url}/apis/api/${id_str}/input_info`;
