@@ -1799,7 +1799,7 @@ class ConsumeApi extends Controller {
                     await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
                 }
             } else {
-                if (primaryRecord) {
+                if (primaryRecord && primaryRecord.length == 0 ) {
                     primaryConflict = true
                 }
 
