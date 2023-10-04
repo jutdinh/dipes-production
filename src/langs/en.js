@@ -4,13 +4,13 @@ export default {
     "en": "English",
     "signin": "Sign In",
     "account": "Account",
-    "password": "Password",
+    // "password": "Password",
     "forgot password": "Forgot password ?",
     "remember me": "Remember me",
     "online": "Online",
     "search": "Search",
     "result": "Result",
-    "results": "results",
+    // "results": "results",
     "general": "General",
     "my profile": "My Profile",
     "settings": "Settings",
@@ -73,7 +73,7 @@ export default {
     "addproject": "Add proejct",
     "projectname": "Project name",
     "p.projectname": "Enter a project name",
-    "projectcode": "Project code",
+    // "projectcode": "Project code",
     "p.projectcode": "Enter the project code",
     "projectstatus": "Status",
     "p.projectstatus": "Select status",
@@ -81,7 +81,7 @@ export default {
     "p.projectrole": "Choose a manager",
     "projectdescripton": "Project description",
     "p.projectdescripton": "Enter project description",
-    "projectmember": "Project members",
+    // "projectmember": "Project members",
 
     //update project 
     "updateproject": "Project update",
@@ -136,12 +136,12 @@ export default {
     "normal": " Normal",
     "monitor": "Monitor Staff",
     //list
-    "username": "Username",
-    "permission": "Permission",
+    // "username": "Username",
+    // "permission": "Permission",
     "time": "Time",
     // modal add user,
     "btn.create": "Create new",
-    "btn.close": "Close",
+    // "btn.close": "Close",
     "adduser.title": "Add user",
     "profile.title": "Update profile",
     "fullname": "Fullname",
@@ -176,7 +176,7 @@ export default {
 
     // modal edit user
     "btn.update": "Save",
-    "btn.create": "Create new",
+    // "btn.create": "Create new",
     "btn.close": "Close",
     "edituser.title": "Update",
     // logs
@@ -233,7 +233,7 @@ export default {
     "type file": "File format",
     "create account": "Create account",
     "manage data": "Manage Data",
-    "create": "Create",
+    // "create": "Create",
     "MAC": "This server MAC address",
     "active now": "Active now",
     "select fields": "Select fields",
@@ -246,7 +246,7 @@ export default {
     "success.update": "Successful update",
     "fail.update": "Update failed",
     
-    "confirm": "Confirm",
+    // "confirm": "Confirm",
     "confirm.content": "Are you sure you want to delete this field?",
     "btn.delete": "Delete",
     "btn.cencel": "Remove",
@@ -299,7 +299,7 @@ export default {
     "File size exceeds the allowable limit": "File size exceeds allowable limit (Up to 120MB)",
     "export_excel_csv": "Export Excel/CSV",
     "export data example": "Export sample file",
-    "import data": "Import Data",
+    // "import data": "Import Data",
     "value": "Value",
     "criteria": "Criteria",
     "importing": "Importing data",
@@ -314,7 +314,8 @@ export default {
     "purge": "Purge",
     "erorr pk fk": "primary and foreign key errors",
     "erorr fk": "Foreign key errors",
-    "erorr pk": "Primary key errors"
+    "erorr pk": "Primary key errors",
+    "char error": "Exceeding the allowed number of characters"
 
 }
 

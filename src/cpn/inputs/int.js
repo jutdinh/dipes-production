@@ -150,13 +150,9 @@ export default (props) => {
         const res = await response.json();
         // console.log(res);
 
-        let returnedData = [];
 
-        if (res.result) {
-            returnedData = res.result;
-        } else {
-            returnedData = res.data;
-        }
+        const returnedData = res.data;
+
 
         // console.log(returnedData)
         const dataWithoutNull = returnedData.filter(record => record !== null && record !== undefined);
@@ -307,7 +303,7 @@ export default (props) => {
 
                 const res = await response.json();
 
-                let returnedData = res.result || res.data;
+                let returnedData = res.data;
 
                 const foundData = returnedData.find(d => d != undefined && d[pk] === defaultValue);
                 // console.log(criteria)

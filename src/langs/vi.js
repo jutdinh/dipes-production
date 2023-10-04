@@ -4,14 +4,14 @@ export default {
     "en": "English",
     "signin": "Đăng nhập",
     "account": "Tên đăng nhập",
-    "password": "Mật khẩu",
+    // "password": "Mật khẩu",
     "forgot password": "Quên mật khẩu ?",
     "remember me": "Ghi nhớ đăng nhập",
     "online": "Trực tuyến",
     "general": "Tổng quan",
     "search": "Tìm kiếm",
     "result": "Kết quả",
-    "results": "kết quả",
+    // "results": "kết quả",
     "my profile": "Hồ sơ của tôi",
     "settings": "Cấu hình",
     "help": "Trợ giúp",
@@ -71,7 +71,7 @@ export default {
 
     "projectname": "Tên dự án",
     "p.projectname": "Nhập tên dự án",
-    "projectcode": "Mã dự án",
+    // "projectcode": "Mã dự án",
     "p.projectcode": "Nhập mã dự án",
     "projectstatus": "Trạng thái",
     "p.projectstatus": "Chọn trạng thái",
@@ -79,7 +79,7 @@ export default {
     "p.projectrole": "Chọn người quản lý",
     "projectdescripton": "Mô tả dự án",
     "p.projectdescripton": "Nhập mô tả dự án",
-    "projectmember": "Thành viên dự án",
+    // "projectmember": "Thành viên dự án",
     //update project
     "updateproject": "Cập nhật dự án",
 
@@ -117,7 +117,7 @@ export default {
     "p.versionname": "Nhập tên phiên bản",
     "p.versiondescription": "Nhập mô tả",
     //Task
-    "task": "Yêu cầu",
+    // "task": "Yêu cầu",
     "duty": "Chức vụ",
     "confirm": "Xác nhận",
     //User
@@ -128,8 +128,8 @@ export default {
     "normal": " Người dùng",
     "monitor": "Người theo dõi dự án",
     //list user
-    "username": "Tên đăng nhập",
-    "permission": "Quyền",
+    // "username": "Tên đăng nhập",
+    // "permission": "Quyền",
     "time": "Thời gian",
     // modal add user
     "btn.create": "Thêm mới",
@@ -239,7 +239,7 @@ export default {
     "success.update": "Cập nhật thành công",
     "fail.update": "Cập nhật thất bại",
 
-    "confirm": "Xác nhận xóa",
+    // "confirm": "Xác nhận xóa",
     "confirm.content": "Bạn có chắc chắn muốn xóa trường này?",
     "btn.delete": "Xóa",
     "btn.cencel": "Hủy",
@@ -255,7 +255,7 @@ export default {
     "not found": "Không tìm thấy",
     "activate.key": "Khóa kích hoạt",
     "profile.empty": "Vui lòng điền đầy đủ thông tin",
-    "create": "Thêm mới",
+    // "create": "Thêm mới",
     "update": "Cập nhật",
     "not found config": "Không tìm thấy cấu hình Database và Api",
     "not found update": "Không tìm thấy tính năng cập nhật",
@@ -265,7 +265,7 @@ export default {
     "error.phone_invalid": "Số điện thoại không hợp lệ",
     "choose": "Chọn",
     "select export type": "Chọn loại xuất",
-    "import data": "Nhập dữ liệu",
+    // "import data": "Nhập dữ liệu",
     "export sample data": "Xuất dữ liệu mẫu",
     "selected file": "File đã chọn",
     "size": "Kích thước",
@@ -308,11 +308,6 @@ export default {
     "purge": "Xóa",
     "erorr pk fk": "Lỗi khóa chính và khóa ngoại",
     "erorr fk": "Lỗi khóa ngoại",
-    "erorr pk": "Lỗi khóa chính"
-
-
-
-
-
-
+    "erorr pk": "Lỗi khóa chính",
+    "char error": "Vượt quá số lượng kí tự cho phép"
 }

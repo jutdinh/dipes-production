@@ -13,7 +13,7 @@ const RECORD_PER_PAGE = 10
 
 
 export default (props) => {
-    const { lang, proxy, auth, pages, functions } = useSelector(state => state);
+    const { lang, proxy, auth, pages, functions, socket } = useSelector(state => state);
     const { openTab, renderDateTimeByFormat } = functions
     const { project_id, version_id, url } = useParams();
     const _token = localStorage.getItem("_token");
@@ -55,7 +55,18 @@ export default (props) => {
         }
     }, [dataStatis]);
 
-    // console.log(apiData)
+    console.log(apiData)
+    useEffect(() => {
+        socket.on("/dipe-production-update-data", data => {  
+            console.log(data)
+        })
+
+        return () => {
+            socket.off("/dipe-production-update-data")
+         
+        }
+
+    }, [])
 
     const callApi = (startIndex = currentPage - 1,) => {
         const startTime = new Date().getTime();

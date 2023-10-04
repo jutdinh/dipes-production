@@ -16,7 +16,7 @@ export default () => {
     const _token = localStorage.getItem("_token");
     const { project_id, version_id, url } = useParams();
     let navigate = useNavigate();
-    const { proxy, pages, lang } = useSelector(state => state);
+    const { proxy, pages, lang, socket } = useSelector(state => state);
     const [api, setApi] = useState({})
     const [tables, setTables] = useState([])
     const [keyFields, setKeyFields] = useState([]);
@@ -25,11 +25,11 @@ export default () => {
     const [data, setData] = useState({});
     const [relatedTables, setRelatedTables] = useState([])
     const [initialData, setInitData] = useState({})
-    const [ loaded, setLoaded ] = useState(false)
+    const [loaded, setLoaded] = useState(false)
 
     const urlParams = new URLSearchParams(window.location.search);
     const myParam = urlParams.get('myParam');
-    // console.log(myParam); 
+    console.log(id_str);
     const goToHomePage = () => {
         navigate(`/page/${myParam}`);
     };
@@ -54,11 +54,11 @@ export default () => {
         // So sánh với id_str
         return api_get_id === id_str;
     });
-    
+
     // console.log(result)
 
     const changeTrigger = (field, value) => {
-        if( loaded ){
+        if (loaded) {
             const newData = data;
             if (value === "true") {
                 newData[field.fomular_alias] = true;
@@ -71,7 +71,7 @@ export default () => {
         }
     }
 
-    const nullCheck = () => {        
+    const nullCheck = () => {
         let valid = true;
         for (let i = 0; i < fields.length; i++) {
             const field = fields[i];
@@ -91,12 +91,12 @@ export default () => {
         const paramsList = rawParams.split('/');
         // console.log(rawParams)
         fetch(`${proxy()}/apis/api/${id_str}/input_info`,
-        {
-            headers: {
-                Authorization: _token
-            }
-        })
-        .then(res => res.json())
+            {
+                headers: {
+                    Authorization: _token
+                }
+            })
+            .then(res => res.json())
             .then(res => {
                 const { success, data } = res;
                 // console.log(res)
@@ -124,7 +124,7 @@ export default () => {
                     setTables(data.tables)
                     setRelatedTables(relatedTables)
 
-                    fetch(`${proxy()}/apis/retrieve/${id_str}/${rawParams}`,{
+                    fetch(`${proxy()}/apis/retrieve/${id_str}/${rawParams}`, {
                         headers: {
                             Authorization: _token
                         }
@@ -148,8 +148,8 @@ export default () => {
                                     const { fomular_alias } = field;
                                     data[fomular_alias] = initData[0][fomular_alias];
                                 })
-                                setInitData(initData[0] ? initData[0] : {});                                
-                                setData({...data})
+                                setInitData(initData[0] ? initData[0] : {});
+                                setData({ ...data })
                                 setLoaded(true)
                             }
                         })
@@ -162,7 +162,7 @@ export default () => {
     useEffect(() => {
         // console.log(data)
     }, [data])
-   const showError = (title, text) => {
+    const showError = (title, text) => {
         Swal.fire({
             title: title,
             text: text,
@@ -172,7 +172,7 @@ export default () => {
     };
     const handleAPIErrors = (res) => {
         const { primaryConflict, foreignConflict, typeError } = res;
-    
+
         if (primaryConflict && foreignConflict) return showError(lang["faild"], lang["erorr pk fk"]);
         if (primaryConflict) return showError(lang["faild"], lang["erorr pk"]);
         if (foreignConflict) return showError(lang["faild"], lang["erorr fk"]);
@@ -183,7 +183,8 @@ export default () => {
         const url = window.location;
         const rawParams = url.pathname.split(`/${id_str}/`)[1];
         const paramsList = rawParams.split('/');
-    
+        console.log(data)
+
         if (!emailError && !phoneError && nullCheck(data)) {
             fetch(`${proxy()}/ui/${id_str}/${paramsList.join('/')}`, {
                 method: "PUT",
@@ -193,33 +194,40 @@ export default () => {
                 },
                 body: JSON.stringify({ ...data })
             })
-            .then(res => res.json())
-            .then(res => {
-                console.log(res)
-                if (res.primaryConflict || res.foreignConflict || res.typeError) {
-                    handleAPIErrors(res);
-                } else{ 
-                    Swal.fire({
-                        title: lang["success"],
-                        text: lang["success.update"],
-                        icon: "success",
-                        showConfirmButton: false,
-                        timer: 1500
-                    }).then(function () {
-                        // window.location.reload();
-                    });
-                } 
-            })
-            .catch(error => {
-                // Xử lý lỗi nếu cần
-            });
+
+                .then(res => res.json())
+                .then(res => {
+                    console.log(res)
+                    if (res.primaryConflict || res.foreignConflict || res.typeError) {
+                        handleAPIErrors(res);
+                    } else {
+                        Swal.fire({
+                            title: lang["success"],
+                            text: lang["success.update"],
+                            icon: "success",
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(function () {
+                            // window.location.reload();
+                        });
+                    }
+                    const dataSubmit = {
+                        api_id: id_str,
+                        data: data
+                    }
+         
+                    socket.emit("/dipe-production-update-data", dataSubmit)
+                })
+                .catch(error => {
+                    // Xử lý lỗi nếu cần
+                });
         } else {
             if (emailError) showError(lang["faild"], lang["error.email_invalid"]);
             else if (phoneError) showError(lang["faild"], lang["error.phone_invalid"]);
             else showError(lang["faild"], lang["fail.null"]);
         }
     };
-    
+
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -238,9 +246,9 @@ export default () => {
                                 <div class="heading1_cus margin_0 ">
                                     {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
                                     <h5> <label class="pointer" onClick={() => goToHomePage()}>
-                                        <a  title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-0 nav-item nav-link"></i></a>{result?.title}
+                                        <a title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-0 nav-item nav-link"></i></a>{result?.title}
                                     </label> <i class="fa fa-chevron-right"></i>  {lang["update"]}</h5>
-                                    
+
                                 </div>
                                 {/* <div class="ml-auto">
                                 <i class="fa fa-newspaper-o icon-ui"></i>
@@ -263,113 +271,113 @@ export default () => {
                                         </div>
 
                                     </div>
-                                    { tables.length > 0 ?
-                                    
-                                    <div class="col-md-12">
-                                        <div className="w-50-pct mg-auto p-1 bg-white">
-                                            <span className="block text-32-px text-center p-0-5">{api.api_name}</span>
-                                            {fields.map(field =>
-                                                <div key={field.field_id}>
+                                    {tables.length > 0 ?
 
-                                                    {field.DATATYPE == "PHONE" ?
-                                                        <DataPhone
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger}
-                                                            onPhoneError={handlePhoneError} defaultValue={initialData[field.fomular_alias]}
-                                                        /> : null
-                                                    }
-                                                    {field.DATATYPE == "VARCHAR" ?
-                                                        <Varchar
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
-                                                        /> : null
-                                                    }
-                                                    {field.DATATYPE == "CHAR" ?
-                                                        <Char
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
-                                                        /> : null
-                                                    }
-                                                    {field.DATATYPE == "TEXT" ?
-                                                        <Text
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
-                                                        /> : null
-                                                    }
-                                                    {field.DATATYPE == "INT" || field.data_type == "BIG INT" ?
-                                                        <Int
-                                                            selectOption={false}
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
-                                                            field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
-                                                        /> : null
-                                                    }
-                                                    {field.DATATYPE == "INT UNSIGNED" || field.data_type == "BIG INT UNSIGNED" ?
-                                                        <Int
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
-                                                            related={relatedTables} unsigned={true} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
-                                                        /> : null
-                                                    }
-                                                    {field.DATATYPE == "DATE" ?
-                                                        <DateInput
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
-                                                        /> : null
-                                                    }
-                                                    {field.DATATYPE == "EMAIL" ?
-                                                        <DataEmail
-                                                            selectOption={true}
-                                                            readOnly={true}
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger}
-                                                            onEmailError={handleEmailError} defaultValue={initialData[field.fomular_alias]}
-                                                        /> : null
-                                                    }
-                                                    {field.DATATYPE == "TIME" ?
-                                                        <TimeInput
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
-                                                        /> : null
-                                                    }
-                                                    {field.DATATYPE == "DATETIME" ?
-                                                        <DateTimeInput
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
-                                                        /> : null
-                                                    }
-                                                    {field.DATATYPE == "DECIMAL" ?
-                                                        <Decimal
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
-                                                        /> : null
-                                                    }
-                                                    {field.DATATYPE == "DECIMAL UNSIGNED" ?
-                                                        <Decimal
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
-                                                            related={relatedTables} unsigned={true} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
-                                                        /> : null
-                                                    }
-                                                    {field.DATATYPE == "BOOL" ?
-                                                        <Bool
-                                                            table={tables.filter(tb => tb.id == field.table_id)[0] }
-                                                            related={relatedTables} field={field}
-                                                            changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
-                                                        /> : null
-                                                    }
-                                                </div>
-                                            )}
-                                            {/* <div className="m-t-1">
+                                        <div class="col-md-12">
+                                            <div className="w-50-pct mg-auto p-1 bg-white">
+                                                <span className="block text-32-px text-center p-0-5">{api.api_name}</span>
+                                                {fields.map(field =>
+                                                    <div key={field.field_id}>
+
+                                                        {field.DATATYPE == "PHONE" ?
+                                                            <DataPhone
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger}
+                                                                onPhoneError={handlePhoneError} defaultValue={initialData[field.fomular_alias]}
+                                                            /> : null
+                                                        }
+                                                        {field.DATATYPE == "VARCHAR" ?
+                                                            <Varchar
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                            /> : null
+                                                        }
+                                                        {field.DATATYPE == "CHAR" ?
+                                                            <Char
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                            /> : null
+                                                        }
+                                                        {field.DATATYPE == "TEXT" ?
+                                                            <Text
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                            /> : null
+                                                        }
+                                                        {field.DATATYPE == "INT" || field.data_type == "BIG INT" ?
+                                                            <Int
+                                                                selectOption={false}
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                field={field}
+                                                                changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                            /> : null
+                                                        }
+                                                        {field.DATATYPE == "INT UNSIGNED" || field.data_type == "BIG INT UNSIGNED" ?
+                                                            <Int
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} unsigned={true} field={field}
+                                                                changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                            /> : null
+                                                        }
+                                                        {field.DATATYPE == "DATE" ?
+                                                            <DateInput
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                            /> : null
+                                                        }
+                                                        {field.DATATYPE == "EMAIL" ?
+                                                            <DataEmail
+                                                                selectOption={true}
+                                                                readOnly={true}
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger}
+                                                                onEmailError={handleEmailError} defaultValue={initialData[field.fomular_alias]}
+                                                            /> : null
+                                                        }
+                                                        {field.DATATYPE == "TIME" ?
+                                                            <TimeInput
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                            /> : null
+                                                        }
+                                                        {field.DATATYPE == "DATETIME" ?
+                                                            <DateTimeInput
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                            /> : null
+                                                        }
+                                                        {field.DATATYPE == "DECIMAL" ?
+                                                            <Decimal
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                            /> : null
+                                                        }
+                                                        {field.DATATYPE == "DECIMAL UNSIGNED" ?
+                                                            <Decimal
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} unsigned={true} field={field}
+                                                                changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                            /> : null
+                                                        }
+                                                        {field.DATATYPE == "BOOL" ?
+                                                            <Bool
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                            /> : null
+                                                        }
+                                                    </div>
+                                                )}
+                                                {/* <div className="m-t-1">
                                                 <div className="p-1">
                                                     <div className="button-wrapper">
                                                         <button onClick={submit} className="w-max-content p-0-5 p-l-1 p-r-1 shadow-blur shadow-hover bg-theme-color no-border block text-16-px white pointer shadow-blur shadow-hover">Lưu lại</button>
@@ -381,18 +389,18 @@ export default () => {
                                             </div> */}
 
 
-                                            <div class="row justify-content-center">
-                                                <div class="col-md-6">
-                                                    <div class="mt-2 d-flex justify-content-end">
-                                                        <button type="button" onClick={submit} class="btn btn-success mr-2">{lang["btn.update"]}</button>
-                                                        <button type="button" onClick={() => navigate(-1)} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
+                                                <div class="row justify-content-center">
+                                                    <div class="col-md-6">
+                                                        <div class="mt-2 d-flex justify-content-end">
+                                                            <button type="button" onClick={submit} class="btn btn-success mr-2">{lang["btn.update"]}</button>
+                                                            <button type="button" onClick={() => navigate(-1)} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
+                                                        </div>
                                                     </div>
                                                 </div>
+
+
                                             </div>
-
-
-                                        </div>
-                                    </div> : null
+                                        </div> : null
                                     }
                                 </div>
                             </div>

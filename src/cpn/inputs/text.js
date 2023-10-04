@@ -5,6 +5,7 @@ export default (props) => {
 
     const { field, changeTrigger, related, table, defaultValue, selectOption } = props;
     const [current, setCurrent] = useState('')
+    const { proxy, unique_string, lang } = useSelector(state => state);
     const [textError, settextError] = useState(false);
     const validateVarchar = (varchar) => {
         return varchar.length <= 65535;
@@ -69,7 +70,7 @@ if(isPrimaryKey()){
                         <div className="rel">
                             <div className="abs">
                                 <span  className="block crimson mb-2 text-14-px " style={{color: 'red'}}>
-                                Vượt quá số lượng kí tự
+                               {lang["char error"]}
                                 </span>
                             </div>
                         </div>
@@ -104,7 +105,7 @@ if(isPrimaryKey()){
                         <div className="rel">
                             <div className="abs">
                                 <span  className="block crimson mb-2 text-14-px " style={{color: 'red'}}>
-                                Vượt quá số lượng kí tự
+                                {lang["char error"]}
                                 </span>
                             </div>
                         </div>

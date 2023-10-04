@@ -81,9 +81,9 @@ function App() {
     fetchData();
 
     socket.on("/dipe-production-user-login", ({ username }) => {
-      alert("Bạn vừa bị đá ra")
+
       if( user.username == username ){
-        // window.location = '/signout'
+        window.location = '/signout'
       }
     })
 
