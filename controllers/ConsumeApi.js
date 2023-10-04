@@ -149,7 +149,7 @@ class ConsumeApi extends Controller {
                 });
 
                 const apiTables = api.tables.map(table_id => this.tables.find(tb => tb.id == table_id));
-                console.log(api)
+                // console.log(api)
                 let isGranted;
 
                 if (project) {
@@ -1799,7 +1799,7 @@ class ConsumeApi extends Controller {
                     await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
                 }
             } else {
-                if (primaryRecord && primaryRecord.length == 0 ) {
+                if (primaryRecord && primaryRecord.length > 0 ) {
                     primaryConflict = true
                 }
 
@@ -1874,7 +1874,6 @@ class ConsumeApi extends Controller {
                         } else {
                             if (Fields.isIntFamily(DATATYPE) && AUTO_INCREMENT) {
                                 // tearedObject.data[fomular_alias] = await Fields.makeAutoIncreament(table_alias, PATTERN)
-                                isAutoIncreTriggerd = true
                             } else {
                                 const { valid, result } = this.parseType(field, this.req.body[fomular_alias])
                                 if (valid) {
@@ -1914,6 +1913,7 @@ class ConsumeApi extends Controller {
                 }
             }
             tearedBody.push(tearedObject)
+            // console.log(tearedBody)
         }
 
         if (!typeError) {
@@ -2090,7 +2090,7 @@ class ConsumeApi extends Controller {
                         })
 
                         const originDatas = await Database.selectAll(table_alias, updateQuery);                        
-                        console.log(updateQuery)
+                        // console.log(updateQuery)
 
                         const slaves = this.detectAllSlave(table)
                         console.log(`${table.table_name} => `, slaves.map(slave => slave.table_name).join(', '))
@@ -2138,10 +2138,10 @@ class ConsumeApi extends Controller {
                         const statistics = statis.statistic.valueOrNot()
                         const calculates = statis.calculates.valueOrNot()
 
-                        console.log(data)
+                        // console.log(data)
                         for( let br  = 0 ; br < originDatas.length; br++ ){
                             const originData = originDatas[br];
-                            console.log(originData)
+                            // console.log(originData)
     
                             if (calculates && calculates.length > 0) {
                                 const keys = Object.keys(data)
@@ -2427,6 +2427,7 @@ class ConsumeApi extends Controller {
 
         primaryFields.map(field => {
             indexQuery[field.fomular_alias] = data[field.fomular_alias]
+            delete data[field.fomular_alias]
         })
 
         const keys = Object.keys(query)
@@ -2675,7 +2676,7 @@ class ConsumeApi extends Controller {
             const slaves = this.detectAllSlave(table)
             const slaveryBoundRecords = await Promise.all(slaves.map(slave => Database.count(slave.table_alias, formatedQuery)))
             const isBoundBySlaves = slaveryBoundRecords.find(count => count > 0)
-            console.log(slaveryBoundRecords)
+            // console.log(slaveryBoundRecords)
             if (!isBoundBySlaves) {
 
                 const sumerize = await Table.__findCriteria__({ position: "sumerize" })
@@ -3671,10 +3672,10 @@ class ConsumeApi extends Controller {
                     const privilege = tablePrivileges[j]
                     for (let h = 0; h < rights.length; h++) {
                         const right = rights[h]
-                        console.log(tables[i].table)
-                        console.log(privilege[right])
-                        console.log(privilege)
-                        console.log(right)
+                        // console.log(tables[i].table)
+                        // console.log(privilege[right])
+                        // console.log(privilege)
+                        // console.log(right)
                         if (!privilege[right]) {
                             isGranted = false
                         }

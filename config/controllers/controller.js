@@ -154,12 +154,12 @@ class Controller {
 
     writeReq = (request) => {
         const { originalUrl, method } = request
-        console.log(`REQ: ${ method } - ${  originalUrl }`)
+        console.log(`FROM: ${ request.connection.remoteAddress }\tREQ: ${ method } - ${  originalUrl }`)
     }
 
     writeRes = (response) => {
         const { status, message } = response;
-        console.log(`RES: ${ status } - ${ message }`)
+        console.log(`TO  : ${ response.connection.remoteAddress }\tRES: ${ status } - ${ message }`)
     } 
 
     successLog = (msg, prefix="" ) => {

@@ -168,6 +168,8 @@ class Auth extends Controller {
          * 
          */
 
+        
+
         this.writeReq(req)        
         const { username, password } = req.body.account;  
         const checkNULL = this.notNullCheck( req.body.account, ["username", "password" ] )

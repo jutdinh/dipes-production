@@ -108,9 +108,28 @@ module.exports = (socket) => {
         socket.to( api_id ).emit("/dipe-production-delete-data",  { data, api_id, current_page } )
     })
 
-    socket.on("/dipe-production-update-data", ( payload ) => {
-        const { data, api_id, current_page } = payload;
-        socket.to( api_id ).emit("/dipe-production-update-data",  { data, api_id, current_page } )
+    socket.on("/dipe-production-update-data", async ( payload ) => {
+        const { data, api_id } = payload;
+        const apis = await Database.selectAll('apis', { api_id })
+        if( data && apis && apis[0] ){
+            const table_id = apis[0].tables[0]
+            const tables = await Database.selectAll("tables", { id: table_id })
+    
+            const table = tables[0]
+            
+            const primaryKeys = table.primary_key;
+            const fields = await Database.selectAll("fields", { id: { $in: primaryKeys } })
+            const key = {}
+            for( let i = 0 ; i < fields.length; i++ ){
+                const field = fields[i]
+                const { fomular_alias } = field;
+                key[fomular_alias] = data[fomular_alias]
+            }
+
+            // console.log(key)
+
+            socket.to( api_id ).emit("/dipe-production-update-data",  { data, api_id, key } )
+        }
     })
 
 
