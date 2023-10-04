@@ -8,19 +8,20 @@ import StatisTable from '../statistic/table'
 import Swal from 'sweetalert2';
 import ReactECharts from 'echarts-for-react';
 import $ from 'jquery'
+import XLSX from 'xlsx-js-style';
 import { PieChart, Pie, Cell, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line, ResponsiveContainer, AreaChart, Area, ComposedChart, ScatterChart, Scatter } from 'recharts';
 const RECORD_PER_PAGE = 10
 
 
 export default (props) => {
-    const { lang, proxy, auth, pages, functions } = useSelector(state => state);
+    const { lang, proxy, auth, pages, functions,socket } = useSelector(state => state);
     const { openTab, renderDateTimeByFormat } = functions
     const { project_id, version_id, url } = useParams();
     const _token = localStorage.getItem("_token");
     const { formatNumber } = functions
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
-
+    const [selectedFileType, setSelectedFileType] = useState('xlsx');
     // console.log(props)
     const [loaded, setLoaded] = useState(false);
     const [previousSearchValues, setPreviousSearchValues] = useState({});
@@ -52,6 +53,38 @@ export default (props) => {
     // console.log(apiData)
     const layoutId = page.components?.[0].layout_id;
     const tableClassName = layoutId === 0 ? "table" : "table table-hover";
+
+
+
+    useEffect(() => {
+        socket.on("/dipe-production-update-data", (newData) => {
+            // Hàm kiểm tra xem item có trùng với tất cả key-value trong obj không
+            const matchesAllKeys = (item, obj) => {
+                return Object.entries(obj).every(([key, value]) => item[key] === value);
+            };
+    
+            // Tìm index của phần tử cần cập nhật
+            const indexToUpdate = apiData.findIndex(item => matchesAllKeys(item, newData.key));
+        
+            // Nếu tìm thấy phần tử cần cập nhật
+            if (indexToUpdate !== -1) {
+                const updatedData = [...apiData];
+                updatedData[indexToUpdate] = {
+                    ...updatedData[indexToUpdate],
+                    ...newData.data
+                };
+                
+                setApiData(updatedData);
+            }
+        });
+        
+        return () => {
+            socket.off("/dipe-production-update-data");
+        }
+    }, [apiData]);
+
+
+
 
     const callApi = (startIndex = currentPage - 1,) => {
         const startTime = new Date().getTime();
@@ -131,10 +164,11 @@ export default (props) => {
             .then(res => res.json())
             .then(res => {
                 const { success, content, data, count, fields, limit, statistic } = res;
-                // console.log(res)
+                console.log(res)
+                setApiDataName(fields);
                 if (data && data.length > 0) {
                     setApiData(data.filter(record => record != undefined));
-                    setApiDataName(fields);
+                    // setApiDataName(fields);
                     setDataStatis(statistic);
 
                     setSumerize(count)
@@ -356,6 +390,7 @@ export default (props) => {
 
     useEffect(() => {
         if (page && page.components) {
+            setApiData([])
             callApiView()
         }
     }, [page, dataTable_id])
@@ -550,7 +585,7 @@ export default (props) => {
             confirmButtonText: lang["btn.delete"],
             cancelButtonText: lang["btn.cancel"],
             confirmButtonColor: 'rgb(209, 72, 81)'
-            
+
         }).then((result) => {
             if (result.isConfirmed) {
                 fetch(`${proxy()}${newParams}`, {
@@ -636,10 +671,136 @@ export default (props) => {
             }
         });
     };
+    const exportToCSV = (csvData) => {
+        const selectedHeaders = apiDataName;
+        function styleHeaders(ws) {
+            const headerStyle = {
+                fill: {
+                    fgColor: { rgb: "008000" }
+                },
+                font: {
+                    bold: true,
+                    color: { rgb: "fffffff" }
+                }
+            };
 
+            const colNum = XLSX.utils.decode_range(ws['!ref']).e.c + 1;
+            for (let i = 0; i < colNum; ++i) {
+                const cellRef = XLSX.utils.encode_cell({ c: i, r: 0 });
+                if (ws[cellRef]) {
+                    ws[cellRef].s = headerStyle;
+                }
+            }
+        }
+        const generateSampleData = (field) => {
+            switch (field.DATATYPE) {
+                case "INT":
+                    return "0001";
+                case "INT UNSIGNED":
+                    return "0001";
+                case "BIGINT":
+                    return "0001";
+                case "BIGINT UNSIGNED":
+                    return "0001";
+                case "TEXT":
+                    return "Sample Text";
+                case "BOOL":
+                    return "True/False";
+                case "DECIMAL":
+                    return "1.00";
+                case "DECIMAL":
+                    return "1.0";
+                case "CHAR":
+                    return "a";
+                case "EMAIL":
+                    return "abc@gmail.com";
+                case "PHONE":
+                    return "0123456789";
+                case "DATE":
+                    return "01/11/2022";
+                case "DATETIME":
+                    return "01/11/2022 10:10:26";
+                default:
+                    return "Sample Text";
+            }
+        }
+        // const headerRow = selectedHeaders.reduce((obj, header) => ({ ...obj, [header.fomular_alias]: header.display_name }), {});
+        const segments = page.url.split('/');
+        const lastSegment = segments[segments.length - 1];//tên
+        const result = lastSegment.replace(/-/g, '');
+
+        const headerRow = selectedHeaders.map(header => `${header.field_name}(${header.fomular_alias})`);
+        const sampleRow = selectedHeaders.map(header => generateSampleData(header));
+
+        if (selectedFileType === 'xlsx') {
+            const ws = XLSX.utils.json_to_sheet([headerRow, sampleRow], { skipHeader: true });
+            styleHeaders(ws);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Template");
+
+
+            XLSX.writeFile(wb, `TEMPLATE_${result.toUpperCase()}_${(new Date()).getTime()}.xlsx`);
+
+        } else if (selectedFileType === 'csv') {
+            const utf8BOM = "\uFEFF";
+            const csv = utf8BOM + headerRow.join(",") + "\n" + sampleRow.join(",") + "\n";
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `TEMPLATE_${result.toUpperCase()}_${(new Date()).getTime()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        $('#closeModalExportFileSample').click();
+    }
     // console.log(props.data.values.length)
     return (
         <>
+         {/* modal export excel/csv example */}
+         <div class={`modal `} id="exportExcelEx">
+                <div class="modal-dialog modal-dialog-center">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">{lang["export sample data"]}</h4>
+                            <button type="button" class="close"  data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <h5 class="mt-4 mb-2">{lang["select export type"]}:</h5>
+                                <div>
+                                    <label>
+                                        <input
+                                            type="radio"
+                                            name="fileType"
+                                            value="xlsx"
+                                            checked={selectedFileType === 'xlsx'}
+                                            onChange={e => setSelectedFileType(e.target.value)}
+                                        />
+                                        <span className="ml-2">Excel</span>
+                                    </label>
+                                    <label className="ml-4">
+                                        <input
+                                            type="radio"
+                                            name="fileType"
+                                            value="csv"
+                                            checked={selectedFileType === 'csv'}
+                                            onChange={e => setSelectedFileType(e.target.value)}
+                                        />
+                                        <span className="ml-2">CSV</span>
+                                    </label>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" onClick={exportToCSV} class="btn btn-success">{lang["export"]}</button>
+                            <button type="button" id="closeModalExportFileSample"  class="btn btn-danger" data-dismiss="modal">{lang["btn.close"]}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="col-md-12">
                 <div class="white_shd full">
                     <div class="tab_style2 layout2">

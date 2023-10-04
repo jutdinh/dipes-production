@@ -208,15 +208,17 @@ export default () => {
                             showConfirmButton: false,
                             timer: 1500
                         }).then(function () {
-                            // window.location.reload();
+                            window.location.reload();
                         });
                     }
                     const dataSubmit = {
                         api_id: id_str,
                         data: data
                     }
-         
-                    socket.emit("/dipe-production-update-data", dataSubmit)
+                   
+                    socket.emit("/dipe-production-update-data", dataSubmit);
+                 
+
                 })
                 .catch(error => {
                     // Xử lý lỗi nếu cần

@@ -67,7 +67,7 @@ export default () => {
 
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     }
-    console.log(dataStatis)
+    // console.log(dataStatis)
     const formatNumberSize = (num) => {
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     }
@@ -145,7 +145,7 @@ export default () => {
     }, [page, url])
 
     const layoutId = page.components?.[0].layout_id;
-    console.log(layoutId)
+    // console.log(layoutId)
     const tableClassName = layoutId === 0 ? "table" : "table table-hover";
 
     const CustomFileInput = ({ onChange, ...props }) => {
@@ -362,7 +362,7 @@ export default () => {
     }, [])
     // console.log(dataPrivileges)
     const dataCheck = dataPrivileges?.find(item => item.table_id === dataTable_id);
-    console.log(dataCheck)
+    // console.log(dataCheck)
     useEffect(() => {
 
         importData()
@@ -430,7 +430,7 @@ export default () => {
         // console.log(requireCount)
     }, [currentPage]);
 
-    console.log(2343243243324242, currentPage - 1)
+    // console.log(2343243243324242, currentPage - 1)
     const [previousSearchValues, setPreviousSearchValues] = useState({});
     const [currentCount, setCurrentCount] = useState(null);
 
@@ -459,7 +459,7 @@ export default () => {
             // exact: true
         }
 
-        console.log("ĐÂY LÀ BODY:", searchBody)
+        // console.log("ĐÂY LÀ BODY:", searchBody)
 
         fetch(`${proxy()}${page.components?.[0]?.api_search}`, {
             method: "POST",
@@ -474,7 +474,7 @@ export default () => {
             .then(res => {
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
-                console.log(74, res)
+                // console.log(74, res)
                 if (success) {
                     setApiData(data.filter(record => record != undefined));
 
@@ -534,7 +534,7 @@ export default () => {
             // exact: true
         }
 
-        console.log(searchBody)
+        // console.log(searchBody)
         fetch(`${proxy()}${page.components?.[0]?.api_search}`, {
             method: "POST",
             headers: {
@@ -549,7 +549,7 @@ export default () => {
 
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
-                console.log(74, res)
+                // console.log(74, res)
                 if (success) {
                     // setApiData(data.filter(record => record != undefined));
                     // setApiDataName(fields);
@@ -667,7 +667,7 @@ export default () => {
         }
     }, [page, dataTable_id])
 
-console.log(loadingSearch)
+// console.log(loadingSearch)
     //searching
     useEffect(() => {
         let timeout;
@@ -1248,7 +1248,7 @@ console.log(loadingSearch)
                 {/* List table */}
                 <div class="row">
                     {/* modal export excel/csv example */}
-                    <div class={`modal `} id="exportExcelEx">
+                    {/* <div class={`modal `} id="exportExcelEx">
                         <div class="modal-dialog modal-dialog-center">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -1288,7 +1288,7 @@ console.log(loadingSearch)
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     {/* modal export excel/csv */}
                     <div class={`modal `} id="exportExcel">
                         <div class="modal-dialog modal-dialog-center">

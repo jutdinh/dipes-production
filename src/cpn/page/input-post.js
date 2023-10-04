@@ -16,7 +16,7 @@ export default () => {
     const _token = localStorage.getItem("_token");
     const { project_id, version_id, url } = useParams();
     let navigate = useNavigate();
-    const { proxy, pages, lang, functions } = useSelector(state => state);
+    const { proxy, pages, lang, functions, socket } = useSelector(state => state);
     const [api, setApi] = useState({})
     const [tables, setTables] = useState([])
     const [fields, setFields] = useState([]);
@@ -50,10 +50,7 @@ export default () => {
     };
     // console.log(pages)
 
-
-
     useEffect(() => {
-
         fetch(`${proxy()}/apis/api/${id_str}/input_info`, {
             headers: {
                 Authorization: _token
@@ -141,7 +138,7 @@ export default () => {
         })
         .then(res => res.json())
         .then(res => {
-          console.log(res)
+        //   console.log(res)
             if (res.primaryConflict || res.foreignConflict || res.typeError) {
                 handleAPIErrors(res);
             } else {
@@ -152,9 +149,15 @@ export default () => {
                     showConfirmButton: false,
                     timer: 1500
                 }).then(function () {
-                    window.location.reload();
+                    // window.location.reload();
                 });
             }
+            const dataSubmit = {
+                api_id: id_str,
+                data: data
+            }
+           console.log(dataSubmit)
+            socket.emit("/dipe-production-new-data-added", dataSubmit);
         })
         .catch(error => {
            
