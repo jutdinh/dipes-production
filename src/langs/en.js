@@ -223,8 +223,8 @@ export default {
 
     "success": "Success",
     "success.content": "Successful data import",
-    "faild": "Fail",
-    "faild.content": "Data import failure",
+    "faild": "Failed",
+    "faild.content": "Data import failed",
     "format": "Invalid file format",
     "error": "Error",
     "faild.format": " Incorrect formatting, please select again!",
@@ -242,7 +242,7 @@ export default {
     "preview data": "Excel data preview",
     "export.content.error": "Please select at least one field before exporting.",
     "success.add": "Add success data",
-    "fail.add": "Add data failures",
+    "fail.add": "Add data failed",
     "success.update": "Successful update",
     "fail.update": "Update failed",
     
@@ -251,7 +251,7 @@ export default {
     "btn.delete": "Delete",
     "btn.cencel": "Remove",
     "success.delete": "Successful deletion",
-    "fail.delete": "Deletion failure",
+    "fail.delete": "Deletion failed",
     "fail.null": "There are some fields that are not left blank",
     "fail.active": "Product has not been activated yet",
     "preview.content": "Please select at least one field to view sample data",
@@ -311,7 +311,10 @@ export default {
     "read": "Read",
     "write": "Write",
     "modify": "Modify",
-    "purge": "Purge"
+    "purge": "Purge",
+    "erorr pk fk": "primary and foreign key errors",
+    "erorr fk": "Foreign key errors",
+    "erorr pk": "Primary key errors"
 
 }
 

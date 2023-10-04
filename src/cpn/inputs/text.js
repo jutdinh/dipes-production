@@ -2,14 +2,35 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 export default (props) => {
-    const { field, changeTrigger, defaultValue } = props;
+
+    const { field, changeTrigger, related, table, defaultValue, selectOption } = props;
     const [current, setCurrent] = useState('')
     const [textError, settextError] = useState(false);
     const validateVarchar = (varchar) => {
         return varchar.length <= 65535;
     };
 
+    const isFieldForeign = () => {
+        if (table) {
+            const { foreign_keys } = table;
+            const key = foreign_keys.find(key => key.field_id == field.id)
+            if (key) {
+                return key
+            }
+        }
+        return false
+    }
 
+    const isPrimaryKey = () => {
+        if (table) {
+            const { primary_key } = table;
+            const key = primary_key.find(key => key == field.id)
+            if (key) {
+                return key
+            }
+        }
+        return false
+    }
 
 // console.log(field)
     const fieldChangeData = (e) => {
@@ -26,16 +47,14 @@ export default (props) => {
     useEffect(() => {
         setCurrent(defaultValue)
     }, [defaultValue])
-
+if(isPrimaryKey()){
     return (
-
-
         <div class="row justify-content-center">
             <div class="form-group col-md-6">
                 <form>
                     <div class="form-group">
                         <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
-                        <textarea type="text"
+                        <textarea disabled type="text"
                         onKeyDown={e => {
                             if (e.key === 'Enter') {
                                 e.preventDefault();
@@ -61,4 +80,41 @@ export default (props) => {
             </div>
         </div>
     )
+} else {
+    return (
+
+
+        <div class="row justify-content-center">
+            <div class="form-group col-md-6">
+                <form>
+                    <div class="form-group">
+                        <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
+                        <textarea type="text" rows="1" 
+                        onKeyDown={e => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                               
+                            }
+                        }}
+                            className="form-control"
+                            value={current}
+                            placeholder="" onChange={fieldChangeData}
+                        />
+                       { textError && (
+                        <div className="rel">
+                            <div className="abs">
+                                <span  className="block crimson mb-2 text-14-px " style={{color: 'red'}}>
+                                Vượt quá số lượng kí tự
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                    </div>
+                   
+                </form>
+            </div>
+        </div>
+    )
+}
+    
 }

@@ -162,14 +162,28 @@ export default () => {
     useEffect(() => {
         // console.log(data)
     }, [data])
-
+   const showError = (title, text) => {
+        Swal.fire({
+            title: title,
+            text: text,
+            icon: "error",
+            showConfirmButton: true,
+        });
+    };
+    const handleAPIErrors = (res) => {
+        const { primaryConflict, foreignConflict, typeError } = res;
+    
+        if (primaryConflict && foreignConflict) return showError(lang["faild"], lang["erorr pk fk"]);
+        if (primaryConflict) return showError(lang["faild"], lang["erorr pk"]);
+        if (foreignConflict) return showError(lang["faild"], lang["erorr fk"]);
+        if (typeError) return showError(lang["faild"], lang["fail.add"]);
+    };
     // console.log(fields)
     const submit = () => {
-
         const url = window.location;
         const rawParams = url.pathname.split(`/${id_str}/`)[1];
         const paramsList = rawParams.split('/');
-        // console.log("body", data)
+    
         if (!emailError && !phoneError && nullCheck(data)) {
             fetch(`${proxy()}/ui/${id_str}/${paramsList.join('/')}`, {
                 method: "PUT",
@@ -177,25 +191,14 @@ export default () => {
                     Authorization: `${_token}`,
                     "content-type": "application/json"
                 },
-
                 body: JSON.stringify({ ...data })
-            }).then(res => res.json()).then(res => {
-                const { success, data, fk, content } = res;
-                // console.log(res)
-                const errors = [
-                    "primaryConflict",
-                    "foreignConflict",
-                    "typeError"
-                ]
-                let valid = true;
-                for (let i = 0; i < errors.length; i++) {
-                    const isInValid = res[errors[i]]
-                    if (isInValid) {
-                        valid = false
-                    }
-                }
-                // console.log(`VALID: ${valid}`)
-                if (valid) {
+            })
+            .then(res => res.json())
+            .then(res => {
+                console.log(res)
+                if (res.primaryConflict || res.foreignConflict || res.typeError) {
+                    handleAPIErrors(res);
+                } else{ 
                     Swal.fire({
                         title: lang["success"],
                         text: lang["success.update"],
@@ -203,37 +206,20 @@ export default () => {
                         showConfirmButton: false,
                         timer: 1500
                     }).then(function () {
-                        window.location.reload();
+                        // window.location.reload();
                     });
-                } else {
-                    Swal.fire({
-                        title: lang["faild"],
-                        text: lang["fail.update"],
-                        icon: "error",
-                        showConfirmButton: true,
-
-                    }).then(function () {
-                        // Không cần reload trang
-                    });
-                }
+                } 
             })
+            .catch(error => {
+                // Xử lý lỗi nếu cần
+            });
         } else {
-            if (emailError) {
-                // al.failure("Lỗi", "Địa chỉ email không hợp lệ");
-            } else if (phoneError) {
-                // al.failure("Lỗi", "Số điện thoại không hợp lệ");
-            } else {
-                Swal.fire({
-                    title: lang["faild"],
-                    text: lang["fail.null"],
-                    icon: "error",
-                    showConfirmButton: true,
-                }).then(function () {
-                    // Không cần reload trang
-                });
-            }
+            if (emailError) showError(lang["faild"], lang["error.email_invalid"]);
+            else if (phoneError) showError(lang["faild"], lang["error.phone_invalid"]);
+            else showError(lang["faild"], lang["fail.null"]);
         }
     };
+    
     return (
         <div class="midde_cont">
             <div class="container-fluid">

@@ -25,7 +25,7 @@ export default () => {
     const [relatedTables, setRelatedTables] = useState([])
     const [page, setPage] = useState(null);
 
-  
+
     // console.log(url); 
     const goToHomePage = () => {
         navigate(`/page/${url}`);
@@ -49,17 +49,17 @@ export default () => {
         setEmailError(error);
     };
     // console.log(pages)
-  
+
 
 
     useEffect(() => {
 
-        fetch(`${proxy()}/apis/api/${id_str}/input_info`,{
+        fetch(`${proxy()}/apis/api/${id_str}/input_info`, {
             headers: {
                 Authorization: _token
             }
         })
-        .then(res => res.json())
+            .then(res => res.json())
             .then(res => {
                 const { success, api, relatedTables, data } = res;
 
@@ -78,7 +78,7 @@ export default () => {
         // So sánh với id_str
         return api_get_id === id_str;
     });
-    
+
     // console.log (result)
 
     const changeTrigger = (field, value) => {
@@ -110,91 +110,63 @@ export default () => {
 
     const [isLoading, setIsLoading] = useState(false);
 
+    const showError = (title, text) => {
+        Swal.fire({
+            title: title,
+            text: text,
+            icon: "error",
+            showConfirmButton: true,
+        });
+    };
+    const handleAPIErrors = (res) => {
+        const { primaryConflict, foreignConflict, typeError } = res;
     
+        if (primaryConflict && foreignConflict) return showError(lang["faild"], lang["erorr pk fk"]);
+        if (primaryConflict) return showError(lang["faild"], lang["erorr pk"]);
+        if (foreignConflict) return showError(lang["faild"], lang["erorr fk"]);
+        if (typeError) return showError(lang["faild"], lang["fail.add"]);
+    };
+    
+        
 
-    const submit = () => {
-
-        // console.log({ ...data })
-        if (!emailError && !phoneError && nullCheck(data)) {
-            fetch(`${proxy()}${result?.components?.[0]?.api_post}`, {
-                method: "POST",
-                headers: {
-                    Authorization: _token,
-                    "content-type": "application/json"
-                },
-
-                body: JSON.stringify({ ...data })
-
-            }).then(res => res.json())
-                .then(res => {
-                    setIsLoading(false);
-                    const { success, data, fk, content } = res;
-                    // console.log(res)
-                    const errors = [
-                        "primaryConflict",
-                        "foreignConflict",
-                        "typeError"
-                    ]
-
-                    let valid = true;
-                    for (let i = 0; i < errors.length; i++) {
-                        const isInValid = res[errors[i]]
-                        if (isInValid) {
-                            valid = false
-                        }
-                    }
-                    // console.log(`VALID: ${valid}`)
-                    if (valid) {
-                        Swal.fire({
-                            title: lang["success"],
-                            text: lang["success.add"],
-                            icon: "success",
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then(function () {
-                            window.location.reload();
-                        });
-                    } else {
-                        Swal.fire({
-                            title: lang["faild"],
-                            text: lang["fail.add"],
-                            icon: "error",
-                            showConfirmButton: true,
-
-                        }).then(function () {
-                            // Không cần reload trang
-                        });
-                    }
-                }).catch(error => {
-                    setIsLoading(false);
-                    // Xử lý lỗi nếu cần
-                });
-        } else {
-            if (emailError) {
-                Swal.fire({
-                    title: lang["faild"],
-                    text: lang["error.email_invalid"],
-                    icon: "error",
-                    showConfirmButton: true,
-                })
-            } else if (phoneError) {
-                Swal.fire({
-                    title: lang["faild"],
-                    text: lang["error.phone_invalid"],
-                    icon: "error",
-                    showConfirmButton: true,
-                })
+   const submit = () => {
+    if (!emailError && !phoneError && nullCheck(data)) {
+        fetch(`${proxy()}${result?.components?.[0]?.api_post}`, {
+            method: "POST",
+            headers: {
+                Authorization: _token,
+                "content-type": "application/json"
+            },
+            body: JSON.stringify({ ...data })
+        })
+        .then(res => res.json())
+        .then(res => {
+          console.log(res)
+            if (res.primaryConflict || res.foreignConflict || res.typeError) {
+                handleAPIErrors(res);
             } else {
                 Swal.fire({
-                    title: lang["faild"],
-                    text: lang["fail.null"],
-                    icon: "error",
-                    showConfirmButton: true,
-
-                })
+                    title: lang["success"],
+                    text: lang["success.add"],
+                    icon: "success",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(function () {
+                    window.location.reload();
+                });
             }
-        }
-    };
+        })
+        .catch(error => {
+           
+            // Xử lý lỗi nếu cần
+        });
+    } else {
+        if (emailError) showError(lang["faild"], lang["error.email_invalid"]);
+        else if (phoneError) showError(lang["faild"], lang["error.phone_invalid"]);
+        else showError(lang["faild"], lang["fail.null"]);
+    }
+};
+
 
 
     return (
@@ -215,9 +187,9 @@ export default () => {
                             <div class="full graph_head_cus d-flex">
                                 <div class="heading1_cus margin_0 ">
                                     {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
-                                   
-                                    <h5> <label class="pointer"onClick={() => goToHomePage()}>
-                                        <a  title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-1 nav-item nav-link"></i></a>{result?.title}
+
+                                    <h5> <label class="pointer" onClick={() => goToHomePage()}>
+                                        <a title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-1 nav-item nav-link"></i></a>{result?.title}
                                     </label> <i class="fa fa-chevron-right"></i>  {lang["create"]}</h5>
 
                                 </div>

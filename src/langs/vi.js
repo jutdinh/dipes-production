@@ -305,7 +305,11 @@ export default {
     "read": "Xem",
     "write": "Thêm",
     "modify": "Sửa",
-    "purge": "Xóa"
+    "purge": "Xóa",
+    "erorr pk fk": "Lỗi khóa chính và khóa ngoại",
+    "erorr fk": "Lỗi khóa ngoại",
+    "erorr pk": "Lỗi khóa chính"
+
 
 
 
