@@ -166,7 +166,7 @@ module.exports = (socket) => {
 
             console.log(key)
             console.log(api_id)
-            socket.to(api_id).emit("/dipe-production-update-data", { data, api_id, key })
+            socket.broadcast.emit("/dipe-production-update-data", { data, api_id, key })
         }
     })
 
