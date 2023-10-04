@@ -51,6 +51,7 @@ module.exports = (socket) => {
                         const keys = Object.keys(component)
                         keys.map(k => {
                             if (k && k.includes('api_')) {
+                                // console.log(component[k].split('/')[2])
                                 socket.join(component[k].split('/')[2])
                             }
                         })
@@ -163,8 +164,8 @@ module.exports = (socket) => {
                 key[fomular_alias] = data[fomular_alias]
             }
 
-            // console.log(key)
-
+            console.log(key)
+            console.log(api_id)
             socket.to(api_id).emit("/dipe-production-update-data", { data, api_id, key })
         }
     })
