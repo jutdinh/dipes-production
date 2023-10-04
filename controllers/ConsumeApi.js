@@ -3724,8 +3724,7 @@ class ConsumeApi extends Controller {
                     }
                 }
 
-                const api_table = tables.find(tb => tb.id == api.tables[0])
-                console.log()
+                const api_table = tables.find(tb => tb.id == api.tables[0])                
                 let isGranted = this.hasEnoughPrivileges([api_table], ["read"], privileges)
 
                 if (this.isAdmin(user) || isGranted) {

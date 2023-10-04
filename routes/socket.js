@@ -46,10 +46,16 @@ module.exports = (socket) => {
                 const uis = jsonUI.data ? jsonUI.data : [];
                 const getApiURLs = uis.map(ui => {
 
-                    const url = ui.components[0]?.api_get.split('/')[2]
-                    if (url) {
-                        socket.join(url)
+                    const component = ui.components[0]
+                    if (component) {
+                        const keys = Object.keys(component)
+                        keys.map(k => {
+                            if (k && k.includes('api_')) {
+                                socket.join(component[k].split('/')[2])
+                            }
+                        })
                     }
+
                 })
 
             }
@@ -64,22 +70,32 @@ module.exports = (socket) => {
         const uis = jsonUI.data ? jsonUI.data : [];
 
         const getApiURLs = uis.map(ui => {
-            const url = ui.components[0]?.api_get.split('/')[2]
-            if (url) {
-                socket.leave(url)
+            const component = ui.components[0]
+            if (component) {
+                const keys = Object.keys(component)
+                keys.map(k => {
+                    if (k && k.includes('api_')) {
+                        socket.leave(component[k].split('/')[2])
+                    }
+                })
             }
         })
         // console.log("leave mot dong rooms")
     })
 
-    socket.on("/dipe-production-import-ui", ()=> {
+    socket.on("/dipe-production-import-ui", () => {
         const jsonUI = retriveUI()
         const uis = jsonUI.data ? jsonUI.data : [];
 
         const getApiURLs = uis.map(ui => {
-            const url = ui.components[0]?.api_get.split('/')[2]
-            if (url) {
-                socket.join(url)
+            const component = ui.components[0]
+            if (component) {
+                const keys = Object.keys(component)
+                keys.map(k => {
+                    if (k && k.includes('api_')) {
+                        socket.join(component[k].split('/')[2])
+                    }
+                })
             }
         })
 
@@ -91,52 +107,57 @@ module.exports = (socket) => {
         const uis = jsonUI.data ? jsonUI.data : [];
         console.log("reconnect ui")
         const getApiURLs = uis.map(ui => {
-            const url = ui.components[0]?.api_get.split('/')[2]
-            if (url) {
-                socket.join(url)
+            const component = ui.components[0]
+            if (component) {
+                const keys = Object.keys(component)
+                keys.map(k => {
+                    if (k && k.includes('api_')) {
+                        socket.join(component[k].split('/')[2])
+                    }
+                })
             }
         })
     })
-     // not tested
-    socket.on("/dipe-production-new-data-added", ( payload ) => {
+    // not tested
+    socket.on("/dipe-production-new-data-added", (payload) => {
         const { data, api_id } = payload;
-        socket.to( api_id ).emit("/dipe-production-new-data-added", { data, api_id } )
+        socket.to(api_id).emit("/dipe-production-new-data-added", { data, api_id })
     })
 
-    socket.on("/dipe-production-delete-data", async ( payload ) => {
+    socket.on("/dipe-production-delete-data", async (payload) => {
         const { data, api_id } = payload;
         const apis = await Database.selectAll('apis', { api_id })
-        if( data && apis && apis[0] ){
+        if (data && apis && apis[0]) {
             const table_id = apis[0].tables[0]
             const tables = await Database.selectAll("tables", { id: table_id })
-    
+
             const table = tables[0]
-            
+
             const primaryKeys = table.primary_key;
             const fields = await Database.selectAll("fields", { id: { $in: primaryKeys } })
             const key = {}
-            for( let i = 0 ; i < fields.length; i++ ){
+            for (let i = 0; i < fields.length; i++) {
                 const field = fields[i]
                 const { fomular_alias } = field;
                 key[fomular_alias] = data[fomular_alias]
-            }            
-            socket.to( api_id ).emit("/dipe-production-delete-data",  { data, api_id, current_page, key } )
-        }        
+            }
+            socket.to(api_id).emit("/dipe-production-delete-data", { data, api_id, current_page, key })
+        }
     })
 
-    socket.on("/dipe-production-update-data", async ( payload ) => {
+    socket.on("/dipe-production-update-data", async (payload) => {
         const { data, api_id } = payload;
         const apis = await Database.selectAll('apis', { api_id })
-        if( data && apis && apis[0] ){
+        if (data && apis && apis[0]) {
             const table_id = apis[0].tables[0]
             const tables = await Database.selectAll("tables", { id: table_id })
-    
+
             const table = tables[0]
-            
+
             const primaryKeys = table.primary_key;
             const fields = await Database.selectAll("fields", { id: { $in: primaryKeys } })
             const key = {}
-            for( let i = 0 ; i < fields.length; i++ ){
+            for (let i = 0; i < fields.length; i++) {
                 const field = fields[i]
                 const { fomular_alias } = field;
                 key[fomular_alias] = data[fomular_alias]
@@ -144,7 +165,7 @@ module.exports = (socket) => {
 
             // console.log(key)
 
-            socket.to( api_id ).emit("/dipe-production-update-data",  { data, api_id, key } )
+            socket.to(api_id).emit("/dipe-production-update-data", { data, api_id, key })
         }
     })
 
