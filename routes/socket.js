@@ -42,6 +42,7 @@ module.exports = (socket) => {
             }
 
             if (sessionAccount != undefined) {
+                console.log(`${ username } JOINS ROOM ITSELF`)
                 socket.join(username)
                 const uis = jsonUI.data ? jsonUI.data : [];
                 const getApiURLs = uis.map(ui => {
@@ -67,6 +68,7 @@ module.exports = (socket) => {
     socket.on("/dipe-production-user-logout", (payload) => {
         const { username } = payload;
         socket.leave(username)
+        console.log(`${ username } LEAVES ROOM ITSELF`)
         const jsonUI = retriveUI()
         const uis = jsonUI.data ? jsonUI.data : [];
 
@@ -198,7 +200,7 @@ module.exports = (socket) => {
                     statistics.push(statisRecord)
                 })
             }            
-            socket.broadcast.emit("/dipe-production-new-data-added", { data: record, api_id, statistics })
+            socket.broadcast.emit("/dipe-production-new-data-added", { data: record, api_id, statistics, key })
         }
     })
 
@@ -300,7 +302,7 @@ module.exports = (socket) => {
                     statistics.push(statisRecord)
                 })
             }
-            socket.broadcast.emit("/dipe-production-update-data", { data: record, api_id, key, statistics })
+            socket.to(api_id).emit("/dipe-production-update-data", { data: record, api_id, key, statistics })
         }
     })
 
