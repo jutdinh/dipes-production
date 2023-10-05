@@ -27,7 +27,7 @@ export default (props) => {
     const [previousSearchValues, setPreviousSearchValues] = useState({});
     const [currentCount, setCurrentCount] = useState(null);
 
-
+    const [searchValues, setSearchValues] = useState({});
 
     // const [currentPage, setCurrentPage] = useState(0)
     const [apiData, setApiData] = useState([])
@@ -56,16 +56,36 @@ export default (props) => {
 
 
 
+     // Client side
+    //Thêm 
+    useEffect(() => {
+        console.log(1)
+
+        socket.on("/dipe-production-new-data-added", newData => {
+            console.log(123456, newData);
+            console.log(searchValues)
+            if (Object.keys(newData).length !== 0 && Object.keys(searchValues).length === 0) {
+                setSumerize(prevSumerize => prevSumerize + 1);
+            }
+        })
+
+        return () => {
+
+            socket.off("/dipe-production-new-data-added");
+        }
+    }, [searchValues]);
+
+    //Sửa
     useEffect(() => {
         socket.on("/dipe-production-update-data", (newData) => {
-            // Hàm kiểm tra xem item có trùng với tất cả key-value trong obj không
+            console.log(newData)
             const matchesAllKeys = (item, obj) => {
                 return Object.entries(obj).every(([key, value]) => item[key] === value);
             };
-    
+
             // Tìm index của phần tử cần cập nhật
             const indexToUpdate = apiData.findIndex(item => matchesAllKeys(item, newData.key));
-        
+
             // Nếu tìm thấy phần tử cần cập nhật
             if (indexToUpdate !== -1) {
                 const updatedData = [...apiData];
@@ -73,32 +93,46 @@ export default (props) => {
                     ...updatedData[indexToUpdate],
                     ...newData.data
                 };
-                
+
                 setApiData(updatedData);
             }
         });
-        
+
+
         return () => {
             socket.off("/dipe-production-update-data");
         }
     }, [apiData]);
 
-  
+    // Xóa  
     useEffect(() => {
-        if (Object.keys(searchValues).length !== 0) {
-            socket.on("/dipe-production-new-data-added", newData => {
-                console.log(123456, newData);
-                console.log(searchValues)
-                if (Object.keys(newData).length !== 0) {
-                    setSumerize(prevSumerize => prevSumerize + 1);
-                }
-            })
-        } 
-        return () => {
+        socket.on("/dipe-production-delete-data", (newData) => {
+            console.log(newData)
+            // const matchesAllKeys = (item, obj) => {
+            //     return Object.entries(obj).every(([key, value]) => item[key] === value);
+            // };
 
-            socket.off("/dipe-production-new-data-added");
+            // // Tìm index của phần tử cần cập nhật
+            // const indexToUpdate = apiData.findIndex(item => matchesAllKeys(item, newData.key));
+
+            // // Nếu tìm thấy phần tử cần cập nhật
+            // if (indexToUpdate !== -1) {
+            //     const updatedData = [...apiData];
+            //     updatedData[indexToUpdate] = {
+            //         ...updatedData[indexToUpdate],
+            //         ...newData.data
+            //     };
+
+            //     setApiData(updatedData);
+            // }
+        });
+
+
+        return () => {
+            socket.off("/dipe-production-delete-data");
         }
-    }, []);
+    }, [apiData]);
+
 
 
     const callApi = (startIndex = currentPage - 1,) => {
@@ -488,6 +522,7 @@ export default (props) => {
             }, 1000);
         }
     }, [loadingExportFile]);
+
     const renderData = (field, data) => {
         if (data) {
             switch (field.DATATYPE) {
@@ -508,6 +543,7 @@ export default (props) => {
             return "Invalid value"
         }
     };
+
     const redirectToInputPUT = async (record) => {
 
         const { components } = page;
@@ -553,6 +589,7 @@ export default (props) => {
             })
         }
     }
+
     const redirectToInput = () => {
         // console.log(page)
         const id_str = page.components?.[0]?.api_post.split('/')[2];
@@ -562,7 +599,7 @@ export default (props) => {
     const handleDelete = (data) => {
         // console.log(data)
 
-
+        const id_str = page.components?.[0]?.api_delete.split('/')[2];
         let api_delete = page.components[0].api_delete;
 
         let primaryKeys = dataTables && dataTables[0] && dataTables[0].primary_key ? dataTables[0].primary_key : null;
@@ -640,6 +677,13 @@ export default (props) => {
                         }
                     });
             }
+            const dataSubmit = {
+                api_id: id_str,
+                current_page: undefined,
+                data: data
+            }
+
+            socket.emit("/dipe-production-delete-data", dataSubmit);
         });
     }
     const redirectToImportData = () => {
@@ -672,7 +716,7 @@ export default (props) => {
 
 
 
-    const [searchValues, setSearchValues] = useState({});
+ 
     const handleInputChange = (fomular_alias, value) => {
         setSearchValues(prevValues => {
             if (value.trim() === '') {
@@ -687,7 +731,7 @@ export default (props) => {
         });
     };
     const exportToCSV = (csvData) => {
-        const selectedHeaders = apiDataName;
+        const selectedHeaders = dataFields;
         function styleHeaders(ws) {
             const headerStyle = {
                 fill: {

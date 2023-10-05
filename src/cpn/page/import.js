@@ -948,7 +948,7 @@ console.log(apiDataName)
                                                                 <thead>
                                                                     <tr>
                                                                         <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
-                                                                        {apiDataName.map((header, index) => (
+                                                                        {dataFields.map((header, index) => (
                                                                             <th class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
                                                                         ))}
                                                                         <th class="font-weight-bold">{lang["note"]}</th>
@@ -964,7 +964,7 @@ console.log(apiDataName)
                                                                                 return (
                                                                                     <tr key={index} className={isPrimaryError ? 'error-row' : ''}>
                                                                                         <td scope="row">{indexOfFirst + index + 1}</td>
-                                                                                        {apiDataName.map((header) => (
+                                                                                        {dataFields.map((header) => (
                                                                                             <td
                                                                                                 key={header.fomular_alias}
                                                                                                 className={foreignErrors.includes(header.fomular_alias) ? 'foreign-error' : ''}

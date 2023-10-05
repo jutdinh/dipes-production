@@ -59,7 +59,7 @@ export default () => {
             .then(res => res.json())
             .then(res => {
                 const { success, api, relatedTables, data } = res;
-
+// console.log(res)
                 if (success) {
                     setFields(data.body)
                     setTables(data.tables)

@@ -22,7 +22,7 @@ export default (props) => {
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
     const [selectedFileType, setSelectedFileType] = useState('xlsx');
-
+    const [searchValues, setSearchValues] = useState({});
 
     // console.log(props)
     const [loaded, setLoaded] = useState(false);
@@ -62,7 +62,25 @@ export default (props) => {
 
 
     // Client side
+    //Thêm 
+    useEffect(() => {
+        console.log(1)
 
+        socket.on("/dipe-production-new-data-added", newData => {
+            console.log(123456, newData);
+            console.log(searchValues)
+            if (Object.keys(newData).length !== 0 && Object.keys(searchValues).length === 0) {
+                setSumerize(prevSumerize => prevSumerize + 1);
+            }
+        })
+
+        return () => {
+
+            socket.off("/dipe-production-new-data-added");
+        }
+    }, [searchValues]);
+
+    //Sửa
     useEffect(() => {
         socket.on("/dipe-production-update-data", (newData) => {
             console.log(newData)
@@ -91,21 +109,36 @@ export default (props) => {
         }
     }, [apiData]);
 
+    // Xóa  
     useEffect(() => {
-        if (Object.keys(searchValues).length !== 0) {
-            socket.on("/dipe-production-new-data-added", newData => {
-                console.log(123456, newData);
-                console.log(searchValues)
-                if (Object.keys(newData).length !== 0) {
-                    setSumerize(prevSumerize => prevSumerize + 1);
-                }
-            })
-        } 
-        return () => {
+        socket.on("/dipe-production-delete-data", (newData) => {
+            console.log(newData)
+            // const matchesAllKeys = (item, obj) => {
+            //     return Object.entries(obj).every(([key, value]) => item[key] === value);
+            // };
 
-            socket.off("/dipe-production-new-data-added");
+            // // Tìm index của phần tử cần cập nhật
+            // const indexToUpdate = apiData.findIndex(item => matchesAllKeys(item, newData.key));
+
+            // // Nếu tìm thấy phần tử cần cập nhật
+            // if (indexToUpdate !== -1) {
+            //     const updatedData = [...apiData];
+            //     updatedData[indexToUpdate] = {
+            //         ...updatedData[indexToUpdate],
+            //         ...newData.data
+            //     };
+
+            //     setApiData(updatedData);
+            // }
+        });
+
+
+        return () => {
+            socket.off("/dipe-production-delete-data");
         }
-    }, []);
+    }, [apiData]);
+
+
 
     const callApi = (startIndex = currentPage - 1,) => {
         const startTime = new Date().getTime();
@@ -570,6 +603,7 @@ export default (props) => {
         // console.log(data)
 
 
+        const id_str = page.components?.[0]?.api_delete.split('/')[2];
         let api_delete = page.components[0].api_delete;
 
         let primaryKeys = dataTables && dataTables[0] && dataTables[0].primary_key ? dataTables[0].primary_key : null;
@@ -622,7 +656,7 @@ export default (props) => {
                     .then(res => res.json())
                     .then((resp) => {
                         const { success, content, data, status } = resp;
-                        // console.log(resp)
+                        console.log(resp)
                         // functions.showApiResponseMessage(status)
 
                         if (success) {
@@ -633,7 +667,7 @@ export default (props) => {
                                 showConfirmButton: false,
                                 timer: 1500,
                             }).then(function () {
-                                window.location.reload();
+                                // window.location.reload();
                             });
                         } else {
                             Swal.fire({
@@ -648,6 +682,13 @@ export default (props) => {
                         }
                     });
             }
+            const dataSubmit = {
+                api_id: id_str,
+                current_page: undefined,
+                data: data
+            }
+
+            socket.emit("/dipe-production-delete-data", dataSubmit);
         });
     }
     const redirectToImportData = () => {
@@ -680,7 +721,7 @@ export default (props) => {
 
 
 
-    const [searchValues, setSearchValues] = useState({});
+
 
     const handleInputChange = (fomular_alias, value) => {
         setSearchValues(prevValues => {
@@ -696,7 +737,7 @@ export default (props) => {
         });
     };
     const exportToCSV = (csvData) => {
-        const selectedHeaders = apiDataName;
+        const selectedHeaders = dataFields;
         function styleHeaders(ws) {
             const headerStyle = {
                 fill: {
