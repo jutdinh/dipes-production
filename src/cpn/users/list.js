@@ -433,8 +433,8 @@ export default (props) => {
                                             </form>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" onClick={submit} class="btn btn-success">{lang["btn.create"]}</button>
-                                            <button type="button" onClick={handleCloseModal} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
+                                            <button type="button"  style={{ minWidth: "105px" }} onClick={submit} class="btn btn-success">{lang["btn.create"]}</button>
+                                            <button type="button"  style={{ minWidth: "105px" }} onClick={handleCloseModal} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
                                         </div>
                                     </div>
                                 </div>

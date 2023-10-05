@@ -58,7 +58,7 @@ export default (props) => {
         }
     }, [dataStatis]);
 
-    console.log(apiData)
+    // console.log(apiData)
 
 
     // Client side
@@ -66,7 +66,6 @@ export default (props) => {
     useEffect(() => {
         socket.on("/dipe-production-update-data", (newData) => {
             console.log(newData)
-            // Hàm kiểm tra xem item có trùng với tất cả key-value trong obj không
             const matchesAllKeys = (item, obj) => {
                 return Object.entries(obj).every(([key, value]) => item[key] === value);
             };
@@ -85,7 +84,7 @@ export default (props) => {
                 setApiData(updatedData);
             }
         });
-        
+
 
         return () => {
             socket.off("/dipe-production-update-data");
@@ -93,20 +92,20 @@ export default (props) => {
     }, [apiData]);
 
     useEffect(() => {
-       
-        socket.on("/dipe-production-new-data-added", data => {
-            console.log(123456, data);
-        });
-
+        if (Object.keys(searchValues).length !== 0) {
+            socket.on("/dipe-production-new-data-added", newData => {
+                console.log(123456, newData);
+                console.log(searchValues)
+                if (Object.keys(newData).length !== 0) {
+                    setSumerize(prevSumerize => prevSumerize + 1);
+                }
+            })
+        } 
         return () => {
-           
+
             socket.off("/dipe-production-new-data-added");
         }
     }, []);
-
-
-
-
 
     const callApi = (startIndex = currentPage - 1,) => {
         const startTime = new Date().getTime();
@@ -682,6 +681,7 @@ export default (props) => {
 
 
     const [searchValues, setSearchValues] = useState({});
+
     const handleInputChange = (fomular_alias, value) => {
         setSearchValues(prevValues => {
             if (value.trim() === '') {

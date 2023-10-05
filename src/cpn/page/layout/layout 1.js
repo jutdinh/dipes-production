@@ -83,7 +83,22 @@ export default (props) => {
         }
     }, [apiData]);
 
+  
+    useEffect(() => {
+        if (Object.keys(searchValues).length !== 0) {
+            socket.on("/dipe-production-new-data-added", newData => {
+                console.log(123456, newData);
+                console.log(searchValues)
+                if (Object.keys(newData).length !== 0) {
+                    setSumerize(prevSumerize => prevSumerize + 1);
+                }
+            })
+        } 
+        return () => {
 
+            socket.off("/dipe-production-new-data-added");
+        }
+    }, []);
 
 
     const callApi = (startIndex = currentPage - 1,) => {
