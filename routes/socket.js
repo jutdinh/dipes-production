@@ -219,7 +219,7 @@ module.exports = (socket) => {
                 const { fomular_alias } = field;
                 key[fomular_alias] = data[fomular_alias]
             }
-            socket.broadcast.emit("/dipe-production-delete-data", { data, api_id, current_page, key })
+            socket.broadcast.emit("/dipe-production-delete-data", { data, api_id, key })
         }
     })
 
