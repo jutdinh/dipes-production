@@ -124,7 +124,7 @@
                 {
                     "component_id": 1643,
                     "component_name": "ĐƠN HÀNG",
-                    "layout_id": 1,
+                    "layout_id": 0,
                     "api_get": "/api/7581E9D2A3214E42BF3EE648F2F59668",
                     "api_post": "/ui/3D135B9FCE104A46833AFABA6A78615A",
                     "api_put": "/ui/E595F0146D4C4B17AF0CAD619B7B79C9",
