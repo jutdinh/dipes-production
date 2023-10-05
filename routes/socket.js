@@ -14,11 +14,7 @@ const retriveUI = () => {
 }
 
 
-module.exports = (socket) => {
-    socket.on("new-connected", (payload) => {
-        console.log(payload)
-    })
-
+module.exports = (io, socket) => {
     socket.on("/dipe-production-user-login", async (payload) => {
 
         if (payload && payload.username) {
@@ -61,8 +57,11 @@ module.exports = (socket) => {
                 })
 
             }
-            socket.broadcast.emit("/dipe-production-user-login", { username })
-        }
+            // socket.broadcast.emit("/dipe-production-user-login", { username })
+            const rooms = io.sockets.adapter.rooms
+            console.log(rooms)
+            socket.broadcast.emit("/dipe-production-user-login", { username, rooms })
+        }        
     })
 
     socket.on("/dipe-production-user-logout", (payload) => {

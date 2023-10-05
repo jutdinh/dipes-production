@@ -33,7 +33,8 @@ const io = new Server(server, {
 const { Auth, Projects, Versions, Logs, Tasks, Tables, Fields, Api, UI, Privileges, SocketController } = require('./routes');
 
 io.on("connection", (socket) => {  
-    SocketController(socket)
+    SocketController(io, socket)
+    // console.log(io.sockets.adapter.rooms)
 })
 
 const ConsumeApi = require('./controllers/ConsumeApi');
