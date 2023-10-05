@@ -2471,32 +2471,37 @@ class ConsumeApi extends Controller {
 
             const foreignData = await Promise.all(foreignSerialized.map((key) => {
                 const { field, foreignTable, ref } = key
-                return Database.selectAll(foreignTable.table_alias, { [`${ref.fomular_alias}`]: data[field.fomular_alias] ? data[field.fomular_alias] : data[ref.fomular_alias] })
+                const queryValue = data[field.fomular_alias] ? data[field.fomular_alias] : data[ref.fomular_alias]
+                if( queryValue ){
+                    return Database.selectAll(foreignTable.table_alias, { [`${ref.fomular_alias}`]: (data[field.fomular_alias] ? data[field.fomular_alias] : data[ref.fomular_alias]) })
+                }
             }))
-
+            console.log(2476, foreignData)
             let areForeignDataValid = true
 
             for (let i = 0; i < foreignData.length; i++) {
-                if (foreignData[i].length == 0) {
-                    areForeignDataValid = false
-                } else {
-                    const foreignRecord = foreignData[i][0]
-                    const keys = Object.keys(foreignRecord)
-                    keys.map(key => data[key] = foreignRecord[key])
+                if( foreignData[i] ){
+                    if (foreignData[i].length == 0) {
+                        areForeignDataValid = false
+                    } else {
+                        const foreignRecord = foreignData[i][0]
+                        const keys = Object.keys(foreignRecord)
+                        keys.map(key => data[key] = foreignRecord[key])
+                    }
                 }
             }
 
             if (areForeignDataValid) {
                 console.log(2490, data)
                 // const partitionData = partition.data;
-                // await Database.update(`${table_alias}`, formatedQuery, { ...data })
+                await Database.update(`${table_alias}`, formatedQuery, { ...data })
 
                 const slaves = this.detectAllSlave(table)
                 for (let i = 0; i < slaves.length; i++) {
                     const startAt = new Date()
                     const slave = slaves[i]
                     console.log(2498, data )
-                    // await Database.update(`${slave.table_alias}`, formatedQuery, { ...data })
+                    await Database.update(`${slave.table_alias}`, formatedQuery, { ...data })
                     const endAt = new Date()
                     console.log(`Synchorized data in table ${slave.table_name} costs: ${endAt - startAt}ms`)
                 }
@@ -2604,7 +2609,7 @@ class ConsumeApi extends Controller {
                         }
                     }
                     console.log(2605, statisSum)
-                    // await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
+                    await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
                 }
 
                 this.res.send({ success: true })
