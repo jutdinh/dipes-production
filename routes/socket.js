@@ -122,7 +122,7 @@ module.exports = (socket) => {
     // not tested
     socket.on("/dipe-production-new-data-added", (payload) => {
         const { data, api_id } = payload;
-        socket.to(api_id).emit("/dipe-production-new-data-added", { data, api_id })
+        socket.broadcast.emit("/dipe-production-new-data-added", { data, api_id })
     })
 
     socket.on("/dipe-production-delete-data", async (payload) => {

@@ -2423,6 +2423,8 @@ class ConsumeApi extends Controller {
         const indexQuery = {}
         const primaryFields = this.getFields(primary_key)
 
+        console.log(2424, data)
+
         const recordIndex = primaryFields.map(field => query[field.fomular_alias])
 
         primaryFields.map(field => {
@@ -2485,15 +2487,16 @@ class ConsumeApi extends Controller {
             }
 
             if (areForeignDataValid) {
-
+                console.log(2490, data)
                 // const partitionData = partition.data;
-                await Database.update(`${table_alias}`, formatedQuery, { ...data })
+                // await Database.update(`${table_alias}`, formatedQuery, { ...data })
 
                 const slaves = this.detectAllSlave(table)
                 for (let i = 0; i < slaves.length; i++) {
                     const startAt = new Date()
                     const slave = slaves[i]
-                    await Database.update(`${slave.table_alias}`, formatedQuery, { ...data })
+                    console.log(2498, data )
+                    // await Database.update(`${slave.table_alias}`, formatedQuery, { ...data })
                     const endAt = new Date()
                     console.log(`Synchorized data in table ${slave.table_name} costs: ${endAt - startAt}ms`)
                 }
@@ -2600,7 +2603,8 @@ class ConsumeApi extends Controller {
                             }
                         }
                     }
-                    await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
+                    console.log(2605, statisSum)
+                    // await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
                 }
 
                 this.res.send({ success: true })
