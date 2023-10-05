@@ -215,9 +215,9 @@ export default () => {
                         api_id: id_str,
                         data: data
                     }
-                   
+
                     socket.emit("/dipe-production-update-data", dataSubmit);
-                 
+
 
                 })
                 .catch(error => {
@@ -305,6 +305,7 @@ export default () => {
                                                         }
                                                         {field.DATATYPE == "TEXT" ?
                                                             <Text
+                                                                selectOption={false}
                                                                 table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                                 related={relatedTables} field={field}
                                                                 changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}

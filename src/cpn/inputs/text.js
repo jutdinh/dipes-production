@@ -33,7 +33,7 @@ export default (props) => {
         return false
     }
 
-// console.log(field)
+    // console.log(field)
     const fieldChangeData = (e) => {
         const { value } = e.target
         setCurrent(value)
@@ -43,79 +43,187 @@ export default (props) => {
         } else {
             settextError(true);
         }
-      
+
     }
     useEffect(() => {
         setCurrent(defaultValue)
     }, [defaultValue])
-if(isPrimaryKey()){
-    return (
-        <div class="row justify-content-center">
-            <div class="form-group col-md-6">
-                <form>
-                    <div class="form-group">
-                        <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
-                        <textarea disabled type="text"
-                        onKeyDown={e => {
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                               
-                            }
-                        }}
-                            className="form-control"
-                            value={current}
-                            placeholder="" onChange={fieldChangeData}
-                        />
-                       { textError && (
-                        <div className="rel">
-                            <div className="abs">
-                                <span  className="block crimson mb-2 text-14-px " style={{color: 'red'}}>
-                               {lang["char error"]}
-                                </span>
-                            </div>
-                        </div>
-                    )}
-                    </div>
-                   
-                </form>
-            </div>
-        </div>
-    )
-} else {
-    return (
+    if (isPrimaryKey()) {
+        if (!isFieldForeign()) {
+            if (selectOption) {
+                return (
+                    <div class="row justify-content-center">
+                        <div class="form-group col-md-6">
+                            <form>
+                                <div class="form-group">
+                                    <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
+                                    <textarea type="text"
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
 
+                                            }
+                                        }}
+                                        className="form-control"
+                                        value={current}
+                                        placeholder="" onChange={fieldChangeData}
+                                    />
+                                    {textError && (
+                                        <div className="rel">
+                                            <div className="abs">
+                                                <span className="block crimson mb-2 text-14-px " style={{ color: 'red' }}>
+                                                    {lang["char error"]}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
 
-        <div class="row justify-content-center">
-            <div class="form-group col-md-6">
-                <form>
-                    <div class="form-group">
-                        <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
-                        <textarea type="text" rows="1" 
-                        onKeyDown={e => {
-                            if (e.key === 'Enter') {
-                                e.preventDefault();
-                               
-                            }
-                        }}
-                            className="form-control"
-                            value={current}
-                            placeholder="" onChange={fieldChangeData}
-                        />
-                       { textError && (
-                        <div className="rel">
-                            <div className="abs">
-                                <span  className="block crimson mb-2 text-14-px " style={{color: 'red'}}>
-                                {lang["char error"]}
-                                </span>
-                            </div>
+                            </form>
                         </div>
-                    )}
                     </div>
-                   
-                </form>
+                )
+
+            } else {
+                return (
+                    <div class="row justify-content-center">
+                        <div class="form-group col-md-6">
+                            <form>
+                                <div class="form-group">
+                                    <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
+                                    <textarea disabled type="text"
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+
+                                            }
+                                        }}
+                                        className="form-control"
+                                        value={current}
+                                        placeholder="" onChange={fieldChangeData}
+                                    />
+                                    {textError && (
+                                        <div className="rel">
+                                            <div className="abs">
+                                                <span className="block crimson mb-2 text-14-px " style={{ color: 'red' }}>
+                                                    {lang["char error"]}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                )
+
+            }
+
+        }
+        else {
+            if (selectOption) {
+                return (
+                    <div class="row justify-content-center">
+                        <div class="form-group col-md-6">
+                            <form>
+                                <div class="form-group">
+                                    <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
+                                    <textarea type="text"
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+
+                                            }
+                                        }}
+                                        className="form-control"
+                                        value={current}
+                                        placeholder="" onChange={fieldChangeData}
+                                    />
+                                    {textError && (
+                                        <div className="rel">
+                                            <div className="abs">
+                                                <span className="block crimson mb-2 text-14-px " style={{ color: 'red' }}>
+                                                    {lang["char error"]}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                )
+            } else {
+                return (
+                    <div class="row justify-content-center">
+                        <div class="form-group col-md-6">
+                            <form>
+                                <div class="form-group">
+                                    <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
+                                    <textarea disabled type="text"
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault();
+
+                                            }
+                                        }}
+                                        className="form-control"
+                                        value={current}
+                                        placeholder="" onChange={fieldChangeData}
+                                    />
+                                    {textError && (
+                                        <div className="rel">
+                                            <div className="abs">
+                                                <span className="block crimson mb-2 text-14-px " style={{ color: 'red' }}>
+                                                    {lang["char error"]}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                )
+            }
+
+        }
+    } else {
+        return (
+            <div class="row justify-content-center">
+                <div class="form-group col-md-6">
+                    <form>
+                        <div class="form-group">
+                            <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
+                            <textarea type="text" rows="1"
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+
+                                    }
+                                }}
+                                className="form-control"
+                                value={current}
+                                placeholder="" onChange={fieldChangeData}
+                            />
+                            {textError && (
+                                <div className="rel">
+                                    <div className="abs">
+                                        <span className="block crimson mb-2 text-14-px " style={{ color: 'red' }}>
+                                            {lang["char error"]}
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                    </form>
+                </div>
             </div>
-        </div>
-    )
-}
-    
+        )
+    }
+
 }

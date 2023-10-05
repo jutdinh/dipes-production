@@ -251,6 +251,7 @@ export default () => {
                                                         }
                                                         {field.DATATYPE == "TEXT" ?
                                                             <Text
+                                                            selectOption={true}
                                                                 table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                                 related={relatedTables} field={field}
                                                                 changeTrigger={changeTrigger} /> : null
