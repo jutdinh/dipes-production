@@ -33,12 +33,12 @@ export default () => {
     const inputs = document.querySelectorAll('input[type="number"], input[type="text"], textarea');
     inputs.forEach(input => {
         input.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                submit()
+            if (e.keyCode === 13) {
+                submit();
             }
         });
     });
+   
 
     const [phoneError, setPhoneError] = useState(false);
     const handlePhoneError = (error) => {
@@ -149,7 +149,7 @@ export default () => {
                     showConfirmButton: false,
                     timer: 1500
                 }).then(function () {
-                    // window.location.reload();
+                    window.location.reload();
                 });
             }
             const dataSubmit = {

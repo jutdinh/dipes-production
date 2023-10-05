@@ -6,7 +6,7 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
-
+import Swal from 'sweetalert2';
 
 
 import { Home } from './dashboard';
@@ -83,7 +83,19 @@ function App() {
     socket.on("/dipe-production-user-login", ({ username }) => {
 
       if( user.username == username ){
+        Swal.fire({
+          title: lang["notification"],
+          text: lang["signout account"],
+          icon: "warning",
+          showConfirmButton: true,
+          customClass: {
+              confirmButton: 'swal2-confirm my-confirm-button-class'
+          }
+
+      }).then(function () {
         window.location = '/signout'
+      });
+       
       }
     })
 

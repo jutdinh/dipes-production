@@ -315,7 +315,9 @@ export default {
     "erorr pk fk": "primary and foreign key errors",
     "erorr fk": "Foreign key errors",
     "erorr pk": "Primary key errors",
-    "char error": "Exceeding the allowed number of characters"
+    "char error": "Exceeding the allowed number of characters", 
+    "signout account": "Account signed another device",
+    "notification": "Notification"
 
 }
 

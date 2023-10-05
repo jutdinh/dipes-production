@@ -14,7 +14,7 @@ const RECORD_PER_PAGE = 10
 
 
 export default (props) => {
-    const { lang, proxy, auth, pages, functions,socket } = useSelector(state => state);
+    const { lang, proxy, auth, pages, functions, socket } = useSelector(state => state);
     const { openTab, renderDateTimeByFormat } = functions
     const { project_id, version_id, url } = useParams();
     const _token = localStorage.getItem("_token");
@@ -28,7 +28,10 @@ export default (props) => {
     const [currentCount, setCurrentCount] = useState(null);
 
     const [searchValues, setSearchValues] = useState({});
-
+    const rowsPerPage = 15;
+    const [currentPage, setCurrentPage] = useState(0);
+    const [searching, setSearching] = useState(false);
+    const [totalPages, setTotalPages] = useState(0);
     // const [currentPage, setCurrentPage] = useState(0)
     const [apiData, setApiData] = useState([])
     const [apiDataName, setApiDataName] = useState([])
@@ -56,24 +59,34 @@ export default (props) => {
 
 
 
-     // Client side
+    // Client side
     //Thêm 
     useEffect(() => {
-        console.log(1)
 
         socket.on("/dipe-production-new-data-added", newData => {
-            console.log(123456, newData);
-            console.log(searchValues)
+            console.log(newData)
+            // Nếu đang ở trạng thái không search
             if (Object.keys(newData).length !== 0 && Object.keys(searchValues).length === 0) {
+                // Tăng tổng số kết quả lên 1
                 setSumerize(prevSumerize => prevSumerize + 1);
+                if (currentPage === totalPages) {
+                    setApiData(prevData => {
+                        if (prevData.length < 15) {
+                            return [...prevData, newData.data];
+                        }
+                        return prevData;
+                    });
+                }
+            } else if(Object.keys(searchValues).length !== 0){
+               console.log(newData)
             }
-        })
-
+        });
         return () => {
-
             socket.off("/dipe-production-new-data-added");
         }
-    }, [searchValues]);
+    }, [searchValues, totalPages, currentPage, apiData]);
+
+    console.log(searchValues)
 
     //Sửa
     useEffect(() => {
@@ -82,10 +95,8 @@ export default (props) => {
             const matchesAllKeys = (item, obj) => {
                 return Object.entries(obj).every(([key, value]) => item[key] === value);
             };
-
             // Tìm index của phần tử cần cập nhật
             const indexToUpdate = apiData.findIndex(item => matchesAllKeys(item, newData.key));
-
             // Nếu tìm thấy phần tử cần cập nhật
             if (indexToUpdate !== -1) {
                 const updatedData = [...apiData];
@@ -93,12 +104,10 @@ export default (props) => {
                     ...updatedData[indexToUpdate],
                     ...newData.data
                 };
-
                 setApiData(updatedData);
+                console.log(apiData)
             }
         });
-
-
         return () => {
             socket.off("/dipe-production-update-data");
         }
@@ -181,7 +190,7 @@ export default (props) => {
                     setDataStatis(statisticValues);
                     setLoaded(true);
 
-                    
+
 
                 } else {
                     setApiData([]);
@@ -389,10 +398,7 @@ export default (props) => {
         setCurrentPage(1)
     }, [page, url])
 
-    const rowsPerPage = 15;
-    const [currentPage, setCurrentPage] = useState(0);
-    const [searching, setSearching] = useState(false);
-    const [totalPages, setTotalPages] = useState(0);
+
 
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
@@ -662,7 +668,12 @@ export default (props) => {
                                 showConfirmButton: false,
                                 timer: 1500,
                             }).then(function () {
-                                window.location.reload();
+                                // window.location.reload();
+
+                                setCurrentPage(1);
+                                setApiData([])
+                                setSumerize(0)
+                                callApiView()
                             });
                         } else {
                             Swal.fire({
@@ -716,7 +727,7 @@ export default (props) => {
 
 
 
- 
+
     const handleInputChange = (fomular_alias, value) => {
         setSearchValues(prevValues => {
             if (value.trim() === '') {
@@ -818,13 +829,13 @@ export default (props) => {
     // console.log(props.data.values.length)
     return (
         <>
-         {/* modal export excel/csv example */}
-         <div class={`modal `} id="exportExcelEx">
+            {/* modal export excel/csv example */}
+            <div class={`modal `} id="exportExcelEx">
                 <div class="modal-dialog modal-dialog-center">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h4 class="modal-title">{lang["export sample data"]}</h4>
-                            <button type="button" class="close"  data-dismiss="modal">&times;</button>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
                         </div>
                         <div class="modal-body">
                             <form>
@@ -855,7 +866,7 @@ export default (props) => {
                         </div>
                         <div class="modal-footer">
                             <button type="button" onClick={exportToCSV} class="btn btn-success">{lang["export"]}</button>
-                            <button type="button" id="closeModalExportFileSample"  class="btn btn-danger" data-dismiss="modal">{lang["btn.close"]}</button>
+                            <button type="button" id="closeModalExportFileSample" class="btn btn-danger" data-dismiss="modal">{lang["btn.close"]}</button>
                         </div>
                     </div>
                 </div>

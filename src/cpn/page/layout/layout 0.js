@@ -23,6 +23,10 @@ export default (props) => {
     const _user = JSON.parse(stringifiedUser) || {}
     const [selectedFileType, setSelectedFileType] = useState('xlsx');
     const [searchValues, setSearchValues] = useState({});
+    const rowsPerPage = 15;
+    const [currentPage, setCurrentPage] = useState(0);
+    const [searching, setSearching] = useState(false);
+    const [totalPages, setTotalPages] = useState(0);
 
     // console.log(props)
     const [loaded, setLoaded] = useState(false);
@@ -64,21 +68,27 @@ export default (props) => {
     // Client side
     //Thêm 
     useEffect(() => {
-        console.log(1)
-
+        
         socket.on("/dipe-production-new-data-added", newData => {
-            console.log(123456, newData);
-            console.log(searchValues)
+            console.log(totalPages);
+        console.log(currentPage);
+            console.log(123456, newData.data);
+            console.log(searchValues);
             if (Object.keys(newData).length !== 0 && Object.keys(searchValues).length === 0) {
                 setSumerize(prevSumerize => prevSumerize + 1);
+                if(currentPage === totalPages && apiData.length > 15) {
+                    setApiData(prevData => [...prevData, newData.data]);
+                }
             }
-        })
-
+            
+        });
+    
         return () => {
-
             socket.off("/dipe-production-new-data-added");
         }
-    }, [searchValues]);
+    }, [searchValues, totalPages, currentPage, apiData]);
+    
+    
 
     //Sửa
     useEffect(() => {
@@ -112,31 +122,29 @@ export default (props) => {
     // Xóa  
     useEffect(() => {
         socket.on("/dipe-production-delete-data", (newData) => {
-            console.log(newData)
-            // const matchesAllKeys = (item, obj) => {
-            //     return Object.entries(obj).every(([key, value]) => item[key] === value);
-            // };
-
-            // // Tìm index của phần tử cần cập nhật
-            // const indexToUpdate = apiData.findIndex(item => matchesAllKeys(item, newData.key));
-
-            // // Nếu tìm thấy phần tử cần cập nhật
-            // if (indexToUpdate !== -1) {
-            //     const updatedData = [...apiData];
-            //     updatedData[indexToUpdate] = {
-            //         ...updatedData[indexToUpdate],
-            //         ...newData.data
-            //     };
-
-            //     setApiData(updatedData);
-            // }
+            console.log(newData);
+    
+            const matchesAllKeys = (item, obj) => {
+                return Object.entries(obj).every(([key, value]) => item[key] === value);
+            };
+    
+            // Tìm index của phần tử cần xóa
+            const indexToDelete = apiData.findIndex(item => matchesAllKeys(item, newData.key));
+    
+            // Nếu tìm thấy phần tử cần xóa
+            if (indexToDelete !== -1) {
+                const updatedData = [...apiData];
+                updatedData.splice(indexToDelete, 1); // Xóa phần tử tại vị trí tìm thấy
+                setApiData(updatedData);
+                setSumerize(prevSumerize => prevSumerize - 1);
+            }
         });
-
-
+    
         return () => {
             socket.off("/dipe-production-delete-data");
         }
     }, [apiData]);
+    
 
 
 
@@ -394,10 +402,7 @@ export default (props) => {
         setCurrentPage(1)
     }, [page, url])
 
-    const rowsPerPage = 15;
-    const [currentPage, setCurrentPage] = useState(0);
-    const [searching, setSearching] = useState(false);
-    const [totalPages, setTotalPages] = useState(0);
+ 
 
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
@@ -667,7 +672,10 @@ export default (props) => {
                                 showConfirmButton: false,
                                 timer: 1500,
                             }).then(function () {
-                                // window.location.reload();
+                                setCurrentPage(1);
+                                setApiData([])
+                                setSumerize(0)
+                                callApiView()
                             });
                         } else {
                             Swal.fire({

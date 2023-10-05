@@ -84,7 +84,8 @@ export default (props) => {
                     </div>
                 )
 
-            } else {
+            }else
+            {
                 return (
                     <div class="row justify-content-center">
                         <div class="form-group col-md-6">
@@ -122,40 +123,41 @@ export default (props) => {
 
         }
         else {
-            if (selectOption) {
-                return (
-                    <div class="row justify-content-center">
-                        <div class="form-group col-md-6">
-                            <form>
-                                <div class="form-group">
-                                    <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
-                                    <textarea type="text"
-                                        onKeyDown={e => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
+            if(selectOption)
+            {
+                  return (
+                <div class="row justify-content-center">
+                    <div class="form-group col-md-6">
+                        <form>
+                            <div class="form-group">
+                                <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
+                                <textarea type="text"
+                                    onKeyDown={e => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
 
-                                            }
-                                        }}
-                                        className="form-control"
-                                        value={current}
-                                        placeholder="" onChange={fieldChangeData}
-                                    />
-                                    {textError && (
-                                        <div className="rel">
-                                            <div className="abs">
-                                                <span className="block crimson mb-2 text-14-px " style={{ color: 'red' }}>
-                                                    {lang["char error"]}
-                                                </span>
-                                            </div>
+                                        }
+                                    }}
+                                    className="form-control"
+                                    value={current}
+                                    placeholder="" onChange={fieldChangeData}
+                                />
+                                {textError && (
+                                    <div className="rel">
+                                        <div className="abs">
+                                            <span className="block crimson mb-2 text-14-px " style={{ color: 'red' }}>
+                                                {lang["char error"]}
+                                            </span>
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
+                            </div>
 
-                            </form>
-                        </div>
+                        </form>
                     </div>
-                )
-            } else {
+                </div>
+            )
+            }else{
                 return (
                     <div class="row justify-content-center">
                         <div class="form-group col-md-6">
@@ -166,7 +168,7 @@ export default (props) => {
                                         onKeyDown={e => {
                                             if (e.key === 'Enter') {
                                                 e.preventDefault();
-
+    
                                             }
                                         }}
                                         className="form-control"
@@ -183,13 +185,13 @@ export default (props) => {
                                         </div>
                                     )}
                                 </div>
-
+    
                             </form>
                         </div>
                     </div>
                 )
             }
-
+          
         }
     } else {
         return (

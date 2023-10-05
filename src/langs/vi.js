@@ -309,5 +309,7 @@ export default {
     "erorr pk fk": "Lỗi khóa chính và khóa ngoại",
     "erorr fk": "Lỗi khóa ngoại",
     "erorr pk": "Lỗi khóa chính",
-    "char error": "Vượt quá số lượng kí tự cho phép"
+    "char error": "Vượt quá số lượng kí tự cho phép",
+    "signout account": "Tài khoản đã được đăng nhập từ một thiết bị khác",
+    "notification": "Thông báo"
 }
