@@ -4192,7 +4192,13 @@ class ConsumeApi extends Controller {
                     return { table, field, refField }
                 })
 
-                const formedData = await Promise.all(data.map((record, index) => this.FormingImportData(record, index)))
+                const formedData = []
+                for( let i = 0 ; i < data.length; i++ ){
+                    const record = data[i]
+                    const index = i
+                    const formedRecord = await this.FormingImportData(record)
+                    formedData.push( formedRecord )
+                }                
 
                 const primaryDataSet = formedData.map(record => {
                     const primaryQuery = {}
