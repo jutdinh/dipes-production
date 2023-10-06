@@ -142,7 +142,30 @@ const formatNumber = (num) => {
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 }
 
+function generateUniqueColors(num) {
+    const step = Math.cbrt((256 * 256 * 256) / num);
+    const colors = [];
+
+    for (let r = 0; r < 256; r += step) {
+        for (let g = 0; g < 256; g += step) {
+            for (let b = 0; b < 256; b += step) {
+                if (colors.length >= num) {
+                    return colors;
+                }
+                if (r === 0 && g === 0 && b === 0) {
+                    // Bỏ qua màu đen
+                    continue;
+                }
+                const color = `#${Math.round(r).toString(16).padStart(2, '0')}${Math.round(g).toString(16).padStart(2, '0')}${Math.round(b).toString(16).padStart(2, '0')}`;
+                colors.push(color);
+            }
+        }
+    }
+    return colors;
+}
+
+
 export default {
     uid, removeDuplicate, titleCase, openTab, dateGenerator, renderDateTimeByFormat,
-    showApiResponseMessage, formatNumberWithCommas, formatNumber
+    showApiResponseMessage, formatNumberWithCommas, formatNumber, generateUniqueColors
 }

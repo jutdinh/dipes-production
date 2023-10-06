@@ -13,23 +13,23 @@ function Chart_HelpDesk() {
     const renderStackedBarLabel = (props) => {
         const { x, y, width, height, value, index, dataKey } = props;
         const labelValue = value === 0 ? '' : value;
-    
+
         let accumulatedHeight = 0;
         if (dataKey === 'Chưa Kích Hoạt') {
             accumulatedHeight = data[index]['Đã Kích Hoạt'];
         } else if (dataKey === 'Kích Hoạt Thất Bại') {
             accumulatedHeight = data[index]['Đã Kích Hoạt'] + data[index]['Chưa Kích Hoạt'];
         }
-    
-        const yPos = y - accumulatedHeight + height / 2; 
-    
+
+        const yPos = y - accumulatedHeight + height / 2;
+
         return (
             <text x={x + width / 2} y={yPos} fill="#ffffff" fontSize={14} textAnchor="middle" dominantBaseline="middle">
                 {labelValue}
             </text>
         );
     };
-    
+
 
     const renderTotalLabel = (props) => {
         const { x, y, width, index } = props;
@@ -54,14 +54,14 @@ function Chart_HelpDesk() {
                         </div>
                     </div>
                 </div>
-                <div className="row column1">
+                {/* <div className="row column1">
                     <div className="col-md-12">
                         <div className="white_shd full margin_bottom_30">
                             <div className="full price_table padding_infor_info">
                                 <div className="col-lg-12">
                                     <BarChart
-                                        width={1200}
-                                        height={600}
+                                        width={200}
+                                        height={400}
                                         data={data}
                                         margin={{
                                             top: 20, right: 30, left: 20, bottom: 5,
@@ -84,6 +84,124 @@ function Chart_HelpDesk() {
                                         }} />
 
                                     </BarChart>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> */}
+                <div class="row column1">
+                    <div class="col-lg-10">
+                        <div class="white_shd full ">
+                            <div class="full graph_head">
+                                <div class="heading1 margin_0">
+                                    Chart
+                                </div>
+                            </div>
+                            <div class="map_section padding_infor_info_statis">
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="white_shd full ">
+                            <div class="full graph_head">
+                                <div class="heading1 margin_0">
+                                    Chart
+                                </div>
+                            </div>
+                            <div class="map_section padding_infor_info_statis">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mt-4">
+                        <div class="white_shd full ">
+                            <div class="full graph_head">
+                                <div class="heading1 margin_0">
+                                    Chart
+                                </div>
+                            </div>
+                            <div class="map_section padding_infor_info_statis">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <BarChart
+                                            width={200}
+                                            height={400}
+                                            data={data}
+                                            margin={{
+                                                top: 20, right: 30, left: 20, bottom: 5,
+                                            }}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="name" />
+                                            <YAxis />
+                                            <Tooltip />
+                                            <Legend />
+                                            <Bar barSize={100} dataKey="Đã Kích Hoạt" stackId="a" fill={stackColors[0]} label={renderStackedBarLabel} />
+                                            <Bar barSize={100} dataKey="Chưa Kích Hoạt" stackId="a" fill={stackColors[1]} label={renderStackedBarLabel} />
+                                            <Bar barSize={100} dataKey="Kích Hoạt Thất Bại" stackId="a" fill={stackColors[2]} label={(barProps) => {
+                                                return (
+                                                    <>
+                                                        {renderStackedBarLabel(barProps)}
+                                                        {renderTotalLabel(barProps)}
+                                                    </>
+                                                );
+                                            }} />
+
+                                        </BarChart>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <BarChart
+                                            width={200}
+                                            height={400}
+                                            data={data}
+                                            margin={{
+                                                top: 20, right: 30, left: 20, bottom: 5,
+                                            }}
+                                        >
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="name" />
+                                            <YAxis />
+                                            <Tooltip />
+                                            <Legend />
+                                            <Bar barSize={100} dataKey="Đã Kích Hoạt" stackId="a" fill={stackColors[0]} label={renderStackedBarLabel} />
+                                            <Bar barSize={100} dataKey="Chưa Kích Hoạt" stackId="a" fill={stackColors[1]} label={renderStackedBarLabel} />
+                                            <Bar barSize={100} dataKey="Kích Hoạt Thất Bại" stackId="a" fill={stackColors[2]} label={(barProps) => {
+                                                return (
+                                                    <>
+                                                        {renderStackedBarLabel(barProps)}
+                                                        {renderTotalLabel(barProps)}
+                                                    </>
+                                                );
+                                            }} />
+
+                                        </BarChart>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mt-4">
+                        <div class="white_shd full ">
+                            <div class="full graph_head text-center">
+                                <div class="heading1 margin_0">
+                                    Chart
+                                </div>
+                            </div>
+                            <div class="map_section padding_infor_info_statis">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="ml-4 mt-3 mb-3 my-box">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mr-4 mt-3 mb-3 my-box">
+
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

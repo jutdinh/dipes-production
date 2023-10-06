@@ -661,11 +661,11 @@ export default () => {
                 // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
             });
     };
-    useEffect(() => {
-        if (page && page.components) {
-            callApiView()
-        }
-    }, [page, dataTable_id])
+    // useEffect(() => {
+    //     if (page && page.components) {
+    //         callApiView()
+    //     }
+    // }, [page, dataTable_id])
 
 // console.log(loadingSearch)
     //searching

@@ -367,17 +367,8 @@ export default (props) => {
                 if (success) {
                     // setApiData(data.filter(record => record != undefined));
                     // setApiDataName(fields);
-                    // setDataStatis(statisticValues);
-                    // setLoaded(true);
-
-                    if (count !== undefined && requireCount) {
-                        setCurrentCount(count);
-                        setSumerize(count);
-                    } else if (sumerize !== undefined) {
-                        setSumerize(sumerize);
-                    } else if (!requireCount && currentCount != null) {
-                        setSumerize(currentCount);
-                    }
+                    setDataStatis(statisticValues);
+                  
                 } else {
                     setApiData([]);
                     setApiDataName([])
@@ -710,7 +701,7 @@ export default (props) => {
         setCurrentPage(1);
         callApiCount()
         callApi(0);
-        // callApiStatistic()
+        callApiStatistic()
         setApiData([])
         setSumerize(0)
 

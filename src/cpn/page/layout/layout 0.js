@@ -40,7 +40,7 @@ export default (props) => {
     const [apiDataName, setApiDataName] = useState([])
     const [sumerize, setSumerize] = useState(0)
     const [dataStatis, setDataStatis] = useState([])
-
+console.log(dataStatis)
     const [dataTable_id, setDataTableID] = useState(null);
     const [dataTables, setDataTables] = useState([]);
     const [dataFields, setDataFields] = useState([]);
@@ -70,10 +70,7 @@ export default (props) => {
     useEffect(() => {
         
         socket.on("/dipe-production-new-data-added", newData => {
-            console.log(totalPages);
-        console.log(currentPage);
-            console.log(123456, newData.data);
-            console.log(searchValues);
+           
             if (Object.keys(newData).length !== 0 && Object.keys(searchValues).length === 0) {
                 setSumerize(prevSumerize => prevSumerize + 1);
                 if(currentPage === totalPages && apiData.length > 15) {
@@ -212,6 +209,11 @@ export default (props) => {
             });
     };
     const callApiView = (startAt = 0, amount = 15) => {
+      
+        let loadingTimeout;
+        loadingTimeout = setTimeout(() => {
+            setLoading(true)
+        }, 200);
         const headerApi = {
             Authorization: _token,
             'start-at': startAt,
@@ -238,6 +240,7 @@ export default (props) => {
                     // setApiViewData(data)
                     // setApiViewFields(fields)
                 }
+                setLoading(false)
             });
     }
     const callApiCount = (requireCount = false) => {
@@ -371,17 +374,10 @@ export default (props) => {
                 if (success) {
                     // setApiData(data.filter(record => record != undefined));
                     // setApiDataName(fields);
-                    // setDataStatis(statisticValues);
+                    setDataStatis(statisticValues);
                     // setLoaded(true);
 
-                    if (count !== undefined && requireCount) {
-                        setCurrentCount(count);
-                        setSumerize(count);
-                    } else if (sumerize !== undefined) {
-                        setSumerize(sumerize);
-                    } else if (!requireCount && currentCount != null) {
-                        setSumerize(currentCount);
-                    }
+                   
                 } else {
                     setApiData([]);
                     setApiDataName([])
@@ -436,7 +432,7 @@ export default (props) => {
                 .then(res => res.json())
                 .then(res => {
                     const { data, success, content } = res;
-                    // console.log(res)
+                    console.log(res)
                     if (success) {
                         setDataTables(data.tables)
                         setDataTableID(data.tables[0].id)
@@ -712,18 +708,16 @@ export default (props) => {
         setCurrentPage(1);
         callApiCount()
         callApi(0);
-        // callApiStatistic()
+        callApiStatistic()
         setApiData([])
         setSumerize(0)
-
     }
+    
     useEffect(() => {
-
         if (Object.keys(searchValues).length === 0) {
             setSearching(false)
         }
         else {
-
         }
     }, [searching]);
 

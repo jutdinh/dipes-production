@@ -115,6 +115,33 @@
     margin-left: auto; 
 }
  
+.text-center {
+    display: flex;
+    justify-content: center;
+  }
+  
+
+
+    .my-box {
+       
+        height: 150px;
+        background-color: #97b0c0;
+        color: #fff;
+        border: 2px solid #2980b9;
+        border-radius: 5px;
+        padding: 20px;
+   
+        text-align: center;
+        font-family: Arial, sans-serif;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease-in-out;
+      }
+      
+      .my-box:hover {
+        background-color: #abd0e9;
+      }
+      
+
 /* end step */
 
 
