@@ -1735,8 +1735,12 @@ class ConsumeApi extends Controller {
                     }
                     for (let i = 0; i < statistic.length; i++) {
                         const statis = statistic[i]
+                        // console.log(statis)
                         const { fomular_alias, field, group_by, fomular } = statis;
                         const stringifyGroupKey = group_by.map(group => data[group]).join("_")
+
+                        // console.log(1741, stringifyGroupKey)
+
                         const statisField = statisSum[fomular_alias];
                         if (!statisField) {
                             if (group_by && group_by.length > 0) {
@@ -2904,7 +2908,9 @@ class ConsumeApi extends Controller {
             if (!isBoundBySlaves) {
 
                 const sumerize = await Table.__findCriteria__({ position: "sumerize" })
-                await Database.delete(`${table_alias}`, query)
+                await Database.deleteMany(`${table_alias}`, query)
+
+                const newTotal = await Database.getEstimateCount( table_alias )
 
                 const cache = await Cache.getData(`${table_alias}-periods`)
                 const periods = cache.value;
@@ -2912,7 +2918,7 @@ class ConsumeApi extends Controller {
                 for (let i = 0; i < periods.length; i++) {
                     const period = periods[i]
                     if (period.position == primaryRecord.position) {
-                        periods[i].total -= 1
+                        periods[i].total = newTotal - 1
                         break;
                     }
                 }
@@ -3017,7 +3023,9 @@ class ConsumeApi extends Controller {
                     await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
                 }
 
-                await Table.__manualUpdate__({ position: "sumerize" }, { total: sumerize.total - 1 })
+                
+
+                await Table.__manualUpdate__({ position: "sumerize" }, { total: newTotal - 1 })
                 this.res.send({ success: true })
             } else {
                 this.res.status(200).send({

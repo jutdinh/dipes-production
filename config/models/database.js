@@ -341,6 +341,11 @@ class Mongo {
         const countResult = await this.dbo.collection( table ).countDocuments(criteria);
         return countResult
     }
+
+    getEstimateCount = async (table) => {
+        const countResult = await this.dbo.collection( table ).estimatedDocumentCount();
+        return countResult
+    } 
 }
 
 let Database;
