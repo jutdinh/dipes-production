@@ -4489,6 +4489,93 @@ class ConsumeApi extends Controller {
             this.res.send({ success: false })
         }
     }
+
+
+    consumeDetail = async (req, res, api_id) => {
+        this.writeReq(req)
+        const start = new Date()
+
+        const { url, method } = req;
+        this.url = decodeURI(url);
+        const [api, projects, tables, fields] = await Promise.all([this.#__apis.find({ api_id }), this.#__projects.findAll(), this.#__tables.findAll(), this.#__fields.findAll()])
+        if (api && api.api_method == method.toLowerCase() && api.status) {
+            const Api = new ApisRecord(api)
+            const project = projects[0]
+            this.project = project;
+
+            this.API = Api;
+            this.req = req;
+            this.res = res;
+            this.fields = fields;
+            this.tables = tables.map(table => {
+                const { id } = table;
+                table.fields = fields.filter(field => field.table_id == id)
+                return table
+            });
+
+            this.CONSUME_DETAIL_RECORD()           
+        }else{
+            res.status(200).send({ succes: false, content: "Not found" })
+        }
+
+    }
+
+    CONSUME_DETAIL_RECORD = async () => {
+        const tables = this.tearTablesAndFieldsToObjects()
+        const params = this.getFields(this.API.params.valueOrNot())
+
+        const data = this.req.body;
+        let paramQueries = [];
+
+        if (params.length > 0) {
+            const formatedUrl = this.url.replaceAll('//', '/')
+            const splittedURL = formatedUrl.split('/')
+            const paramValues = splittedURL.slice(3) /* The 3 number is the first index of params located in url, this can be changed to flexible with url format */
+
+            let paramsValid = true;
+            paramQueries = params.map((param, index) => {
+                const query = {}
+                const parsedValue = this.parseType(param, paramValues[index])
+                query[param.fomular_alias] = parsedValue.result;
+
+                if (paramValues[index] == '') {
+                    paramsValid = false;
+                }
+                return { table_id: param.table_id, query }
+            })
+            if (paramValues.length < params.length || !paramsValid) {
+                this.res.status(200).send({
+                    msg: "INVALID PARAMS SET",
+                    data: []
+                })
+                return
+            }
+        }
+
+        const table = tables[0]   
+        const fields = this.getFields( this.API.fields.valueOrNot().map( f => f.id ) )       
+
+        let formatedQuery = {}
+        paramQueries.map( ({ query }) => {
+            formatedQuery = { ...formatedQuery, ...query }
+        })
+
+        const records = await Database.selectAll( table.table_alias, formatedQuery )
+
+        if( records.length == 1 ){
+            const record = records[0]
+            const result = {}
+            for( let i = 0; i < fields.length; i++ ){
+                const { fomular_alias } = fields[i]
+                result[ fomular_alias ] = record[fomular_alias]
+            }
+            this.res.status(200).send({ success: true, data: result, fields })
+        }else{
+            this.res.status(200).send({ success: false, error: "Query return more than one record or nothing" })
+        }        
+    }
+
+
 }
 
 

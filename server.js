@@ -103,7 +103,11 @@ app.use( async (req, res, next) => {
         if( requestType == "import" ){
           Consumer.consumeImport( req, res, api_id )
         }else{
-          Consumer.consume( req, res, api_id )
+          if(requestType == "d"){
+            Consumer.consumeDetail( req, res, api_id )
+          }else{
+            Consumer.consume( req, res, api_id )
+          }
         }
       }
     }
