@@ -59,7 +59,7 @@ module.exports = (io, socket) => {
             }
             // socket.broadcast.emit("/dipe-production-user-login", { username })
             const rooms = io.sockets.adapter.rooms
-            console.log(rooms)
+            // console.log(rooms)
             socket.broadcast.emit("/dipe-production-user-login", { username, rooms })
         }        
     })

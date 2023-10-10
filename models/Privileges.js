@@ -3,6 +3,12 @@ const { Accounts } = require('./Accounts');
 const { Tables } = require('./Tables');
 
 class Privileges extends Model{
+
+    static READ     = "read"
+    static WRITE    = "write"
+    static MODIFY   = "modify"
+    static PURGE    = "purge"
+
     constructor(){
         super("privileges");        
         this.__addField__( "username", Model.types.string,  { required: true } )

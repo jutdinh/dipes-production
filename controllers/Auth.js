@@ -323,6 +323,73 @@ class Auth extends Controller {
         res.status(200).send( context )
     }
 
+
+    register = async ( req, res ) => {
+        
+        /**
+         *  Request body: {
+         *      account: { username, fullname, password, email, phone, address }
+         *  }
+         * 
+         */
+
+        const { username, fullname, password, email, phone, address } = req.body.account;
+
+        const checkNULL = this.notNullCheck( req.body.account, ["username", "password", "fullname" ] )
+        const context = {}
+        if( checkNULL.valid ){               
+                
+            const Cipher = new Crypto()
+            const encryptedPassword = Cipher.encrypt(password)               
+
+            const create_at = new Date()
+            const Account = new AccountsRecord({ username: username.toLowerCase(), password: encryptedPassword, fullname, email, phone, address, create_by: {}, create_at, role: "pd" })
+            const existedAccount = await this.#__accounts.find({ username });   
+            
+            if( existedAccount ){                
+                context.content = `Tài khoản ${ username } đã tồn tại`;
+            }else{
+                if( Account.username.value() != this.#__default.username ){
+                    Account.avatar.value(`/image/avatar/${ username }.png`)
+                    Account.makeFirstAva();
+                    await Account.save();
+
+                    const tables = await this.#__tables.findAll();
+                    const isAdmin = false;
+                    const privileges = tables.map( table => {
+                        return {
+                            username: Account.username.value(),
+                            table_id: table.id,
+                            read: true,
+                            write: isAdmin,
+                            modify: isAdmin,
+                            purge: isAdmin
+                        }
+                    })
+
+                    await this.#__privileges.insertMany( privileges )
+                    await this.saveLog(
+                        "info", 
+                        req.ip,
+                        "__createuser", 
+                        `__username: ${ Account.username.value() } | __permission __${ Account.role.value() }`, 
+                        "Unknown"
+                    )
+                    context.success = true; context.content = "Tạo tài khoản thành công!"; context.data = Account.get(); context.status = "0x4501011";
+                }else{
+                    context.content = `Tài khoản ${ username } đã tồn tại`;
+                    context.status = "0x4501008"
+                }
+            }              
+
+        }else{
+            context.content = `Không được bỏ trống các trường: ${ checkNULL.nullFields.toString() }`
+            context.status = "0x4501010"
+        }
+        res.status(200).send(context)
+    }
+
+
     removeUser = async (req, res) => {
         /**
          *  Request headers: {

@@ -22,6 +22,20 @@ const DEFAULT_ERROR_CALCLATED_VALUE = "NaN"
 const TOTAL_DATA_PER_PARTITION = 10000
 
 class ConsumeApi extends Controller {
+
+    /**
+     *      Khởi tạo controller. 
+     * 
+     *      Các thuộc tính #__xxx được hiểu là các thuộc tính private.
+     * 
+     *      Hầu hết các thuộc tính private của controller này là đối tượng cơ sở dữ liệu
+     * và chúng được dùng để truy vấn các bảng chứa cấu hình hệ thống.
+     * 
+     *      Bên trong constructor là các thuộc tính public và hiển nhiên chúng mang giá 
+     * trị rỗng.
+     * 
+     */
+
     #__apis = new Apis();
     #__tables = new Tables();
     #__fields = new Fields();
@@ -37,15 +51,58 @@ class ConsumeApi extends Controller {
         this.API = undefined
     }
 
+    NotFound = () => {
+        this.res.status(404).send({ succes: false, content: "404 - Not found" })
+    }
+
+    Forbidden = () => {
+        this.res.status(403).send({ succes: false, content: "403 - Forbidden" })
+    }
+
+    InvalidToken = () => {
+        this.res.status(498).send({ success: false, content: "498 - Invalid token" })
+    }
+
     consume = async (req, res, api_id) => {
+
+        /**
+         *  @funcName Phân giải API
+         *  
+         *  @desc Đại khái là truy vấn API, dự án, tất cả bảng & trường hiện có rồi nhét tất cả vào this như
+         *  những thuộc tính public. Cụ thể:
+         *  (1): Giải mã url  
+         *      VD: "/page/M%C3%A1y%20In%20R20%20MAX" => "/page/Máy In R20 Max"
+         * 
+         *  (2): Truy vấn toàn bộ thông tin gồm 
+         *      + API đang được truy cập
+         *      + Dự án ( chính xác là tất cả dự án nhưng vì chỉ có duy nhất một dự án trong mỗi server production 
+         * nên chúng ta sẽ quy ước "dự án" và "tất cả dự án" là như nhau và đều ám chỉ về dự án hiện tại )
+         *      + Tất cả bảng
+         *      + Tất cả trường
+         *      
+         *  (3): Nếu 
+         *       Api tồn tại
+         *       && Phương thức của api cùng loại với phương thức đang được sử dụng
+         *       && Api đang ở trạng thái hoạt động
+         *       && Dự án tồn tại
+         *      => (4)
+         *      Trường hợp bất kể điều kiện nào trả về false => (8)
+         * 
+         *  (4): Khởi tạo các thông tin cơ sở và nhét hết tụi nó vào controller thông qua this.
+         *  
+         *  (5)(6)(7): Phân tích kiểu dự án thông qua thuộc tính project_type và sử dụng switch-case để điều hướng
+         * 
+         *  (8): Trả về 404 - not found
+         */
+
         this.writeReq(req)
         const start = new Date()
 
         const { url, method } = req;
-        this.url = decodeURI(url);
-        const [api, projects, tables, fields] = await Promise.all([this.#__apis.find({ api_id }), this.#__projects.findAll(), this.#__tables.findAll(), this.#__fields.findAll()])
-        if (api && api.api_method == method.toLowerCase() && api.status) {
-            const Api = new ApisRecord(api)
+/*(1)*/ this.url = decodeURI(url);
+/*(2)*/ const [api, projects, tables, fields] = await Promise.all([this.#__apis.find({ api_id }), this.#__projects.findAll(), this.#__tables.findAll(), this.#__fields.findAll()])
+/*(3)*/ if (api && api.api_method == method.toLowerCase() && api.status && projects[0]) {
+/*(4)*/     const Api = new ApisRecord(api)
             const project = projects[0]
             this.project = project;
 
@@ -59,29 +116,183 @@ class ConsumeApi extends Controller {
                 return table
             });
 
-            if (project) {
+            const { project_type } = project
+/*(6)*/     if (project_type == "database") {
+                switch (api.api_method) {
+                    case "get":
+                        await this.GET()
+                        const end = new Date()
+                        console.log("PROCCESS IN : " + `${end - start} `)
+                        break;
+
+                    case "post":
+                        await this.POST()
+                        break;
+                    case "put":
+                        await this.PUT()
+                        break;
+                    case "delete":
+                        await this.DELETE()
+                        break;
+                    default:
+                        this.NotFound()
+                        break;
+                }                
+/*(7)*/     } else {
+                switch (api.api_method) {
+                    case "get":
+                        await this.REMOTE_GET()
+                        break;
+
+                    case "post":
+                        await this.REMOTE_POST()
+                        break;
+                    case "put":
+                        await this.REMOTE_PUT()
+                        break;
+                    case "delete":
+                        await this.REMOTE_DELETE()
+                        break;
+                    default:
+                        this.NotFound()
+                        break;
+
+                }
+            }
+            
+        } else {
+/*(8)*/    this.NotFound()
+        }
+    }
+
+    consumeUI = async (req, res, api_id) => {
+
+        /**
+         *  @name Phân giải API của UI
+         *  
+         *  @desc Đại khái là truy vấn API, dự án, tất cả bảng & trường hiện có rồi nhét tất cả vào this như
+         *  những thuộc tính public. Cụ thể:
+         *  (1): Xác thực token, vì đây là chổ những API private được sử dụng để truy vấn dữ liệu và quan hệ dữ
+         *  liệu và ràng buộc dữ liệu khá lỏng nên buộc phải dùng token, ép người dùng phải truy cập thông qua UI
+         *  Nếu token hợp lệ => (2), nếu không => (8)
+         * 
+         *  (2): Giải mã url  
+         *      VD: "/page/M%C3%A1y%20In%20R20%20MAX" => "/page/Máy In R20 Max"
+         * 
+         *  (3): Truy vấn toàn bộ thông tin gồm 
+         *      + API đang được truy cập
+         *      + Dự án ( chính xác là tất cả dự án nhưng vì chỉ có duy nhất một dự án trong mỗi server production 
+         * nên chúng ta sẽ quy ước "dự án" và "tất cả dự án" là như nhau và đều ám chỉ về dự án hiện tại )
+         *      + Tất cả bảng
+         *      + Tất cả trường
+         *      + Toàn bộ quyền truy cập của người dùng hiện tại
+         *      
+         *  (4): Nếu 
+         *       Api tồn tại
+         *       && Phương thức của api cùng loại với phương thức đang được sử dụng
+         *       && Api đang ở trạng thái hoạt động
+         *       && Dự án tồn tại
+         *      => (5)
+         *      Trường hợp bất kể điều kiện nào trả về false => (7)
+         * 
+         *  (5): Khởi tạo các thông tin cơ sở và nhét hết tụi nó vào controller thông qua this.
+         *  
+         *  (6): Phân tích kiểu dự án và điều hướng bằng switch case, với mỗi route sẽ có một phân quyền riêng,
+         *  Việc phân tích phân quyền sẽ do một method khác trong controller đảm nhiệm. Nếu người dùng hiện tại
+         *  có đủ quyền, họ sẽ được đi đến route tương ứng. Nếu không => this.Forbidden()
+         * 
+         *  (7): Trả về 404 - Not found
+         * 
+         *  (8): Trả về 498 - Token không hợp lệ
+         */ 
+
+
+        this.writeReq(req)
+        const start = new Date()
+
+/*(1)*/ const verified = await this.verifyToken(req)
+
+        if (verified) {
+
+            const user = this.decodeToken(req.header("Authorization"))
+            const { url, method } = req;
+/*(2)*/     this.url = decodeURI(url);
+/*(3)*/     const [api, projects, tables, fields, privileges] = await Promise.all([
+                this.#__apis.find({ api_id }),
+                this.#__projects.findAll(),
+                this.#__tables.findAll(),
+                this.#__fields.findAll(),
+                this.#__privileges.findAll({ username: user.username })
+            ])
+/*(4)*/     if (api && api.api_method == method.toLowerCase() && api.status && projects[0]) {
+/*(5)*/         const Api = new ApisRecord(api)
+                const project = projects[0]
+                this.project = project;
+
+                this.API = Api;
+
+                this.req = req;
+                this.res = res;
+                this.fields = fields;
+                this.tables = tables.map(table => {
+                    const { id } = table;
+                    table.fields = fields.filter(field => field.table_id == id)
+                    return table
+                });
+
+                const apiTables = api.tables.map(table_id => this.tables.find(tb => tb.id == table_id));
+                // console.log(api)
+                let isGranted;
+
                 const { project_type } = project
-                if (project_type == "database") {
+/*(6)*/         if (project_type == "database") {
                     switch (api.api_method) {
                         case "get":
-
-                            await this.GET()
-
-                            const end = new Date()
-                            console.log("PROCCESS IN : " + `${end - start} `)
+                            isGranted = this.hasEnoughPrivileges(apiTables, [ Privileges.READ ], privileges)
+                            if (isGranted) {
+                                await this.GET_UI()
+                                const end = new Date()
+                                console.log("PROCCESS IN : " + `${end - start} `)
+                            } else {
+                                this.Forbidden()
+                            }
                             break;
 
                         case "post":
-                            await this.POST()
+                            isGranted = this.hasEnoughPrivileges(apiTables, [ Privileges.WRITE ], privileges)
+                            if (isGranted) {
+                                await this.POST_UI()
+                                const end = new Date()
+                                console.log("PROCCESS IN : " + `${end - start} `)
+                            } else {
+                                this.Forbidden()
+                            }
                             break;
+
                         case "put":
-                            await this.PUT()
+
+                            isGranted = this.hasEnoughPrivileges(apiTables, [ Privileges.MODIFY ], privileges)
+                            if (isGranted) {
+                                await this.PUT_UI()
+                                const end = new Date()
+                                console.log("PROCCESS IN : " + `${end - start} `)
+                            } else {
+                                this.Forbidden()
+                            }
                             break;
                         case "delete":
-                            await this.DELETE()
+                            isGranted = this.hasEnoughPrivileges(apiTables, [ Privileges.PURGE ], privileges)
+                            if (isGranted) {
+                                await this.DELETE_UI()
+                                const end = new Date()
+                                console.log("PROCCESS IN : " + `${end - start} `)
+                            } else {
+                                this.Forbidden()
+                            }
+
                             break;
                         default:
-                            this.res.status(200).send("Not found nè")
+                            this.NotFound()
                             break;
 
                     }
@@ -101,182 +312,78 @@ class ConsumeApi extends Controller {
                             await this.REMOTE_DELETE()
                             break;
                         default:
-                            this.res.status(200).send("Not found nè")
+                            this.NotFound()
                             break;
 
                     }
-                }
+                }                
             } else {
-                res.status(200).send({ succes: false, content: "Not found" })
+/*(7)*/          this.NotFound()
             }
         } else {
-            res.status(200).send({ succes: false, content: "Not found" })
-        }
-    }
-
-    consumeUI = async (req, res, api_id) => {
-        this.writeReq(req)
-        const start = new Date()
-
-        const verified = await this.verifyToken(req)
-
-        if (verified) {
-
-            const user = this.decodeToken(req.header("Authorization"))
-            const { url, method } = req;
-            this.url = decodeURI(url);
-            const [api, projects, tables, fields, privileges] = await Promise.all([
-                this.#__apis.find({ api_id }),
-                this.#__projects.findAll(),
-                this.#__tables.findAll(),
-                this.#__fields.findAll(),
-                this.#__privileges.findAll({ username: user.username })
-            ])
-            if (api && api.api_method == method.toLowerCase() && api.status) {
-                const Api = new ApisRecord(api)
-                const project = projects[0]
-                this.project = project;
-
-                this.API = Api;
-
-                this.req = req;
-                this.res = res;
-                this.fields = fields;
-                this.tables = tables.map(table => {
-                    const { id } = table;
-                    table.fields = fields.filter(field => field.table_id == id)
-                    return table
-                });
-
-                const apiTables = api.tables.map(table_id => this.tables.find(tb => tb.id == table_id));
-                // console.log(api)
-                let isGranted;
-
-                if (project) {
-                    const { project_type } = project
-                    if (project_type == "database") {
-                        switch (api.api_method) {
-                            case "get":
-                                isGranted = this.hasEnoughPrivileges(apiTables, ["read"], privileges)
-                                if (isGranted) {
-                                    await this.GET_UI()
-                                    const end = new Date()
-                                    console.log("PROCCESS IN : " + `${end - start} `)
-                                } else {
-                                    res.status(200).send({ succes: false, content: "Không có quyền truy cập" })
-                                }
-                                break;
-
-                            case "post":
-                                isGranted = this.hasEnoughPrivileges(apiTables, ["write"], privileges)
-                                if (isGranted) {
-                                    await this.POST_UI()
-                                    const end = new Date()
-                                    console.log("PROCCESS IN : " + `${end - start} `)
-                                } else {
-                                    res.status(200).send({ succes: false, content: "Không có quyền truy cập" })
-                                }
-                                break;
-
-                            case "put":
-
-                                isGranted = this.hasEnoughPrivileges(apiTables, ["modify"], privileges)
-                                if (isGranted) {
-                                    await this.PUT_UI()
-                                    const end = new Date()
-                                    console.log("PROCCESS IN : " + `${end - start} `)
-                                } else {
-                                    res.status(200).send({ succes: false, content: "Không có quyền truy cập" })
-                                }
-                                break;
-                            case "delete":
-                                isGranted = this.hasEnoughPrivileges(apiTables, ["purge"], privileges)
-                                if (isGranted) {
-                                    await this.DELETE_UI()
-                                    const end = new Date()
-                                    console.log("PROCCESS IN : " + `${end - start} `)
-                                } else {
-                                    res.status(200).send({ succes: false, content: "Không có quyền truy cập" })
-                                }
-
-                                break;
-                            default:
-                                this.res.status(200).send("Not found nè")
-                                break;
-
-                        }
-                    } else {
-                        switch (api.api_method) {
-                            case "get":
-                                await this.REMOTE_GET()
-                                break;
-
-                            case "post":
-                                await this.REMOTE_POST()
-                                break;
-                            case "put":
-                                await this.REMOTE_PUT()
-                                break;
-                            case "delete":
-                                await this.REMOTE_DELETE()
-                                break;
-                            default:
-                                this.res.status(200).send("Not found nè")
-                                break;
-
-                        }
-                    }
-                } else {
-                    res.status(200).send({ succes: false, content: "Not found" })
-                }
-            } else {
-                res.status(200).send({ succes: false, content: "Not found" })
-            }
-        } else {
-            res.status(200).send({ succes: false, content: "Token khum hợp lệ" })
+/*(8)*/      this.InvalidToken()
         }
     }
 
     tearTablesAndFieldsToObjects = () => {
 
         /**
-         * This method queries ALL tables from API and tears them to seperated objects with the structure below:
+         * 
+         * @name Tạm dịch là "Xé bảng và trường của chúng rồi gom lại thành từng cục tương ứng"
+         * 
+         * 
+         * @desc 
+         *  Trước tiên, bảng ( table ) và trường ( field ) là 2 thực thể riêng biệt và chỉ liên hệ với nhau thông qua khóa ngoại
+         * field.table_id. Nên để tiện cho việc sử dụng sau này, cần gom các field có table_id giống nhau vào một mảng và nhét chúng
+         * vào table có id tương ứng. Ngoài ra, method này còn gom các trường là đối số (params) và dữ liệu từ request body (body)
+         * lại với nhau nhờ vào cấu hình của Api.
+         * 
+         * @params []
+         *  Phương thức này về cơ bản là không cần truyền tham số. Tuy nhiên, dữ liệu để chạy được lấy từ controller, chúng bao gồm:
+         *  1. API <ApisRecord>
+         *  2. tables <Object>[]  => Xem models.Tables để tham khảo cấu trúc
+         *  3. fields <Object>[]  => Xem models.Fields để tham khảo cấu trúc
+         * 
+         * @return 
+         *  Phương thức này trả về một mảng các object tables với một vài thuộc tính mới như sau:
          * {
          *     id: 27,
-         *     table_alias: '785C0C9C5B5243108C5CFBD9ACFFE13F',
-         *     table_name: 'NHÂN ZIÊN',
-         *     version_id: 11,
-         *     primary_key: [ 77 ],
-         *     foreign_keys: [],
-         *     create_by: 'ad1',
-         *     create_at: 2023-06-19T02:25:10.394Z,
-         *     fields: [],
-         *     body: [],
-         *     params: []
-            },
+         *     table_alias:     <String[32]> 
+         *     table_name:      <String>,
+         *     version_id:      <Int>,
+         *     primary_key:     <Int>[],
+         *     foreign_keys:    <Object{ 
+         *                          table_id <Int>, 
+         *                          field_id <Int>, 
+         *                          ref_field_id <Int>
+         *                      }>[],
+         *     create_by: <String>,
+         *     create_at: <Datetime>,
+         *     fields: <Object>[],
+         *     body: <Object>[],
+         *     params: <Object>[]
+         *  },
          * 
-         * 
-         */
+         *  @note 
+         *  fields, body & params có cùng cấu trúc tương tự như fields
+         */ 
 
-        const tableIds = this.API.tables.value()
-        const rawFields = this.API.fields.valueOrNot()
-        const fieldIds = rawFields.map(field => field.id)
-        const bodyIds = this.API.body.valueOrNot()
-        const paramIds = this.API.params.valueOrNot()
+
+        const tableIds  = this.API.tables.value()                
+        const bodyIds   = this.API.body.valueOrNot()
+        const paramIds  = this.API.params.valueOrNot()
 
         const tables = tableIds.map(tbID => {
             const table = this.tables.find(tb => tb.id == tbID)
             return table;
-        })
-
-        const fields = this.fields.filter(fd => fieldIds.indexOf(fd.id) != -1)
-        const bodyFields = this.fields.filter(fd => bodyIds.indexOf(fd.id) != -1)
-        const paramFields = this.fields.filter(fd => paramIds.indexOf(fd.id) != -1)
+        })        
+        const bodyFields    = this.fields.filter(fd => bodyIds.indexOf(fd.id)  != -1)
+        const paramFields   = this.fields.filter(fd => paramIds.indexOf(fd.id) != -1)
 
         const objects = tables.map(table => {
             const fieldsBelongToThisTable = this.fields.filter(field => field.table_id == table.id)
             const paramsBelongToThisTable = paramFields.filter(field => field.table_id == table.id)
-            const bodyBeLongToThisTable = bodyFields.filter(field => field.table_id == table.id)
+            const bodyBeLongToThisTable   = bodyFields.filter(field => field.table_id == table.id)
             return {
                 ...table,
                 fields: fieldsBelongToThisTable,
@@ -288,19 +395,54 @@ class ConsumeApi extends Controller {
     }
 
     getFieldsByTableId = (tableId) => {
+
+        /**
+         * @desc Lấy thông tin tất cả các trường thuộc bảng với table.id == tableId
+         * 
+         * @params [
+         *      tableId: <Int>
+         * ]
+         * 
+         * @return fields<Objetc>[] || []
+         */
+
         const fields = this.fields.filter(fd => fd.table_id == tableId)
         return fields;
     }
 
     getFields = (fieldIds) => {
+
+        /**
+         * @desc Lấy thông tin tất cả các trường có field.id thuộc danh sách fieldIds
+         * 
+         * @params [
+         *      fieldIds: <Int>[]
+         * ]
+         * 
+         * @return fields<Objetc>[] || []
+         * 
+         */
+
+
         const fields = fieldIds.map(id => {
             const field = this.fields.find(f => f.id == id)
             return field
-        })
+        }).filter(f => f != undefined)
         return fields
     }
 
-    getFieldsByAlias = (fieldAliases) => {
+    getFieldsByAlias = (fieldAliases) => {        
+        /**
+         * @desc Lấy thông tin tất cả các trường có field.fomular_alias thuộc danh sách fieldAliases
+         * 
+         * @params [
+         *      fieldAliases: <String>[]
+         * ]
+         * 
+         * @return fields<Objetc>[]  ||  []
+         * 
+         */
+
         const fields = fieldAliases.map(alias => {
             const field = this.fields.find(f => f.fomular_alias == alias)
             return field
@@ -309,16 +451,61 @@ class ConsumeApi extends Controller {
     }
 
     getField = (fieldId) => {
+        /**
+         * @desc Lấy thông tin trường có field.id == fieldId
+         * 
+         * @params [
+         *      fieldId: <Int>
+         * ]
+         * 
+         * @return fields<Objetc> || undefined
+         * 
+         */
+
         const field = this.fields.find(fd => fieldId == fd.id)
         return field
     }
 
     getTable = (tableId) => {
+
+        /**
+         * @desc Lấy thông tin bảng có table.id == table.id
+         * 
+         * @params [
+         *      tableId: <Int>
+         * ]
+         * 
+         * @return fields<Objetc> || undefined
+         * 
+         */
+
         const table = this.tables.find(tb => tb.id == tableId)
         return table;
     }
 
     isFieldForeign = (field, table) => {
+
+
+        /**
+         * @desc Kiểm tra một trường có phải là khóa ngoại của bảng hay không
+         * 
+         * @params [
+         *      field <Object>,
+         *      table <Object>
+         * ]
+         * 
+         * @return foreign_key<Objetc> || undefined
+         * 
+         * @note
+         * foreign_key<{
+         *      field_id:       <Int>
+         *      table_id:       <Int>
+         *      ref_field_id:   <Int>
+         * }>
+         * 
+         */        
+
+
         const { id } = field;
         const { foreign_keys } = table
 
@@ -327,6 +514,44 @@ class ConsumeApi extends Controller {
     }
 
     parseType = (field, value) => {
+
+        /**
+         * @desc Ép kiểu dữ liệu từ dữ liệu thô thành dữ liệu tương ứng của nó với cấu hình của trường
+         * 
+         * @params [
+         *      field <Object> => Xem models.fields
+         *      value <Any>
+         * ]
+         * 
+         * @detail
+         * 
+         * (1)      Với kiểu dữ liệu thuộc dòng kiểu nguyên [ INT, INT UNSIGNED, BIGINT, BIGINT UNSIGNED ]
+         * 
+         * (1.1)    Với số nguyên và dữ liệu không tự động tăng ( !AUTO_INC ) 
+         *          Xác thực kiểu dữ liệu là số nguyên hợp lệ và ép sang kiểu nguyên.
+         *              a. Với số nguyên hợp lệ
+         *                  - Nếu giá trị của số nguyên vừa được ép nằm trong giới hạn MIN - MAX thì kể như hợp lệ
+         *              và trả về { valid: true,  result: parseInt( value ) }
+         *                  - Nếu không, trả về { valid: false, reason: "Giá trị không thuộc giới hạn cho phép" }
+         *              b. Với số nguyên không hợp lệ, trả về { valid: false, reason: "Dữ liệu của trường số nguyên & NO_AUTO phải là kiểu int" }
+         * 
+         * (1.2)    Với số nguyên và dữ liệu tự động tăng  
+         *              a. Nếu giá trị là một số nguyên hợp lệ => { valid: true, result: parseInt(value) };              
+         *              b. Nếu không => return { valid: true, result: value };
+         *              @note Trường hợp này có thể xãy ra lỗi
+         * 
+         * 
+         * 
+         * 
+         * (2)      Với kiểu dữ liệu thuộc dòng số thực [ DECIMAL, DECIMAL UNSIGNED ]
+         * 
+         * (2.1)    Kiểm tra tính hợp lệ của dữ liệu.
+         *          a. Nếu dữ liệu hợp lệ 
+         *              - Và trong giới hạn MIN - MAX => { valid: true, result: parseFloat(fixedValue) }
+         *              - Nếu không => { valid: false, reason: "Giá trị không thuộc giới hạn cho phép" }
+         *          b. Nếu không => { valid: false, reason: "Dữ liệu của trường số thực phải là một số thực" }
+         */
+
 
         const type = field.DATATYPE
         /**
@@ -338,34 +563,34 @@ class ConsumeApi extends Controller {
         if (value !== undefined && value !== "") {
             const { MAX, MIN } = field;
             switch (type) {
-                case "INT":
+        /*(1)*/ case "INT":
                 case "INT UNSIGNED":
                 case "BIGINT":
                 case "BIGINT UNSIGNED":
                     const { AUTO_INCREMENT } = field;
-                    if (!AUTO_INCREMENT) {
+        /*(1.1)*/    if (!AUTO_INCREMENT) {
                         const validateInt = intValidate(value);
                         if (validateInt) {
                             const intValue = parseInt(value)
                             if (intValue >= MIN && intValue <= MAX) {
                                 return { valid: true, result: intValue };
                             } else {
-                                return { valid: false, reason: "Giá chị khum nằm chong zới hẹn cho phép" };
+                                return { valid: false, reason: "Giá trị không thuộc giới hạn cho phép" };
                             }
                         } else {
                             return { valid: false, reason: "Dữ liệu của trường số nguyên & NO_AUTO phải là kiểu int" }
                         }
-                    } else {
+        /*(1.2)*/   } else {
                         if (intValidate(value)) {
                             return { valid: true, result: parseInt(value) };
                         } else {
                             return { valid: true, result: value };
                         }
                     }
-                case "DECIMAL":
+        /*(2)*/ case "DECIMAL":
                 case "DECIMAL UNSIGNED":
                     const validateDouble = floatValidate(value);
-                    if (validateDouble) {
+        /*(2.1)*/   if (validateDouble) {
                         const { DECIMAL_PLACE } = field;
                         const floatNumber = parseFloat(value)
 
@@ -617,7 +842,7 @@ class ConsumeApi extends Controller {
 
             let partitions = [];
             const dataLimitation = await Database.selectFields(mainTable.table_alias, { position: "sumerize" }, ["total"])
-            
+
             const stringifiedPeriods = await Cache.getData(`${tables[0].table_alias}-periods`)
             const periods = stringifiedPeriods?.value
             if (stringifiedPeriods && periods.length > 0) {
@@ -725,7 +950,7 @@ class ConsumeApi extends Controller {
                 const partitions = this.PRECISE_PARTITIONS(redundantPartitions, tmpDataFrom + 1, dataPerBreak)
                 const keySortedTables = this.sortTablesByKeys(tables)
                 const cacheData = {}
-                
+
                 keySortedTables.map(table => {
                     cacheData[table.table_alias] = []
                 })
@@ -1803,7 +2028,7 @@ class ConsumeApi extends Controller {
                     await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
                 }
             } else {
-                if (primaryRecord && primaryRecord.length > 0 ) {
+                if (primaryRecord && primaryRecord.length > 0) {
                     primaryConflict = true
                 }
 
@@ -2093,7 +2318,7 @@ class ConsumeApi extends Controller {
                             })
                         })
 
-                        const originDatas = await Database.selectAll(table_alias, updateQuery);                        
+                        const originDatas = await Database.selectAll(table_alias, updateQuery);
                         // console.log(updateQuery)
 
                         const slaves = this.detectAllSlave(table)
@@ -2143,14 +2368,14 @@ class ConsumeApi extends Controller {
                         const calculates = statis.calculates.valueOrNot()
 
                         // console.log(data)
-                        for( let br  = 0 ; br < originDatas.length; br++ ){
+                        for (let br = 0; br < originDatas.length; br++) {
                             const originData = originDatas[br];
                             // console.log(originData)
-    
+
                             if (calculates && calculates.length > 0) {
                                 const keys = Object.keys(data)
                                 keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
-            
+
                                 for (let i = 0; i < calculates.length; i++) {
                                     const { fomular_alias, fomular } = calculates[i]
                                     let result = fomular;
@@ -2171,7 +2396,7 @@ class ConsumeApi extends Controller {
                                     }
                                 }
                             }
-            
+
                             if (statistics && statistics.length > 0) {
                                 const sumerize = await Database.select(table_alias, { position: "sumerize" })
                                 const statisSum = sumerize
@@ -2180,7 +2405,7 @@ class ConsumeApi extends Controller {
                                     const { fomular_alias, field, group_by, fomular } = statis;
                                     const stringifyGroupKey = group_by.map(group => data[group]).join("_")
                                     const statisField = statisSum[fomular_alias];
-            
+
                                     if (!statisField) {
                                         if (group_by && group_by.length > 0) {
                                             statisSum[fomular_alias] = {}
@@ -2188,11 +2413,11 @@ class ConsumeApi extends Controller {
                                             statisSum[fomular_alias] = 0
                                         }
                                     }
-            
+
                                     if (fomular == "SUM") {
                                         if (typeof (data[field]) == "number") {
                                             if (group_by && group_by.length > 0) {
-            
+
                                                 if (!statisSum[fomular_alias][stringifyGroupKey]) {
                                                     statisSum[fomular_alias][stringifyGroupKey] = data[field]
                                                 } else {
@@ -2203,10 +2428,10 @@ class ConsumeApi extends Controller {
                                             }
                                         }
                                     }
-            
+
                                     if (fomular == "AVERAGE") {
                                         if (group_by && group_by.length > 0) {
-            
+
                                             if (!statisSum[fomular_alias][stringifyGroupKey]) {
                                                 statisSum[fomular_alias][stringifyGroupKey] = {
                                                     value: data[field],
@@ -2220,7 +2445,7 @@ class ConsumeApi extends Controller {
                                             statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total - originData[field] + data[field]) / (statisSum.total)
                                         }
                                     }
-            
+
                                     if (fomular == "COUNT") {
                                         if (group_by && group_by.length > 0) {
                                             const newGroup = stringifyGroupKey;
@@ -2476,7 +2701,7 @@ class ConsumeApi extends Controller {
             const foreignData = await Promise.all(foreignSerialized.map((key) => {
                 const { field, foreignTable, ref } = key
                 const queryValue = data[field.fomular_alias] ? data[field.fomular_alias] : data[ref.fomular_alias]
-                if( queryValue ){
+                if (queryValue) {
                     return Database.selectAll(foreignTable.table_alias, { [`${ref.fomular_alias}`]: (data[field.fomular_alias] ? data[field.fomular_alias] : data[ref.fomular_alias]) })
                 }
             }))
@@ -2484,7 +2709,7 @@ class ConsumeApi extends Controller {
             let areForeignDataValid = true
 
             for (let i = 0; i < foreignData.length; i++) {
-                if( foreignData[i] ){
+                if (foreignData[i]) {
                     if (foreignData[i].length == 0) {
                         areForeignDataValid = false
                     } else {
@@ -2504,7 +2729,7 @@ class ConsumeApi extends Controller {
                 for (let i = 0; i < slaves.length; i++) {
                     const startAt = new Date()
                     const slave = slaves[i]
-                    console.log(2498, data )
+                    console.log(2498, data)
                     await Database.update(`${slave.table_alias}`, formatedQuery, { ...data })
                     const endAt = new Date()
                     console.log(`Synchorized data in table ${slave.table_name} costs: ${endAt - startAt}ms`)
@@ -2695,7 +2920,7 @@ class ConsumeApi extends Controller {
                 const sumerize = await Table.__findCriteria__({ position: "sumerize" })
 
                 const deletedItems = await Database.selectAll(`${table_alias}`, query)
-                
+
                 await Database.deleteMany(`${table_alias}`, query)
 
                 const cache = await Cache.getData(`${table_alias}-periods`)
@@ -2710,14 +2935,14 @@ class ConsumeApi extends Controller {
                 }
                 await Cache.setData(`${table_alias}-periods`, periods)
                 await Table.__manualUpdate__({ position: "sumerize" }, { total: sumerize.total - deletedItems.length })
-                
+
                 const Statis = await this.#__statistics.findAll({ table_id: tables[0].id })
                 const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id: tables[0].id })
 
                 const statistics = statis.statistic.valueOrNot()
                 const calculates = statis.calculates.valueOrNot()
 
-                for( let i = 0 ; i < deletedItems.length; i++ ){
+                for (let i = 0; i < deletedItems.length; i++) {
                     const originData = deletedItems[i]
 
                     if (calculates && calculates.length > 0) {
@@ -2910,7 +3135,7 @@ class ConsumeApi extends Controller {
                 const sumerize = await Table.__findCriteria__({ position: "sumerize" })
                 await Database.deleteMany(`${table_alias}`, query)
 
-                const newTotal = await Database.getEstimateCount( table_alias )
+                const newTotal = await Database.getEstimateCount(table_alias)
 
                 const cache = await Cache.getData(`${table_alias}-periods`)
                 const periods = cache.value;
@@ -3023,7 +3248,7 @@ class ConsumeApi extends Controller {
                     await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
                 }
 
-                
+
 
                 await Table.__manualUpdate__({ position: "sumerize" }, { total: newTotal - 1 })
                 this.res.send({ success: true })
@@ -3325,7 +3550,7 @@ class ConsumeApi extends Controller {
 
         const table = tables[0]
 
-        const { query, start_index, require_count, require_statistic , exact } = this.req.body;
+        const { query, start_index, require_count, require_statistic, exact } = this.req.body;
 
         const start = (start_index ? start_index : 0) * RESULT_PER_SEARCH_PAGE
         const end = start + RESULT_PER_SEARCH_PAGE
@@ -3347,16 +3572,16 @@ class ConsumeApi extends Controller {
             const formatedQuery = { $and: [] }
             keys.map(key => {
                 const qr = {}
-                
+
                 const [field] = this.getFieldsByAlias([key])
 
-                if( field ){
+                if (field) {
 
                     const { DATATYPE, AUTO_INCREMENT } = field;
-                    if( Fields.stringFamily.indexOf( DATATYPE ) != -1 || ( Fields.intFamily.indexOf( DATATYPE ) != -1 && AUTO_INCREMENT ) ){                        
+                    if (Fields.stringFamily.indexOf(DATATYPE) != -1 || (Fields.intFamily.indexOf(DATATYPE) != -1 && AUTO_INCREMENT)) {
                         qr[`${key}`] = { $regex: query[key] } //approximate
                         // qr[`${key}`] = query[key] // exact
-                    }else{
+                    } else {
                         qr[`${key}`] = query[key]
                     }
 
@@ -3364,35 +3589,35 @@ class ConsumeApi extends Controller {
                 }
 
             })
-            
-            const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)            
+
+            const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)
             let count = 0;
-            
+
             const statistics = this.API.statistic.valueOrNot()
             const statisData = {}
             const calculates = this.API.calculates.valueOrNot();
             const statistic = []
             if (require_count) {
-                count = await Database.count( table.table_alias, formatedQuery )                
+                count = await Database.count(table.table_alias, formatedQuery)
                 console.log("REQ COUNT", count)
             }
 
-            if( require_statistic ){
-                count = await Database.count( table.table_alias, formatedQuery )
+            if (require_statistic) {
+                count = await Database.count(table.table_alias, formatedQuery)
                 console.log("REQ STATIS", count)
-                
-                if( statistics.length > 0 ){
 
-                    for( let i = 0 ; i < count; i+= 10000 ){
-                        const tmpData = await Database.selectFrom(table.table_alias, formatedQuery, i, i+10000 )
-                        
-                        for (let j = 0; j < tmpData.length; j++) {                        
+                if (statistics.length > 0) {
+
+                    for (let i = 0; i < count; i += 10000) {
+                        const tmpData = await Database.selectFrom(table.table_alias, formatedQuery, i, i + 10000)
+
+                        for (let j = 0; j < tmpData.length; j++) {
                             const record = tmpData[j]
-            
+
                             const keys = Object.keys(record)
-            
+
                             keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
-            
+
                             for (let k = 0; k < calculates.length; k++) {
                                 const { fomular_alias, fomular } = calculates[k]
                                 let result = fomular;
@@ -3405,14 +3630,14 @@ class ConsumeApi extends Controller {
                                 } catch {
                                     record[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
                                 }
-                            }      
-            
+                            }
+
                             statistics.map(statis => {
                                 const { field, fomular_alias, fomular, group_by } = statis;
                                 const statisRecord = statisData[fomular_alias]
-            
+
                                 const stringifiedKey = group_by.map(group => record[group]).join("_")
-            
+
                                 if (!statisRecord) {
                                     if (group_by && group_by.length > 0) {
                                         statisData[fomular_alias] = {}
@@ -3420,10 +3645,10 @@ class ConsumeApi extends Controller {
                                         statisData[fomular_alias] = 0
                                     }
                                 }
-            
+
                                 if (fomular == "SUM") {
                                     if (group_by && group_by.length > 0) {
-            
+
                                         if (!statisData[fomular_alias][stringifiedKey]) {
                                             statisData[fomular_alias][stringifiedKey] = record[field]
                                         } else {
@@ -3433,10 +3658,10 @@ class ConsumeApi extends Controller {
                                         statisData[fomular_alias] += record[field]
                                     }
                                 }
-            
+
                                 if (fomular == "AVERAGE") {
                                     if (group_by && group_by.length > 0) {
-            
+
                                         if (!statisData[fomular_alias][stringifiedKey]) {
                                             statisData[fomular_alias][stringifiedKey] = {
                                                 total: 1,
@@ -3450,10 +3675,10 @@ class ConsumeApi extends Controller {
                                         statisData[fomular_alias] = (statisData[fomular_alias] * (count - 1) + record[field]) / count
                                     }
                                 }
-            
+
                                 if (fomular == "COUNT") {
                                     if (group_by && group_by.length > 0) {
-            
+
                                         if (!statisData[fomular_alias][stringifiedKey]) {
                                             statisData[fomular_alias][stringifiedKey] = 1
                                         } else {
@@ -3464,8 +3689,8 @@ class ConsumeApi extends Controller {
                                     }
                                 }
                             })
-                        }            
-                        
+                        }
+
                     }
                     statistics.map(statis => {
                         const { display_name, fomular_alias, group_by, fomular } = statis;
@@ -3476,7 +3701,7 @@ class ConsumeApi extends Controller {
                                 if (fomular == "AVERAGE") {
                                     const headers = Object.keys(rawData)
                                     const values = Object.values(rawData).map(({ total, value }) => value)
-        
+
                                     statisRecord["data"] = { headers, values }
                                     statisRecord["type"] = "table"
                                 } else {
@@ -3496,9 +3721,9 @@ class ConsumeApi extends Controller {
             }
 
 
-            data.map( record => {
+            data.map(record => {
                 const keys = Object.keys(record)
-            
+
                 keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
 
                 for (let k = 0; k < calculates.length; k++) {
@@ -3513,14 +3738,14 @@ class ConsumeApi extends Controller {
                     } catch {
                         record[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
                     }
-                } 
+                }
             })
 
             const result = data
 
             this.res.send({
                 success: true,
-                total: result.length,                
+                total: result.length,
                 fields: [...fields, ...calculates],
                 data: result,
                 count: count,
@@ -3741,7 +3966,7 @@ class ConsumeApi extends Controller {
                     }
                 }
 
-                const api_table = tables.find(tb => tb.id == api.tables[0])                
+                const api_table = tables.find(tb => tb.id == api.tables[0])
                 let isGranted = this.hasEnoughPrivileges([api_table], ["read"], privileges)
 
                 if (this.isAdmin(user) || isGranted) {
@@ -4201,12 +4426,12 @@ class ConsumeApi extends Controller {
                 })
 
                 const formedData = []
-                for( let i = 0 ; i < data.length; i++ ){
+                for (let i = 0; i < data.length; i++) {
                     const record = data[i]
                     const index = i
                     const formedRecord = await this.FormingImportData(record)
-                    formedData.push( formedRecord )
-                }                
+                    formedData.push(formedRecord)
+                }
 
                 const primaryDataSet = formedData.map(record => {
                     const primaryQuery = {}
@@ -4513,8 +4738,8 @@ class ConsumeApi extends Controller {
                 return table
             });
 
-            this.CONSUME_DETAIL_RECORD()           
-        }else{
+            this.CONSUME_DETAIL_RECORD()
+        } else {
             res.status(200).send({ succes: false, content: "Not found" })
         }
 
@@ -4552,27 +4777,27 @@ class ConsumeApi extends Controller {
             }
         }
 
-        const table = tables[0]   
-        const fields = this.getFields( this.API.fields.valueOrNot().map( f => f.id ) )       
+        const table = tables[0]
+        const fields = this.getFields(this.API.fields.valueOrNot().map(f => f.id))
 
         let formatedQuery = {}
-        paramQueries.map( ({ query }) => {
+        paramQueries.map(({ query }) => {
             formatedQuery = { ...formatedQuery, ...query }
         })
 
-        const records = await Database.selectAll( table.table_alias, formatedQuery )
+        const records = await Database.selectAll(table.table_alias, formatedQuery)
 
-        if( records.length == 1 ){
+        if (records.length == 1) {
             const record = records[0]
             const result = {}
-            for( let i = 0; i < fields.length; i++ ){
+            for (let i = 0; i < fields.length; i++) {
                 const { fomular_alias } = fields[i]
-                result[ fomular_alias ] = record[fomular_alias]
+                result[fomular_alias] = record[fomular_alias]
             }
             this.res.status(200).send({ success: true, data: result, fields })
-        }else{
+        } else {
             this.res.status(200).send({ success: false, error: "Query return more than one record or nothing" })
-        }        
+        }
     }
 
 
