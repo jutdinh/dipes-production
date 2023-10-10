@@ -51,7 +51,8 @@ export default (props) => {
     const page = props.page
     const statusActive = props.statusActive
     const dataCheck = props.dataCheck
-
+    // Check trang chi tiết
+    const checkDetail = page.components?.[0]?.api_detail
 
     // console.log(apiData)
     const layoutId = page.components?.[0].layout_id;
@@ -77,8 +78,8 @@ export default (props) => {
                         return prevData;
                     });
                 }
-            } else if(Object.keys(searchValues).length !== 0){
-               console.log(newData)
+            } else if (Object.keys(searchValues).length !== 0) {
+                console.log(newData)
             }
         });
         return () => {
@@ -208,6 +209,11 @@ export default (props) => {
             });
     };
     const callApiView = (startAt = 0, amount = 15) => {
+
+        let loadingTimeout;
+        loadingTimeout = setTimeout(() => {
+            setLoading(true)
+        }, 350);
         const headerApi = {
             Authorization: _token,
             'start-at': startAt,
@@ -222,7 +228,7 @@ export default (props) => {
             .then(res => res.json())
             .then(res => {
                 const { success, content, data, count, fields, limit, statistic } = res;
-                console.log(res)
+                // console.log(res)
                 setApiDataName(fields);
                 if (data && data.length > 0) {
                     setApiData(data.filter(record => record != undefined));
@@ -234,7 +240,10 @@ export default (props) => {
                     // setApiViewData(data)
                     // setApiViewFields(fields)
                 }
+                clearTimeout(loadingTimeout);
+                setLoading(false)
             });
+
     }
     const callApiCount = (requireCount = false) => {
 
@@ -368,7 +377,7 @@ export default (props) => {
                     // setApiData(data.filter(record => record != undefined));
                     // setApiDataName(fields);
                     setDataStatis(statisticValues);
-                  
+
                 } else {
                     setApiData([]);
                     setApiDataName([])
@@ -592,6 +601,53 @@ export default (props) => {
         const id_str = page.components?.[0]?.api_post.split('/')[2];
 
         window.location.href = `${url}/apis/api/${id_str}/input_info`;
+    }
+
+    const handleViewDetail = async (record) => {
+
+        const { components } = page;
+        const cpn = components[0]
+        const { api_detail } = cpn;
+        console.log(cpn)
+        if (api_detail != undefined) {
+            const id_str = api_detail.split('/')[2]
+
+            const response = await new Promise((resolve, reject) => {
+                fetch(`${proxy()}/apis/api/${id_str}/input_info`, {
+                    headers: {
+                        Authorization: _token
+                    }
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        const { data, success, content } = res;
+                        if (success) {
+                            // console.log("succcess", data)
+                            setDataTables(data.tables)
+                            setDataFields(data.body)
+                        }
+                        resolve(res)
+                    })
+            })
+            const { success, data } = response;
+            if (success) {
+                const { params } = data;
+                const stringifiedParams = params.map(param => {
+                    const { fomular_alias } = param
+                    return record[fomular_alias]
+                }).join('/')
+                openTab(`/page/${url}/detail/${id_str}/${stringifiedParams}?myParam=${url}`)
+
+            }
+        } else {
+            Swal.fire({
+                title: lang["faild"],
+                text: lang["not found"],
+                icon: "error",
+                showConfirmButton: false,
+                timer: 2000,
+            })
+        }
     }
     const handleDelete = (data) => {
         // console.log(data)
@@ -992,6 +1048,7 @@ export default (props) => {
                                                                                             </td>
                                                                                         ))}
                                                                                         <td className="align-center cell" style={{ minWidth: "80px" }}>
+                                                                                            {checkDetail && <i className="fa fa-eye size-24 pointer mr-2 icon-view" onClick={() => handleViewDetail(row)} title={lang["viewdetail"]}></i>}
                                                                                             {
                                                                                                 _user.role === "uad"
                                                                                                     ?

@@ -4,6 +4,7 @@ import Text from './text';
 import Int  from './int';
 import Decimal from './decimal';
 import Bool from './bool';
+import Label from "./label"
 
 
 import { DateInput, TimeInput, DateTimeInput } from './datetime';
@@ -14,5 +15,5 @@ export {
     Int,
     DateInput, TimeInput, DateTimeInput,
     Decimal,
-    Bool, DataEmail, DataPhone
+    Bool, DataEmail, DataPhone, Label
 }

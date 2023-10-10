@@ -54,13 +54,10 @@ function Active_Helpdesk() {
                 <div class="col-lg-12">
                   <div class="row">
                     {
-
                       <>
                         {
-
                           <div class="col-md-12">
                             <div class="table-responsive">
-
                               <>
                                 <table class="table table  ">
                                   <thead>
@@ -72,8 +69,6 @@ function Active_Helpdesk() {
                                           <i className="fa fa-filter icon-view size-18" />
                                         </div>
                                       </th>
-
-
                                       <th class="font-weight-bold" style={{ width: "180px" }} scope="col">
                                         <div className="th-container">
                                           Số LOT

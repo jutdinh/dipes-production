@@ -396,7 +396,7 @@ export default () => {
                                                     <div class="col-md-6">
                                                         <div class="mt-2 d-flex justify-content-end">
                                                             <button type="button"  style={{ minWidth: "105px" }} onClick={submit} class="btn btn-success mr-2">{lang["btn.update"]}</button>
-                                                            <button type="button"  style={{ minWidth: "105px" }} onClick={() => navigate(-1)} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
+                                                            <button type="button"  style={{ minWidth: "105px" }} onClick={() => goToHomePage()} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
                                                         </div>
                                                     </div>
                                                 </div>

@@ -71,7 +71,7 @@ export default (props) => {
                 if (data != undefined) {
                     setProfile(data);
                     setEditUser(data)
-                    console.log(data)
+               
                 }
             })
     }, [])
@@ -100,28 +100,29 @@ export default (props) => {
                         body: JSON.stringify({ image: e.target.result })
                     }).then(res => res.json()).then(data => {
                         const { success, content } = data;
+                        console.log(data)
 
-                        if (success) {
-                            Swal.fire({
-                                title: lang["success"],
-                                text: lang["success.update"],
-                                icon: "success",
-                                showConfirmButton: false,
-                                timer: 1500,
-                            }).then(function () {
-                                window.location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: lang["faild"],
-                                text: lang["fail.update"],
-                                icon: "error",
-                                showConfirmButton: false,
-                                timer: 2000,
-                            }).then(function () {
-                                // Không cần reload trang
-                            });
-                        }
+                        // if (success) {
+                        //     Swal.fire({
+                        //         title: lang["success"],
+                        //         text: lang["success.update"],
+                        //         icon: "success",
+                        //         showConfirmButton: false,
+                        //         timer: 1500,
+                        //     }).then(function () {
+                        //         window.location.reload();
+                        //     });
+                        // } else {
+                        //     Swal.fire({
+                        //         title: lang["faild"],
+                        //         text: lang["fail.update"],
+                        //         icon: "error",
+                        //         showConfirmButton: false,
+                        //         timer: 2000,
+                        //     }).then(function () {
+                        //         // Không cần reload trang
+                        //     });
+                        // }
                     })
                 }
             }
@@ -177,7 +178,7 @@ export default (props) => {
             .then(res => res.json())
             .then((resp) => {
                 const { success, content, status } = resp;
-                // console.log(resp)
+                console.log(resp)
                 if (success) {
                     const stringifiedUser = JSON.stringify(requestBody.account)
                     localStorage.setItem("user", stringifiedUser)
@@ -303,7 +304,7 @@ export default (props) => {
                                                             <li class="mt-2"><i class="fa fa-envelope-o"></i> : {profile.email || "nhan.to@mylangroup.com"}</li>
                                                             <li class="mt-2"> <i class="fa fa-phone"></i> : {profile.phone || "0359695554"}</li>
                                                             <li class="mt-2">{lang["address"]}: {profile.address || "Phong Thạnh, Cầu Kè, Trà Vinh"}</li>
-                                                            <li class="mt-2">{lang["note"]}: {profile.note || lang["note"]}</li>
+                                                            {/* <li class="mt-2">{lang["note"]}: {profile.note || lang["note"]}</li> */}
                                                         </ul>
                                                     </div>
                                                     {/* <div class="user_progress_bar">

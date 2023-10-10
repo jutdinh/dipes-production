@@ -255,6 +255,7 @@ export default (props) => {
                 ...editUser
             }
         };
+        console.log(requestBody)
         fetch(`${proxy()}/auth/user`, {
             method: 'PUT',
             headers: {
@@ -266,7 +267,7 @@ export default (props) => {
             .then(res => res.json())
             .then((resp) => {
                 const { success, content, status } = resp;
-
+                console.log(resp)
                 const newProfiles = profiles.map(user => {
                     if (user.username == editUser.username) {
                         return editUser
@@ -277,7 +278,7 @@ export default (props) => {
                 setProfile(newProfiles)
                 // close modal
                 // console.log(resp)
-                functions.showApiResponseMessage(status)
+                // functions.showApiResponseMessage(status)
             });
     }
     const handleUpdateUser = (editUser) => {
@@ -433,8 +434,8 @@ export default (props) => {
                                             </form>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button"  style={{ minWidth: "105px" }} onClick={submit} class="btn btn-success">{lang["btn.create"]}</button>
-                                            <button type="button"  style={{ minWidth: "105px" }} onClick={handleCloseModal} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
+                                            <button type="button" style={{ minWidth: "105px" }} onClick={submit} class="btn btn-success">{lang["btn.create"]}</button>
+                                            <button type="button" style={{ minWidth: "105px" }} onClick={handleCloseModal} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -541,7 +542,7 @@ export default (props) => {
                                                                                 <ul class="list-unstyled">
                                                                                     <li><i class="fa fa-envelope-o"></i> {item.email}</li>
                                                                                     <li><i class="fa fa-phone"></i> {item.phone}</li>
-                                                                                    <li>{lang["createby"]}: {item.create_by}</li>
+                                                                                    {/* <li>{lang["createby"]}: {item.create_by}</li> */}
                                                                                     <li>
                                                                                         {lang["time"]}: {
                                                                                             lang["time"] === "Time" ?
@@ -595,7 +596,7 @@ export default (props) => {
                                                                                     <li><i class="fa fa-envelope-o"></i> {item.email}</li>
                                                                                     <li><i class="fa fa-phone"></i> {item.phone}</li>
                                                                                     <li>{lang["address"]}: {item.address}</li>
-                                                                                    <li>{lang["createby"]}: {item.create_by}</li>
+                                                                                    {/* <li>{lang["createby"]}: {item.create_by}</li> */}
                                                                                     <li>
                                                                                         {lang["time"]}: {
                                                                                             lang["time"] === "Time" ?
@@ -646,7 +647,7 @@ export default (props) => {
                                                                                     <li><i class="fa fa-envelope-o"></i> {item.email}</li>
                                                                                     <li><i class="fa fa-phone"></i> {item.phone}</li>
                                                                                     <li>{lang["address"]}: {item.address}</li>
-                                                                                    <li>{lang["createby"]}: {item.create_by}</li>
+                                                                                    {/* <li>{lang["createby"]}: {item.create_by}</li> */}
                                                                                     <li>
                                                                                         {lang["time"]}: {
                                                                                             lang["time"] === "Time" ?

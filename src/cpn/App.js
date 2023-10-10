@@ -19,7 +19,7 @@ import { Logs } from './logs';
 import { Tables, Field, UpdateField } from './tables';
 import { Diagram } from './diagram';
 import  Active_Key from "./active_key/active";
-import { Fetch, InputPost, InputPut, ImportData } from './page';
+import { Fetch, InputPost, InputPut, ImportData, Detail } from './page';
 import  {Active_Helpdesk, Table_Key, Chart_HelpDesk}  from "./page/step"
 import "../css/index.scss";
 import { SiteMap } from './site-map';
@@ -160,6 +160,7 @@ function App() {
 
         <Route exac path="/page/:url/apis/api/:id_str/input_info" element={ < Navigation Child={InputPost} /> } />
         <Route path="/page/:url/put/api/:id_str/*" element={ < Navigation Child={InputPut} /> } />
+        <Route path="/page/:url/detail/:id_str/*" element={ < Navigation Child={Detail} /> } />
         <Route exac path="/page/:url" element={ < Navigation Child={Fetch} /> } />
         <Route exac path="/page/:url/import" element={ < Navigation Child={ImportData} /> } />
         {/* <Route exac path="/diagram" element={ < Navigation Child={Diagram} /> } /> */}
