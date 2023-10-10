@@ -376,6 +376,7 @@ class Auth extends Controller {
                         "Unknown"
                     )
                     context.success = true; context.content = "Tạo tài khoản thành công!"; context.data = Account.get(); context.status = "0x4501011";
+                    delete context.data.create_by
                 }else{
                     context.content = `Tài khoản ${ username } đã tồn tại`;
                     context.status = "0x4501008"

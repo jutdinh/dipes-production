@@ -544,13 +544,45 @@ class ConsumeApi extends Controller {
          * 
          * 
          * (2)      Với kiểu dữ liệu thuộc dòng số thực [ DECIMAL, DECIMAL UNSIGNED ]
+         *          Kiểm tra tính hợp lệ của dữ liệu.
          * 
-         * (2.1)    Kiểm tra tính hợp lệ của dữ liệu.
-         *          a. Nếu dữ liệu hợp lệ 
+         * (2.1)    Nếu dữ liệu hợp lệ 
          *              - Và trong giới hạn MIN - MAX => { valid: true, result: parseFloat(fixedValue) }
          *              - Nếu không => { valid: false, reason: "Giá trị không thuộc giới hạn cho phép" }
-         *          b. Nếu không => { valid: false, reason: "Dữ liệu của trường số thực phải là một số thực" }
-         */
+         * (2.2)    Nếu không => { valid: false, reason: "Dữ liệu của trường số thực phải là một số thực" }
+         * 
+         * 
+         * 
+         * 
+         * 
+         * (3)      Với dữ liệu thuộc dòng Boolean, dử dụng typeof để xác định kiểu và trả về kết quả
+         * 
+         * 
+         * 
+         * (4)      Với dữ liệu thuộc dòng thời gian [ Date, Datetime ]
+         *          Tạo một thực thể kiểu Date() bằng giá trị của value, 
+         *              - Nếu kết quả trả về là NaN => { valid: false, reason: "Ngày giờ không hợp lệ" }
+         *              - Nếu không => { valid: true, result: date }
+         * 
+         * 
+         * (5)      Với dữ liệu kiểu TEXT
+         *          Ép dữ liệu sang dạng chuỗi và đo độ dài, 
+         *              - Nếu độ dài trong khoảng cho phép => { valid: true, result: value.toString() }
+         *              - Nếu không => { valid: false, reason: "Chuỗi có độ dài lớn hơn giới hạn cho phép" }
+         * 
+         * 
+         * (6)      Với kiểu CHAR 
+         *          Tương tự TEXT, tuy nhiên giới hạn độ dài của kiểu CHAR luôn là 1
+         * 
+         * 
+         * (7)      Với dữ liệu thuộc nhóm PHONE || EMAIL => luôn trả về { valid: true, result: value }
+         * 
+         * 
+         * (8)      Nếu không tìm thấy kiểu dữ liệu => { valid: false }
+         * 
+         * 
+         * 
+         */             
 
 
         const type = field.DATATYPE
@@ -601,10 +633,10 @@ class ConsumeApi extends Controller {
                             return { valid: false, reason: "Giá trị khum nằm trong giới hạn cho phép" }
                         }
 
-                    } else {
+        /*(2.2)*/   } else {
                         return { valid: false, reason: "Dữ liệu của trường số thực phải là một số thực" }
                     }
-                case "BOOL":
+        /*(3)*/ case "BOOL":
                     const typeBool = typeof (value);
                     if (typeBool == 'boolean') {
                         return { valid: true, result: value }
@@ -612,31 +644,31 @@ class ConsumeApi extends Controller {
                     else {
                         return { valid: false, reason: "Dữ liệu của trường BOOL phải là giá trị trong ENUM [ true, false ]" }
                     }
-                case "DATE":
+        /*(4)*/ case "DATE":
                 case "DATETIME":
                     const date = new Date(value);
                     if (!isNaN(date)) {
                         return { valid: true, result: date }
                     } else {
-                        return { valid: false, reason: "Ngày giờ khum hợp lệ" }
+                        return { valid: false, reason: "Ngày giờ hông hợp lệ" }
                     }
-                case "TEXT":
+        /*(5)*/ case "TEXT":
                     const stringifiedValue = value.toString();
                     const { LENGTH } = field;
                     if (LENGTH && LENGTH > 0 && stringifiedValue.length <= LENGTH) {
                         return { valid: true, result: stringifiedValue }
                     } else {
-                        return { valid: false, reason: "Dài quá dài z rồi ai chơi má" }
+                        return { valid: false, reason: "Chuỗi có độ dài lớn hơn giới hạn cho phép" }
                     }
-                case "CHAR":
+        /*(6)*/ case "CHAR":
                     const charifiedValue = value.toString()
                     if (charifiedValue.length == 1) {
                         return { valid: true, result: charifiedValue }
                     } return { valid: false, reason: "Kiểu char yêu cầu dữ liệu với độ dài bằng 1" }
-                case "PHONE":
+        /*(7)*/ case "PHONE":
                 case "EMAIL":
                     return { valid: true, result: value }
-                default:
+        /*(8)*/ default:
                     return { valid: false }
             }
         } else {
@@ -651,6 +683,21 @@ class ConsumeApi extends Controller {
 
 
     generatePeriodIndex = (rawIndex) => {
+
+        /**
+         * 
+         * @params rawIndex <INT>
+         * 
+         * @desc 
+         *      Tạo (các) đối tượng chứa thông tin các partion sao cho số lượng dữ liệu được truy vấn từ chúng vừa đủ 
+         *  bằng số lượng truy vấn mỗi request được định nghĩa bởi RESULT_PER_SEARCH_PAGE
+         * 
+         * 
+         * 
+         * 
+         */
+
+
         const partitions = this.periods;
         const RECORD_PER_PAGE = RESULT_PER_SEARCH_PAGE
         if (intValidate(rawIndex) && partitions.length > 0) {
