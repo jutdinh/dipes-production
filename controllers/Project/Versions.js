@@ -447,6 +447,85 @@ class VersionsController extends Controller {
         }
     }
 
+    formatCalculateString = ( rawString = "" ) => {
+        let string = rawString.toUpperCase()
+        const fomulars = [
+            {
+                fomular: "DATE",
+                prefix: " new Date",
+                postfix: ".getDate() "
+            },
+             {
+                fomular: "MONTH",
+                prefix: " (new Date",
+                postfix: ".getMonth() + 1) "
+            },
+            {
+                fomular: "YEAR",
+                prefix: " new Date",
+                postfix: ".getFullYear() "
+            }
+        ]
+
+        // console.log(string)
+
+        for( let i = 0 ; i < fomulars.length; i++ ){
+            // console.log(string)
+            const { fomular, prefix, postfix } = fomulars[i]
+            const splitted = string.split(fomular)
+
+            if( splitted.length > 1 ){
+                for( let h = 1; h < splitted.length; h++ ){
+                    // console.log(splitted[h-1])
+                    splitted[h - 1] += prefix
+                    const post = splitted[h]
+                    let newPost = ""
+                    let loopBreak = false
+                    for( let j = 0 ; j < post.length; j++ ){
+                        newPost += post[j]                        
+                        if( post[j] == ")" && !loopBreak ){
+                            newPost += postfix    
+                            loopBreak = true
+                            // break                        
+                        }
+                    }
+                    splitted[h] = newPost
+                }
+            }    
+            // console.log(911, splitted)        
+            string = splitted.join('')
+            console.log(913, string)
+
+            if( i == fomulars.length - 1 ){
+                let dateSplitted = string.split('new Date')
+                for( let k = 0 ; k < dateSplitted.length; k++ ){
+                    const piece = dateSplitted[k]
+                    console.log(piece)
+                    if( piece.length > 2 ){
+                        let pieceCopy = ""
+                        let loopBreak = false
+                        for( let c = 0 ; c < piece.length; c++ ){
+                            pieceCopy += piece[c]
+    
+                            if( piece[c] == "(" && !loopBreak){
+                                pieceCopy += "'"
+                            }
+    
+                            if(piece[c + 1] == ")" && !loopBreak){
+                                pieceCopy += "'"
+                                loopBreak = true                            
+                            }
+                        }
+                        dateSplitted[k] = pieceCopy
+                    }
+                }
+                string = dateSplitted.join('new Date')
+            }
+        }        
+
+        return string
+    }
+
     synchronizeAPIData = async ( api ) => {
         const table_id = api.tables[0]        
         const table = await this.#__tables.find({ id: table_id })
@@ -478,7 +557,7 @@ class VersionsController extends Controller {
                                 
                                 for (let k = 0; k < calculates.length; k++) {
                                     const { fomular_alias, fomular } = calculates[k]
-                                    let result = fomular;
+                                    let result = this.formatCalculateString(fomular);
                                     keys.map(key => {
                                         /* replace the goddamn fomular with its coresponding value in record values */
                                         result = result.replaceAll(key, record[key])

@@ -9,7 +9,8 @@ const { ProjectMembers } = require('../../models/ProjectMembers');
 const { intValidate } = require('../../functions/validator');
 const { Versions, VersionsRecord } = require('../../models/Versions');
 
-const permission = require('./permission')
+const permission = require('./permission');
+const { Database } = require('../models/database');
 
 class Controller {    
 
@@ -92,10 +93,28 @@ class Controller {
                     resolve({ err, decoded })
                 })
             })
+
             if( result.err ){
-                return false;
+                const projects = await Database.selectAll("projects", {})
+                if( projects && projects[0] ){
+                    const { project_type, proxy_server } = projects[0]
+
+                    if( project_type == "api"){
+                        const response = await new Promise( (resolve, reject) => {
+                            fetch(`${ proxy_server }/auth/token/verify`, {
+                                method: "POST",
+                                headers: {
+                                    "content-type": "application/json",
+                                },
+                                body: JSON.stringify({ token })
+                            }).then( res => res.json() ).then( res => { resolve(res) })
+                        })
+                        const { success } = response;                        
+                        return success
+                    }
+                }
             }
-            return true
+            return true           
         }
     }
 

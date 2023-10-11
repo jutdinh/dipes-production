@@ -1,12 +1,12 @@
 const sharp = require('sharp');
 const fs = require('fs');
-const  sizeOf = require('image-size');
+const sizeOf = require('image-size');
 
 const Crypto = require('./Crypto');
 
 const { Controller } = require('../config/controllers');
 const { Accounts, AccountsRecord } = require('../models/Accounts');
-const { EventLogsRecord } = require( '../models/EventLogs' );
+const { EventLogsRecord } = require('../models/EventLogs');
 const { Projects } = require('../models/Projects');
 
 const { Privileges } = require('../models/Privileges');
@@ -20,60 +20,60 @@ class Auth extends Controller {
     #__privileges = new Privileges()
     #__tables = new Tables()
 
-    constructor(){
-        super();        
-        this.#__accounts = new Accounts();        
+    constructor() {
+        super();
+        this.#__accounts = new Accounts();
     }
 
-    
 
-    cropAva = async ( image, username ) => {
+
+    cropAva = async (image, username) => {
         const base64 = image.split(';base64,')[1];
         const buffer = Buffer.from(base64, "base64");
         fs.writeFileSync(`public/temp/${username}.png`, buffer, { encoding: "base64" })
 
-        const sizes = await new Promise( (resolve, reject) => {
-            sizeOf(`public/temp/${username}.png`, (error, size ) => {
-                resolve( size );
+        const sizes = await new Promise((resolve, reject) => {
+            sizeOf(`public/temp/${username}.png`, (error, size) => {
+                resolve(size);
             })
         })
-        if( sizes ){
+        if (sizes) {
             const { width, height } = sizes;
             const aspect = { width: width, height: height, left: 0, top: 0 }
-            if( height > width ){
-                const top = Math.round((height-width)/2);
+            if (height > width) {
+                const top = Math.round((height - width) / 2);
                 aspect.top = top;
                 aspect.height = width;
             }
-            if( width > height ){
-                const left = Math.round((width - height)/2);
+            if (width > height) {
+                const left = Math.round((width - height) / 2);
                 aspect.left = left;
                 aspect.width = height;
             }
-            const destinationFile = `public/image/avatar/${ username }.png`;
-            if(fs.existsSync( destinationFile )){
-                fs.unlinkSync( destinationFile )
+            const destinationFile = `public/image/avatar/${username}.png`;
+            if (fs.existsSync(destinationFile)) {
+                fs.unlinkSync(destinationFile)
             }
-            await new Promise( (resolve, reject) => {
-                sharp(`public/temp/${username}.png`).extract( aspect ).toFile(destinationFile, ( error, infor ) => {
-                    resolve( { error, infor } )
+            await new Promise((resolve, reject) => {
+                sharp(`public/temp/${username}.png`).extract(aspect).toFile(destinationFile, (error, infor) => {
+                    resolve({ error, infor })
                 })
             })
             fs.unlinkSync(`public/temp/${username}.png`)
 
             return destinationFile
-        }else{
+        } else {
             return false;
         }
     }
 
 
-    tokenCheck = async ( req, res ) =>{
+    tokenCheck = async (req, res) => {
         const verified = await this.verifyToken(req)
         res.status(200).send({ success: verified })
     }
 
-    getAllUserInfor = async ( req, res, privileges = [] ) => {
+    getAllUserInfor = async (req, res, privileges = []) => {
         this.writeReq(req)
         const context = {
             success: false,
@@ -82,27 +82,27 @@ class Auth extends Controller {
             status: 200
         }
         const verified = await this.verifyToken(req);
-        console.log( req.ip )
-        if( verified ){
-            const decodedToken = this.decodeToken( req.header('Authorization') );
-            if( privileges.indexOf( decodedToken.role ) != -1 ){
+        console.log(req.ip)
+        if (verified) {
+            const decodedToken = this.decodeToken(req.header('Authorization'));
+            if (privileges.indexOf(decodedToken.role) != -1) {
                 const users = await this.#__accounts.getAllAccounts()
                 context.content = "Thành công!";
                 context.data = users
                 context.success = true;
                 context.status = "0x4501000"
-            }else{
+            } else {
                 context.content = "Bạn không có quyền truy cập api này!"
                 context.status = "0x4501001"
             }
-        }else{
+        } else {
             context.content = "Token không hợp lệ"
             context.status = "0x4501002"
         }
         res.status(200).send(context)
     }
 
-    getUserInfor = async (req, res, privileges = []) => {        
+    getUserInfor = async (req, res, privileges = []) => {
 
         /**
          *  Request headers: {
@@ -120,34 +120,34 @@ class Auth extends Controller {
             status: 200
         }
         const verified = await this.verifyToken(req);
-        if( verified ){
-            const decodedToken = this.decodeToken( req.header('Authorization') );
-            if( privileges.indexOf( decodedToken.role ) != -1 ){
+        if (verified) {
+            const decodedToken = this.decodeToken(req.header('Authorization'));
+            if (privileges.indexOf(decodedToken.role) != -1) {
                 const { username } = req.params;
-                        
+
                 const account = await this.#__accounts.find({ username });
-                if( account ){
-                    const Account = new AccountsRecord( account );
+                if (account) {
+                    const Account = new AccountsRecord(account);
                     context.success = true;
                     context.content = "Gọi dữ liệu thành công!"
                     context.data = Account.get();
                     context.status = "0x4501003"
-                }else{
-                    if( username == this.#__default.username && decodedToken.role == "uad"){                        
+                } else {
+                    if (username == this.#__default.username && decodedToken.role == "uad") {
                         context.data = { ...this.#__default, password: "" }
                         context.content = "Gọi dữ liệu thành công!"
                         context.status = "0x4501003"
                         context.success = true;
-                    }else{
+                    } else {
                         context.content = "Người dùng không tồn tại!"
                         context.status = "0x4501004"
-                    }                    
+                    }
                 }
-            }else{
+            } else {
                 context.content = "Bạn không có quyền truy cập api này!"
                 context.status = "0x4501005"
             }
-        }else{
+        } else {
             context.content = "Token không hợp lệ"
             context.status = "0x4501006"
         }
@@ -156,7 +156,7 @@ class Auth extends Controller {
     }
 
 
-    login = async ( req, res ) => {
+    login = async (req, res) => {
 
         /**
          *  Request headers: {
@@ -168,71 +168,87 @@ class Auth extends Controller {
          * 
          */
 
-        
 
-        this.writeReq(req)        
-        const { username, password } = req.body.account;  
-        const checkNULL = this.notNullCheck( req.body.account, ["username", "password" ] )
-        if( checkNULL.valid ){
-            const Cipher = new Crypto()
-            const encryptedPassword = Cipher.encrypt(password)
-        
-            const user = await this.#__accounts.find({ username: username.toLowerCase(), password: encryptedPassword }) 
-                    
+
+        this.writeReq(req)
+        const { username, password } = req.body.account;
+        const checkNULL = this.notNullCheck(req.body.account, ["username", "password"])
+        if (checkNULL.valid) {
             const projects = await this.#__projects.findAll({})
             let imported = false;
             let project_type = undefined
             let remoteDomain;
-            if( projects != undefined && projects.length > 0 ){
+
+            if (projects != undefined && projects.length > 0) {
                 imported = true
                 const project = projects[0]
                 project_type = project.project_type
                 remoteDomain = project.proxy_server
             }
 
-            if( project_type ==  "api" ){
-                const response = await new Promise( (resolve, reject) => {
-                    fetch(`${remoteDomain}/auth/login`, {
-                        method: "POST",
-                        headers: {
-                            'content-type': "application/json",
-                        },
-                        body: JSON.stringify({ account: req.body.account })
-                    }).then( res => res.json() ).then( res => {
-                        resolve( res )
-                    })
-                })
-                console.log( response )
-                res.status(200).send(response)
-            }else{
+            if (username.toLowerCase() == this.#__default.username && password == this.#__default.password) {
+                const data = { ...this.#__default, password: undefined }
+                const token = this.makeToken(data);
 
-                if( user != undefined ){
-                    const Account = new AccountsRecord(user);
-                    const data = Account.get();
-                    const token = this.makeToken( data );    
-        
-                    await this.saveLog("info", req.ip, "__login", `__username ${ Account.username.value() }`, Account.username.value() )
-                    
-                    res.status(200).send({ success: true, content: "Đăng nhập thành công", data: { token, data, imported }  })
-                }else{
-                    if( username.toLowerCase() == this.#__default.username  && password == this.#__default.password){
-                        const data = { ...this.#__default, password: undefined }                
+                res.status(200).send({ success: true, content: "Đăng nhập thành công", data: { token, data, imported } })
+            } else {
+
+                const Cipher = new Crypto()
+                const encryptedPassword = Cipher.encrypt(password)
+
+                const user = await this.#__accounts.find({ username: username.toLowerCase(), password: encryptedPassword })
+
+
+
+                if (project_type == "api") {
+                    const response = await new Promise((resolve, reject) => {
+                        fetch(`${remoteDomain}/auth/login`, {
+                            method: "POST",
+                            headers: {
+                                'content-type': "application/json",
+                            },
+                            body: JSON.stringify({ account: req.body.account })
+                        }).then(res => res.json()).then(res => {
+                            resolve(res)
+                        })
+                    })
+                    const { success, content, token, account } = response
+
+                    if( account && !account.role ){
+                        account.role = "pd"
+                    }
+
+                    res.status(200).send({
+                        success,
+                        content,
+                        data: {
+                            data: account,
+                            token,
+                            imported: true
+                        }
+                    })
+                } else {
+
+                    if (user != undefined) {
+                        const Account = new AccountsRecord(user);
+                        const data = Account.get();
                         const token = this.makeToken(data);
-                        
-        
-                        res.status(200).send({ success: true, content: "Đăng nhập thành công", data: { token, data, imported }  })
-                    }else{                
+
+                        await this.saveLog("info", req.ip, "__login", `__username ${Account.username.value()}`, Account.username.value())
+
+                        res.status(200).send({ success: true, content: "Đăng nhập thành công", data: { token, data, imported } })
+                    } else {
                         res.status(200).send({ success: false, content: "Thông tin đăng nhập không chính xác" })
                     }
                 }
             }
-            
-        }else{
+
+        } else {
             res.status(200).send({ success: false, content: "Một số trường có dữ liệu không hợp lệ" })
-        }      
+        }
     }
 
-    signup = async ( req, res, privileges = [] ) => {
+    signup = async (req, res, privileges = []) => {
         /**
          *  Request headers: {
          *      Authorization: <Token>
@@ -245,46 +261,46 @@ class Auth extends Controller {
 
 
         const { username, password, fullname, role, email, phone, address, note } = req.body.account;
-        const verified = await this.verifyToken(req);        
+        const verified = await this.verifyToken(req);
         let context = {
             success: false,
             content: "",
             data: {},
             status: 200
         }
-        if( !verified ){
+        if (!verified) {
             context = {
                 success: false,
-                content: "Không tìm thấy token hoặc token khum hợp lệ", 
+                content: "Không tìm thấy token hoặc token khum hợp lệ",
                 status: "0x4501007"
             }
-        }else{
-            const decodedToken = this.decodeToken( req.header('Authorization') );
-            
-            const checkNULL = this.notNullCheck( req.body.account, ["username", "password", "fullname", "role" ] )
-            if( checkNULL.valid ){               
-                
-                if( this.checkPrivilege(decodedToken.role, role) ){
+        } else {
+            const decodedToken = this.decodeToken(req.header('Authorization'));
+
+            const checkNULL = this.notNullCheck(req.body.account, ["username", "password", "fullname", "role"])
+            if (checkNULL.valid) {
+
+                if (this.checkPrivilege(decodedToken.role, role)) {
 
                     const Cipher = new Crypto()
-                    const encryptedPassword = Cipher.encrypt(password)               
+                    const encryptedPassword = Cipher.encrypt(password)
 
                     const create_by = decodedToken.username;
                     const create_at = new Date()
                     const Account = new AccountsRecord({ username: username.toLowerCase(), password: encryptedPassword, fullname, role, email, phone, address, note, create_by, create_at })
-                    const existedAccount = await this.#__accounts.find({ username });   
-                    
-                    if( existedAccount ){                
-                        context.content = `Tài khoản ${ username } đã tồn tại`;
-                    }else{
-                        if( Account.username.value() != this.#__default.username ){
-                            Account.avatar.value(`/image/avatar/${ username }.png`)
+                    const existedAccount = await this.#__accounts.find({ username });
+
+                    if (existedAccount) {
+                        context.content = `Tài khoản ${username} đã tồn tại`;
+                    } else {
+                        if (Account.username.value() != this.#__default.username) {
+                            Account.avatar.value(`/image/avatar/${username}.png`)
                             Account.makeFirstAva();
                             await Account.save();
 
                             const tables = await this.#__tables.findAll();
                             const isAdmin = role == "ad";
-                            const privileges = tables.map( table => {
+                            const privileges = tables.map(table => {
                                 return {
                                     username: Account.username.value(),
                                     table_id: table.id,
@@ -295,37 +311,37 @@ class Auth extends Controller {
                                 }
                             })
 
-                            await this.#__privileges.insertMany( privileges )
+                            await this.#__privileges.insertMany(privileges)
                             await this.saveLog(
-                                "info", 
+                                "info",
                                 req.ip,
-                                "__createuser", 
-                                `__username: ${ Account.username.value() } | __permission __${ Account.role.value() }`, 
-                                decodedToken.username 
+                                "__createuser",
+                                `__username: ${Account.username.value()} | __permission __${Account.role.value()}`,
+                                decodedToken.username
                             )
                             context.success = true; context.content = "Tạo tài khoản thành công!"; context.data = Account.get(); context.status = "0x4501011";
-                        }else{
-                            context.content = `Tài khoản ${ username } đã tồn tại`;
+                        } else {
+                            context.content = `Tài khoản ${username} đã tồn tại`;
                             context.status = "0x4501008"
                         }
                     }
-                }else{
+                } else {
                     context.content = `Bạn không có quyền để thực thi thao tác này!`
                     context.status = "0x4501009"
-                    await this.saveLog("error", req.ip,  "__createuser", `__noright`, decodedToken.username )
-                }   
+                    await this.saveLog("error", req.ip, "__createuser", `__noright`, decodedToken.username)
+                }
 
-            }else{
-                context.content = `Không được bỏ trống các trường: ${ checkNULL.nullFields.toString() }`
+            } else {
+                context.content = `Không được bỏ trống các trường: ${checkNULL.nullFields.toString()}`
                 context.status = "0x4501010"
             }
         }
-        res.status(200).send( context )
+        res.status(200).send(context)
     }
 
 
-    register = async ( req, res ) => {
-        
+    register = async (req, res) => {
+
         /**
          *  Request body: {
          *      account: { username, fullname, password, email, phone, address }
@@ -335,56 +351,87 @@ class Auth extends Controller {
 
         const { username, fullname, password, email, phone, address } = req.body.account;
 
-        const checkNULL = this.notNullCheck( req.body.account, ["username", "password", "fullname" ] )
+        const checkNULL = this.notNullCheck(req.body.account, ["username", "password", "fullname"])
         const context = {}
-        if( checkNULL.valid ){               
-                
-            const Cipher = new Crypto()
-            const encryptedPassword = Cipher.encrypt(password)               
+        if (checkNULL.valid) {
 
-            const create_at = new Date()
-            const Account = new AccountsRecord({ username: username.toLowerCase(), password: encryptedPassword, fullname, email, phone, address, create_by: {}, create_at, role: "pd" })
-            const existedAccount = await this.#__accounts.find({ username });   
-            
-            if( existedAccount ){                
-                context.content = `Tài khoản ${ username } đã tồn tại`;
-            }else{
-                if( Account.username.value() != this.#__default.username ){
-                    Account.avatar.value(`/image/avatar/${ username }.png`)
-                    Account.makeFirstAva();
-                    await Account.save();
 
-                    const tables = await this.#__tables.findAll();
-                    const isAdmin = false;
-                    const privileges = tables.map( table => {
-                        return {
-                            username: Account.username.value(),
-                            table_id: table.id,
-                            read: true,
-                            write: isAdmin,
-                            modify: isAdmin,
-                            purge: isAdmin
-                        }
+            const projects = await this.#__projects.findAll({})
+
+            let project_type, proxy_server;
+
+            if (projects && projects[0]) {
+                const project = projects[0]
+                project_type = project.project_type
+                proxy_server = project.proxy_server
+            }
+
+            if (project_type == "api") {
+                const response = await new Promise((resolve, reject) => {
+                    fetch(`${proxy_server}/auth/register`, {
+                        method: "POST",
+                        headers: {
+                            'content-type': "application/json",
+                        },
+                        body: JSON.stringify({ account: req.body.account })
+                    }).then(res => res.json()).then(res => {
+                        resolve(res)
                     })
+                })
+                console.log(response)
+                const { success, content, token } = response;
+                context.success = success
+                context.content = content
+                context.token = token
+            } else {
 
-                    await this.#__privileges.insertMany( privileges )
-                    await this.saveLog(
-                        "info", 
-                        req.ip,
-                        "__createuser", 
-                        `__username: ${ Account.username.value() } | __permission __${ Account.role.value() }`, 
-                        "Unknown"
-                    )
-                    context.success = true; context.content = "Tạo tài khoản thành công!"; context.data = Account.get(); context.status = "0x4501011";
-                    delete context.data.create_by
-                }else{
-                    context.content = `Tài khoản ${ username } đã tồn tại`;
-                    context.status = "0x4501008"
+                const Cipher = new Crypto()
+                const encryptedPassword = Cipher.encrypt(password)
+
+                const create_at = new Date()
+                const Account = new AccountsRecord({ username: username.toLowerCase(), password: encryptedPassword, fullname, email, phone, address, create_by: {}, create_at, role: "pd" })
+                const existedAccount = await this.#__accounts.find({ username });
+
+                if (existedAccount) {
+                    context.content = `Tài khoản ${username} đã tồn tại`;
+                } else {
+                    if (Account.username.value() != this.#__default.username) {
+                        Account.avatar.value(`/image/avatar/${username}.png`)
+                        Account.makeFirstAva();
+                        await Account.save();
+
+                        const tables = await this.#__tables.findAll();
+                        const isAdmin = false;
+                        const privileges = tables.map(table => {
+                            return {
+                                username: Account.username.value(),
+                                table_id: table.id,
+                                read: true,
+                                write: isAdmin,
+                                modify: isAdmin,
+                                purge: isAdmin
+                            }
+                        })
+
+                        await this.#__privileges.insertMany(privileges)
+                        await this.saveLog(
+                            "info",
+                            req.ip,
+                            "__createuser",
+                            `__username: ${Account.username.value()} | __permission __${Account.role.value()}`,
+                            "Unknown"
+                        )
+                        context.success = true; context.content = "Tạo tài khoản thành công!"; context.data = Account.get(); context.status = "0x4501011";
+                        context.token = this.makeToken(Account.get())
+                        delete context.data.create_by
+                    } else {
+                        context.content = `Tài khoản ${username} đã tồn tại`;
+                        context.status = "0x4501008"
+                    }
                 }
-            }              
-
-        }else{
-            context.content = `Không được bỏ trống các trường: ${ checkNULL.nullFields.toString() }`
+            }
+        } else {
+            context.content = `Không được bỏ trống các trường: ${checkNULL.nullFields.toString()}`
             context.status = "0x4501010"
         }
         res.status(200).send(context)
@@ -402,8 +449,8 @@ class Auth extends Controller {
          * 
          */
 
-        
-        const verified = await this.verifyToken(req);  
+
+        const verified = await this.verifyToken(req);
 
         const context = {
             success: false,
@@ -412,95 +459,95 @@ class Auth extends Controller {
             status: 200
         }
 
-        if( verified ){
-            if( !req.body.account || !req.body.account.username ){
-                context.content =  "Request body không hợp lệ";
+        if (verified) {
+            if (!req.body.account || !req.body.account.username) {
+                context.content = "Request body không hợp lệ";
                 context.status = "0x4501012"
-            }else{
+            } else {
                 const { username } = req.body.account;
-                
-                const decodedToken = this.decodeToken( req.header('Authorization') );
+
+                const decodedToken = this.decodeToken(req.header('Authorization'));
                 const account = await this.#__accounts.find({ username })
-                if( !account ){
+                if (!account) {
                     context.success = true;
                     context.content = "Người dùng không tồn tại!"
                     context.status = "0x4501013"
-                }else{
+                } else {
                     const Account = new AccountsRecord(account);
                     const validPrivilege = this.checkPrivilege(decodedToken.role, Account.role.value());
-                    if( !validPrivilege ){
+                    if (!validPrivilege) {
                         context.content = "Bạn không có quyền thực hiện thao tác này";
                         context.status = "0x4501014"
                         await this.saveLog(
                             "error", req.ip,
-                            "__deleteuser", 
-                            `__noright`, 
-                            decodedToken.username 
-                        )  
-                    }else{
+                            "__deleteuser",
+                            `__noright`,
+                            decodedToken.username
+                        )
+                    } else {
                         context.success = true;
                         context.content = "Xóa thành công!";
                         context.status = "0x4501015"
-                        
+
                         await this.saveLog(
                             "info", req.ip,
-                            "__deleteuser", 
-                            `__username ${ Account.username.value() } | __permission __${ Account.role.value() }`, 
-                            decodedToken.username 
-                        )                            
-                        await Account.destroy()                        
+                            "__deleteuser",
+                            `__username ${Account.username.value()} | __permission __${Account.role.value()}`,
+                            decodedToken.username
+                        )
+                        await Account.destroy()
                     }
                 }
             }
-        }else{
-            context.content =  "Không tìm thấy token hoặc token khum hợp lệ";
+        } else {
+            context.content = "Không tìm thấy token hoặc token khum hợp lệ";
             context.status = "0x4501016"
         }
 
         res.status(200).send(context)
     }
 
-    updateUser = async ( req, res, privileges = [] ) => {
+    updateUser = async (req, res, privileges = []) => {
 
-         /**
-         *  Request headers: {
-         *      Authorization: <Token>
-         *  }
-         *  Request body: {
-         *      account: { username, fullname, role, email, phone, address, note }
-         *  }
-         * 
-         */
-        
-                
-        const verified = await this.verifyToken(req); 
+        /**
+        *  Request headers: {
+        *      Authorization: <Token>
+        *  }
+        *  Request body: {
+        *      account: { username, fullname, role, email, phone, address, note }
+        *  }
+        * 
+        */
+
+
+        const verified = await this.verifyToken(req);
         let context = {
             success: false,
             content: "",
             data: {},
             status: 200
         }
-        if( verified ){
-            const { account } = req.body;            
-            if( account != undefined ){
+        if (verified) {
+            const { account } = req.body;
+            if (account != undefined) {
                 const { username } = account;
-                if( username != undefined ){
+                if (username != undefined) {
                     const oldInfo = await this.#__accounts.find({ username })
-                    if( oldInfo != null ){
-                        const decodedToken = this.decodeToken( req.header("Authorization") );
-                        if( privileges.indexOf( decodedToken.role ) != -1 ){
-                            const Account = new AccountsRecord( oldInfo )
-                            if( this.checkPrivilege( decodedToken.role, Account.role.value() ) ){
-                                const { fullname, role, email, phone, address, note } = req.body.account;                                
-                                const newPriCheck = this.checkPrivilege( decodedToken.role, role );
-                                if( newPriCheck ){
-                                    Account.fullname.value( fullname ? fullname: undefined );
+                    if (oldInfo != null) {
+                        const decodedToken = this.decodeToken(req.header("Authorization"));
+                        if (privileges.indexOf(decodedToken.role) != -1) {
+                            const Account = new AccountsRecord(oldInfo)
+                            if (this.checkPrivilege(decodedToken.role, Account.role.value())) {
+                                const { fullname, role, email, phone, address, note } = req.body.account;
+                                const newPriCheck = this.checkPrivilege(decodedToken.role, role);
+                                if (newPriCheck) {
+                                    Account.fullname.value(fullname ? fullname : undefined);
                                     Account.role.value(role);
-                                    Account.email.value( email ? email : undefined );
-                                    Account.phone.value( phone ? phone : undefined );
-                                    Account.address.value( address ? address : undefined );
-                                    Account.note.value( note ? note : undefined );
-    
+                                    Account.email.value(email ? email : undefined);
+                                    Account.phone.value(phone ? phone : undefined);
+                                    Account.address.value(address ? address : undefined);
+                                    Account.note.value(note ? note : undefined);
+
                                     await Account.save()
                                     context.content = "Cập nhật thành công!"
                                     context.success = true;
@@ -508,53 +555,53 @@ class Auth extends Controller {
 
                                     await this.saveLog(
                                         "info", req.ip,
-                                        "__updateuser", 
-                                        `__username: ${ Account.username.value() }
-| __fullname ${ oldInfo.fullname } => ${ Account.fullname.value() }
-| __role __${ oldInfo.role } => __${ Account.role.value() }
-| __email ${ oldInfo.email } => ${ Account.email.value() }
-| __phone ${ oldInfo.phone } => ${ Account.phone.value() }
-| __address ${ oldInfo.address } => ${ Account.address.value() }
-| __note ${ oldInfo.note } => ${ Account.note.value() }
-                                        `.replaceAll("\n", " "), 
-                                        decodedToken.username 
+                                        "__updateuser",
+                                        `__username: ${Account.username.value()}
+| __fullname ${oldInfo.fullname} => ${Account.fullname.value()}
+| __role __${oldInfo.role} => __${Account.role.value()}
+| __email ${oldInfo.email} => ${Account.email.value()}
+| __phone ${oldInfo.phone} => ${Account.phone.value()}
+| __address ${oldInfo.address} => ${Account.address.value()}
+| __note ${oldInfo.note} => ${Account.note.value()}
+                                        `.replaceAll("\n", " "),
+                                        decodedToken.username
                                     )
-                                    
-                                }else{
+
+                                } else {
                                     context.content = "Bạn không thể cập nhật một quyền cao hơn bản thân";
                                     context.status = "0x4501018"
-                                    await this.saveLog("error", req.ip,  "__updateuser", `__noright`, decodedToken.username ) 
+                                    await this.saveLog("error", req.ip, "__updateuser", `__noright`, decodedToken.username)
                                 }
-                            }else{
+                            } else {
                                 context.content = "Bạn không có đủ quyền để thực hiện thao tác này";
                                 context.status = "0x4501019"
-                                await this.saveLog("error", req.ip,  "__updateuser", `__noright`, decodedToken.username )   
+                                await this.saveLog("error", req.ip, "__updateuser", `__noright`, decodedToken.username)
                             }
-                        }else{
+                        } else {
                             context.content = "Bạn không có quyền để truy cập API này";
                             context.status = "0x4501020"
-                            await this.saveLog("error", req.ip,  "__updateuser", `__noright`, decodedToken.username ) 
+                            await this.saveLog("error", req.ip, "__updateuser", `__noright`, decodedToken.username)
                         }
-                    }else{
-                        context.content = "Tài khoản không tồn tại hoặc đã bị xóa"    
+                    } else {
+                        context.content = "Tài khoản không tồn tại hoặc đã bị xóa"
                         context.status = "0x4501021"
                     }
-                }else{
-                    context.content = "Request body không hợp lệ"    
+                } else {
+                    context.content = "Request body không hợp lệ"
                     context.status = "0x4501022"
                 }
-            }else{
+            } else {
                 context.content = "Request body không hợp lệ"
                 context.status = "0x4501022"
             }
-        }else{
+        } else {
             context.content = "Token không hợp lệ!"
             context.status = "0x4501023"
         }
-        res.status(200).send(context )
+        res.status(200).send(context)
     }
 
-    selfUpdate = async ( req, res ) => {
+    selfUpdate = async (req, res) => {
 
         /**
          *  Request headers: {
@@ -566,7 +613,7 @@ class Auth extends Controller {
          * 
          */
 
-        const verified = await this.verifyToken(req);  
+        const verified = await this.verifyToken(req);
 
         const context = {
             success: false,
@@ -575,70 +622,70 @@ class Auth extends Controller {
             status: 200
 
         }
-        const decodedToken = this.decodeToken( req.header("Authorization") );
-        if( verified ){
-            const { account } = req.body; 
-            if( account != undefined ){
+        const decodedToken = this.decodeToken(req.header("Authorization"));
+        if (verified) {
+            const { account } = req.body;
+            if (account != undefined) {
                 const { username } = account;
-                if( username != undefined ){
+                if (username != undefined) {
                     const account = await this.#__accounts.find({ username })
-                    if( account ){
-                        const Account = new AccountsRecord( account )
-                        if( username === decodedToken.username ){
+                    if (account) {
+                        const Account = new AccountsRecord(account)
+                        if (username === decodedToken.username) {
                             const { fullname, password, email, phone, address, note } = req.body.account;
-                            Account.fullname.value( fullname ? fullname: undefined );                            
-                            Account.password.value(password ? password: undefined);
-                            Account.email.value( email ? email : undefined );
-                            Account.phone.value( phone ? phone : undefined );
-                            Account.address.value( address ? address : undefined );
-                            Account.note.value( note ? note : undefined );
-    
+                            Account.fullname.value(fullname ? fullname : undefined);
+                            Account.password.value(password ? password : undefined);
+                            Account.email.value(email ? email : undefined);
+                            Account.phone.value(phone ? phone : undefined);
+                            Account.address.value(address ? address : undefined);
+                            Account.note.value(note ? note : undefined);
+
                             context.content = "Cập nhật thành công!"
                             context.success = true;
                             context.status = "0x4501024"
 
                             await this.saveLog(
                                 "info", req.ip,
-                                "__selfupdateinfo", 
-                                `__username ${ Account.username.value() }
-| __fullname ${ account.fullname } => ${ Account.fullname.value() }
-| __email ${ account.email } => ${ Account.email.value() }
-| __phone ${ account.phone } => ${ Account.phone.value() }
-| __address ${ account.address } => ${ Account.address.value() }
-| __note ${ account.note } => ${ Account.note.value() }
-                                `.replaceAll("\n", " "), 
-                                decodedToken.username 
+                                "__selfupdateinfo",
+                                `__username ${Account.username.value()}
+| __fullname ${account.fullname} => ${Account.fullname.value()}
+| __email ${account.email} => ${Account.email.value()}
+| __phone ${account.phone} => ${Account.phone.value()}
+| __address ${account.address} => ${Account.address.value()}
+| __note ${account.note} => ${Account.note.value()}
+                                `.replaceAll("\n", " "),
+                                decodedToken.username
                             )
 
                             await Account.save()
-                            
-                        }else{
-                            context.content = "Không thể cập nhật thông tin của tài khoản khác bằng API này!"        
+
+                        } else {
+                            context.content = "Không thể cập nhật thông tin của tài khoản khác bằng API này!"
                             context.status = "0x4501025"
-                            await this.saveLog("error", req.ip,  "__selfupdateinf", `__noright`, decodedToken.username ) 
+                            await this.saveLog("error", req.ip, "__selfupdateinf", `__noright`, decodedToken.username)
                         }
-                    }else{
-                        context.content = "Tài khoản bị xóa hoặc không tồn tại!"    
+                    } else {
+                        context.content = "Tài khoản bị xóa hoặc không tồn tại!"
                         context.status = "0x4501026"
                     }
-                }else{
+                } else {
                     context.content = "Request body không hợp lệ"
                     context.status = "0x4501027"
                 }
-            }else{
+            } else {
                 context.content = "Request body không hợp lệ"
                 context.status = "0x4501027"
             }
-        }else{
+        } else {
             context.content = "Token không hợp lệ"
             context.status = "0x4501028"
         }
         res.status(200).send(context)
     }
 
-    changeAva = async ( req, res, privileges = [] ) => {
-        const verified = this.verifyToken( req );
-        const decodedToken = this.decodeToken( req.header("Authorization") );
+    changeAva = async (req, res, privileges = []) => {
+        const verified = this.verifyToken(req);
+        const decodedToken = this.decodeToken(req.header("Authorization"));
         const context = {
             success: false,
             content: "",
@@ -656,41 +703,41 @@ class Auth extends Controller {
          *  }
          * 
          */
-        if( verified ){
-            if( privileges.indexOf( decodedToken.role ) != -1 ){
-                const { username, image } = req.body;               
-                if( username && image ){
+        if (verified) {
+            if (privileges.indexOf(decodedToken.role) != -1) {
+                const { username, image } = req.body;
+                if (username && image) {
                     const user = await this.#__accounts.find({ username })
-                    if( user != undefined ){
-                        const Account = new AccountsRecord( user );
-                        if( this.checkPrivilege( decodedToken.role, Account.role.value() ) ){
-                            const cropResult = await this.cropAva( image, username )
-                            if( cropResult ){
-                                context.success = true; 
+                    if (user != undefined) {
+                        const Account = new AccountsRecord(user);
+                        if (this.checkPrivilege(decodedToken.role, Account.role.value())) {
+                            const cropResult = await this.cropAva(image, username)
+                            if (cropResult) {
+                                context.success = true;
                                 context.content = "Thay đổi thành công"
                                 context.status = "0x4501029"
-                                
-                            }else{
-                                context.content = "Tệp lỗi!"; 
-                                context.status = "0x4501030"       
+
+                            } else {
+                                context.content = "Tệp lỗi!";
+                                context.status = "0x4501030"
                             }
-                        }else{
-                            context.content = "Bạn không có quyền thực hiện thao tác này"; 
+                        } else {
+                            context.content = "Bạn không có quyền thực hiện thao tác này";
                             context.status = "0x4501031"
                         }
-                    }else{
+                    } else {
                         context.content = "Tài khoản không tồn tại";
                         context.status = "0x4501032"
                     }
-                }else{
+                } else {
                     context.content = "Request body không hợp lệ!"
                     context.status = "0x4501033"
                 }
-            }else{
-                context.content = "Bạn không có quyền để truy cập API này!"    
+            } else {
+                context.content = "Bạn không có quyền để truy cập API này!"
                 context.status = "0x4501034"
             }
-        }else{
+        } else {
             context.content = "Token không hợp lệ"
             context.status = "0x4501035"
         }
@@ -709,7 +756,7 @@ class Auth extends Controller {
          * 
          */
 
-        const verified = await this.verifyToken(req);  
+        const verified = await this.verifyToken(req);
 
         const context = {
             success: false,
@@ -718,53 +765,53 @@ class Auth extends Controller {
             status: 200
 
         }
-        const decodedToken = this.decodeToken( req.header("Authorization") );
-        if( verified ){
-            const { image } = req.body; 
-            if( image != undefined ){
+        const decodedToken = this.decodeToken(req.header("Authorization"));
+        if (verified) {
+            const { image } = req.body;
+            if (image != undefined) {
                 const { username } = decodedToken;
-                if( username != undefined ){
+                if (username != undefined) {
                     const account = await this.#__accounts.find({ username })
-                    if( account ){                                                                           
-                        this.cropAva( image, username )
+                    if (account) {
+                        this.cropAva(image, username)
                         context.content = "Cập nhật thành công!"
                         context.success = true;
-                        context.status = "0x4501036"         
-                    }else{
-                        
-                        if( username == this.#__default.username && decodedToken.role == "uad"){                        
-                            this.cropAva( image, username )
+                        context.status = "0x4501036"
+                    } else {
+
+                        if (username == this.#__default.username && decodedToken.role == "uad") {
+                            this.cropAva(image, username)
                             context.success = true;
                             context.content = "Cập nhật thành công!"
                             context.status = "0x4501036"
-                        }else{
+                        } else {
                             context.content = "Người dùng không tồn tại!"
                             context.status = "0x4501037"
-                        } 
+                        }
                     }
-                }else{
+                } else {
                     context.content = "Token không hợp lệ"
                     context.status = "0x4501038"
                 }
-            }else{
+            } else {
                 context.content = "Request body không hợp lệ"
                 context.status = "0x4501039"
             }
-        }else{
+        } else {
             context.content = "Token không hợp lệ"
             context.status = "0x4501040"
         }
         res.status(200).send(context)
     }
 
-    getPrivilegesOnTables = async ( req, res ) => {
+    getPrivilegesOnTables = async (req, res) => {
         const tables = await this.#__tables.findAll()
         const formatedTables = []
-        for( let i = 0; i < tables.length; i++ ){
+        for (let i = 0; i < tables.length; i++) {
             const table = tables[i]
-            const table_id = table.id;           
+            const table_id = table.id;
             table.accounts = await this.#__privileges.findAll({ table_id });
-            for( let j = 0 ; j < table.accounts.length; j++ ){
+            for (let j = 0; j < table.accounts.length; j++) {
                 const { username } = table.accounts[j]
                 const account = await this.#__accounts.find({ username })
                 table.accounts[j].account = account;
@@ -775,7 +822,7 @@ class Auth extends Controller {
 
 
     changeUserPrivileges = async (req, res) => {
-        const verified = await this.verifyToken(req);  
+        const verified = await this.verifyToken(req);
 
         const context = {
             success: false,
@@ -784,11 +831,11 @@ class Auth extends Controller {
             status: 200
 
         }
-        if( verified ){        
-            const decodedToken = this.decodeToken( req.header("Authorization") );
+        if (verified) {
+            const decodedToken = this.decodeToken(req.header("Authorization"));
             console.log(decodedToken)
 
-        }else{
+        } else {
             context.content = "Token không hợp lệ"
             context.status = "0x4501040"
         }
@@ -797,4 +844,3 @@ class Auth extends Controller {
 }
 module.exports = Auth
 
-    

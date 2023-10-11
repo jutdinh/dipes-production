@@ -1,143 +1,61 @@
 {
     "data": [
         {
-            "ui_id": 903,
-            "title": "LOẠI SẢN PHẨN",
-            "url": "/loai-san-phan",
+            "ui_id": 1844,
+            "title": "KHÓA KÍCH HOẠT",
+            "url": "/khoa-kich-hoat",
             "status": true,
             "params": [],
             "type": "ui",
-            "create_at": "2023-10-06T03:50:20.367Z",
-            "create_by": {
-                "username": "khanh.chi",
-                "fullname": "Khánh Chi Nè"
-            },
-            "components": [
-                {
-                    "component_id": 904,
-                    "component_name": "LOẠI SẢN PHẨN",
-                    "layout_id": 0,
-                    "api_get": "/api/52EA4E1353D8489E94B58E9411033B15",
-                    "api_post": "/ui/3734C644B00B4A158CA1413C89A9780E",
-                    "api_put": "/ui/6D7DF1CB36704FABBA348B2AAC4FB75C",
-                    "api_delete": "/ui/ACBAAAF8E4D34FF9BF926CD2B8370DD7",
-                    "api_search": "/search/BEB84AAA10E049F2AB09F6EECECD5683",
-                    "api_export": "/export/E45149CF28704FC2BD9230B49C65CA0E",
-                    "api_import": "/import/8AD6F4E02ED042C68F47BAC6D29EAD05"
-                }
-            ]
-        },
-        {
-            "ui_id": 912,
-            "title": "QUY CÁCH ĐÓNG GÓI",
-            "url": "/quy-cach-dong-goi",
-            "status": true,
-            "params": [],
-            "type": "ui",
-            "create_at": "2023-10-06T03:51:44.456Z",
-            "create_by": {
-                "username": "khanh.chi",
-                "fullname": "Khánh Chi Nè"
-            },
-            "components": [
-                {
-                    "component_id": 913,
-                    "component_name": "QUY CÁCH ĐÓNG GÓI",
-                    "layout_id": 1,
-                    "api_get": "/api/09A53ACFD2CB4572A663E74986EAC197",
-                    "api_post": "/ui/26E1739F423141EAAF63A0F12E0A5D7D",
-                    "api_put": "/ui/78E87CA48D604515A3FDC1A1F3DCCB24",
-                    "api_delete": "/ui/03C4532C82C249F4BA73A3FF7FFC1F5A",
-                    "api_search": "/search/79E6D7DA6B714CBD8822BB4BAECC498F",
-                    "api_export": "/export/D7C600E9FECE46ABA150DD75F213265F",
-                    "api_import": "/import/0520BE900D3D48A787542E0C4FE3693B"
-                }
-            ]
-        },
-        {
-            "ui_id": 930,
-            "title": "KHÁCH HÀNG",
-            "url": "/khach-hang",
-            "status": true,
-            "params": [],
-            "type": "ui",
-            "create_at": "2023-10-06T03:53:44.576Z",
-            "create_by": {
-                "username": "khanh.chi",
-                "fullname": "Khánh Chi Nè"
-            },
-            "components": [
-                {
-                    "component_id": 931,
-                    "component_name": "KHÁCH HÀNG",
-                    "layout_id": 1,
-                    "api_get": "/api/3C6621102C334224B638F852BABA316C",
-                    "api_post": "/ui/7AB0EBC8D1CB40FCAB50B66F46D445C7",
-                    "api_put": "/ui/C1FCBE1DE3214335A53DD585E6C497F4",
-                    "api_delete": "/ui/F8D2D34A96464A06A89445D439BB4AF8",
-                    "api_search": "/search/4FC1C85341AD4FA7BF11F86F5BA741DA",
-                    "api_export": "/export/2A4063CA29C0435BB05FA5A3EED927D6",
-                    "api_import": "/import/A7CD45E3B4CE4BF288BFDEF40DC65BB5"
-                }
-            ]
-        },
-        {
-            "ui_id": 984,
-            "title": "KÍCH HOẠT LICENSE",
-            "url": "/kich-hoat-license",
-            "status": true,
-            "params": [
-                890
-            ],
-            "type": "ui",
-            "create_at": "2023-10-06T04:29:21.620Z",
-            "create_by": {
-                "username": "khanh.chi",
-                "fullname": "Khánh Chi Nè"
-            },
-            "components": [
-                {
-                    "component_id": 985,
-                    "component_name": "KÍCH HOẠT LICENSE",
-                    "layout_id": 1,
-                    "api_get": "/api/AEF2D9242AC0485AAA0C8A62DEA8E49F",
-                    "api_post": "/ui/465C3AFCAA6547C8A2311E84301DAE48",
-                    "api_put": "/ui/9CE45114CD0A4799BBDEBB2A38E855F9",
-                    "api_delete": "/ui/878E72C3CB7647478C901B4C13D6C512",
-                    "api_search": "/search/77ED743E03404BBEB6B167C69A742BA2",
-                    "api_export": "/export/4A5766ECAAED45B0B895A96F2B3F64C0",
-                    "api_import": "/import/AF9FBA1E0B8648E0A837E859D0B6D27F"
-                }
-            ]
-        },
-        {
-            "ui_id": 1005,
-            "title": "CHI TIẾT SẢN PHẨM",
-            "url": "/chi-tiet-san-pham",
-            "status": true,
-            "params": [
-                873
-            ],
-            "type": "ui",
-            "create_at": "2023-10-09T00:55:03.295Z",
+            "create_at": "2023-10-10T08:54:45.359Z",
             "create_by": {
                 "username": "administrator",
                 "fullname": "Administrator"
             },
             "components": [
                 {
-                    "component_id": 1006,
-                    "component_name": "CHI TIẾT SẢN PHẨM",
+                    "component_id": 1845,
+                    "component_name": "KHÓA KÍCH HOẠT",
                     "layout_id": 0,
-                    "api_get": "/api/DF3280CC3F1E4F1DAB57269FB3D19964",
-                    "api_post": "/ui/9EC877A82C7644CA8D7B55C555C68C8D",
-                    "api_put": "/ui/09A93BEFB40743C9BE45FC4C85D62A8F",
-                    "api_delete": "/ui/DC12097915DC4FD88AA10B9A10601A70",
-                    "api_search": "/search/2D85534E09134887A166795ABFD80E61",
-                    "api_export": "/export/A1A5F7E8EA6F42699BD82A52580F17CF",
-                    "api_import": "/import/562AE97F76D0433296F8D3E0F85EE231",
-                    "api_detail": "/d/89B392F015154213B486D9400002FFCB"
-                } 
+                    "api_get": "/api/6D5FCDEAA36F49D89CA933A190C6DD23",
+                    "api_post": "/ui/6305EAE210C74305A1CF1E8427B63BCE",
+                    "api_put": "/ui/5FF0B0F5A2964E49A36C5047FE3287A7",
+                    "api_delete": "/ui/0E28BB60F90444F49B914F67C272769C",
+                    "api_search": "/search/23D020124A134FC5B4924BED76AFCA82",
+                    "api_export": "/export/B25B5BFD66FF44FA8BBE91355ECAB5D0",
+                    "api_import": "/import/6F4E09E395FB41C3AAD07AF67E6CC158",
+                    "api_detail": "/d/940A626C00DC4CE690907B1FB1D2CE83"
+                }
+            ]
+        },
+        {
+            "ui_id": 1874,
+            "title": "KEYS",
+            "url": "/keys",
+            "status": true,
+            "params": [
+                1730
+            ],
+            "type": "ui",
+            "create_at": "2023-10-11T02:59:20.627Z",
+            "create_by": {
+                "username": "administrator",
+                "fullname": "Administrator"
+            },
+            "components": [
+                {
+                    "component_id": 1875,
+                    "component_name": "KEYS",
+                    "layout_id": 0,
+                    "api_get": "/api/A44ED43CE42B4C7CAE8403D6B62ACF8E",
+                    "api_post": "/ui/AA9B4591FE5F4A5789582207C5064C1F",
+                    "api_put": "/ui/60D70E4526514205909FA59ABC4CD728",
+                    "api_delete": "/ui/FE97593DF345400BA08D57AA5E32E42C",
+                    "api_search": "/search/ABF84B95C6B4440EB0E021B8FF6ED3FF",
+                    "api_export": "/export/26A9B832B276492DADBC4282B2E80EA4",
+                    "api_import": "/import/8C000C9E57E94383BC0FA47FF731EB4F",
+                    "api_detail": "/d/03710DEE03DB4BB5B0A531248A1614C8"
+                }
             ]
         }
     ]

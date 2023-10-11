@@ -100,6 +100,8 @@ class ConsumeApi extends Controller {
 
         const { url, method } = req;
 /*(1)*/ this.url = decodeURI(url);
+        this.req = req;
+        this.res = res;
 /*(2)*/ const [api, projects, tables, fields] = await Promise.all([this.#__apis.find({ api_id }), this.#__projects.findAll(), this.#__tables.findAll(), this.#__fields.findAll()])
 /*(3)*/ if (api && api.api_method == method.toLowerCase() && api.status && projects[0]) {
 /*(4)*/     const Api = new ApisRecord(api)
@@ -107,8 +109,7 @@ class ConsumeApi extends Controller {
             this.project = project;
 
             this.API = Api;
-            this.req = req;
-            this.res = res;
+            
             this.fields = fields;
             this.tables = tables.map(table => {
                 const { id } = table;
@@ -211,6 +212,8 @@ class ConsumeApi extends Controller {
         const start = new Date()
 
 /*(1)*/ const verified = await this.verifyToken(req)
+        this.req = req;
+        this.res = res;
 
         if (verified) {
 
@@ -231,8 +234,7 @@ class ConsumeApi extends Controller {
 
                 this.API = Api;
 
-                this.req = req;
-                this.res = res;
+                
                 this.fields = fields;
                 this.tables = tables.map(table => {
                     const { id } = table;
@@ -689,34 +691,66 @@ class ConsumeApi extends Controller {
          * @params rawIndex <INT>
          * 
          * @desc 
-         *      Tạo (các) đối tượng chứa thông tin các partion sao cho số lượng dữ liệu được truy vấn từ chúng vừa đủ 
+         *      Tạo (các) đối tượng chứa thông tin các partition sao cho số lượng dữ liệu được truy vấn từ chúng vừa đủ 
          *  bằng số lượng truy vấn mỗi request được định nghĩa bởi RESULT_PER_SEARCH_PAGE
          * 
          * 
+         *  (1). Các period được gọi từ controller chứa dữ liệu của toàn bộ partition hiện có, mỗi partition có cấu trúc như sau:
+         *          partition <{
+         *              position: <String>,
+         *              total: <Int>     
+         *          }>
+         *  ngoài ra các position cũng có cấu trúc của riêng chúng `<start>-<end>`  với với start, end là cặp số nguyên biểu thị thứ tự
+         *  của cặp giá trị tại hai đầu mút bên trong bảng dữ liệu, ví dụ:
+         *          {
+         *              position: "10000-19999",
+         *              total: 8000    
+         *          }<Partition>
+         * biểu thị partition này hiện có 8,000 phần tử, phần tử đầu tiên ở vị trí 10,000 và phần tử cuối cùng (có thể đạt đến) vị trí 19,999.
+         * Một partition không nhất thiết phải được lấp đầy, nhưng nó không thể chứa hơn 10,000 phần tử, đó là quy ước chung.
          * 
+         * 
+         * (2). Sau khi xác thực rawIndex là một số nguyên hợp lệ và partions không rỗng
+         *      - Ép rawIndex sang kiểu nguyên và gán nó vào START_INDEX
+         *      - Đặt một biến khác tên PRIMAL_START_POINT mang giá trị của START_INDEX * RECORD_PER_PAGE
+         *          @explain => Với một lượng dữ liệu lớn khủng khiếp lên đến hàng trăm triệu dữ liệu, không thể truy vấn tất cả trong một lần
+         * nên buộc phải ngắt từng phần đển gọi, với UI hiện tại có thể hiển thị 15 ( RECORD_PER_PAGE ) records một lần request, cách truy vấn 
+         * này có thể cho phép xem dữ liệu ở những partition cuối cùng, nơi index của bảng ghi có thể lên đến hàng trăm triệu một cách nhanh chóng
+         * mà không cần phải truy vấn những bảng ghi trước chúng.
+         * 
+         * 
+         * 
+         * (3). Map toàn bộ partition, qua mỗi partition, trừ PRIMAL_START_POINT với total của partion hiện tại cho đến khi PRIMAL_START_POINT
+         * nhỏ hơn hoặc bằng 0,
+         *      a. Đặt lại thuộc tính total cho partition thứ i bằng số lượng indexes còn lại 
+         *      b. Đặt lại thuộc tính from cho partion thứ i bằng vị trí bắt đầu lấy dữ liệu
+         *      c. Đặt lại thuộc tính to cho partion thứ i bằng vị trí kết thúc lấy dữ liệu
+         *      => break;
          * 
          */
 
 
-        const partitions = this.periods;
+/*(1)*/ const partitions = this.periods;
         const RECORD_PER_PAGE = RESULT_PER_SEARCH_PAGE
         if (intValidate(rawIndex) && partitions.length > 0) {
-            const START_INDEX = parseInt(rawIndex)
+/*(2)*/     const START_INDEX = parseInt(rawIndex)
             let PRIMAL_START_POINT = START_INDEX * RECORD_PER_PAGE
 
             const PARTITION_LENGTH = partitions.length
             let TARGET_PARTITION_INDEX = 0
 
-            for (let i = 0; i < PARTITION_LENGTH; i++) {
+/*(3)*/     for (let i = 0; i < PARTITION_LENGTH; i++) {
                 const total = partitions[i]["total"]
                 const CURRENT_REMAINING_INDEX = PRIMAL_START_POINT
+
+
                 PRIMAL_START_POINT -= total
 
                 if (PRIMAL_START_POINT <= 0) {
-                    TARGET_PARTITION_INDEX = i
-                    partitions[i]["total"] = total - CURRENT_REMAINING_INDEX
-                    partitions[i]["from"] = CURRENT_REMAINING_INDEX
-                    partitions[i]["to"] = CURRENT_REMAINING_INDEX + RECORD_PER_PAGE
+                    TARGET_PARTITION_INDEX  = i
+                    partitions[i]["total"]  = total - CURRENT_REMAINING_INDEX           // (a)
+                    partitions[i]["from"]   = CURRENT_REMAINING_INDEX                   // (b)
+                    partitions[i]["to"]     = CURRENT_REMAINING_INDEX + RECORD_PER_PAGE // (c)
                     break
                 }
             }
@@ -826,6 +860,86 @@ class ConsumeApi extends Controller {
         }
 
         return finalePartitions
+    }
+    
+    
+    formatCalculateString = ( rawString = "" ) => {
+        let string = rawString.toUpperCase()
+        const fomulars = [
+            {
+                fomular: "DATE",
+                prefix: " new Date",
+                postfix: ".getDate() "
+            },
+             {
+                fomular: "MONTH",
+                prefix: " (new Date",
+                postfix: ".getMonth() + 1) "
+            },
+            {
+                fomular: "YEAR",
+                prefix: " new Date",
+                postfix: ".getFullYear() "
+            }
+        ]
+
+        // console.log(string)
+
+        for( let i = 0 ; i < fomulars.length; i++ ){
+            // console.log(string)
+            const { fomular, prefix, postfix } = fomulars[i]
+            const splitted = string.split(fomular)
+
+            if( splitted.length > 1 ){
+                for( let h = 1; h < splitted.length; h++ ){
+                    // console.log(splitted[h-1])
+                    splitted[h - 1] += prefix
+                    const post = splitted[h]
+                    let newPost = ""
+                    let loopBreak = false
+                    for( let j = 0 ; j < post.length; j++ ){
+                        newPost += post[j]                        
+                        if( post[j] == ")" && !loopBreak ){
+                            newPost += postfix    
+                            loopBreak = true
+                            // break                        
+                        }
+                    }
+                    splitted[h] = newPost
+                }
+            }    
+            // console.log(911, splitted)        
+            string = splitted.join('')
+            console.log(913, string)
+
+            if( i == fomulars.length - 1 ){
+                let dateSplitted = string.split('new Date')
+                for( let k = 0 ; k < dateSplitted.length; k++ ){
+                    const piece = dateSplitted[k]
+                    console.log(piece)
+                    if( piece.length > 2 ){
+                        let pieceCopy = ""
+                        let loopBreak = false
+                        for( let c = 0 ; c < piece.length; c++ ){
+                            pieceCopy += piece[c]
+    
+                            if( piece[c] == "(" && !loopBreak){
+                                pieceCopy += "'"
+                            }
+    
+                            if(piece[c + 1] == ")" && !loopBreak){
+                                pieceCopy += "'"
+                                loopBreak = true                            
+                            }
+                        }
+                        dateSplitted[k] = pieceCopy
+                    }
+                }
+                string = dateSplitted.join('new Date')
+            }
+        }        
+
+        return string
     }
 
 
@@ -1021,7 +1135,8 @@ class ConsumeApi extends Controller {
                         keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
                         for (let i = 0; i < calculates.length; i++) {
                             const { fomular_alias, fomular } = calculates[i]
-                            let result = fomular;
+                            let result = this.formatCalculateString(fomular);                           
+
                             keys.map(key => {
                                 /* replace the goddamn fomular with its coresponding value in record values */
                                 result = result.replaceAll(key, record[key])
@@ -1241,7 +1356,7 @@ class ConsumeApi extends Controller {
                 keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
                 for (let i = 0; i < calculates.length; i++) {
                     const { fomular_alias, fomular } = calculates[i]
-                    let result = fomular;
+                    let result = this.formatCalculateString(fomular);
                     keys.map(key => {
                         /* replace the goddamn fomular with its coresponding value in record values */
                         result = result.replaceAll(key, record[key])
@@ -1644,7 +1759,7 @@ class ConsumeApi extends Controller {
 
                 for (let i = 0; i < calculates.length; i++) {
                     const { fomular_alias, fomular } = calculates[i]
-                    let result = fomular;
+                    let result = this.formatCalculateString(fomular);
                     const keys = Object.keys(data)
                     keys.map(key => {
                         /* replace the goddamn fomular with its coresponding value in record values */
@@ -1993,7 +2108,7 @@ class ConsumeApi extends Controller {
 
                     for (let i = 0; i < calculates.length; i++) {
                         const { fomular_alias, fomular } = calculates[i]
-                        let result = fomular;
+                        let result = this.formatCalculateString(fomular);
                         const keys = Object.keys(data)
                         keys.map(key => {
                             /* replace the goddamn fomular with its coresponding value in record values */
@@ -2425,8 +2540,8 @@ class ConsumeApi extends Controller {
 
                                 for (let i = 0; i < calculates.length; i++) {
                                     const { fomular_alias, fomular } = calculates[i]
-                                    let result = fomular;
-                                    let originResult = fomular
+                                    let result = this.formatCalculateString(fomular);
+                                    let originResult = this.formatCalculateString(fomular)
                                     keys.map(key => {
                                         result = result.replaceAll(key, data[key])
                                         originResult = originResult.replaceAll(key, originData[key])
@@ -2798,8 +2913,8 @@ class ConsumeApi extends Controller {
 
                     for (let i = 0; i < calculates.length; i++) {
                         const { fomular_alias, fomular } = calculates[i]
-                        let result = fomular;
-                        let originResult = fomular
+                        let result = this.formatCalculateString(fomular);
+                        let originResult = this.formatCalculateString(fomular)
                         keys.map(key => {
                             result = result.replaceAll(key, data[key])
                             originResult = originResult.replaceAll(key, originData[key])
@@ -2998,7 +3113,7 @@ class ConsumeApi extends Controller {
 
                         for (let i = 0; i < calculates.length; i++) {
                             const { fomular_alias, fomular } = calculates[i]
-                            let originResult = fomular
+                            let originResult = this.formatCalculateString(fomular)
                             keys.map(key => {
                                 originResult = originResult.replaceAll(key, originData[key])
                             })
@@ -3211,7 +3326,7 @@ class ConsumeApi extends Controller {
 
                     for (let i = 0; i < calculates.length; i++) {
                         const { fomular_alias, fomular } = calculates[i]
-                        let originResult = fomular
+                        let originResult = this.formatCalculateString(fomular)
                         keys.map(key => {
                             originResult = originResult.replaceAll(key, originData[key])
                         })
@@ -3229,6 +3344,7 @@ class ConsumeApi extends Controller {
                     for (let i = 0; i < statistics.length; i++) {
                         const statis = statistics[i]
                         const { fomular_alias, field, group_by, fomular } = statis;
+                        
                         const stringifyGroupKey = group_by.map(group => originData[group]).join("_")
                         const statisField = statisSum[fomular_alias];
 
@@ -3334,7 +3450,7 @@ class ConsumeApi extends Controller {
 
     REMOTE_GET = async () => {
         const remoteURL = this.generateRemoteURL()
-        console.log(this.req.headers)
+        
         const response = await new Promise((resolve, reject) => {
             fetch(remoteURL, {
                 headers: {
@@ -3351,7 +3467,7 @@ class ConsumeApi extends Controller {
     REMOTE_POST = async () => {
         const body = this.req.body;
         const remoteURL = this.generateRemoteURL()
-
+        console.log(3470, remoteURL)
         const response = await new Promise((resolve, reject) => {
             fetch(remoteURL, {
                 method: "POST",
@@ -3667,7 +3783,7 @@ class ConsumeApi extends Controller {
 
                             for (let k = 0; k < calculates.length; k++) {
                                 const { fomular_alias, fomular } = calculates[k]
-                                let result = fomular;
+                                let result = this.formatCalculateString(fomular);
                                 keys.map(key => {
                                     /* replace the goddamn fomular with its coresponding value in record values */
                                     result = result.replaceAll(key, record[key])
@@ -3775,7 +3891,7 @@ class ConsumeApi extends Controller {
 
                 for (let k = 0; k < calculates.length; k++) {
                     const { fomular_alias, fomular } = calculates[k]
-                    let result = fomular;
+                    let result = this.formatCalculateString(fomular);
                     keys.map(key => {
                         /* replace the goddamn fomular with its coresponding value in record values */
                         result = result.replaceAll(key, record[key])
@@ -4096,7 +4212,7 @@ class ConsumeApi extends Controller {
 
                         calculates.map(calc => {
                             const { fomular, fomular_alias } = calc;
-                            let result = fomular;
+                            let result = this.formatCalculateString(fomular);
                             keys.map(key => { result = result.replaceAll(key, record[key]) })
 
                             try {
@@ -4140,7 +4256,7 @@ class ConsumeApi extends Controller {
 
                             calculates.map(calc => {
                                 const { fomular, fomular_alias } = calc;
-                                let result = fomular;
+                                let result = this.formatCalculateString(fomular);
                                 keys.map(key => { result = result.replaceAll(key, record[key]) })
 
                                 try {
@@ -4168,9 +4284,6 @@ class ConsumeApi extends Controller {
             this.res.send({ success: false, content: "No fields found!" })
         }
     }
-
-
-
 
     EXPORT_EXCEL = async () => {
         function styleHeaders(ws) {
@@ -4241,7 +4354,7 @@ class ConsumeApi extends Controller {
 
                         calculates.map(calc => {
                             const { fomular, fomular_alias } = calc;
-                            let result = fomular;
+                            let result = this.formatCalculateString(fomular);
                             keys.map(key => { result = result.replaceAll(key, record[key]) })
 
                             try {
@@ -4287,7 +4400,7 @@ class ConsumeApi extends Controller {
 
                             calculates.map(calc => {
                                 const { fomular, fomular_alias } = calc;
-                                let result = fomular;
+                                let result = this.formatCalculateString(fomular);
                                 keys.map(key => { result = result.replaceAll(key, record[key]) })
 
                                 try {
@@ -4679,7 +4792,7 @@ class ConsumeApi extends Controller {
                     const { fomular, fomular_alias } = calculates[i]
 
                     data.map(record => {
-                        let result = fomular;
+                        let result = this.formatCalculateString(fomular);
 
                         keys.map(key => { result = result.replaceAll(key, record[key]) })
 
@@ -4761,7 +4874,6 @@ class ConsumeApi extends Controller {
             this.res.send({ success: false })
         }
     }
-
 
     consumeDetail = async (req, res, api_id) => {
         this.writeReq(req)

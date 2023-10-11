@@ -2,7 +2,7 @@ const { Accounts } = require('./../models/Accounts')
 const { Database } = require('./../config/models/database')
 const fs = require('fs')
 const UI_PATH = 'public/config/ui.json'
-
+DEFAULT_ERROR_CALCLATED_VALUE = "NULL"
 const retriveUI = () => {
     if (fs.existsSync(UI_PATH)) {
         const stringifiedUI = fs.readFileSync(UI_PATH)
@@ -141,11 +141,12 @@ module.exports = (io, socket) => {
                 key[fomular_alias] = data[fomular_alias]
             }
 
-            const originData = await Database.selectAll( table.table_alias, key )
+            const originData = await Database.selectAll( table.table_alias, key )           
+
             const record = originData[0]
 
             if (calculates && calculates.length > 0) {
-                const keys = Object.keys(record)
+                const keys = Object.keys(record )
                 keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
 
                 for (let i = 0; i < calculates.length; i++) {
