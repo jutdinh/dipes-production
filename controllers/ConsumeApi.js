@@ -109,7 +109,7 @@ class ConsumeApi extends Controller {
             this.project = project;
 
             this.API = Api;
-            
+
             this.fields = fields;
             this.tables = tables.map(table => {
                 const { id } = table;
@@ -138,8 +138,9 @@ class ConsumeApi extends Controller {
                     default:
                         this.NotFound()
                         break;
-                }                
-/*(7)*/     } else {
+                }
+                /*(7)*/
+            } else {
                 switch (api.api_method) {
                     case "get":
                         await this.REMOTE_GET()
@@ -160,7 +161,7 @@ class ConsumeApi extends Controller {
 
                 }
             }
-            
+
         } else {
 /*(8)*/    this.NotFound()
         }
@@ -205,7 +206,7 @@ class ConsumeApi extends Controller {
          *  (7): Trả về 404 - Not found
          * 
          *  (8): Trả về 498 - Token không hợp lệ
-         */ 
+         */
 
 
         this.writeReq(req)
@@ -234,7 +235,7 @@ class ConsumeApi extends Controller {
 
                 this.API = Api;
 
-                
+
                 this.fields = fields;
                 this.tables = tables.map(table => {
                     const { id } = table;
@@ -250,7 +251,7 @@ class ConsumeApi extends Controller {
 /*(6)*/         if (project_type == "database") {
                     switch (api.api_method) {
                         case "get":
-                            isGranted = this.hasEnoughPrivileges(apiTables, [ Privileges.READ ], privileges)
+                            isGranted = this.hasEnoughPrivileges(apiTables, [Privileges.READ], privileges)
                             if (isGranted) {
                                 await this.GET_UI()
                                 const end = new Date()
@@ -261,7 +262,7 @@ class ConsumeApi extends Controller {
                             break;
 
                         case "post":
-                            isGranted = this.hasEnoughPrivileges(apiTables, [ Privileges.WRITE ], privileges)
+                            isGranted = this.hasEnoughPrivileges(apiTables, [Privileges.WRITE], privileges)
                             if (isGranted) {
                                 await this.POST_UI()
                                 const end = new Date()
@@ -273,7 +274,7 @@ class ConsumeApi extends Controller {
 
                         case "put":
 
-                            isGranted = this.hasEnoughPrivileges(apiTables, [ Privileges.MODIFY ], privileges)
+                            isGranted = this.hasEnoughPrivileges(apiTables, [Privileges.MODIFY], privileges)
                             if (isGranted) {
                                 await this.PUT_UI()
                                 const end = new Date()
@@ -283,7 +284,7 @@ class ConsumeApi extends Controller {
                             }
                             break;
                         case "delete":
-                            isGranted = this.hasEnoughPrivileges(apiTables, [ Privileges.PURGE ], privileges)
+                            isGranted = this.hasEnoughPrivileges(apiTables, [Privileges.PURGE], privileges)
                             if (isGranted) {
                                 await this.DELETE_UI()
                                 const end = new Date()
@@ -318,7 +319,7 @@ class ConsumeApi extends Controller {
                             break;
 
                     }
-                }                
+                }
             } else {
 /*(7)*/          this.NotFound()
             }
@@ -368,24 +369,24 @@ class ConsumeApi extends Controller {
          * 
          *  @note 
          *  fields, body & params có cùng cấu trúc tương tự như fields
-         */ 
+         */
 
 
-        const tableIds  = this.API.tables.value()                
-        const bodyIds   = this.API.body.valueOrNot()
-        const paramIds  = this.API.params.valueOrNot()
+        const tableIds = this.API.tables.value()
+        const bodyIds = this.API.body.valueOrNot()
+        const paramIds = this.API.params.valueOrNot()
 
         const tables = tableIds.map(tbID => {
             const table = this.tables.find(tb => tb.id == tbID)
             return table;
-        })        
-        const bodyFields    = this.fields.filter(fd => bodyIds.indexOf(fd.id)  != -1)
-        const paramFields   = this.fields.filter(fd => paramIds.indexOf(fd.id) != -1)
+        })
+        const bodyFields = this.fields.filter(fd => bodyIds.indexOf(fd.id) != -1)
+        const paramFields = this.fields.filter(fd => paramIds.indexOf(fd.id) != -1)
 
         const objects = tables.map(table => {
             const fieldsBelongToThisTable = this.fields.filter(field => field.table_id == table.id)
             const paramsBelongToThisTable = paramFields.filter(field => field.table_id == table.id)
-            const bodyBeLongToThisTable   = bodyFields.filter(field => field.table_id == table.id)
+            const bodyBeLongToThisTable = bodyFields.filter(field => field.table_id == table.id)
             return {
                 ...table,
                 fields: fieldsBelongToThisTable,
@@ -433,7 +434,7 @@ class ConsumeApi extends Controller {
         return fields
     }
 
-    getFieldsByAlias = (fieldAliases) => {        
+    getFieldsByAlias = (fieldAliases) => {
         /**
          * @desc Lấy thông tin tất cả các trường có field.fomular_alias thuộc danh sách fieldAliases
          * 
@@ -505,7 +506,7 @@ class ConsumeApi extends Controller {
          *      ref_field_id:   <Int>
          * }>
          * 
-         */        
+         */
 
 
         const { id } = field;
@@ -584,7 +585,7 @@ class ConsumeApi extends Controller {
          * 
          * 
          * 
-         */             
+         */
 
 
         const type = field.DATATYPE
@@ -614,7 +615,8 @@ class ConsumeApi extends Controller {
                         } else {
                             return { valid: false, reason: "Dữ liệu của trường số nguyên & NO_AUTO phải là kiểu int" }
                         }
-        /*(1.2)*/   } else {
+                        /*(1.2)*/
+                    } else {
                         if (intValidate(value)) {
                             return { valid: true, result: parseInt(value) };
                         } else {
@@ -635,7 +637,8 @@ class ConsumeApi extends Controller {
                             return { valid: false, reason: "Giá trị khum nằm trong giới hạn cho phép" }
                         }
 
-        /*(2.2)*/   } else {
+                        /*(2.2)*/
+                    } else {
                         return { valid: false, reason: "Dữ liệu của trường số thực phải là một số thực" }
                     }
         /*(3)*/ case "BOOL":
@@ -747,10 +750,10 @@ class ConsumeApi extends Controller {
                 PRIMAL_START_POINT -= total
 
                 if (PRIMAL_START_POINT <= 0) {
-                    TARGET_PARTITION_INDEX  = i
-                    partitions[i]["total"]  = total - CURRENT_REMAINING_INDEX           // (a)
-                    partitions[i]["from"]   = CURRENT_REMAINING_INDEX                   // (b)
-                    partitions[i]["to"]     = CURRENT_REMAINING_INDEX + RECORD_PER_PAGE // (c)
+                    TARGET_PARTITION_INDEX = i
+                    partitions[i]["total"] = total - CURRENT_REMAINING_INDEX           // (a)
+                    partitions[i]["from"] = CURRENT_REMAINING_INDEX                   // (b)
+                    partitions[i]["to"] = CURRENT_REMAINING_INDEX + RECORD_PER_PAGE // (c)
                     break
                 }
             }
@@ -861,9 +864,9 @@ class ConsumeApi extends Controller {
 
         return finalePartitions
     }
-    
-    
-    formatCalculateString = ( rawString = "" ) => {
+
+
+    formatCalculateString = (rawString = "") => {
         let string = rawString.toUpperCase()
         const fomulars = [
             {
@@ -871,7 +874,7 @@ class ConsumeApi extends Controller {
                 prefix: " new Date",
                 postfix: ".getDate() "
             },
-             {
+            {
                 fomular: "MONTH",
                 prefix: " (new Date",
                 postfix: ".getMonth() + 1) "
@@ -885,51 +888,51 @@ class ConsumeApi extends Controller {
 
         // console.log(string)
 
-        for( let i = 0 ; i < fomulars.length; i++ ){
+        for (let i = 0; i < fomulars.length; i++) {
             // console.log(string)
             const { fomular, prefix, postfix } = fomulars[i]
             const splitted = string.split(fomular)
 
-            if( splitted.length > 1 ){
-                for( let h = 1; h < splitted.length; h++ ){
+            if (splitted.length > 1) {
+                for (let h = 1; h < splitted.length; h++) {
                     // console.log(splitted[h-1])
                     splitted[h - 1] += prefix
                     const post = splitted[h]
                     let newPost = ""
                     let loopBreak = false
-                    for( let j = 0 ; j < post.length; j++ ){
-                        newPost += post[j]                        
-                        if( post[j] == ")" && !loopBreak ){
-                            newPost += postfix    
+                    for (let j = 0; j < post.length; j++) {
+                        newPost += post[j]
+                        if (post[j] == ")" && !loopBreak) {
+                            newPost += postfix
                             loopBreak = true
                             // break                        
                         }
                     }
                     splitted[h] = newPost
                 }
-            }    
+            }
             // console.log(911, splitted)        
             string = splitted.join('')
-            console.log(913, string)
+            // console.log(913, string)
 
-            if( i == fomulars.length - 1 ){
+            if (i == fomulars.length - 1) {
                 let dateSplitted = string.split('new Date')
-                for( let k = 0 ; k < dateSplitted.length; k++ ){
+                for (let k = 0; k < dateSplitted.length; k++) {
                     const piece = dateSplitted[k]
                     console.log(piece)
-                    if( piece.length > 2 ){
+                    if (piece.length > 2) {
                         let pieceCopy = ""
                         let loopBreak = false
-                        for( let c = 0 ; c < piece.length; c++ ){
+                        for (let c = 0; c < piece.length; c++) {
                             pieceCopy += piece[c]
-    
-                            if( piece[c] == "(" && !loopBreak){
+
+                            if (piece[c] == "(" && !loopBreak) {
                                 pieceCopy += "'"
                             }
-    
-                            if(piece[c + 1] == ")" && !loopBreak){
+
+                            if (piece[c + 1] == ")" && !loopBreak) {
                                 pieceCopy += "'"
-                                loopBreak = true                            
+                                loopBreak = true
                             }
                         }
                         dateSplitted[k] = pieceCopy
@@ -937,7 +940,7 @@ class ConsumeApi extends Controller {
                 }
                 string = dateSplitted.join('new Date')
             }
-        }        
+        }
 
         return string
     }
@@ -1014,7 +1017,7 @@ class ConsumeApi extends Controller {
             const redundantPartitions = []
 
             if (paramQueries.length > 0) {
-
+                // ERRORS
                 let data_counter = 0;
                 let finale_raw_data_counter = 0;
                 let found = false
@@ -1104,7 +1107,13 @@ class ConsumeApi extends Controller {
                 }
             }
 
-            // console.log( redundantPartitions.length)
+            redundantPartitions.map(par => {
+                const { position, total, data } = par;
+                console.log()
+                console.log(position)
+                console.log(total)
+                console.log(data)
+            })
 
             if (redundantPartitions.length > 0) {
 
@@ -1135,7 +1144,7 @@ class ConsumeApi extends Controller {
                         keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
                         for (let i = 0; i < calculates.length; i++) {
                             const { fomular_alias, fomular } = calculates[i]
-                            let result = this.formatCalculateString(fomular);                           
+                            let result = this.formatCalculateString(fomular);
 
                             keys.map(key => {
                                 /* replace the goddamn fomular with its coresponding value in record values */
@@ -3344,7 +3353,7 @@ class ConsumeApi extends Controller {
                     for (let i = 0; i < statistics.length; i++) {
                         const statis = statistics[i]
                         const { fomular_alias, field, group_by, fomular } = statis;
-                        
+
                         const stringifyGroupKey = group_by.map(group => originData[group]).join("_")
                         const statisField = statisSum[fomular_alias];
 
@@ -3450,7 +3459,13 @@ class ConsumeApi extends Controller {
 
     REMOTE_GET = async () => {
         const remoteURL = this.generateRemoteURL()
-        
+
+        const context = {
+            success: true,
+            data: [],
+            statistic: []
+        }
+
         const response = await new Promise((resolve, reject) => {
             fetch(remoteURL, {
                 headers: {
@@ -3461,7 +3476,40 @@ class ConsumeApi extends Controller {
             })
         })
 
-        this.res.status(200).send(response)
+        const statistic = this.API.statistic.valueOrNot()
+        const statistics = []
+
+        statistic.map(statis => {
+            const { display_name, fomular_alias, fomular, group_by } = statis;
+            const statisRecord = { display_name }
+            if (group_by && group_by.length > 0) {
+                const rawData = response[fomular_alias]
+                if (rawData != undefined) {
+                    if (fomular == "AVERAGE") {
+                        const headers = Object.keys(rawData)
+                        const values = Object.values(rawData).map(({ total, value }) => value)
+
+                        statisRecord["data"] = { headers, values }
+                        statisRecord["type"] = "table"
+                    } else {
+                        const headers = Object.keys(rawData)
+                        const values = Object.values(rawData)
+                        statisRecord["data"] = { headers, values }
+                        statisRecord["type"] = "table"
+                    }
+                }
+            } else {
+                statisRecord["type"] = "text"
+                statisRecord["data"] = response[fomular_alias]
+            }
+            statistics.push(statisRecord)
+        })
+
+
+        context.data = response.data;
+        context.statistic = statistics;
+
+        this.res.status(200).send(context)
     }
 
     REMOTE_POST = async () => {
@@ -3516,7 +3564,6 @@ class ConsumeApi extends Controller {
 
         this.res.status(200).send(response)
     }
-
 
     retrievePutData = async (req, res) => {
         this.writeReq(req)
@@ -4897,7 +4944,12 @@ class ConsumeApi extends Controller {
                 return table
             });
 
-            this.CONSUME_DETAIL_RECORD()
+            if (project.project_type == "database") {
+                this.CONSUME_DETAIL_RECORD()
+            } else {
+                this.REMOTE_GET()
+            }
+
         } else {
             res.status(200).send({ succes: false, content: "Not found" })
         }

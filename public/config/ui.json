@@ -29,32 +29,32 @@
             ]
         },
         {
-            "ui_id": 1874,
+            "ui_id": 1895,
             "title": "KEYS",
             "url": "/keys",
             "status": true,
             "params": [
-                1730
+                1725
             ],
             "type": "ui",
-            "create_at": "2023-10-11T02:59:20.627Z",
+            "create_at": "2023-10-12T01:07:07.207Z",
             "create_by": {
                 "username": "administrator",
                 "fullname": "Administrator"
             },
             "components": [
                 {
-                    "component_id": 1875,
+                    "component_id": 1896,
                     "component_name": "KEYS",
                     "layout_id": 0,
-                    "api_get": "/api/A44ED43CE42B4C7CAE8403D6B62ACF8E",
-                    "api_post": "/ui/AA9B4591FE5F4A5789582207C5064C1F",
-                    "api_put": "/ui/60D70E4526514205909FA59ABC4CD728",
-                    "api_delete": "/ui/FE97593DF345400BA08D57AA5E32E42C",
-                    "api_search": "/search/ABF84B95C6B4440EB0E021B8FF6ED3FF",
-                    "api_export": "/export/26A9B832B276492DADBC4282B2E80EA4",
-                    "api_import": "/import/8C000C9E57E94383BC0FA47FF731EB4F",
-                    "api_detail": "/d/03710DEE03DB4BB5B0A531248A1614C8"
+                    "api_get": "/api/8C6CE27F524B4809948762F27B55BC35",
+                    "api_post": "/ui/8FD3A675DA4846CA9ABBF936C0373817",
+                    "api_put": "/ui/6C49D605C1EF47C3BA130A4DFC234864",
+                    "api_delete": "/ui/E76A026765284F88AEE00081B4E3AB90",
+                    "api_search": "/search/845E807944524E1AB5E79C917E11E5A7",
+                    "api_export": "/export/6FD48D8D40EB4CD4AD84B4BD3A9AD7F1",
+                    "api_import": "/import/133099ADFCE945939BE343DDEAAA7F90",
+                    "api_detail": "/d/ED62F146466648A18B9F2F82928B1A5C"
                 }
             ]
         }

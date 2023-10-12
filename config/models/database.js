@@ -98,7 +98,7 @@ class Mongo {
     }
 
     select = async ( table, criteria = undefined) => {
-
+        await this.init()
         /**
          * @desc Select là phương thức gọi dữ liệu từ một bảng thuộc cơ sở dữ liệu
          *     
@@ -141,7 +141,7 @@ class Mongo {
     }
 
     selectAll = async ( table, criteria = undefined) => {
-
+        await this.init()
         /**
          * @desc Select là phương thức gọi dữ liệu từ một bảng thuộc cơ sở dữ liệu
          *     
@@ -172,6 +172,7 @@ class Mongo {
     }
 
     selectFrom = async (table, query, from, to) => {                
+        await this.init()
         const data = await new Promise( (resolve, reject) => {
 
             this.dbo.collection( table ).find(query, { skip: from, projection: { "_id": 0 } }).limit( to - from ).toArray((err, result) => {                                                
@@ -184,7 +185,7 @@ class Mongo {
     }
 
     selectFields = async ( table, criteria, fields) => {
-
+        await this.init()
         /**
          * @desc Select là phương thức gọi dữ liệu từ một bảng thuộc cơ sở dữ liệu
          *     
@@ -218,7 +219,7 @@ class Mongo {
     }
 
     insert = async ( table, value ) => {
-
+        await this.init()
         /**
          * @desc Insert là phương thức chèn dữ liệu vào một bảng thuộc cơ sở dữ liệu
          *     
@@ -243,6 +244,7 @@ class Mongo {
     }
 
     insertMany = async ( table, objects ) => {
+        await this.init()
         /**
          * @desc Insert Many là phương thức chèn dữ liệu vào một bảng thuộc cơ sở dữ liệu
          *     
@@ -269,7 +271,7 @@ class Mongo {
     } 
 
     update = async ( table, criteria, newValue ) => {
-
+        await this.init()
         /**
          * @desc Update là phương thức cập nhật một hoặc nhiều bảng ghi với một hoặc nhiều giá trị mới
          *     
@@ -291,7 +293,7 @@ class Mongo {
     }
 
     delete = async ( table, criteria ) => {
-        
+        await this.init()    
         /**
          * @desc Delete là phương thức xóa dữ liệu
          *     
@@ -312,7 +314,7 @@ class Mongo {
         });        
     }
     deleteMany = async ( table, criteria ) => {
-        
+        await this.init()        
         /**
          * @desc Delete là phương thức xóa dữ liệu
          *     
@@ -334,6 +336,7 @@ class Mongo {
     }
 
     count = async ( table, query ) => {
+        await this.init()
         let criteria = query;
         if( query == undefined ){
             criteria = {}
@@ -343,6 +346,7 @@ class Mongo {
     }
 
     getEstimateCount = async (table) => {
+        await this.init()
         const countResult = await this.dbo.collection( table ).estimatedDocumentCount();
         return countResult
     } 
