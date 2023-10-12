@@ -3477,8 +3477,7 @@ class ConsumeApi extends Controller {
         })
 
         const statistic = this.API.statistic.valueOrNot()
-        const statistics = []
-
+        const statistics = []        
         statistic.map(statis => {
             const { display_name, fomular_alias, fomular, group_by } = statis;
             const statisRecord = { display_name }
@@ -3505,9 +3504,16 @@ class ConsumeApi extends Controller {
             statistics.push(statisRecord)
         })
 
+        const calculates = this.API.calculates.valueOrNot();
+        const calculateDisplay = calculates.map(field => {
+            const { fomular_alias, display_name } = field;
+            return { fomular_alias, display_name }
+        })
 
         context.data = response.data;
         context.statistic = statistics;
+        const fields = this.getFields(this.API.fields.valueOrNot().map(f => f.id))
+        context.fields = [...fields, ...calculateDisplay]
 
         this.res.status(200).send(context)
     }
