@@ -80,10 +80,12 @@ class Api extends Controller {
                 const tableIDs = API.tables.valueOrNot()
                 const bodyIDs  = API.body.valueOrNot()
                 const paramIDs = API.params.valueOrNot()
+                const fieldIds = API.fields.valueOrNot().map( f => f.id )
     
                 const tables = await this.getTables( tableIDs )
                 const body   = await this.getFields( bodyIDs )
-                const params = await this.getFields( paramIDs )                     
+                const params = await this.getFields( paramIDs )   
+                const fields = await this.getFields( fieldIds )   
                 
 
                 for( let i = 0; i < body.length; i++ ){
@@ -110,7 +112,7 @@ class Api extends Controller {
                 }
                 context.success = true;
                 context.data = {
-                    tables, body, params 
+                    tables, body, params, fields
                 }
             }
         }

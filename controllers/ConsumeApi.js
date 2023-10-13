@@ -1017,7 +1017,6 @@ class ConsumeApi extends Controller {
             const redundantPartitions = []
 
             if (paramQueries.length > 0) {
-                // ERRORS
                 let data_counter = 0;
                 let finale_raw_data_counter = 0;
                 let found = false
@@ -1030,11 +1029,12 @@ class ConsumeApi extends Controller {
                         const currentDataLength = redundantPartition.total
                         data_counter += currentDataLength;
                         tmpDataFrom -= currentDataLength
-                        // console.log(630, data_counter, found, finale_raw_data_counter, tmpDataFrom )
+
                         if (tmpDataFrom < 0 && !found) {
+                            
                             const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { position: partitions[i].position, ...sideQueries })
                             const data = redundantPartitionData.slice(redundantPartitionData.length + tmpDataFrom, redundantPartitionData.length)
-                            // console.log(636, { position: partitions[i].position, ...sideQueries })
+                            
                             redundantPartitions.push({
                                 position: partitions[i].position,
                                 total: data.length,
@@ -1046,17 +1046,18 @@ class ConsumeApi extends Controller {
                         }
 
                         if (finale_raw_data_counter < dataPerBreak && found) {
-                            finale_raw_data_counter += redundantPartition.total
-                            // console.log(656, finale_raw_data_counter)
-
+                       
                             const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { position: partitions[i].position, ...sideQueries })
-
+                          
                             redundantPartitions.push({
                                 position: partitions[i].position,
                                 total: redundantPartitionData.length,
                                 data: redundantPartitionData,
                             })
+                            finale_raw_data_counter += redundantPartitionData.length
+                         
                             if (finale_raw_data_counter >= dataPerBreak) {
+                               
                                 break;
                             }
                         }
@@ -1107,13 +1108,13 @@ class ConsumeApi extends Controller {
                 }
             }
 
-            redundantPartitions.map(par => {
-                const { position, total, data } = par;
-                console.log()
-                console.log(position)
-                console.log(total)
-                console.log(data)
-            })
+            // redundantPartitions.map(par => {
+            //     const { position, total, data } = par;
+            //     console.log()
+            //     console.log(position)
+            //     console.log(total)
+            //     console.log(data)
+            // })
 
             if (redundantPartitions.length > 0) {
 
