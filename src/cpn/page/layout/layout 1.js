@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExport, faFileImport, faDownload, faSquarePlus, faCirclePlus } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
-import StatisTable from '../statistic/table'
+import StatisTable from '../statistic/table_chart'
 import Swal from 'sweetalert2';
 import ReactECharts from 'echarts-for-react';
 import $ from 'jquery'
@@ -1047,7 +1047,7 @@ export default (props) => {
                                                                                                 {renderData(header, row)}
                                                                                             </td>
                                                                                         ))}
-                                                                                        <td className="align-center cell" style={{ minWidth: "80px" }}>
+                                                                                        <td className="align-center cell" style={{ minWidth: "100px" }}>
                                                                                             {checkDetail && <i className="fa fa-eye size-24 pointer mr-2 icon-view" onClick={() => handleViewDetail(row)} title={lang["viewdetail"]}></i>}
                                                                                             {
                                                                                                 _user.role === "uad"

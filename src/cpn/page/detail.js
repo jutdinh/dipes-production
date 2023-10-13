@@ -26,17 +26,32 @@ export default () => {
     const [relatedTables, setRelatedTables] = useState([])
     const [initialData, setInitData] = useState({})
     const [loaded, setLoaded] = useState(false)
-
+    const [page, setPage] = useState([]);
     const urlParams = new URLSearchParams(window.location.search);
     const myParam = urlParams.get('myParam');
 
     const goToHomePage = () => {
         navigate(`/page/${myParam}`);
     };
+    useEffect(() => {
+        if (pages && pages.length > 0) {
+
+          
+          
+
+            const filteredPages = pages.filter(page => page.type !== "apiview");
+
+            const result = filteredPages.find(page => page.url === `/${url}`);
+            if (result) {
+                setPage(result);
+            } else {
+                // openTab('/page/not/found')
+            }
+        }
+    }, [pages]);
 
 
-
-    
+    console.log(page)
 
 
 
@@ -51,6 +66,11 @@ export default () => {
 
     
     useEffect(() => {
+        console.log(page)
+        if(pages && pages.length > 0){
+
+
+        
         const url = window.location;
         const rawParams = url.pathname.split(`/${id_str}/`)[1];
         const paramsList = rawParams.split('/');
@@ -64,7 +84,7 @@ export default () => {
             .then(res => res.json())
             .then(res => {
                 const { success, data } = res;
-                // console.log(res)
+                console.log(res)
                 if (success) {
                     // const { tables } = data.tables;
                     const apiFields = data.params;
@@ -88,14 +108,16 @@ export default () => {
                     setFields(apiFields)
                     setTables(data.tables)
                     setRelatedTables(relatedTables)
+                    
+                    
 
-                    fetch(`${proxy()}/apis/retrieve/${id_str}/${rawParams}`, {
+                    fetch(`${proxy()}${page.components?.[0]?.api_detail}/${rawParams}`, {
                         headers: {
                             Authorization: _token
                         }
                     })
                         .then(res => res.json()).then(res => {
-                            // console.log(res);
+                            console.log(res);
 
                             const { data } = res;
                             let initData = data;
@@ -107,23 +129,24 @@ export default () => {
                                     return row[fomular_alias] == decodedString
                                 })
                             }
-                            if (initData[0]) {
+                            if (initData) {
                                 const data = {};
                                 apiFields.map(field => {
                                     const { fomular_alias } = field;
-                                    data[fomular_alias] = initData[0][fomular_alias];
+                                    data[fomular_alias] = initData[fomular_alias];
                                 })
-                                setInitData(initData[0] ? initData[0] : {});
+                                setInitData(initData ? initData : {});
                                 setData({ ...data })
                                 setLoaded(true)
                             }
                         })
                 } else {
-                    // al.failure("Lỗi", "API này không tồn tại hoặc đã bị vô hiệu")
+                 
                 }
             })
-    }, [])
-
+        }
+    }, [page, url])
+console.log(initialData)
     useEffect(() => {
         // console.log(data)
     }, [data])

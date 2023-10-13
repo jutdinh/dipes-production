@@ -5,7 +5,7 @@ export default (props) => {
 
     const { field, changeTrigger, related, table, defaultValue, selectOption } = props;
     const [current, setCurrent] = useState('')
-
+console.log(props)
 
    
     useEffect(() => {

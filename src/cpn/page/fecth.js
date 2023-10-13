@@ -13,9 +13,10 @@ import $ from 'jquery'
 
 import Layout0 from "./layout/layout 0";
 import Layout1 from "./layout/layout 1";
-import StatisTable from './statistic/table'
+import StatisTable from './statistic/table_chart'
 import Layout_active from "./layout/layout_active";
-
+import Layout_keys from "./layout/layout_keys"
+import Layout_chart from "./layout/layout_chart"
 
 
 const rowsPerPage = 15;
@@ -1481,8 +1482,12 @@ export default () => {
                     ) : layoutId === 1 ? (
                         < Layout1 activeTab={activeTab} page={page} statusActive={statusActive} dataCheck={dataCheck} />
                     ) : layoutId === 2 ? (
-                        < Layout_active activeTab={activeTab} page={page} statusActive={statusActive} dataCheck={dataCheck} />
-                    ) : null
+                        < Layout_active page={page} statusActive={statusActive} dataCheck={dataCheck} />
+                    ) : layoutId === 3 ? (
+                        < Layout_keys page={page} statusActive={statusActive} dataCheck={dataCheck} />
+                    ) :  layoutId === 4 ? (
+                        < Layout_chart page={page} statusActive={statusActive} dataCheck={dataCheck} />
+                    ):null
                     }
 
                     {/* {layoutId === 0 ? (

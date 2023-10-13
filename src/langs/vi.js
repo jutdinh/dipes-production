@@ -311,5 +311,19 @@ export default {
     "erorr pk": "Lỗi khóa chính",
     "char error": "Vượt quá số lượng kí tự cho phép",
     "signout account": "Tài khoản đã được đăng nhập từ một thiết bị khác",
-    "notification": "Thông báo"
+    "notification": "Thông báo",
+    "january":'Tháng 1',
+    "february":'Tháng 2',
+    "march":'Tháng 3',
+    "april":'Tháng 4',
+    "may":'Tháng 5',
+    "june":'Tháng 6',
+    "july":'Tháng 7',
+    "august":'Tháng 8',
+    "september":'Tháng 9',
+    "october":'Tháng 10',
+    "november":'Tháng 11',
+    "december":'Tháng 12',
+    "month": "Tháng",
+    "year": "Năm"
 }

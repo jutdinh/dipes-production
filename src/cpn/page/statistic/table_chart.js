@@ -14,13 +14,12 @@ export default (props) => {
     // console.log(props)
     const { display_name, type } = statis;
     const { headers, values } = data;
-    // console.log(props)
+    console.log(props)
     const [display, setDisplay] = useState(headers.slice(0, RECORD_PER_PAGE))
     const [currentPage, setCurrentPage] = useState(0)
     const totalPages = Math.ceil(headers.length / RECORD_PER_PAGE);
 
-// console.log(display)
-// console.log(props)
+
 
     function generateUniqueColors(num) {
         const step = Math.cbrt((256 * 256 * 256) / num);

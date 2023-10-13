@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExport, faFileImport, faDownload, faSquarePlus, faCirclePlus } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
-import StatisTable from '../statistic/table'
+import StatisTable from '../statistic/table_chart'
 import Swal from 'sweetalert2';
 import ReactECharts from 'echarts-for-react';
 import $ from 'jquery'
@@ -40,7 +40,7 @@ export default (props) => {
     const [apiDataName, setApiDataName] = useState([])
     const [sumerize, setSumerize] = useState(0)
     const [dataStatis, setDataStatis] = useState([])
-   
+
     const [dataTable_id, setDataTableID] = useState(null);
     const [dataTables, setDataTables] = useState([]);
     const [dataFields, setDataFields] = useState([]);
@@ -64,7 +64,7 @@ export default (props) => {
         }
     }, [dataStatis]);
 
-    // console.log(apiData)
+    console.log(apiDataName)
 
 
     // Client side
@@ -227,7 +227,7 @@ export default (props) => {
             .then(res => res.json())
             .then(res => {
                 const { success, content, data, count, fields, limit, statistic } = res;
-                // console.log(res)
+                console.log(res)
                 setApiDataName(fields);
                 if (data && data.length > 0) {
                     setApiData(data.filter(record => record != undefined));
@@ -640,7 +640,7 @@ export default (props) => {
         } else {
             // console.log('Không tìm thấy primaryKeys');
         }
-        // console.log(newParams);
+ 
 
         Swal.fire({
             title: lang["confirm"],
@@ -707,7 +707,7 @@ export default (props) => {
         const { components } = page;
         const cpn = components[0]
         const { api_detail } = cpn;
-    
+
         if (api_detail != undefined) {
             const id_str = api_detail.split('/')[2]
 
@@ -1059,16 +1059,17 @@ export default (props) => {
                                                                                         <table className={"table"} style={{ marginBottom: "10px", width: '100%' }}>
                                                                                             <thead>
                                                                                                 <tr class="color-tr">
-                                                                                                    <th class="font-weight-bold " style={{ minWidth: "100px" }} scope="col">{lang["log.no"]}</th>
-                                                                                                    {apiDataName.map((header, index) => (
-                                                                                                        <th key={index} class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
+                                                                                                    <th class="font-weight-bold " style={{ minWidth: "50px" }} scope="col">{lang["log.no"]}</th>
+                                                                                                    {apiDataName?.map((header, index) => (
+                                                                                                        <th key={index} class="font-weight-bold" style={{ minWidth: "200px" }}>
+                                                                                                            {header.display_name ? header.display_name : header.field_name}</th>
                                                                                                     ))}
                                                                                                     <th class="font-weight-bold align-center" style={{ minWidth: "100px" }}>{lang["log.action"]}</th>
                                                                                                 </tr>
                                                                                                 <tr>
                                                                                                     <th></th>
-                                                                                                    {apiDataName.map((header, index) => (
-                                                                                                        <th key={index}>
+                                                                                                    {apiDataName?.map((header, index) => (
+                                                                                                        <th key={index} className="header-cell" style={{ minWidth: "200px" }}>
                                                                                                             <input
 
                                                                                                                 type="text"
@@ -1079,32 +1080,29 @@ export default (props) => {
                                                                                                             />
                                                                                                         </th>
                                                                                                     ))}
-                                                                                                    <th class="align-center" onClick={handleSearchClick} > <i class="fa fa-search size-24 pointer mb-2" title={lang["search"]}></i></th>
+                                                                                                    <th class="align-center" onClick={handleSearchClick} style={{ minWidth: "100px" }}>
+                                                                                                        <i class="fa fa-search size-24 pointer mb-2" title={lang["search"]}></i>
+                                                                                                    </th>
                                                                                                 </tr>
 
                                                                                             </thead>
                                                                                             <tbody>
-
-
                                                                                                 {current.map((row, index) => {
                                                                                                     if (row) {
                                                                                                         return (
                                                                                                             <tr key={index}>
                                                                                                                 <td scope="row" style={{ minWidth: "50px" }} className="cell">{indexOfFirst + index + 1}</td>
-                                                                                                                {apiDataName.map((header) => (
+                                                                                                                {apiDataName?.map((header) => (
                                                                                                                     <td key={header.fomular_alias} className="cell">{renderData(header, row)}</td>
                                                                                                                 ))}
-                                                                                                                <td class="align-center" style={{ minWidth: "80px" }}>
-                                                                                                                    {checkDetail && <i className="fa fa-eye size-24 pointer mr-2 icon-view" onClick={() => handleViewDetail(row)} title={lang["viewdetail"]}></i>}
+                                                                                                                <td class="align-center" style={{ width: "100px" }}>
+                                                                                                                    {checkDetail && <i className="fa fa-eye size-24 pointer icon-view" onClick={() => handleViewDetail(row)} title={lang["viewdetail"]}></i>}
                                                                                                                     {
                                                                                                                         _user.role === "uad"
                                                                                                                             ? <>
-
                                                                                                                                 <i className="fa fa-edit size-24 pointer ml-2 icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
                                                                                                                             </>
-
                                                                                                                             :
-
                                                                                                                             (dataCheck && dataCheck?.modify)
                                                                                                                                 ?
                                                                                                                                 <i className="fa fa-edit size-24 pointer icon-margin icon-edit" onClick={() => redirectToInputPUT(row)} title={lang["edit"]}></i>
@@ -1115,10 +1113,7 @@ export default (props) => {
                                                                                                                         _user.role === "uad"
                                                                                                                             ? <>
                                                                                                                                 <i className="fa fa-trash-o size-24 pointer icon-delete" onClick={() => handleDelete(row)} title={lang["delete"]}></i>
-
-
                                                                                                                             </>
-
                                                                                                                             :
                                                                                                                             (dataCheck && dataCheck?.purge)
                                                                                                                                 ?
@@ -1222,9 +1217,9 @@ export default (props) => {
 
                                                                                         </thead>
                                                                                         <tbody>
-                                                                                            <tr>
-                                                                                                <td class="font-weight-bold cell" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
-                                                                                            </tr>
+                                                                                                <tr>
+                                                                                                    <td class="font-weight-bold cell" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
+                                                                                                </tr>
                                                                                         </tbody>
                                                                                     </table>
                                                                                 </div>

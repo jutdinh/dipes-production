@@ -317,7 +317,21 @@ export default {
     "erorr pk": "Primary key errors",
     "char error": "Exceeding the allowed number of characters", 
     "signout account": "Account signed another device",
-    "notification": "Notification"
+    "notification": "Notification",
+    "january":'January',
+    "february":'February',
+    "march":'March',
+    "april":'April',
+    "may":'May',
+    "june":'June',
+    "july":'July',
+    "august":'August',
+    "september":'September',
+    "october":'October',
+    "november":'November',
+    "december":'December',
+    "month": "Month",
+    "year": "Year"
 
 }
 

@@ -37,12 +37,13 @@
     padding: 0;
     list-style-type: none;
     border: 1px solid #ccc;
-    display: flex;  
-    flex-wrap: wrap;  
+    display: flex;
+    flex-wrap: wrap;
 }
 
 
-.step-list:before, .step-list:after {
+.step-list:before,
+.step-list:after {
     content: "";
     display: table;
 }
@@ -53,7 +54,7 @@
 
 .step-item {
     display: inline-block;
-    width: 33.33%;
+    width: 33.333333%;
     /* float: left; */
     text-align: center;
     text-transform: uppercase;
@@ -65,6 +66,7 @@
     background: #1F8A70;
     color: #fff;
 }
+
 .step-active .step-link {
     font-size: 14px;
 }
@@ -75,6 +77,7 @@
     line-height: 40px;
     position: relative;
     display: block;
+
 }
 
 .step-arrow-right.step-active .step-link:after {
@@ -84,6 +87,7 @@
     border-width: 20px;
     border-color: transparent transparent transparent #1F8A70;
     right: -40px;
+
 }
 
 
@@ -93,9 +97,12 @@
     position: absolute;
     border-style: solid;
     border-width: 20px;
-    border-color: #1F8A70#1F8A70 #1F8A70 transparent; /* Mũi tên dạng khuyết ở bên trái */
+    border-color: #1F8A70#1F8A70 #1F8A70 transparent;
+    /* Mũi tên dạng khuyết ở bên trái */
     left: -40px;
+    /* border: 1px solid #5f3939; */
 }
+
 .step-arrow-both.step-active .step-link:after {
     content: "";
     position: absolute;
@@ -110,7 +117,8 @@
     position: absolute;
     border-style: solid;
     border-width: 20px;
-    border-color: #1F8A70 #1F8A70 #1F8A70 transparent; /* Mũi tên dạng khuyết ở bên trái */
+    border-color: #1F8A70 #1F8A70 #1F8A70 transparent;
+    /* Mũi tên dạng khuyết ở bên trái */
     left: -40px;
 }
 
@@ -119,13 +127,12 @@
     position: absolute;
     border-style: solid;
     border-width: 20px;
-    border-color: transparent transparent #1F8A70 transparent; /* Mũi tên dạng bằng ở bên phải */
-    right: -1px;  /* chỉnh sửa vị trí */
+    border-color: transparent transparent #1F8A70 transparent;
+    /* Mũi tên dạng bằng ở bên phải */
+    right: 0;
+    /* chỉnh sửa vị trí */
     top: 0;
 }
-
-
-
 
 .th-container {
     display: flex;
@@ -135,38 +142,70 @@
 }
 
 .icon-view {
-    margin-left: auto; 
+    margin-left: auto;
 }
- 
+
 .text-center {
     display: flex;
     justify-content: center;
-  }
-  
+}
 
 
-    .my-box {
-       
-        height: 150px;
-        background-color: #97b0c0;
-        color: #fff;
-        border: 2px solid #2980b9;
-        border-radius: 5px;
-        padding: 20px;
-   
-        text-align: center;
-        font-family: Arial, sans-serif;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: background-color 0.3s ease-in-out;
-      }
-      
-      .my-box:hover {
-        background-color: #abd0e9;
-      }
-      
+
+.my-box {
+    height: 338px;
+    background-color: #d9dfe4;
+    color: #fff;
+    border: 2px solid #e7f1f8;
+    border-radius: 5px;
+    padding: 20px;
+    display: flex; /* Sử dụng Flexbox */
+    justify-content: center; /* Căn giữa chữ theo chiều ngang */
+    align-items: center; /* Căn giữa chữ theo chiều dọc */
+    font-family: Arial, sans-serif;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease-in-out;
+}
+
+.my-box:hover {
+    background-color: #abd0e9;
+}
+
+.my-box span {
+    font-size: 48px; 
+    color: #ffc107; 
+    font-weight: bold; 
+}
 
 
-      
+.my-box-half {
+    height: 150px;
+    background-color: #d9dfe4;
+    color: #fff;
+    border: 2px solid #e7f1f8;
+    border-radius: 5px;
+    padding: 20px;
+    display: flex; /* Sử dụng Flexbox */
+    justify-content: center; /* Căn giữa chữ theo chiều ngang */
+    align-items: center; /* Căn giữa chữ theo chiều dọc */
+    font-family: Arial, sans-serif;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease-in-out;
+}
+
+.my-box-half:hover {
+    background-color: #abd0e9;
+}
+
+.my-box-half span {
+    font-size: 48px; 
+    color: #ffc107; 
+    font-weight: bold; 
+}
+
+
+
+
 
 
 
@@ -195,10 +234,12 @@
 .pl-10 {
     padding-left: 10px !important;
 }
-.mlr-5{
-    margin-left:  5px;
+
+.mlr-5 {
+    margin-left: 5px;
     margin-right: 5px;
 }
+
 .p-20 {
     padding-left: 20px !important;
     padding-right: 20px !important;
@@ -228,6 +269,7 @@
     width: 100%;
     border-bottom: solid #f3f3f3 2px;
 }
+
 
 .circle-image_list_user {
     border-radius: 100%;
@@ -286,6 +328,10 @@
     max-height: 600px;
     overflow-y: auto;
     box-shadow: 0 -5px 20px rgba(250, 247, 247, 0.09), 0 5px 20px rgba(250, 247, 247, 0.09);
+}
+
+.scrollable_user.no_shadow {
+    box-shadow: none;
 }
 
 #sidebar ul.components ul {
@@ -468,6 +514,13 @@
     border-radius: 0;
 }
 
+.select-container {
+    position: absolute;
+    top: 3px;
+    right: 18px;
+    z-index: 2;
+}
+
 .table-hover-custom tbody tr:hover,
 .table-hover-custom tbody tr:focus {
     background-color: #ddd !important;
@@ -626,7 +679,7 @@
     display: inline-block;
     width: 48px;
     height: 48px;
-   line-height: 48px;
+    line-height: 48px;
     border-radius: 100%;
     text-align: center;
     background-position: center;
@@ -1245,15 +1298,17 @@ h5 {
 .icon-delete {
     color: #c13a38
 }
+
 .label-container {
     display: flex;
     flex-wrap: wrap;
 }
 
-.label-container > div {
+.label-container>div {
     width: 50%;
     box-sizing: border-box;
-    padding: 0 10px;  /* Điều chỉnh padding nếu cần */
+    padding: 0 10px;
+    /* Điều chỉnh padding nếu cần */
 }
 
 .icon-edit {
@@ -1516,6 +1571,7 @@ h5 {
     min-height: 560px;
 
 }
+
 .layout2 .tabbar nav div.nav-tabs .nav-link {
     border-radius: 0;
     padding: 7px 20px;
@@ -1528,6 +1584,20 @@ h5 {
     float: left;
     width: 100%;
     min-height: 560px;
+
+}
+.padding_infor_info_layout_chart {
+    padding: 5px 20px 5px 20px;
+    float: left;
+    width: 100%;
+    min-height: 380px;
+
+}
+.padding_infor_info_layout_chart_half {
+    padding: 5px 20px 5px 20px;
+    float: left;
+    width: 100%;
+    min-height: 250px;
 
 }
 
@@ -1544,10 +1614,10 @@ h5 {
     width: 20px;
 
     height: 20px;
-  
+
     background: url('path-to-your-image.jpg') no-repeat center center;
     background-size: contain;
-    
+
 }
 
 .padding_infor_info-cus {
@@ -1769,9 +1839,9 @@ h5 {
 
 .user-popup-content {
     max-height: 200px;
-  
+
     overflow-y: auto;
- 
+
 }
 
 

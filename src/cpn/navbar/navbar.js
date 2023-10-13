@@ -17,18 +17,18 @@ export default () => {
    useEffect(() => {
       const savedState = localStorage.getItem('menuExpanded');
       if (savedState !== null) {
-          setIsExpanded(savedState === 'true');
+         setIsExpanded(savedState === 'true');
       }
-  }, []);
-  
-  useEffect(() => {
-   localStorage.setItem('menuExpanded', isExpanded ? 'true' : 'false');
-}, [isExpanded]);
+   }, []);
 
-const toggleMenu = (event) => {
-   event.preventDefault();
-   setIsExpanded(prevState => !prevState);
-};
+   useEffect(() => {
+      localStorage.setItem('menuExpanded', isExpanded ? 'true' : 'false');
+   }, [isExpanded]);
+
+   const toggleMenu = (event) => {
+      event.preventDefault();
+      setIsExpanded(prevState => !prevState);
+   };
 
    const OpenTab = (url) => {
       window.location.href = `/fetch/${url}`;
@@ -106,7 +106,7 @@ const toggleMenu = (event) => {
 
                {user.role === "ad" || user.role === "uad" ? (
                   <li>
-                     <a href="#dashboard" onClick={toggleMenu}aria-expanded="false" class="dropdown-toggle">
+                     <a href="#dashboard" onClick={toggleMenu} aria-expanded="false" class="dropdown-toggle">
                         <i class="fa fa-dashboard yellow_color"></i>
                         <span>{lang["data management"]}</span>
                         <i class="fa "></i>
@@ -127,12 +127,12 @@ const toggleMenu = (event) => {
 
                ) : null}
 
-               <div class="scrollable_user">
+               <div class={`scrollable_user ${user.role === "pd" ? 'no_shadow' : ''}`}>
                   {user.role === "pd" ? (
                      <li>
                         {pages && pages.map(ui => (
                            ui.status ? (
-                              <li className="navbar-item" >
+                              <li className="navbar-item">
                                  <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
                                     <i class="fa fa-newspaper-o"></i>
                                     <span>{ui.title}</span>
@@ -143,6 +143,7 @@ const toggleMenu = (event) => {
                      </li>
                   ) : null}
                </div>
+
 
 
                {user.role === "ad" || user.role === "uad" ? (
