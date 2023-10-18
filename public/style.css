@@ -901,7 +901,7 @@ span {
 }
 
 #sidebar ul.components li {
-    position: relative;
+    /* position: relative; */
 }
 
 #sidebar ul.components ul {

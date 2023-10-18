@@ -100,7 +100,7 @@ export default (props) => {
 
     }
     const handleViewDetail = async (record) => {
-
+console.log(record)
         const { components } = page;
         const cpn = components[0]
         const { api_detail } = cpn;
@@ -117,6 +117,7 @@ export default (props) => {
                     .then(res => res.json())
                     .then(res => {
                         const { data, success, content } = res;
+                        console.log(res)
                         if (success) {
                             // console.log("succcess", data)
                             // setDataTables(data.tables)
@@ -128,11 +129,12 @@ export default (props) => {
             const { success, data } = response;
             if (success) {
                 const { params } = data;
+             
                 const stringifiedParams = params.map(param => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                openTab(`/page/${url}/detail/${id_str}/${stringifiedParams}?myParam=${url}`)
+                openTab(`/page/${url}/detail/${id_str}/${stringifiedParams}`)
 
             }
         } else {
@@ -174,7 +176,7 @@ export default (props) => {
 
 
     const [currentPage, setCurrentPage] = useState(1);
-    const rowsPerPage = 14
+    const rowsPerPage = 15
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
     const current = filteredData.slice(indexOfFirst, indexOfLast);
@@ -206,7 +208,8 @@ export default (props) => {
             switch (field.DATATYPE) {
                 case "DATE":
                 case "DATETIME":
-                    return renderDateTimeByFormat(data[field.fomular_alias], field.FORMAT);
+                    // return renderDateTimeByFormat(data[field.fomular_alias], field.FORMAT);
+                    return data[field.fomular_alias];
                 case "DECIMAL":
                 case "DECIMAL UNSIGNED":
                     const { DECIMAL_PLACE } = field;
@@ -282,7 +285,7 @@ export default (props) => {
                                                             {apiDataName?.map((header, index) => (
                                                                 <th key={index}>
                                                                     <input
-                                                                        type="text"
+                                                                        type="search"
                                                                         className="form-control"
                                                                         value={inputValues[header.fomular_alias] || ''}
                                                                         onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}

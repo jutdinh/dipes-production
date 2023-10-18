@@ -2,7 +2,8 @@ import { useSelector } from "react-redux"
 
 export default () => {
 
-    const { lang } = useSelector( state => state );
+    const { lang, pages } = useSelector( state => state );
+    const check= pages[0]?.url
 
     return(
         <div classNameName="inner_page login">
@@ -18,7 +19,7 @@ export default () => {
                   <br/>
                   <h3>PAGE NOT FOUND !</h3>
                   <p>YOU SEEM TO BE TRYING TO FIND HIS WAY HOME</p>
-                  <div class="center"><a class="main_bt" href="/">Go To Home Page</a></div>
+                  <div class="center"><a class="main_bt" href={"/page" + check}>Go To Home Page</a></div>
                </div>
             </div>
          </div>

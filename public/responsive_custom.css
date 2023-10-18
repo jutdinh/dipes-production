@@ -43,8 +43,17 @@
     }
     .step-arrow-right.step-active .step-link:after, 
     .step-arrow-both.step-active .step-link:before,
-    .step-arrow-both.step-active .step-link:after {
+    .step-arrow-both.step-active .step-link:after,
+    .step-arrow-left-flat-right.step-active .step-link:before,
+    .step-arrow-left-flat-right.step-active .step-link:after {
         display: none; 
        
+    }
+}
+
+@media (min-width: 768px) {
+    .error-login {
+        width: 395px; /* Đặt chiều rộng cố định khi trên màn hình trung bình và lớn */
+        float: right;
     }
 }

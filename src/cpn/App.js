@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 import { Home } from './dashboard';
 import { Import } from './import-data';
 import { Navigation, PageNotFound } from './navigations';
-import { Login, SignUp, SignOut } from './auth';
+import { Login, SignUp, SignOut, ChangePassword } from './auth';
 import { Settings } from './settings';
 import { ListUser, Profile, Permission, PermissionDetail } from './users';
 import { Logs } from './logs';
@@ -138,6 +138,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signout" element={<SignOut />} />
+        <Route path="/changepassword" element={<Navigation Child={ChangePassword} />} />
+
         {/* <Route path="/" element={<Navigation Child={Home} />} /> */}
         <Route path="/" element={<Navigation Child={Import} />} />
        

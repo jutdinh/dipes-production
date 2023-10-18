@@ -174,10 +174,10 @@ export default (props) => {
         const [totalPrintheadForYear, setTotalPrintheadForYear] = useState(0);
         const [totalControllerForCurrentMonth, setTotalControllerForCurrentMonth] = useState(0);
         const [totalPrintheadForCurrentMonth, setTotalPrintheadForCurrentMonth] = useState(0);
-        console.log("controller trong năm", totalControllerForYear)
-        console.log("printhead trong năm", totalPrintheadForYear)
-        console.log("controller trong tháng", totalControllerForCurrentMonth)
-        console.log("printhead trong tháng", totalPrintheadForCurrentMonth)
+        // console.log("controller trong năm", totalControllerForYear)
+        // console.log("printhead trong năm", totalPrintheadForYear)
+        // console.log("controller trong tháng", totalControllerForCurrentMonth)
+        // console.log("printhead trong tháng", totalPrintheadForCurrentMonth)
         useEffect(() => {
             let yearControllerTotal = 0;
             let yearPrintheadTotal = 0;
@@ -247,7 +247,7 @@ export default (props) => {
                 formatter: function (params) {
                     const controllerData = params[0];
                     const printheadData = params[1];
-                    return `${controllerData.name}:<br/>${LABELS[0]}: ${controllerData.value.toFixed()}<br/>${LABELS[1]}: ${printheadData.value.toFixed()}`;
+                    return `<strong>${controllerData.name}</strong><br/>${LABELS[0]}: ${controllerData.value.toFixed()}<br/>${LABELS[1]}: ${printheadData.value.toFixed()}`;
                 }
             },
             legend: {

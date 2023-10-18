@@ -31,7 +31,7 @@ export default () => {
     const myParam = urlParams.get('myParam');
 
     const goToHomePage = () => {
-        navigate(`/page/${myParam}`);
+        navigate(`/page/${url}`);
     };
     useEffect(() => {
         if (pages && pages.length > 0) {
@@ -87,9 +87,9 @@ export default () => {
                 console.log(res)
                 if (success) {
                     // const { tables } = data.tables;
-                    const apiFields = data.params;
+                    const apiFields = data.fields;
 
-                    apiFields.push(...data.body)
+                    // apiFields.push(...data.fields)
 
 
                     const serializeParams = apiFields.map((param, index) => {

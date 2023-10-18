@@ -8,6 +8,7 @@ import { StatusEnum, StatusTask } from '../enum/status';
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { Tables } from ".";
+import { camelCase } from "jquery";
 export default () => {
     const { lang, proxy, auth, functions, socket } = useSelector(state => state);
     const [statusActive, setStatusActive] = useState(false);
@@ -50,6 +51,17 @@ export default () => {
             reader.readAsText(file);
         }
     };
+
+    useEffect(() => {
+        const stringifiedUser = localStorage.getItem("user");
+        const user = JSON.parse(stringifiedUser)
+        const { role } = user;
+        const validPrivileges = ["uad", "ad"]
+
+        if( validPrivileges.indexOf( role ) == -1 ){
+            window.location = "/404-notfound"
+        }
+    }, [])
 
     const importData = async () => {
         if (!uploadedJson) {

@@ -331,8 +331,28 @@ export default {
     "november":'November',
     "december":'December',
     "month": "Month",
-    "year": "Year"
-
+    "year": "Year",
+    "no data": "No data available",
+    "next": "Next",
+    "error.file": "Please select a .txt file!",
+    "correct format": "The file content is not in the correct format!",
+    "back": "Back",
+    "create key": "Create Key",
+    "success create key": "Create license success",
+    "change password": "Change password",
+    "new password": "New password",
+    "p.new password": "Enter the new password",
+    "old password": "Old password",
+    "p.old password": "Enter the old password",
+    "re password": "Re-enter password",
+    "p.re password": "Re-enter the new password",
+    "change": "Change",
+    "vaild password": "Vui lòng nhập mật khẩu cũ",
+    "error.input": "This field can't be blank",
+    "duPassword": "Please do not reuse old passwords",
+    "validPassword": "The password re-entered does not match",
+    "success.password": "Change password successfully",
+    "faild.password": "Incorrect password"
 }
 
 

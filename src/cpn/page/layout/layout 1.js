@@ -1021,7 +1021,7 @@ export default (props) => {
                                                                             {apiDataName.map((header, index) => (
                                                                                 <th key={index} className="header-cell" style={{ minWidth: "200px" }}>
                                                                                     <input
-                                                                                        type="text"
+                                                                                        type="search"
                                                                                         className="form-control"
                                                                                         value={searchValues[header.fomular_alias] || ''}
                                                                                         onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
@@ -1152,7 +1152,7 @@ export default (props) => {
                                                                     {apiDataName.map((header, index) => (
                                                                         <th key={index}>
                                                                             <input
-                                                                                type="text"
+                                                                                type="search"
                                                                                 class="form-control"
                                                                                 value={searchValues[header.fomular_alias] || ''}
                                                                                 onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}

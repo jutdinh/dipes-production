@@ -5,14 +5,16 @@ import { useMediaQuery } from 'react-responsive'
 import $ from 'jquery';
 
 export default () => {
-    const { proxy, lang, auth, profiles } = useSelector(state => state);
+    const { proxy, lang, auth, profiles, pages } = useSelector(state => state);
 
     const isMobile = useMediaQuery({ query: '(max-width: 767px)' })
     const [defaultValue, setDefaultValue] = useState({})
     const fullname = localStorage.getItem("fullname");
 
+    // console.log(pages)
+
     const langs = [
-        { id: 0, label: lang["vi"],  flag: "vietnam.png", value: "Vi" },
+        { id: 0, label: lang["vi"], flag: "vietnam.png", value: "Vi" },
         { id: 1, label: lang["en"], flag: "united-kingdom.png", value: "En" },
     ]
     const options = langs;
@@ -25,7 +27,7 @@ export default () => {
     }, [])
 
     const LanguageRender = ({ name, flag }) => {
-        
+
 
         return (
             <div className="d-flex flex-nowrap">
@@ -35,7 +37,7 @@ export default () => {
         )
     }
     const DropdownLanguageRender = ({ name, flag }) => {
-        
+
         return (
             <div className="d-flex flex-nowrap">
                 <img style={{ width: 22 }} src={`/images/flags/${flag}`} />
@@ -62,25 +64,34 @@ export default () => {
     }
 
     const generateUserLastName = () => {
-        const { fullname } = auth
+        const { fullname } = auth;
+        const maxLength = 10;
+
         if (fullname) {
             const names = fullname.split(' ');
-            const displayFullName = names[names.length - 1];
-            return displayFullName
+            let displayFullName = fullname;
+
+            // Cắt chuỗi nếu vượt quá maxLength và thêm "..."
+            if (displayFullName.length > maxLength) {
+                displayFullName = displayFullName.substring(0, maxLength) + '...';
+            }
+
+            return displayFullName;
         } else {
-            return ""
+            return "";
         }
-    }
+    };
+
 
     const sidebarToggle = (e) => {
         $('#sidebar').toggleClass('active');
-    } 
+    }
 
     return (
         <div class="topbar">
             <nav class="bg-cus navbar navbar-expand-lg navbar-light">
                 <div class="full d-flex flex-row">
-                    <button onClick={ sidebarToggle } type="button" id="sidebarCollapse" class="sidebar_toggle"><i class="fa fa-bars"></i></button>
+                    <button onClick={sidebarToggle} type="button" id="sidebarCollapse" class="sidebar_toggle"><i class="fa fa-bars"></i></button>
                     {/* <button  type="button" id="sidebarCollapse" class="sidebar_toggle"><i class="fa fa-bars"></i></button> */}
                     <div className="ml-auto dropdown d-flex align-items-center">
                         <div className="d-flex flex-nowrap"
@@ -91,7 +102,7 @@ export default () => {
                         >
 
                             <a href="#" className="d-block text-light">
-                                
+
                                 {isMobile
                                     ? <LanguageRender flag={defaultValue.flag} />
                                     : <DropdownLanguageRender name={defaultValue.label} flag={defaultValue.flag} />}
@@ -116,16 +127,17 @@ export default () => {
                                 <li><a href="#"><i class="fa fa-bell-o"></i><span class="badge">2</span></a></li> */}
                                 {/* <li><a href="#"><i class="fa fa-envelope-o"></i><span class="badge">1</span></a></li> */}
                             </ul>
-                            <ul class="user_profile_dd ">
+                            <ul class="user_profile_dd" title={auth.fullname}>
                                 <li>
                                     <a class="dropdown-toggle" data-toggle="dropdown">
                                         {/* <img class="img-responsive circle-image" src={(proxy()) + auth.avatar} alt="#" /> */}
+                                        {/* <span class="name_user"> {generateUserLastName()}</span> */}
                                         <span class="name_user"> {generateUserLastName()}</span>
                                     </a>
                                     <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="/users/profile">{lang["my profile"]}</a>
-                                        {/* <a class="dropdown-item" href="settings.html">{lang["settings"]}</a>
-                                        <a class="dropdown-item" href="help.html">{lang["help"]}</a> */}
+                                        {/* <a class="dropdown-item" href="/users/profile">{lang["my profile"]}</a> */}
+                                        {/* <a class="dropdown-item" href="settings.html">{lang["settings"]}</a> */}
+                                        <a class="dropdown-item" href="/changepassword">{lang["change password"]}</a>
 
                                         <a class="dropdown-item" href="#" onClick={signOut}>{lang["signout"]}</a>
                                     </div>
@@ -133,6 +145,8 @@ export default () => {
                             </ul>
                         </div>
                     </div>
+
+                  
                 </div>
             </nav>
         </div>

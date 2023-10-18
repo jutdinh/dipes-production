@@ -3,21 +3,24 @@ import { useSelector } from "react-redux"
 import Swal from 'sweetalert2';
 
 export default () => {
-    const { lang, proxy, socket } = useSelector(state => state);
+    const { lang, proxy, socket, pages} = useSelector(state => state);
 
     const [auth, setAuth] = useState({})
     const [rememberMe, setRememberMe] = useState(false);
     const [authError, setAuthError] = useState(null);
-
+console.log(pages)
     const enterTriggered = (e) => {
         if (e.keyCode === 13) {
             submit(e)
         }
     }
+    const check= pages[0]?.url
+
+    console.log(check)
     const [statusActive, setStatusActive] = useState(false);
 
     useEffect(() => {
-        
+
         const storedAccountString = localStorage.getItem("username");
         const storedPwdString = localStorage.getItem("password");
         const storedRememberMe = localStorage.getItem("remember_me") === "true";
@@ -62,7 +65,7 @@ export default () => {
                 // localStorage.setItem('fullname', data.data.fullname)
                 const stringifiedUser = JSON.stringify(data.data)
                 localStorage.setItem('user', stringifiedUser);
-        
+
                 fetch(`${proxy()}/auth/activation/check`, {
                     headers: {
                         Authorization: data.token
@@ -78,7 +81,7 @@ export default () => {
                             setStatusActive(false)
                             window.location.href = `/active`;
                         }
-                        if (activated) {                            
+                        if (activated) {
                             socket.emit("/dipe-production-user-login", { username: auth.username })
 
                             if (credential.data.role === "ad" || credential.data.role === "uad") {
@@ -90,13 +93,19 @@ export default () => {
                                 }
 
                             } else if (credential.data.role === "pd") {
-                                window.location = "/sitemap";
+                                if(check !== "")
+                                {
+                                    window.location = `/page${check}`;
+                                }else{
+                                    window.location = `/ưewqeeqwewqe`;
+                                }
+                                
                             }
                         } else {
                             if (credential.data.role === "pd" || credential.data.role === "ad" || credential.data.role === "uad") {
                                 window.location = "/active";
                             }
-                            else{
+                            else {
                                 window.location = "/diagram_db";
                             }
 
@@ -124,24 +133,22 @@ export default () => {
                                 <form>
                                     <fieldset>
                                         <div className="field">
-
                                             <div class="row">
                                                 <div class="col-md-4">
-
                                                 </div>
-
                                                 <div class="col-md-8">
                                                     {authError && <span class="error-message error-login">{authError}</span>}
-
                                                 </div>
                                             </div>
+                                          
+                                        </div>
+                                        <div className="field">
+                                            
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <label className="label_field">{lang["account"]}</label>
                                                 </div>
-
                                                 <div class="col-md-8">
-
                                                     <input type="text" onKeyUp={enterTriggered}
                                                         onChange={
                                                             (e) => {
@@ -149,15 +156,9 @@ export default () => {
                                                                 setAuth({ ...auth, username: e.target.value });
                                                             }
                                                         } value={auth.username || ""} placeholder={lang["account"]} />
-
-
                                                 </div>
                                             </div>
-
-
-
                                         </div>
-
                                         <div className="field">
                                             <label className="label_field">{lang["password"]}</label>
                                             <input type="password" onKeyUp={enterTriggered} onChange={(e) => { setAuth({ ...auth, password: e.target.value }) }} value={auth.password || ""} placeholder={lang["password"]} />
@@ -167,7 +168,7 @@ export default () => {
                                             <label className="form-check-label">
                                                 <input
                                                     type="checkbox"
-                                                    checked={rememberMe} // Liên kết trạng thái rememberMe với thuộc tính checked
+                                                    checked={rememberMe}
                                                     onChange={(e) => setRememberMe(e.target.checked)}
                                                     className="form-check-input"
                                                 />

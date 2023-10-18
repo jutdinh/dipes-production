@@ -162,7 +162,7 @@
     display: flex; /* Sử dụng Flexbox */
     justify-content: center; /* Căn giữa chữ theo chiều ngang */
     align-items: center; /* Căn giữa chữ theo chiều dọc */
-    font-family: Arial, sans-serif;
+   
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease-in-out;
 }
@@ -188,7 +188,7 @@
     display: flex; /* Sử dụng Flexbox */
     justify-content: center; /* Căn giữa chữ theo chiều ngang */
     align-items: center; /* Căn giữa chữ theo chiều dọc */
-    font-family: Arial, sans-serif;
+ 
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease-in-out;
 }
@@ -205,11 +205,130 @@
 
 
 
+/* CSS cho nút tải lên tùy chỉnh */
+.custom-file-upload {
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    background-color: #1a73e8; /* Màu nền của bạn */
+    color: white; /* Màu chữ của bạn */
+    border-radius: 4px; /* Độ cong của các góc, tùy chỉnh theo ý thích */
+    font-family: sans-serif; /* Phông chữ của bạn */
+    font-size: 14px; /* Kích thước phông chữ */
+    text-align: center; /* Căn chỉnh chữ nằm giữa */
+}
 
+.custom-file-upload:hover {
+    background-color: #0053bf; /* Màu nền khi di chuột qua */
+}
+.icon_info ul.user_profile_dd>li {
+    width: 155px;
+    border-radius: 0;
+    background: #0066cc;
+    margin: 0;
+    padding: 12px 0 12px 20px;
+    height: auto;
+}
+
+
+
+.upload-container {
+    width: 100%;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    position: relative;
+    padding-left: 20px;
+    padding-top: 20px;
+    padding-bottom: 0px;
+    padding-right: 20px;
+}
+
+.upload-button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 20px; 
+}
+
+.upload-button:hover {
+    background-color: #0056b3;
+}
+
+.icon {
+    font-size: 50px;
+    margin-right: 20px;
+    color: #ccc;
+    margin-bottom: 10px;
+    align-self: center; 
+}
+
+.instructions {
+    color: #888;
+    margin-top: 10px;
+    text-align: center;
+    align-self: center; 
+}
+
+.input-file {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
 
 
 
 /* end step */
+.fixed-height {
+    height: 15px; 
+    display: block;
+}
+
+.user_profile_dd .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1000;
+    float: left;
+    /* padding: 10px 0px; */
+    margin: 0;
+    font-size: 15px;
+    color: #212529;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border-radius: 0;
+    width: 100%;
+    box-shadow: -1px 1px 4px -2px rgba(0, 0, 0, 0.2);
+    border: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 .no-select {
@@ -262,6 +381,20 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.cell-key {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    user-select: none;  
+    pointer-events: none;  
+}
+.error-text {
+    color: red;
+   
+}
+
 
 .graph_head {
     padding: 15px 25px 5px;
@@ -516,9 +649,9 @@
 
 .select-container {
     position: absolute;
-    top: 3px;
+    top: 5px;
     right: 18px;
-    z-index: 2;
+    z-index: 1;
 }
 
 .table-hover-custom tbody tr:hover,
@@ -1772,14 +1905,17 @@ h5 {
 
 }
 
+
+
+
 .error-login {
     border-top: none;
     border-left: none;
     border-right: none;
 
-    width: 395px;
-    float: right;
-
+    width: 100%;
+    /* float: right; */
+    padding-left: 20px;
     line-height: normal;
     font-weight: 300;
     transition: ease all 0.5s;

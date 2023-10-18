@@ -147,20 +147,24 @@ export default () => {
 
 
                {user.role === "ad" || user.role === "uad" ? (
-                  <li className="navbar-item">
-                     <NavLink to="/diagram_db" activeClassName="nav-active">
-                        <i class="fa fa-database pointer icon-database"></i>
-                        <span>{lang["diagram"]}</span>
-                     </NavLink>
-                  </li>
+                  <>
+                     <li className="navbar-item">
+                        <NavLink to="/diagram_db" activeClassName="nav-active">
+                           <i class="fa fa-database pointer icon-database"></i>
+                           <span>{lang["diagram"]}</span>
+                        </NavLink>
+                     </li>
+                     <li className="navbar-item">
+                        <NavLink to="/sitemap" onClick={() => { openTab('/sitemap') }} activeClassName="nav-active">
+                           <i class="fa fa-sitemap"></i>
+                           <span>{lang["site map"]}</span>
+                        </NavLink>
+                     </li>
+                  </>
+
                ) : null}
 
-               <li className="navbar-item">
-                  <NavLink to="/sitemap" onClick={() => { openTab('/sitemap') }} activeClassName="nav-active">
-                     <i class="fa fa-sitemap"></i>
-                     <span>{lang["site map"]}</span>
-                  </NavLink>
-               </li>
+
 
                {/* {user.role === "uad" ? (
                   <li className="navbar-item">
