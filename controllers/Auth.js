@@ -842,6 +842,69 @@ class Auth extends Controller {
         }
         res.status(200).send(context)
     }
+
+
+    changePassword = async ( req, res ) => {       
+        const checkNULL = this.notNullCheck(req.body.account, ["username", "oldPassword", "newPassword"])
+
+        if( checkNULL.valid ){
+            const { username, oldPassword, newPassword } = req.body.account;
+
+            const projects = await this.#__projects.findAll({})
+            let imported = false;
+            let project_type = undefined
+            let remoteDomain;
+
+            if (projects != undefined && projects.length > 0) {
+                imported = true
+                const project = projects[0]
+                project_type = project.project_type
+                remoteDomain = project.proxy_server
+            }            
+            if (project_type == "api") {
+                const response = await new Promise((resolve, reject) => {
+                    fetch(`${remoteDomain}/auth/changePwd`, {
+                        method: "POST",
+                        headers: {
+                            'content-type': "application/json",
+                        },
+                        body: JSON.stringify({ account: req.body.account })
+                    }).then(res => res.json()).then(res => {
+                        resolve(res)
+                    })
+                })
+                const { success, content } = response
+    
+                res.status(200).send({
+                    success,
+                    content
+                })
+            } else {
+                // not yet tested
+                const Cipher = new Crypto()
+                const NewPwdCipher = new Crypto()
+                
+                const encryptedPassword =  Cipher.encrypt(oldPassword)                 
+                const encryptedNewPassword =  NewPwdCipher.encrypt(newPassword)
+
+                const user = await this.#__accounts.find({ username: username.toLowerCase(), password: encryptedPassword })
+
+    
+                if (user != undefined) {
+                    const Account = new AccountsRecord({ ...user, password: encryptedNewPassword });
+                    await Account.save()
+
+                    res.status(200).send({ success: true, content: "Đổi mật khẩu thành công" })
+                } else {
+                    res.status(200).send({ success: false, content: "Thông tin không chính xác" })
+                }
+            }
+
+        }else{
+            res.status(200).send({ success: false, content: "Thông tin không chính xác" })
+        }
+
+    } 
 }
 module.exports = Auth
 

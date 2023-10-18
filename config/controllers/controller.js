@@ -52,7 +52,7 @@ class Controller {
         return false
     }
 
-    notNullCheck = ( data, fields) => { // new
+    notNullCheck = ( data = {}, fields) => { // new
         let valid = true;
         const nullFields = []
         for( let i = 0; i < fields.length; i++ ){
