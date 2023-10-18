@@ -66,7 +66,7 @@ class Controller {
         return { valid, nullFields };
     }
 
-    makeToken = ( data ) => { // new
+    makeToken = ( data = {}) => { // new
         const token = jwt.sign(data, this.tokenKey, { expiresIn: '12h' });
         return token;
     }
@@ -83,7 +83,7 @@ class Controller {
         return false
     }
 
-    verifyToken = async (req) => {
+    removed_verifyToken = async (req) => {
         const token = req.header('Authorization');
         if( !token ){
             return false;
@@ -113,6 +113,24 @@ class Controller {
                         return success
                     }
                 }
+            }
+            return true           
+        }
+    }
+
+    verifyToken = async (req) => {
+        const token = req.header('Authorization');
+        if( !token ){
+            return false;
+        }else{
+            const result = await new Promise( (resolve, reject) => {
+                jwt.verify(token, this.tokenKey, ( err, decoded ) => {
+                    resolve({ err, decoded })
+                })
+            })
+
+            if( result.err ){
+                return false
             }
             return true           
         }

@@ -589,12 +589,7 @@ class ConsumeApi extends Controller {
 
 
         const type = field.DATATYPE
-        /**
-         * This method parses data to its valid type and return an object with the structures below:
-         * 
-         * In case of success: { valid: true  , result: <CorrespondingValueAfterParsing> }
-         * In case of failure: { valid: false , reason: <String> }
-         */
+
         if (value !== undefined && value !== "") {
             const { MAX, MIN } = field;
             switch (type) {
@@ -730,7 +725,24 @@ class ConsumeApi extends Controller {
          *      c. Đặt lại thuộc tính to cho partion thứ i bằng vị trí kết thúc lấy dữ liệu
          *      => break;
          * 
-         */
+         * 
+         * (4). Khởi tạo một mảng tên FINALE_PARTITIONS với giá trị khởi tạo là TARGET_PARTITION đã tìm thấy ở (3)
+         * (5). Khởi tạo biến TOTAL_RESULT_ITEM với giá trị là số lượng bảng ghi sẽ trả về, mặc nhiên là RECORD_PER_PAGE
+         * (6). Tính tổng số lượng phần tử còn cần phải lấy kể từ partition kế tiếp bằng cách lấy TOTAL_RESULT_ITEM trừ đi tổng số lượng 
+         *  hiện tại của partition vừa tìm được, giá trị total này đã được làm mới ở (3.a)
+         * (7). Chạy vòng lập từ partition tiếp theo đến partition cuối cùng để tìm những partition kế tiếp cho đến khi tìm đủ số lượng
+         *  bảng ghi yêu cầu.
+         *      a. Đặt một chiếc biến total với giá trị là tổng số lượng phần tử hiện có của partition hiện tại
+         *      b. Đặt một chiếc biến CURRENT_REMAINING_INDEX với giá trị là số lượng phần tử còn thiếu ở thời điểm hiện tại
+         *      c. Trừ số lượng phần tử còn thiếu với tổng số lượng phần tử hiện có của partition 
+         *      d. Luôn đặt vị trí khởi đầu là 0 cho tất cả các partition.
+         *      e. Nếu số lượng còn thiếu lớn hơn total thì vị trí kết thúc là tổng số lượng, nếu khum thì vị trí kết thúc là 
+         *  số lượng phần tử còn thiếu
+         *      f. Thêm partition vào FINALE_PARTITIONS
+         *      g. Nếu số lượng phần tử còn thiếu <= 0 thì kết thúc vòng lập
+         * 
+         * 
+         */     
 
 
 /*(1)*/ const partitions = this.periods;
@@ -751,29 +763,29 @@ class ConsumeApi extends Controller {
 
                 if (PRIMAL_START_POINT <= 0) {
                     TARGET_PARTITION_INDEX = i
-                    partitions[i]["total"] = total - CURRENT_REMAINING_INDEX           // (a)
-                    partitions[i]["from"] = CURRENT_REMAINING_INDEX                   // (b)
-                    partitions[i]["to"] = CURRENT_REMAINING_INDEX + RECORD_PER_PAGE // (c)
+                    partitions[i]["total"] = total - CURRENT_REMAINING_INDEX            // (a)
+                    partitions[i]["from"] = CURRENT_REMAINING_INDEX                     // (b)
+                    partitions[i]["to"] = CURRENT_REMAINING_INDEX + RECORD_PER_PAGE     // (c)
                     break
                 }
             }
 
-            const FINALE_PARTIONS = [partitions[TARGET_PARTITION_INDEX]]
-            const TOTAL_RESULT_ITEM = RECORD_PER_PAGE
-            let REMAINING_ITEM_AMOUNT = TOTAL_RESULT_ITEM - partitions[TARGET_PARTITION_INDEX]["total"]
+/*(4)*/     const FINALE_PARTITIONS = [partitions[TARGET_PARTITION_INDEX]]
+/*(5)*/     const TOTAL_RESULT_ITEM = RECORD_PER_PAGE
+/*(6)*/     let REMAINING_ITEM_AMOUNT = TOTAL_RESULT_ITEM - partitions[TARGET_PARTITION_INDEX]["total"]
 
-            for (let i = TARGET_PARTITION_INDEX + 1; i < PARTITION_LENGTH; i++) {
-                const total = partitions[i]["total"]
-                const CURRENT_REMAINING_INDEX = REMAINING_ITEM_AMOUNT
-                REMAINING_ITEM_AMOUNT -= total
-                partitions[i]["from"] = 0
-                partitions[i]["to"] = REMAINING_ITEM_AMOUNT > 0 ? total : CURRENT_REMAINING_INDEX
+/*(7)*/     for (let i = TARGET_PARTITION_INDEX + 1; i < PARTITION_LENGTH; i++) {
+                const total = partitions[i]["total"]                                                // a
+                const CURRENT_REMAINING_INDEX = REMAINING_ITEM_AMOUNT                               // b
+                REMAINING_ITEM_AMOUNT -= total                                                      // c
+                partitions[i]["from"] = 0                                                           // d            
+                partitions[i]["to"] = REMAINING_ITEM_AMOUNT > 0 ? total : CURRENT_REMAINING_INDEX   // e
 
-                FINALE_PARTIONS.push(partitions[i])
+                FINALE_PARTITIONS.push(partitions[i])                                               // f
 
-                if (REMAINING_ITEM_AMOUNT <= 0) break
+                if (REMAINING_ITEM_AMOUNT <= 0) break                                               // g
             }
-            return FINALE_PARTIONS
+            return FINALE_PARTITIONS
         } else {
             return [{
                 position: partitions[0]?.position,
@@ -784,24 +796,62 @@ class ConsumeApi extends Controller {
     }
 
     translateColIndexToName = (index) => {
+
+        /**
+         * @desc Dịch số nguyên thành tên của một partition
+         *      
+         * 
+         * @params [
+         *      index <Int>
+         * ]
+         * 
+         * @return String
+         * 
+         * @note Phần giải thích tên của partition đã được làm tường minh ở phương thức this.generatePeriodIndex, mục (1)
+         *  
+         */
+
         return `${index * TOTAL_DATA_PER_PARTITION}-${(index + 1) * TOTAL_DATA_PER_PARTITION - 1}`
     }
 
     sortTablesByKeys = (tables) => {
-        let sortedTables = [tables[0]]
-        let index = 0;
-        let remainingTables = tables.slice(1, tables.length)
 
-        while (remainingTables.length > 0) {
-            const foreignKeys = []
-            sortedTables.map(tb => { foreignKeys.push(...tb.foreign_keys) })
+        /**
+         * @desc Sắp xếp danh sách bảng theo thứ tự khóa ngoại của bảng đầu tiên
+         *      
+         * (1). Khởi tạo danh sách kết quả với giá trị khởi đầu là bảng đầu tiên
+         * (2). Khởi tạo danh sách bảng còn lại với giá trị khởi đầu là toàn bộ phần còn lại của danh sách bảng sau khi trừ đi phần tử đầu tiên
+         * (3). Hễ mà danh sách bảng còn lại chưa rỗng:
+         *      a. Khởi tạo mảng rỗng với tên foreignKeys
+         *      b. Bằng việc ánh xạ lần lượt các bảng nằm trong danh sách kết quả hiện tại, chọn ra tất cả khóa ngoại của chúng và nhét hết vào foreignKeys
+         *      c. Chạy nguyên một cái vòng lập qua từng phần tử của mảng khóa ngoại, chọn ra bảng chứa khóa chính tương ứng với từng khóa 
+         *  và thêm chúng vào danh sách kết quả hiện tại. Đồng thời, xóa bảng đó khỏi danh sách bảng còn lại
+         * 
+         * 
+         * @params [
+         *      tables <object>[]
+         * ]
+         * 
+         * @return tables <object>[]
+         *         
+         *  
+         */
 
-            for (let i = 0; i < foreignKeys.length; i++) {
-                const { table_id } = foreignKeys[i]
-                const targetTable = remainingTables.find(tb => tb.id == table_id)
+
+
+        let sortedTables = [tables[0]]                                      // 1
+        let remainingTables = tables.slice(1, tables.length)                // 2
+
+        while (remainingTables.length > 0) {                                // 3
+            const foreignKeys = []                                                  // a
+            sortedTables.map(tb => { foreignKeys.push(...tb.foreign_keys) })        // b
+
+            for (let i = 0; i < foreignKeys.length; i++) {                          // c
+                const { table_id } = foreignKeys[i] 
+                const targetTable = remainingTables.find(tb => tb.id == table_id) 
                 if (targetTable) {
-                    sortedTables.push(targetTable)
-                    remainingTables = remainingTables.filter(tb => tb.id != table_id)
+                    sortedTables.push(targetTable) 
+                    remainingTables = remainingTables.filter(tb => tb.id != table_id) 
                 }
             }
         }
@@ -810,12 +860,60 @@ class ConsumeApi extends Controller {
 
 
     PRECISE_PARTITIONS = (partitions, START_INDEX, RECORD_AMOUNT) => {
-        const partitions_length = partitions.length
+
+        /**
+         * 
+         * @params [
+         *      partitions      <Object>[], 
+         *      START_INDEX     <Int>, 
+         *      RECORD_AMOUNT   <Int>
+         * ]
+         * 
+         * @desc Thu gọn partition, giải thích ngắn gọn là 
+         *       "Từ phần tử START_INDEX, chọn ra một số RECORD_AMOUNT bảng ghi nhất định và trả về những PARTITIONS chứa những bảng ghi ấy"
+         *     
+         * (1). Khởi tạo biến & hằng:
+         *      partition_length => độ dài hiện có của danh sách partitions.
+         *      remain_index => số lượng phần tử còn lại, nhỏ này dùng để tìm partition chứa item ở vị trí START_INDEX
+         *      targetStartIndex => partition chứa START_INDEX
+         *      targetItem => vị trí của START_INDEX bên trong partition chứa nó.
+         *     
+         * (2). Dùng vòng lập for để tìm vị trí của partition chứa START_INDEX bằng cách cộng partition_counter với độ dài của mỗi
+         *  partition mà vòng lập đi qua, cho đến khi partition_count lơn hơn hoặc bằng START_INDEX. 
+         *  Nếu partition_count > START_INDEX:
+         *      - Đặt tartgetStartItem = remain_index - 1
+         *      - Đặt targetStartIndex = index hiện tại của vòng lập
+         *  Nếu khum: remain_index = remain_index - độ dài của partition
+         * 
+         * 
+         * (3). Đặt một số biến để xử lý dữ liệu của partition vừa tìm được
+         *      - remain_items_container: là mảng data của partition vừa tìm được
+         *      - remain_items: là mảng các bảng ghi được lấy từ vị trí START_INDEX
+         *      - finalePartitions: Mảng rỗng chứa các partition kết quả
+         *      - precisedTargetPartition: là một instance copy từ partition vùa tìm được
+         * 
+         * (4). Nếu remain_items có độ dài lớn hơn RECORD_AMOUNT:
+         *      - Đặt lại thuộc tính data cho precisedTargetPartition với giá trị là lát cắt từ START_INDEX đến START_INDEX + DATA_AMOUNT
+         * 
+         * @return partitions <Object>[]
+         * 
+         * @note 
+         * 
+         * partition <{
+         *     position: "<start>-<end>"
+         *     data: <Object>[]
+         * }>
+         *  
+         */
+
+
+/*(1)*/ const partitions_length = partitions.length
         let partition_counter = 0;
         let remain_index = START_INDEX
         let targetStartIndex = 0
         let targetStartItem = 0
-        for (let i = 0; i < partitions_length; i++) {
+
+/*(2)*/ for (let i = 0; i < partitions_length; i++) {
             const data = partitions[i]["data"]
             const data_length = data.length
             partition_counter += data_length
@@ -830,17 +928,19 @@ class ConsumeApi extends Controller {
                 remain_index -= data_length
             }
         }
-        let remain_items_container = partitions[targetStartIndex]["data"]
-        let remain_items = remain_items_container.slice(targetStartItem, remain_items_container.length)
 
+
+
+/*(3)*/ let remain_items_container = partitions[targetStartIndex]["data"]
+        let remain_items = remain_items_container.slice(targetStartItem, remain_items_container.length)
 
         const finalePartitions = []
         const precisedTargetPartition = { ...partitions[targetStartIndex] }
 
-        if (remain_items.length > RECORD_AMOUNT) {
+/*(4)*/ if (remain_items.length > RECORD_AMOUNT) {
             precisedTargetPartition["data"] = remain_items.slice(0, RECORD_AMOUNT)
             finalePartitions.push(precisedTargetPartition)
-        } else {
+/*(5)*/ } else {
             precisedTargetPartition["data"] = remain_items.slice(0, RECORD_AMOUNT)
             finalePartitions.push(precisedTargetPartition)
             let result_counter = precisedTargetPartition["data"].length

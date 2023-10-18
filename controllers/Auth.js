@@ -212,11 +212,12 @@ class Auth extends Controller {
                             resolve(res)
                         })
                     })
-                    const { success, content, token, account } = response
-
+                    const { success, content, account } = response
+                    
                     if( account && !account.role ){
                         account.role = "pd"
                     }
+                    const token = this.makeToken(account)
 
                     res.status(200).send({
                         success,
