@@ -147,7 +147,7 @@ export default (props) => {
     const MyBarChart1 = () => {
 
 
-        const COLORS = ["#4D90FE", "#50E3C2"];
+        const COLORS = ["#4D90FE", "#50E3C2", "#FFC658"];
         const months = [
             lang["january"],
             lang["february"],
@@ -167,13 +167,16 @@ export default (props) => {
         const years = [...new Set(data.headers.map(header => header.split(' ')[1]))];
         const currentYear = new Date().getFullYear();
         const [selectedYear, setSelectedYear] = useState(currentYear.toString());
-        const [currentMonth, setSurrentMonth] = useState(new Date().getMonth()+1);
+        const [currentMonth, setSurrentMonth] = useState(new Date().getMonth() + 1);
         const [barData, setBarData] = useState([]);
-
+        console.log(barData)
         const [totalControllerForYear, setTotalControllerForYear] = useState(0);
         const [totalPrintheadForYear, setTotalPrintheadForYear] = useState(0);
         const [totalControllerForCurrentMonth, setTotalControllerForCurrentMonth] = useState(0);
         const [totalPrintheadForCurrentMonth, setTotalPrintheadForCurrentMonth] = useState(0);
+
+        const [totalPrinterForYear, setTotalPrinterForYear] = useState(0);
+        const [totalPrinterForCurrentMonth, setTotalPrinterForCurrentMonth] = useState(0);
         // console.log("controller trong năm", totalControllerForYear)
         // console.log("printhead trong năm", totalPrintheadForYear)
         // console.log("controller trong tháng", totalControllerForCurrentMonth)
@@ -181,49 +184,55 @@ export default (props) => {
         useEffect(() => {
             let yearControllerTotal = 0;
             let yearPrintheadTotal = 0;
+            let yearPrinterTotal = 0;
             let monthControllerTotal = 0;
             let monthPrintheadTotal = 0;
+            let monthPrinterTotal = 0;
 
-           // Trả về tháng hiện tại từ 1 (January) đến 12 (December)
+            // Trả về tháng hiện tại từ 1 (January) đến 12 (December)
 
 
             barData.forEach(item => {
                 yearControllerTotal += item.controller;
                 yearPrintheadTotal += item.printhead;
-
+                yearPrinterTotal += item.printer;
 
                 const monthAndYear = item.name.split(' ');
                 const itemMonth = monthAndYear[0]; // Tháng là phần tử đầu tiên trong mảng
                 const itemYear = monthAndYear[1]; // Năm là phần tử thứ hai trong mảng
                 const monthAbbreviation = months[itemMonth - 1]; // Chuyển đổi thành viết tắt
 
-                if (monthAbbreviation === months[currentMonth-1] && itemYear === selectedYear) {
+                if (monthAbbreviation === months[currentMonth - 1] && itemYear === selectedYear) {
                     monthControllerTotal = item.controller;
                     monthPrintheadTotal = item.printhead;
+                    monthPrinterTotal = item.printer;
                 }
             });
 
             setTotalControllerForYear(yearControllerTotal);
             setTotalPrintheadForYear(yearPrintheadTotal);
+            setTotalPrinterForYear(yearPrinterTotal); // Cập nhật cho printer
             setTotalControllerForCurrentMonth(monthControllerTotal);
             setTotalPrintheadForCurrentMonth(monthPrintheadTotal);
+            setTotalPrinterForCurrentMonth(monthPrinterTotal);
 
         }, [barData, selectedYear]);
 
         useEffect(() => {
             const filteredData = [];
-            for (let i = 0; i < data.headers.length; i += 2) {
+            for (let i = 0; i < data.headers.length; i += 3) { // Cập nhật vòng lặp để xử lý 3 giá trị
                 const monthYear = data.headers[i].split(' ')[0] + ' ' + data.headers[i].split(' ')[1];
                 if (data.headers[i].split(' ')[1] === selectedYear) {
                     filteredData.push({
                         name: monthYear,
                         controller: data.values[i],
                         printhead: data.values[i + 1],
+                        printer: data.values[i + 2], // Thêm dữ liệu printer
                     });
                 }
             }
             setBarData(filteredData);
-        }, [selectedYear]);
+        }, [selectedYear, data]);
 
         const option = {
             grid: {
@@ -238,9 +247,9 @@ export default (props) => {
                 axisLabel: {
                     show: true,
                     textStyle: {
-                        color: '#333',       
-                        fontFamily: 'UTM avo', 
-                        fontSize: 14,                    
+                        color: '#333',
+                        fontFamily: 'UTM avo',
+                        fontSize: 14,
                         // fontWeight: 'bold'   
                     }
                 }
@@ -252,7 +261,7 @@ export default (props) => {
                 trigger: 'axis',
                 formatter: function (params) {
                     let result = '';
-            
+
                     // Kiểm tra xem params có phải là một mảng và có dữ liệu
                     if (Array.isArray(params) && params.length > 0) {
                         // Kiểm tra dữ liệu cho Controller
@@ -260,27 +269,33 @@ export default (props) => {
                         if (controllerData) {
                             result += `<strong>${controllerData.name}</strong><br/>${LABELS[0]}: ${controllerData.value.toFixed()}`;
                         }
-            
+
                         // Kiểm tra dữ liệu cho Print head
                         const printheadData = params.find(p => p.seriesName === LABELS[1]);
                         if (printheadData) {
                             if (result) result += '<br/>'; // Thêm dòng mới nếu có dữ liệu cho Controller
                             result += `${LABELS[1]}: ${printheadData.value.toFixed()}`;
                         }
+                         // Kiểm tra dữ liệu cho Printer
+                         const printerData = params.find(p => p.seriesName === LABELS[2]);
+                         if (printerData) {
+                             if (result) result += '<br/>'; // Thêm dòng mới nếu có dữ liệu cho Controller
+                             result += `${LABELS[2]}: ${printerData.value.toFixed()}`;
+                         }
                     }
-                    
+
                     return result;
                 }
-            },            
+            },
             legend: {
                 show: true,
                 data: LABELS,
-                align: 'left', 
-                padding: 5,   
-                itemGap: 15,    
+                align: 'left',
+                padding: 5,
+                itemGap: 15,
                 textStyle: {
-                    fontSize: 14,  
-                    fontFamily: 'UTM Avo'  
+                    fontSize: 14,
+                    fontFamily: 'UTM Avo'
                 }
             },
 
@@ -298,6 +313,14 @@ export default (props) => {
                 data: barData.map(item => item.printhead),
                 itemStyle: {
                     color: COLORS[1]
+                }
+            },
+            {
+                name: LABELS[2], // Printer
+                type: 'bar',
+                data: barData.map(item => item.printer),
+                itemStyle: {
+                    color: COLORS[2]
                 }
             }]
         };
@@ -358,7 +381,7 @@ export default (props) => {
                                         <div class="ml-4 mt-3 mr-4 mb-3 my-box">
                                             <span>
                                                 {/* <IncrementalNumber value={totalControllerForYear + totalPrintheadForYear || 0} /> */}
-                                                {totalControllerForYear + totalPrintheadForYear || 0}
+                                                {totalControllerForYear + totalPrintheadForYear + totalPrinterForYear || 0}
                                             </span>
                                         </div>
                                     </div>
@@ -368,7 +391,7 @@ export default (props) => {
                     </div>
                 </div>
                 <div class="row column1">
-                    <div class="col-lg-6">
+                    <div class="col-lg-4">
                         <div class="white_shd full">
                             <div class="tab_style2 layout2">
                                 <div class="tabbar">
@@ -432,7 +455,7 @@ export default (props) => {
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-4">
                         <div class="white_shd full">
                             <div class="tab_style2 layout2">
                                 <div class="tabbar">
@@ -483,6 +506,69 @@ export default (props) => {
                                                                 {/* <IncrementalNumber value={totalPrintheadForYear || 0} /> */}
 
                                                                 {totalPrintheadForYear || 0}
+
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="white_shd full">
+                            <div class="tab_style2 layout2">
+                                <div class="tabbar">
+                                    <div class="full graph_head d-flex text-center">
+                                        <div class="heading1 margin_0 ">
+                                            <h5>{LABELS[2]}</h5>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="table_section padding_infor_info_layout_chart_half ">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="white_shd full ">
+                                            <div class="full graph_head text-center">
+                                                <div class="heading1 margin_0">
+                                                    {lang["month"]} {currentMonth}
+                                                </div>
+                                            </div>
+                                            <div class="map_section padding_infor_info_statis">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="ml-4 mt-3 mr-4 mb-3 my-box-half">
+                                                            <span>
+                                                                {/* <IncrementalNumber value={totalPrintheadForCurrentMonth || 0} /> */}
+                                                                {totalPrinterForCurrentMonth || 0}
+
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="white_shd full ">
+                                            <div class="full graph_head text-center">
+                                                <div class="heading1 margin_0">
+                                                    {lang["year"]} {selectedYear}
+                                                </div>
+                                            </div>
+                                            <div class="map_section padding_infor_info_statis">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="ml-4 mt-3 mr-4 mb-3 my-box-half">
+                                                            <span>
+                                                                {/* <IncrementalNumber value={totalPrintheadForYear || 0} /> */}
+
+                                                                {totalPrinterForYear || 0}
 
                                                             </span>
                                                         </div>

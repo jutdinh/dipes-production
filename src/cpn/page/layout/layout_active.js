@@ -459,7 +459,7 @@ console.log(_token)
                                                             id="controllerSerialNumber"
                                                             placeholder={lang["enter serialnumber"]}
                                                             value={controllerData?.serialNumber || ''}
-                                                            readOnly
+                                                            // readOnly
 
                                                             onChange={(e) => {
                                                                 const upperValue = e.target.value.toUpperCase();
