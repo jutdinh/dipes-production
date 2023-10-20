@@ -1,272 +1,90 @@
 {
     "data": [
         {
-            "ui_id": 1606,
-            "title": "KHÁC HÀNG",
-            "url": "/khac-hang",
+            "ui_id": 1895,
+            "title": "KEYS",
+            "url": "/keys",
             "status": true,
-            "params": [],
+            "params": [
+                1725
+            ],
             "type": "ui",
-            "create_at": "2023-09-28T06:04:44.472Z",
+            "create_at": "2023-10-12T01:07:07.207Z",
             "create_by": {
                 "username": "administrator",
                 "fullname": "Administrator"
             },
             "components": [
                 {
-                    "component_id": 1607,
-                    "component_name": "KHÁC HÀNG",
-                    "layout_id": 1,
-                    "api_get": "/api/DEB32E192987432AA104DDAB57481CD3",
-                    "api_post": "/ui/2C161B85BAB54651B1F659EA5529535E",
-                    "api_put": "/ui/80409E908F624607B5821A86BF31BF81",
-                    "api_delete": "/ui/A7B77C1071BB4290AF4E931E10DCD6A8",
-                    "api_search": "/search/A84F82AA267347F8AC8160BBD7DBAE18",
-                    "api_export": "/export/2F69239AE83944E4BD77314CCFE79C59",
-                    "api_import": "/import/A2643D7BC59A4632AD00DD27243873C3"
+                    "component_id": 1896,
+                    "component_name": "KEYS",
+                    "layout_id": 3,
+                    "api_get": "/api/8C6CE27F524B4809948762F27B55BC35",
+                    "api_post": "/ui/8FD3A675DA4846CA9ABBF936C0373817",
+                    "api_put": "/ui/6C49D605C1EF47C3BA130A4DFC234864",
+                    "api_delete": "/ui/E76A026765284F88AEE00081B4E3AB90",
+                    "api_search": "/search/845E807944524E1AB5E79C917E11E5A7",
+                    "api_export": "/export/6FD48D8D40EB4CD4AD84B4BD3A9AD7F1",
+                    "api_import": "/import/133099ADFCE945939BE343DDEAAA7F90",
+                    "api_detail": "/d/ED62F146466648A18B9F2F82928B1A5C"
                 }
             ]
         },
         {
-            "ui_id": 1615,
-            "title": "LOẠI SẢN PHẨM",
-            "url": "/loai-san-pham",
+            "ui_id": 1905,
+            "title": "DEVICES",
+            "url": "/devices",
             "status": true,
             "params": [],
             "type": "ui",
-            "create_at": "2023-09-28T06:05:01.665Z",
+            "create_at": "2023-10-12T01:31:50.323Z",
             "create_by": {
                 "username": "administrator",
                 "fullname": "Administrator"
             },
             "components": [
                 {
-                    "component_id": 1616,
-                    "component_name": "LOẠI SẢN PHẨM",
-                    "layout_id": 1,
-                    "api_get": "/api/E4F4515034ED4F37859FCF4F212C43E0",
-                    "api_post": "/ui/82ABF6DCE2514D1182F14FB817D41CB9",
-                    "api_put": "/ui/2FF0133C397844E9AA95D6FE00A58DC5",
-                    "api_delete": "/ui/888E5EFA57B44F98AA7BCEFCF50657BA",
-                    "api_search": "/search/B6D5F4271B09403C8B91D2316B7178C8",
-                    "api_export": "/export/5B9964A4DCD24314993040AC098BEF20",
-                    "api_import": "/import/E3F3B2D3238348FBBCA07F5CE5151EFC"
+                    "component_id": 1906,
+                    "component_name": "DEVICES",
+                    "layout_id": 2,
+                    "api_get": "/api/2A3FC45AC3914FC595E883B7D2F37310",
+                    "api_post": "/ui/460950C204664ED5B76C46BF3BFA1EBC",
+                    "api_put": "/ui/9415EF9637F94982AA54719148FFEBF2",
+                    "api_delete": "/ui/35106F16A70E43218DF436FAB6DEF44C",
+                    "api_search": "/search/917BF5D096194A77B7E96074DDC3383A",
+                    "api_export": "/export/ADC14587F4474995A58EC01281841B89",
+                    "api_import": "/import/480AFA69F2954B3191933AADB9A753BB",
+                    "api_detail": "/d/6BF529FE343D4765BA5EF4CCD455FF3D"
                 }
             ]
         },
         {
-            "ui_id": 1624,
-            "title": "SẢN PHẨM",
-            "url": "/san-pham",
+            "ui_id": 1915,
+            "title": "THỐNG KÊ THÁNG NĂM",
+            "url": "/thong-ke-thang-nam",
             "status": true,
-            "params": [],
+            "params": [
+                1730
+            ],
             "type": "ui",
-            "create_at": "2023-09-28T06:07:29.276Z",
+            "create_at": "2023-10-12T03:43:53.432Z",
             "create_by": {
                 "username": "administrator",
                 "fullname": "Administrator"
             },
             "components": [
                 {
-                    "component_id": 1625,
-                    "component_name": "SẢN PHẨM",
-                    "layout_id": 1,
-                    "api_get": "/api/26854799DDB149F0BFFF74EDFD714313",
-                    "api_post": "/ui/3E690FFCDCC9450F81C1ED8CE4DED191",
-                    "api_put": "/ui/CFB47E79B2124D2EA5B496E9672CED11",
-                    "api_delete": "/ui/77C20B0FB26C45589492406C4B9ADDB0",
-                    "api_search": "/search/21C59D7BDA8044C5BF9947F498C2C427",
-                    "api_export": "/export/6A6145AFB5EC4D3E8808043676658218",
-                    "api_import": "/import/1E23C05DFEE54D68922EB068E7D07F55"
-                }
-            ]
-        },
-        {
-            "ui_id": 1633,
-            "title": "NHÂN VIÊN",
-            "url": "/nhan-vien",
-            "status": true,
-            "params": [],
-            "type": "ui",
-            "create_at": "2023-09-28T06:08:00.174Z",
-            "create_by": {
-                "username": "administrator",
-                "fullname": "Administrator"
-            },
-            "components": [
-                {
-                    "component_id": 1634,
-                    "component_name": "NHÂN VIÊN",
-                    "layout_id": 1,
-                    "api_get": "/api/3D76CE1B70FC484CB8806EB86149ED33",
-                    "api_post": "/ui/D68E6133CAA9469495D7AC75D62AFE6F",
-                    "api_put": "/ui/67FCAA90772B4D2CABF8FE77C3EC5863",
-                    "api_delete": "/ui/1F086687BCFF42BF973D0E7C67423EC0",
-                    "api_search": "/search/81C936C5C6E14B0AA94C9CBBD1F86154",
-                    "api_export": "/export/BCE7740558D34964B5973A13F4508BFB",
-                    "api_import": "/import/7D63E9E9A5614575B83083C45E60ACEF"
-                }
-            ]
-        },
-        {
-            "ui_id": 1642,
-            "title": "ĐƠN HÀNG",
-            "url": "/don-hang",
-            "status": true,
-            "params": [],
-            "type": "ui",
-            "create_at": "2023-09-28T06:09:06.154Z",
-            "create_by": {
-                "username": "administrator",
-                "fullname": "Administrator"
-            },
-            "components": [
-                {
-                    "component_id": 1643,
-                    "component_name": "ĐƠN HÀNG",
-                    "layout_id": 1,
-                    "api_get": "/api/7581E9D2A3214E42BF3EE648F2F59668",
-                    "api_post": "/ui/3D135B9FCE104A46833AFABA6A78615A",
-                    "api_put": "/ui/E595F0146D4C4B17AF0CAD619B7B79C9",
-                    "api_delete": "/ui/4E65E2E7055A4115B9629F9015C4CDFB",
-                    "api_search": "/search/4B0449203B73460EBB04F58B5EAFCB7F",
-                    "api_export": "/export/94DB1C9BC8554B1AB9084F5EB6251AC1",
-                    "api_import": "/import/4F97E0904CD045D9846C93BC19848F55"
-                }
-            ]
-        },
-        {
-            "ui_id": 1651,
-            "title": "CHI TIẾT ĐẶT HÀNG",
-            "url": "/chi-tiet-dat-hang",
-            "status": true,
-            "params": [],
-            "type": "ui",
-            "create_at": "2023-09-28T06:11:06.975Z",
-            "create_by": {
-                "username": "administrator",
-                "fullname": "Administrator"
-            },
-            "components": [
-                {
-                    "component_id": 1652,
-                    "component_name": "CHI TIẾT ĐẶT HÀNG",
-                    "layout_id": 1,
-                    "api_get": "/api/C1D9F2D35DDF458D81C396C72131C0CF",
-                    "api_post": "/ui/88CA9986E7EB45ADB015A53BF7C289FB",
-                    "api_put": "/ui/B644105E696B44AAA8010D3F4A6C7B20",
-                    "api_delete": "/ui/A87DAE81C248491BB96BFF6297EE61FF",
-                    "api_search": "/search/DB5D30D7475C41B1908ED59100CACA6D",
-                    "api_export": "/export/64D39B75E77941009009522C837EC5A6",
-                    "api_import": "/import/F1D996A3C8B140A48A213F2023606F9C"
-                }
-            ]
-        },
-        {
-            "ui_id": 1669,
-            "title": "TEST - KHÁCH HÀNG ",
-            "url": "/test---khach-hang-",
-            "status": true,
-            "params": [],
-            "type": "ui",
-            "create_at": "2023-09-29T02:12:50.003Z",
-            "create_by": {
-                "username": "khanh.chi",
-                "fullname": "Khánh Chi"
-            },
-            "components": [
-                {
-                    "component_id": 1670,
-                    "component_name": "TEST - KHÁCH HÀNG ",
-                    "layout_id": 1,
-                    "api_get": "/api/3139D83AA0A640BDAD177859DC0BA4DB",
-                    "api_post": "/ui/0E2676DD37A4486DB0C0158DD13DA7F4",
-                    "api_put": "/ui/41EA5F141F274628AE7E3249AE6E0DED",
-                    "api_delete": "/ui/E99723BBC0EE44889C36D456C82BBE4B",
-                    "api_search": "/search/8DDF7503B9C24E6BAB641AE3A2887EF9",
-                    "api_export": "/export/0C98E980A9C84FD9AA3A32ED9D22F861",
-                    "api_import": "/import/2139654B5AF042DAA0B82828FAFE78DC"
-                }
-            ]
-        },
-        {
-            "ui_id": 1678,
-            "title": "TEST - LOẠI SẢN PHẨM",
-            "url": "/test---loai-san-pham",
-            "status": true,
-            "params": [],
-            "type": "ui",
-            "create_at": "2023-09-29T02:14:02.672Z",
-            "create_by": {
-                "username": "khanh.chi",
-                "fullname": "Khánh Chi"
-            },
-            "components": [
-                {
-                    "component_id": 1679,
-                    "component_name": "TEST - LOẠI SẢN PHẨM",
-                    "layout_id": 1,
-                    "api_get": "/api/0F8B28E647CB40D0A34B735FECFDFDAD",
-                    "api_post": "/ui/C0BE9BC038444EF7AE2339DF5E321483",
-                    "api_put": "/ui/78A1A95ACBF940C5A7D54BAEA58506D7",
-                    "api_delete": "/ui/886BC950EE9D40BA9A1BF43666E5C944",
-                    "api_search": "/search/EB4C73BAFB3A45FCA212261758C97461",
-                    "api_export": "/export/9922356C2E0447AC90EA6F8859AA8FA7",
-                    "api_import": "/import/CB44417171B443DFBB8E6B948E237F61"
-                }
-            ]
-        },
-        {
-            "ui_id": 1687,
-            "title": "TEST SẢN PHẨM",
-            "url": "/test-san-pham",
-            "status": true,
-            "params": [],
-            "type": "ui",
-            "create_at": "2023-09-29T02:15:24.417Z",
-            "create_by": {
-                "username": "khanh.chi",
-                "fullname": "Khánh Chi"
-            },
-            "components": [
-                {
-                    "component_id": 1688,
-                    "component_name": "TEST SẢN PHẨM",
-                    "layout_id": 1,
-                    "api_get": "/api/35767BB17C2C430C95A0A7E17F70DD67",
-                    "api_post": "/ui/9882F238C7B947A4A7DA79194BA0FE22",
-                    "api_put": "/ui/CC9ACBD1129B43C89B51E85D12AEA8ED",
-                    "api_delete": "/ui/1E6055E650BF4ACCAA3D68EDAF8C556F",
-                    "api_search": "/search/940C8C96AF5343E58EE44E56B380F1FB",
-                    "api_export": "/export/031C3BAD19474C78BAF85FEB468802D2",
-                    "api_import": "/import/21D5C657064A41A5AC6BD5A25DA6E090"
-                }
-            ]
-        },
-        {
-            "ui_id": 1696,
-            "title": "TEST 2 - SẢN PHẨM",
-            "url": "/test-2---san-pham",
-            "status": true,
-            "params": [],
-            "type": "ui",
-            "create_at": "2023-09-29T02:16:20.918Z",
-            "create_by": {
-                "username": "khanh.chi",
-                "fullname": "Khánh Chi"
-            },
-            "components": [
-                {
-                    "component_id": 1697,
-                    "component_name": "TEST 2 - SẢN PHẨM",
-                    "layout_id": 1,
-                    "api_get": "/api/E5884778BB8B4F5C9F864245B8700842",
-                    "api_post": "/ui/DDBAF30137214F65AD380C21017DC64B",
-                    "api_put": "/ui/494024F0A87A44D8BF840B61ED5CA713",
-                    "api_delete": "/ui/24861981CE45485B94CA14AD2D96A804",
-                    "api_search": "/search/BDACCC4EC93C4044936A7052FC928C62",
-                    "api_export": "/export/077E1A2655ED4EB7A7B757EED9CEEEBA",
-                    "api_import": "/import/FBB076D611594A3E98A0B84D7171BAFF"
+                    "component_id": 1916,
+                    "component_name": "THỐNG KÊ THÁNG NĂM",
+                    "layout_id": 4,
+                    "api_get": "/api/2BCDEE0FA1464DD991F48D490945E630",
+                    "api_post": "/ui/61D5DE37C9AC4CCC8DF499DE43D8E48C",
+                    "api_put": "/ui/1270600071AA45F3944DC70B6195D44B",
+                    "api_delete": "/ui/CE8093E02CA74B3D822DA76270CEE9A1",
+                    "api_search": "/search/838A8A6C838843E6A85D8BCDFC95A134",
+                    "api_export": "/export/88561DF15E9741B2B6948A348B56E045",
+                    "api_import": "/import/EC4BEB752B09433FBB625F915EF2C685",
+                    "api_detail": "/d/57F2967BBFE243C5877C24636F804DD2"
                 }
             ]
         }

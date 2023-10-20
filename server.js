@@ -52,7 +52,7 @@ app.use(async (req, res, next) => {
 // app.use('/projects', Projects )
 // app.use('/tasks', Tasks );
 app.use('/versions', Versions );
-// app.use('/logs', Logs );
+app.use('/logs', Logs );
 // app.use('/db/tables', Tables );
 // app.use('/db/fields', Fields );
 app.use('/apis', Api );
