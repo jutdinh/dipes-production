@@ -13,6 +13,8 @@ const { translateUnicodeToBlanText, formatDecNum } = require('../functions/auto_
 const fastcsv = require('fast-csv')
 const XLSX = require('xlsx-js-style');
 
+const fetch = require('node-fetch')
+
 const Cache = require('./Cache/Cache');
 const { Privileges } = require('../models/Privileges');
 const { Statistics, StatisticsRecord } = require('../models/Statistics');
