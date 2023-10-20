@@ -352,7 +352,14 @@ export default {
     "duPassword": "Please do not reuse old passwords",
     "validPassword": "The password re-entered does not match",
     "success.password": "Change password successfully",
-    "faild.password": "Incorrect password"
+    "faild.password": "Incorrect password",
+    "update.config": "Update information",
+    "enter serialnumber": "Enter Serial Number",
+    "export to file": "Export to file",
+    "step": "Step",
+    "upload file": "Upload File",
+    "get data": "Retrieve Data",
+    "get result": "Get Results"
 }
 
 

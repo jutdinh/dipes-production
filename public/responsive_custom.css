@@ -57,3 +57,19 @@
         float: right;
     }
 }
+/* Custom Responsive Styles */
+@media (max-width: 768px) {
+    h5 {
+        font-size: 18px;
+    }
+    label {
+        font-size: 14px;
+    }
+    .input-group-text {
+     
+        font-size: 14px;
+    }
+    .form-control {
+        font-size: 14px;
+    }
+}

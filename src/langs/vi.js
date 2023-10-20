@@ -346,5 +346,14 @@ export default {
     "duPassword": "Vui lòng không sử dụng lại mật khẩu cũ",
     "validPassword": "Mật khẩu nhập lại không khớp",
     "success.password": "Thay đổi mật khẩu thành công",
-    "faild.password": "Mật khẩu không đúng"
+    "faild.password": "Mật khẩu không đúng",
+    "update.config": "Cập nhật thông tin",
+    "enter serialnumber": "Nhập Serial Number",
+    "export to file": "Xuất file",
+    "step": "Bước",
+    "upload file": "Tải File",
+    "get data": "Nhận Dữ Liệu",
+    "get result": "Lấy Kết Quả"
+
+
 }

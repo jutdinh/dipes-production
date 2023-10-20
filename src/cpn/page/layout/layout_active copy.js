@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -27,21 +27,19 @@ export default (props) => {
     const [currentStep, setCurrentStep] = useState(1);
     const [enableNext, setEnableNext] = useState(false)
     const [enable, setEnable] = useState(false)
-    const [enableSave, setEnableSave] = useState(false)
     const [dataKey, setDatKey] = useState({})
     const [apiDataName, setApiDataName] = useState([])
     const [data, setData] = useState({});
     const [dataFile, setDataFile] = useState({})
-
-    const [reason, setReason] = useState("")
+    console.log(props)
+    const [reason, setReason] = useState(null)
     const [showModal, setShowModal] = useState(false);
 
-    const fileInputRef = useRef();
     const isEmptyObject = (obj) => Object.keys(obj).length === 0;
+
 
     const handleReStep = (e) => {
         setCurrentStep(1);
-        handleCloseModal()
     }
 
     const handleNextStep = (e) => {
@@ -77,6 +75,7 @@ export default (props) => {
                     });
                     setDatKey(keyLicense)
                 }
+
                 // socket.emit("/dipe-production-new-data-added", dataSubmit);
             })
             .catch(error => {
@@ -84,14 +83,7 @@ export default (props) => {
             });
     };
 
-    // Check input Seiral Number
-    const [errorMessage, setErrorMessage] = useState('');
-    const [isFocused, setIsFocused] = useState([]);
-    const setErrorMessageForPrinthead = (index, message) => {
-        let newErrorMessages = [...errorMessage];
-        newErrorMessages[index] = message;
-        setErrorMessage(newErrorMessages);
-    };
+    console.log(dataKey)
 
     const [fileName, setFileName] = useState('');
     const [fileError, setFileError] = useState('');
@@ -100,7 +92,6 @@ export default (props) => {
     const [printheadsData, setPrintheadsData] = useState([]);
 
     const handleFileChange = (event) => {
-
         const file = event.target.files[0];
         if (event.target.files.length > 0) {
             setFileName(event.target.files[0].name);
@@ -116,6 +107,7 @@ export default (props) => {
             }
 
             const reader = new FileReader();
+
             reader.onload = (e) => {
                 const fileContent = e.target.result;
                 let parsedContent;
@@ -131,20 +123,14 @@ export default (props) => {
                     !parsedContent.controller ||
                     typeof parsedContent.controller.key !== 'string' ||
                     typeof parsedContent.controller.serialNumber !== 'string' ||
-                    parsedContent.controller.serialNumber === '' // Kiểm tra nếu serialNumber của controller rỗng
-                ) {
-                    // setFileError(`${lang["correct format"]}`);
-                    $('#modalTrigger').click();
-                } else if (
-                    Array.isArray(parsedContent.printhead) &&
+                    parsedContent.controller.serialNumber === '' ||
+                    !Array.isArray(parsedContent.printhead) ||
                     !parsedContent.printhead.every(printhead =>
-                        (printhead.key && typeof printhead.serialNumber === 'string' && printhead.serialNumber !== '') || // nếu có key thì serialNumber phải không rỗng
-                        (!printhead.key) // không có key là hợp lệ
-                    )
+                        typeof printhead.serialNumber === 'string') // Loại bỏ kiểm tra key
                 ) {
-                    // Nếu một printhead nào đó có key nhưng không có serialNumber, hiển thị lỗi
-                    // setFileError(`${lang["correct format"]}`);
-                    $('#modalTrigger').click();
+                    setFileError(`${lang["correct format"]}`);
+
+                    $('#modalTrigger').click()
                 }
 
                 // Lọc printhead có key rỗng
@@ -166,70 +152,49 @@ export default (props) => {
             reader.readAsText(file);
         }
     };
+    console.log(dataFile)
+    const areAllSerialNumbersEmpty = () => {
+        if (controllerData.serialNumber) return false;
+        for (let printhead of printheadsData) {
+            if (printhead.serialNumber) return false;
+        }
+        return true;
+    };
 
-    // const areAllSerialNumbersEmpty = () => {
-    //     if (controllerData.serialNumber) return false;
-    //     for (let printhead of printheadsData) {
-    //         if (printhead.serialNumber) return false;
-    //     }
-    //     return true;
-    // };
 
     const updateSerialNumber = (index, value) => {
-        if (index === -1) { // Cập nhật cho controller
-            const updatedControllerData = { ...controllerData, serialNumber: value };
-            setControllerData(updatedControllerData);
-        } else { // Cập nhật cho printhead cụ thể
-            const updatedPrintheadsData = printheadsData.map((printhead, currentIndex) => {
-                if (currentIndex === index && printhead.key) {
-                    return {
-                        ...printhead,
-                        serialNumber: value
-                    };
-                }
-                return printhead;
-            });
-            setPrintheadsData(updatedPrintheadsData);
-        }
-    };
+        let updatedControllerData = { ...controllerData };
+        let updatedPrintheadsData = [...printheadsData];
 
-    // Cập nhật trạng thái nút lưu
-    const areSerialNumbersValid = (data) => {
-        for (const item of data) {
-            if (item.key && !item.serialNumber) {
-                // Nếu "key" không rỗng nhưng "serialNumber" rỗng
-                return false;
-            }
-            // Nếu "key" rỗng, chúng ta không kiểm tra "serialNumber"
-        }
-        return true; // Tất cả "serialNumber" của đối tượng có "key" không rỗng đều hợp lệ
-    };
-
-    const isControllerValid = (controller) => {
-        return controller?.serialNumber;
-    };
-
-    useEffect(() => {
-        const isValidPrintHead = areSerialNumbersValid(printheadsData);
-        const isValidController = isControllerValid(controllerData);
-
-        console.log(isValidPrintHead)
-        console.log(isValidController)
-
-        if (isValidController && isValidPrintHead) {
-            setEnableSave(false)
-
+        if (areAllSerialNumbersEmpty()) {
+            updatedControllerData.serialNumber = value;
+            updatedPrintheadsData = updatedPrintheadsData.map(printhead => ({
+                ...printhead,
+                serialNumber: value
+            }));
         } else {
-            setEnableSave(true)
+            if (index === -1) { // Cập nhật cho controller
+                updatedControllerData.serialNumber = value;
+            } else { // Cập nhật cho printhead cụ thể
+                if (updatedPrintheadsData[index].key) {
+                    updatedPrintheadsData[index].serialNumber = value;
+                }
+            }
         }
+
+        setControllerData(updatedControllerData);
+        setPrintheadsData(updatedPrintheadsData);
+        const validPrintheads = updatedPrintheadsData.filter(ph => ph.key);
+        // Cập nhật dataFile
         const updatedDataFile = {
             data: {
-                controller: controllerData,
-                printhead: printheadsData
+                controller: updatedControllerData,
+                printhead: validPrintheads
             }
         };
         setDataFile(updatedDataFile);
-    }, [controllerData, printheadsData])
+    };
+
 
     const handleUpdate = () => {
         // Cập nhật cho controller
@@ -246,32 +211,9 @@ export default (props) => {
             return printhead;
         });
         setPrintheadsData(newPrintheadsData);
-
-
-        const validPrintheads = newPrintheadsData.filter(ph => ph.key);
-        // cập nhật dataFile 
-        const updatedDataFile = {
-            data: {
-                controller: controllerData,
-                printhead: printheadsData
-            }
-        };
-        setDataFile(updatedDataFile);
     };
 
-    const handleCloseModal = () => {
-        // Reset trạng thái
-        setFileName('');
-        setFileError('');
-        setDataFile({});
-        setControllerData({})
-        setPrintheadsData([])
-        setEnableNext(false)
-        console.log("hehe")
-        if (fileInputRef.current) {
-            fileInputRef.current.value = "";
-        }
-    };
+
 
     useEffect(() => {
         if (page && page.components) {
@@ -297,13 +239,12 @@ export default (props) => {
                 })
         }
     }, [page])
-console.log(_token)
+
     const submit = () => {
         const requestBody = {
             ...dataFile,
             reason: reason,
             customer: username,
-            username: "MLG_ITC"
 
         }
         console.log(requestBody)
@@ -325,26 +266,10 @@ console.log(_token)
                         setData(data)
                         setCurrentStep(2);
                         setEnable(true)
+
+
+
                     }
-                    // Ghi log
-                    fetch(`${proxy()}/logs/save/import/devices/json`, {
-                        method: "POST",
-                        headers: {
-                            Authorization: _token,
-                            "content-type": "application/json"
-                        },
-                        body: JSON.stringify(requestBody)
-                    })
-                        .then(res => res.json())
-                        .then(res => {
-            
-                            const { data, success, content } = res;
-                            console.log(res)
-                            
-                        })
-                        .catch(error => {
-                            // Xử lý lỗi nếu cần
-                        });
                 }
                 // socket.emit("/dipe-production-new-data-added", dataSubmit);
             })
@@ -390,7 +315,9 @@ console.log(_token)
         }
     }
     const current = data.printhead
-    console.log(current)
+
+
+
     const getCurrentFormattedDate = () => {
         const date = new Date();
         const year = String(date.getFullYear()).slice(-2);
@@ -407,12 +334,11 @@ console.log(_token)
         const href = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = href;
-        link.download = `${getCurrentFormattedDate()}_License.lic`; // Năm tháng ngày_ Giờ phút giây 
+        link.download = `${getCurrentFormattedDate()}_License.lic`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     };
-
 
     return (
         <>
@@ -425,7 +351,10 @@ console.log(_token)
                                     <div class="full graph_head_cus d-flex">
                                         <div class="heading1_cus margin_0 nav-item nav-link ">
                                             <h5>{page?.components?.[0]?.component_name}</h5>
-                                            <div id="modalTrigger" class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#file" ></div>
+                                            <div id="modalTrigger" class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#file" title={lang["export data example"]}>
+                                                d
+
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -433,64 +362,65 @@ console.log(_token)
                         </div>
                     </div>
                     {/* Modal Add File  */}
-                    <div class="modal no-select-modal" id="file" >
+                    <div class="modal fade show" style={{ display: showModal ? 'block' : 'none' }} id="file" >
                         <div class="modal-dialog modal-lg modal-dialog-center" role="document">
                             <div class="modal-content p-md-3">
                                 <div class="modal-header">
-                                    <h4 class="modal-title">{lang["update.config"]} </h4>
+                                    <h4 class="modal-title">{lang["profile.title"]} </h4>
 
-                                    <button class="close" type="button" onClick={handleCloseModal} data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                    {/* <button class="close" type="button" onClick={handleCloseModal} data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> */}
                                 </div>
                                 <div class="modal-body">
                                     <form>
                                         <div class="row">
                                             {/* Thông tin Controller */}
-                                            <div class="col-md-12">
+                                            <div class="col-md-6">
                                                 <h5>Controller</h5>
-                                                <div class="form-group">
-                                                    <label >UUID: {controllerData?.key}</label><br />
-                                                    <div class="input-group">
-                                                        <label for="controllerSerialNumber" class="input-group-text">
-                                                            Serial Number
-                                                        </label>
-                                                        <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            id="controllerSerialNumber"
-                                                            placeholder={lang["enter serialnumber"]}
-                                                            value={controllerData?.serialNumber || ''}
-                                                            readOnly
-
-                                                            onChange={(e) => {
-                                                                const upperValue = e.target.value.toUpperCase();
-                                                                // Chỉ cho phép ký tự in hoa và số
-                                                                const regex = /^[A-Z0-9]*$/;
-                                                                if (regex.test(upperValue) && upperValue.length <= 15) {
-                                                                    updateSerialNumber(-1, upperValue);
-                                                                    setErrorMessageForPrinthead(-1, ''); // Clear any existing error message
-                                                                } else {
-                                                                    setErrorMessageForPrinthead(-1, 'Chỉ được nhập ký tự từ A-Z và số từ 0-9');
-                                                                }
-                                                            }}
-                                                            maxLength="15"
-                                                            onKeyPress={(e) => {
-                                                                if (e.key === ' ') {
-                                                                    e.preventDefault();
-                                                                }
-                                                            }}
-                                                        />
-
-
-                                                    </div>
-                                                    <div style={{ height: "10px" }}>
-                                                        {errorMessage[-1] && <div style={{ color: 'red' }}>{errorMessage[-1]}</div>}
-                                                    </div>
-                                                </div>
+                                                <label>Key: {controllerData?.key}</label><br />
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="controllerSerialNumber"
+                                                    placeholder="Enter Serial Number"
+                                                    value={controllerData?.serialNumber || ''}
+                                                    onChange={(e) => updateSerialNumber(-1, e.target.value)}
+                                                // readOnly={controllerData?.serialNumber !== ''}
+                                                />
                                             </div>
-
                                             {/* Thông tin Printheads */}
-                                            <div class="col-md-12 mt-2">
-                                                <h5>Print Heads</h5>
+                                            <div class="col-md-6">
+                                                <h5>Printheads</h5>
+                                                {
+                                                    (() => {
+                                                        let validPrintheadCount = 0;
+                                                        return printheadsData.map((printhead, index) => {
+                                                            if (printhead.key) {
+                                                                validPrintheadCount++;
+                                                                return (
+                                                                    <div key={index}>
+                                                                        <label>Printhead {validPrintheadCount}: {printhead.key}</label><br />
+                                                                        <input
+                                                                            type="text"
+                                                                            class="form-control"
+                                                                            id={`printheadSerialNumber_${index}`}
+                                                                            placeholder="Enter Serial Number"
+                                                                            value={printhead.serialNumber || ''}
+                                                                            onChange={(e) => updateSerialNumber(index, e.target.value)}
+                                                                        />
+                                                                    </div>
+                                                                );
+                                                            } else {
+                                                                return (
+                                                                    <div key={index}>
+                                                                        <label>Printhead {validPrintheadCount}: Not Connect</label><br />
+                                                                    </div>
+                                                                );
+                                                            }
+                                                        });
+                                                    })()
+
+                                                }
+
                                                 {
                                                     (() => {
                                                         let validPrintheadCount = 0;
@@ -500,61 +430,27 @@ console.log(_token)
 
                                                                 return (
                                                                     <div key={index}>
-                                                                        <label class="font-weight-bold">Print Head {validPrintheadCount}</label><br />
-                                                                        <div class="form-group">
-                                                                            <label>UUID: {printhead.key}</label><br />
-
-                                                                            <div class="input-group">
-                                                                                <label for="printheadSerialNumber" class="input-group-text">
-                                                                                    Serial Number
-                                                                                </label>
-                                                                                <input
-                                                                                    type="text"
-                                                                                    class="form-control"
-                                                                                    id={`printheadSerialNumber_${index}`}
-                                                                                    placeholder={lang["enter serialnumber"]}
-                                                                                    value={printhead?.serialNumber || ''}
-                                                                                    onChange={(e) => {
-                                                                                        // Chuyển ký tự nhập vào thành chữ in hoa
-                                                                                        const upperValue = e.target.value.toUpperCase();
-
-                                                                                        // Kiểm tra ký tự chỉ cho phép in hoa và số
-                                                                                        const regex = /^[A-Z0-9]*$/;
-                                                                                        if (regex.test(upperValue) && upperValue.length <= 15) {
-                                                                                            updateSerialNumber(index, upperValue);  // Cập nhật giá trị đã được chuyển thành chữ in hoa
-                                                                                            setErrorMessageForPrinthead(index, ''); // Xóa tất cả các lỗi
-                                                                                        } else {
-                                                                                            setErrorMessageForPrinthead(index, 'Chỉ được nhập ký tự từ A-Z và số từ 0-9');
-                                                                                        }
-                                                                                    }}
-                                                                                    onBlur={() => {
-                                                                                        setErrorMessageForPrinthead(index, ''); // Xóa lỗi khi dừng focus
-                                                                                    }}
-                                                                                    maxLength="15"
-                                                                                    onKeyPress={(e) => {
-                                                                                        if (e.key === ' ') {
-                                                                                            e.preventDefault();
-                                                                                        }
-                                                                                    }}
-                                                                                />
-
-                                                                            </div>
-                                                                            <div style={{ height: "15px" }}>
-                                                                                {errorMessage[index] && <div style={{ color: 'red' }}>{errorMessage[index]}</div>}
-                                                                            </div>
-                                                                        </div>
+                                                                        <label>Printhead {validPrintheadCount}: {printhead.key}</label><br />
+                                                                        <input
+                                                                            type="text"
+                                                                            placeholder="Enter Serial Number"
+                                                                            value={printhead.serialNumber || ''}
+                                                                            onChange={(e) => updateSerialNumber(index, e.target.value)}
+                                                                            readOnly={printhead.serialNumber !== ''}
+                                                                        />
                                                                     </div>
                                                                 );
                                                             } else {
                                                                 return (
-                                                                    // <div key={index}>
-                                                                    //     <div class="form-group">
-                                                                    //         <label class="font-weight-bold mt-2 mb-2">Print Head {validPrintheadCount}: Not Connect</label><br />
-                                                                    //     </div>
-                                                                    // </div>
-                                                                    null
+                                                                    <div key={index}>
+                                                                        <label>Printhead {validPrintheadCount}: {printhead.key}</label><br />
+
+                                                                    </div>
                                                                 );
                                                             }
+
+
+
                                                         }).filter(Boolean);  // filter out the nulls
                                                     })()
                                                 }
@@ -563,8 +459,8 @@ console.log(_token)
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" onClick={handleUpdate} style={{ minWidth: "100px" }} data-dismiss="modal" disabled={enableSave ? true : false} class="btn btn-success" title={lang["btn.update"]}>{lang["btn.update"]}</button>
-                                    <button type="button" onClick={handleCloseModal} style={{ minWidth: "100px" }} data-dismiss="modal" class="btn btn-danger" title={lang["btn.close"]}>{lang["btn.close"]}</button>
+                                    <button type="button" onClick={handleUpdate} class="btn btn-success">{lang["btn.update"]}</button>
+                                    <button type="button" data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
 
                                 </div>
                             </div>
@@ -578,15 +474,15 @@ console.log(_token)
                                         <ul className="step-list">
 
                                             <li className={`step-item ${currentStep === 1 ? "step-active" : ""} step-arrow-right`}>
-                                                <a className="step-link">{lang["step"]} 1: {lang["upload file"]}</a>
+                                                <a className="step-link">Step 1: Nhập thông tin</a>
                                             </li>
 
                                             <li className={`step-item ${currentStep === 2 ? "step-active" : ""} step-arrow-both`}>
-                                                <a className="step-link">{lang["step"]} 2: {lang["get data"]}</a>
+                                                <a className="step-link">Step 2: Thông tin máy in</a>
                                             </li>
 
                                             <li className={`step-item ${currentStep === 3 ? "step-active" : ""} step-arrow-left-flat-right`}>
-                                                <a className="step-link">{lang["step"]} 3: {lang["get result"]}</a>
+                                                <a className="step-link">Step 3: Kết Quả Kích Hoạt</a>
                                             </li>
 
                                         </ul>
@@ -599,19 +495,12 @@ console.log(_token)
 
                                                     <div className="form-group mt-4">
                                                         <div className="upload-container">
-                                                            <input
-                                                                type="file"
-                                                                className="input-file"
-                                                                accept=".txt"
-                                                                onChange={handleFileChange}
-                                                                onClick={handleCloseModal}
-                                                                ref={fileInputRef}
-                                                            />
+                                                            <input type="file" className="input-file" accept=".txt" onChange={handleFileChange} />
                                                             <div className="icon">
                                                                 📄
                                                             </div>
                                                             <button className="upload-button">
-                                                                {lang["upload file"]}
+                                                                Upload File
                                                             </button>
                                                             <label class="mt-2" style={{ minHeight: "20px" }}>
                                                                 {!fileError ? fileName : ''}
@@ -651,13 +540,14 @@ console.log(_token)
                                                                     <thead>
                                                                         <tr className="color-tr">
                                                                             <th className="font-weight-bold" style={{ width: "50px" }} scope="col">Key</th>
-                                                                            <th className="font-weight-bold" style={{ width: "100px" }} scope="col">Value</th>
+                                                                            <th className="font-weight-bold align-center" style={{ width: "100px" }} scope="col">Value</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         {apiDataName?.map((header, index) => {
                                                                             const key = header.display_name ? header.display_name : header.field_name;
                                                                             let value = data.controller[header.fomular_alias];
+
 
                                                                             if (value === undefined || value === null || value === '') {
                                                                                 value = lang["no data"];
@@ -672,8 +562,11 @@ console.log(_token)
                                                                         })}
                                                                     </tbody>
                                                                 </table>
+
+
                                                             </div>
                                                         </>
+
                                                     </div>
                                                 </div>
                                                 { // Điều kiện hiển thị
@@ -685,49 +578,34 @@ console.log(_token)
                                                                         <table className={"table"} style={{ marginBottom: "10px", width: '100%' }}>
                                                                             <thead>
                                                                                 <tr className="color-tr">
-                                                                                    <th className="font-weight-bold" style={{ minWidth: "100px" }}>{lang["log.no"]}</th>
                                                                                     {apiDataName?.map((header, index) => (
                                                                                         <th key={index} className="font-weight-bold" style={{ minWidth: "200px" }}>
-                                                                                            {header.display_name ? header.display_name : header.field_name}
-                                                                                        </th>
+                                                                                            {header.display_name ? header.display_name : header.field_name}</th>
                                                                                     ))}
                                                                                 </tr>
                                                                             </thead>
                                                                             <tbody>
-                                                                                {(() => {
-                                                                                    const printheadIndices = [];
-                                                                                    current.forEach((row, index) => {
-                                                                                        if (Object.keys(row).length > 0) {
-                                                                                            printheadIndices.push(index + 1);
-                                                                                        }
-                                                                                    });
-
-                                                                                    let printheadCounter = 0;
-                                                                                    return current.map((row, index) => {
-                                                                                        if (Object.keys(row).length > 0) {
-                                                                                            return (
-                                                                                                <tr key={index}>
-                                                                                                    <td className="cell">{`Printhead ${printheadIndices[printheadCounter++]}`}</td>
-                                                                                                    {apiDataName?.map((header) => (
-                                                                                                        <td key={header.fomular_alias} className="cell">{renderData(header, row)}</td>
-                                                                                                    ))}
-                                                                                                </tr>
-                                                                                            )
-                                                                                        } else {
-                                                                                            return (
-                                                                                                <tr>
-                                                                                                    <td class="font-weight-bold cell" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
-                                                                                                </tr>
-                                                                                            )
-                                                                                        }
-                                                                                    })
-                                                                                })()}
+                                                                                {current.map((row, index) => {
+                                                                                    if (row) {
+                                                                                        return (
+                                                                                            <tr key={index}>
+                                                                                                {apiDataName?.map((header) => (
+                                                                                                    <td key={header.fomular_alias} className="cell">{renderData(header, row)}</td>
+                                                                                                ))}
+                                                                                            </tr>
+                                                                                        )
+                                                                                    } else {
+                                                                                        return null
+                                                                                    }
+                                                                                })}
                                                                             </tbody>
-
                                                                         </table>
                                                                     </div>
                                                                 </>
                                                             </div>
+
+
+
                                                         </div>
                                                     )
                                                 }
@@ -736,7 +614,7 @@ console.log(_token)
                                                         <button onClick={handleReStep} style={{ minWidth: "100px" }} className="btn btn-info mr-2">{lang["back"]}</button>
                                                         {enable && (
 
-                                                            <button onClick={handleNextStep} style={{ minWidth: "100px" }} className="btn btn-primary" disabled={isEmptyObject(data.controller)} title={lang["export to file"]}>{lang["create key"]}</button>
+                                                            <button onClick={handleNextStep} style={{ minWidth: "100px" }} className="btn btn-primary" disabled={isEmptyObject(data.controller)}>{lang["create key"]}</button>
 
                                                         )
                                                         }
@@ -769,7 +647,7 @@ console.log(_token)
                                                                     style={{ marginRight: '10px' }}
                                                                     readOnly
                                                                 />
-                                                                <button className="btn btn-primary" style={{ minWidth: "100px" }} onClick={exportLicense} title={lang["export to file"]}>
+                                                                <button className="btn btn-primary" style={{ minWidth: "100px" }} onClick={exportLicense}>
                                                                     <i class="fa fa-download mr-2 size-18 pointer" aria-hidden="true"></i>
                                                                     Export
                                                                 </button>

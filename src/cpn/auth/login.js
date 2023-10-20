@@ -3,18 +3,24 @@ import { useSelector } from "react-redux"
 import Swal from 'sweetalert2';
 
 export default () => {
-    const { lang, proxy, socket, pages} = useSelector(state => state);
+    const { lang, proxy, socket, pages } = useSelector(state => state);
 
     const [auth, setAuth] = useState({})
     const [rememberMe, setRememberMe] = useState(false);
     const [authError, setAuthError] = useState(null);
-console.log(pages)
+    const md5 = require('md5');
+    const password = '123@#123';
+    const hashedPassword = md5(password);
+    console.log(`Password MD5: ${hashedPassword}`);
+    
+    
+    
     const enterTriggered = (e) => {
         if (e.keyCode === 13) {
             submit(e)
         }
     }
-    const check= pages[0]?.url
+    const check = pages[0]?.url
 
     console.log(check)
     const [statusActive, setStatusActive] = useState(false);
@@ -34,15 +40,24 @@ console.log(pages)
         }
 
     }, []);
+    console.log(auth)
 
     const submit = (e) => {
         e.preventDefault()
+        // const hashedPassword = md5(auth.password);
+        const requestBody = {
+            account: {
+                username: auth.username,
+                password: auth.password
+            }
+
+        }
         fetch(`${proxy()}/auth/login`, {
             method: "post",
             headers: {
                 "content-type": "application/json"
             },
-            body: JSON.stringify({ account: auth })
+            body: JSON.stringify(requestBody)
         }).then(res => res.json()).then((resp) => {
             const { success, content, data } = resp;
             const credential = data
@@ -93,13 +108,12 @@ console.log(pages)
                                 }
 
                             } else if (credential.data.role === "pd") {
-                                if(check !== "")
-                                {
+                                if (check !== "") {
                                     window.location = `/page${check}`;
-                                }else{
+                                } else {
                                     window.location = `/ưewqeeqwewqe`;
                                 }
-                                
+
                             }
                         } else {
                             if (credential.data.role === "pd" || credential.data.role === "ad" || credential.data.role === "uad") {
@@ -140,10 +154,10 @@ console.log(pages)
                                                     {authError && <span class="error-message error-login">{authError}</span>}
                                                 </div>
                                             </div>
-                                          
+
                                         </div>
                                         <div className="field">
-                                            
+
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <label className="label_field">{lang["account"]}</label>

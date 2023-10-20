@@ -162,7 +162,7 @@ export default (props) => {
             lang["november"],
             lang["december"],
         ];
-        const LABELS = ["Controller", "Print head"];
+        const LABELS = ["Controller", "Print head", "Printer"];
 
         const years = [...new Set(data.headers.map(header => header.split(' ')[1]))];
         const currentYear = new Date().getFullYear();
@@ -236,7 +236,13 @@ export default (props) => {
                 type: 'category',
                 data: months,
                 axisLabel: {
-                    show: true
+                    show: true,
+                    textStyle: {
+                        color: '#333',       
+                        fontFamily: 'UTM avo', 
+                        fontSize: 14,                    
+                        // fontWeight: 'bold'   
+                    }
                 }
             },
             yAxis: {
@@ -245,20 +251,36 @@ export default (props) => {
             tooltip: {
                 trigger: 'axis',
                 formatter: function (params) {
-                    const controllerData = params[0];
-                    const printheadData = params[1];
-                    return `<strong>${controllerData.name}</strong><br/>${LABELS[0]}: ${controllerData.value.toFixed()}<br/>${LABELS[1]}: ${printheadData.value.toFixed()}`;
+                    let result = '';
+            
+                    // Kiểm tra xem params có phải là một mảng và có dữ liệu
+                    if (Array.isArray(params) && params.length > 0) {
+                        // Kiểm tra dữ liệu cho Controller
+                        const controllerData = params.find(p => p.seriesName === LABELS[0]);
+                        if (controllerData) {
+                            result += `<strong>${controllerData.name}</strong><br/>${LABELS[0]}: ${controllerData.value.toFixed()}`;
+                        }
+            
+                        // Kiểm tra dữ liệu cho Print head
+                        const printheadData = params.find(p => p.seriesName === LABELS[1]);
+                        if (printheadData) {
+                            if (result) result += '<br/>'; // Thêm dòng mới nếu có dữ liệu cho Controller
+                            result += `${LABELS[1]}: ${printheadData.value.toFixed()}`;
+                        }
+                    }
+                    
+                    return result;
                 }
-            },
+            },            
             legend: {
                 show: true,
                 data: LABELS,
-                align: 'left', // Align legend text
-                padding: 5,   // Adjust padding if needed
-                itemGap: 15,    // Gap between items
+                align: 'left', 
+                padding: 5,   
+                itemGap: 15,    
                 textStyle: {
-                    fontSize: 14,  // Adjust the font size
-                    fontFamily: 'UTM Avo'  // Set the font family
+                    fontSize: 14,  
+                    fontFamily: 'UTM Avo'  
                 }
             },
 
@@ -290,7 +312,7 @@ export default (props) => {
 
                                     <div class="full graph_head d-flex">
                                         <div class="heading1 margin_0 ">
-                                            <h5>{page?.components?.[0]?.component_name}</h5>
+                                            <h5>License created in {selectedYear}</h5>
                                         </div>
                                     </div>
 

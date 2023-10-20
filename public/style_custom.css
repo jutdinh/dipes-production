@@ -154,7 +154,7 @@
 
 .my-box {
     height: 338px;
-    background-color: #d9dfe4;
+    /* background-color: #d9dfe4; */
     color: #fff;
     border: 2px solid #e7f1f8;
     border-radius: 5px;
@@ -180,7 +180,7 @@
 
 .my-box-half {
     height: 150px;
-    background-color: #d9dfe4;
+    /* background-color: #d9dfe4; */
     color: #fff;
     border: 2px solid #e7f1f8;
     border-radius: 5px;
@@ -376,7 +376,7 @@
 }
 
 .cell {
-    max-width: 250px;
+    max-width: 380px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1905,7 +1905,26 @@ h5 {
 
 }
 
+.input-group {
+    display: flex;
+    align-items: center;
+}
 
+.input-group-text {
+    margin-bottom: 0; /* Chắc chắn rằng không có khoảng cách dư thừa ở đáy */
+}
+
+.blur-modal {
+    filter: blur(3px);
+    pointer-events: none;
+  }
+  
+
+  .no-select-modal {
+
+    pointer-events: none;
+  }
+  
 
 
 .error-login {

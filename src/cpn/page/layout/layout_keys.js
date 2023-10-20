@@ -337,7 +337,7 @@ console.log(record)
                                         <p>
                                             {
                                                 apiData.length > 0 ? (
-                                                    `${lang["show"]} ${filteredData.length > 0 ? indexOfFirst + 1 : 0}-${Math.min(indexOfLast, filteredData.length)} ${lang["of"]} ${Math.min(apiData.length, filteredData.length)} ${lang["results"]}`
+                                                    `${lang["show"]} ${filteredData.length > 0 ? indexOfFirst + 1 : 0} - ${Math.min(indexOfLast, filteredData.length)} ${lang["of"]} ${Math.min(apiData.length, filteredData.length)} ${lang["results"]}`
 
                                                 ) : (
                                                     null
@@ -376,13 +376,13 @@ console.log(record)
                                                     }
                                                 })}
                                                 {/* Nút đến trang sau */}
-                                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                <li className={`page-item ${(currentPage === totalPages || filteredData.length === 0) ? 'disabled' : ''}`}>
                                                     <button className="page-link" onClick={() => paginate(currentPage + 1)}>
                                                         &raquo;
                                                     </button>
                                                 </li>
                                                 {/* Nút đến trang cuối */}
-                                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                <li className={`page-item ${(currentPage === totalPages || filteredData.length === 0) ? 'disabled' : ''}`}>
                                                     <button className="page-link" onClick={() => paginate(totalPages)}>
                                                         &#8811;
                                                     </button>
