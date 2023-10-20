@@ -394,18 +394,24 @@ class Auth extends Controller {
             }
 
             if (project_type == "api") {
+                const md5pwdCipher = new Crypto()
+                const md5pwd = md5pwdCipher.md5Encrypt(password)
+
                 const response = await new Promise((resolve, reject) => {
                     fetch(`${proxy_server}/auth/register`, {
                         method: "POST",
                         headers: {
                             'content-type': "application/json",
                         },
-                        body: JSON.stringify({ account: req.body.account })
+                        body: JSON.stringify({ account: {
+                            ...req.body.account,
+                            password: md5pwd
+                        } })
                     }).then(res => res.json()).then(res => {
                         resolve(res)
                     })
                 })
-                console.log(response)
+                // console.log(response)
                 const { success, content, token } = response;
                 context.success = success
                 context.content = content
