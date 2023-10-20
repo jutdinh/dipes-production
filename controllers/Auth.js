@@ -13,6 +13,8 @@ const { Privileges } = require('../models/Privileges');
 const { Tables } = require('../models/Tables');
 
 
+const  DIPES_USER_PASSWORD =  "123@#123" 
+
 class Auth extends Controller {
     #__accounts = undefined
     #__default = Accounts.__defaultAccount;
@@ -197,27 +199,51 @@ class Auth extends Controller {
                 const encryptedPassword = Cipher.encrypt(password)
 
                 const user = await this.#__accounts.find({ username: username.toLowerCase(), password: encryptedPassword })
-
-
+                const md5Cipher = new Crypto()
+                const dipes_user_md5 = md5Cipher.md5Encrypt(DIPES_USER_PASSWORD)
+                const user_md5_cipher = new Crypto()
+                const user_md5 = user_md5_cipher.md5Encrypt( password )
 
                 if (project_type == "api") {
                     const response = await new Promise((resolve, reject) => {
-                        fetch(`${remoteDomain}/auth/login`, {
+                        fetch(`${remoteDomain}/API/MDS.svc/CustomerLogin`, {
                             method: "POST",
                             headers: {
                                 'content-type': "application/json",
                             },
-                            body: JSON.stringify({ account: req.body.account })
+                            body: JSON.stringify({
+                                "checkUser": { 
+                                    "username":"Mylan Digital Solution",
+                                    "password": dipes_user_md5
+                                },
+                                "checkCustomer": {
+                                    username, 
+                                    password: user_md5
+                                }
+                             })
                         }).then(res => res.json()).then(res => {
                             resolve(res)
                         })
                     })
-                    const { success, content, account } = response
                     
+                    const account = response.Account
+                    const success = response.Success
+                    const content = response.Message
+                    let token;
+
                     if( account && !account.role ){
+                        
+                        const keys = Object.keys( account )
+
+                        for( let i = 0 ; i < keys.length; i++ ){
+                            const key = keys[i].toLowerCase()
+                            
+                            account[key] = account[keys[i]]
+                        }
                         account.role = "pd"
+                        token = this.makeToken(account)
                     }
-                    const token = this.makeToken(account)
+
 
                     res.status(200).send({
                         success,
@@ -862,13 +888,36 @@ class Auth extends Controller {
                 remoteDomain = project.proxy_server
             }            
             if (project_type == "api") {
-                const response = await new Promise((resolve, reject) => {
-                    fetch(`${remoteDomain}/auth/changePwd`, {
+
+
+                const dipes_user_md5_cipher = new Crypto()
+
+                const old_pass_cipher = new Crypto()
+                const new_pass_cipher = new Crypto()
+
+                const dipes_user_md5 = dipes_user_md5_cipher.md5Encrypt(DIPES_USER_PASSWORD)
+                const md5OldPass = old_pass_cipher.md5Encrypt( oldPassword )
+                const md5NewPass = new_pass_cipher.md5Encrypt( newPassword )
+
+                const response = await new Promise((resolve, reject) => {                    
+                    fetch(`${remoteDomain}/API/MDS.svc/CustomerChangePassword`, {
                         method: "POST",
                         headers: {
                             'content-type': "application/json",
                         },
-                        body: JSON.stringify({ account: req.body.account })
+                        body: JSON.stringify(
+                            {
+                                "checkUser": { 
+                                    "username":"Mylan Digital Solution",
+                                    "password": dipes_user_md5
+                                },
+                                "checkCustomer": {
+                                    username, 
+                                    password:  md5OldPass,
+                                },
+                                "NewPassword": md5NewPass
+                             }
+                        )
                     }).then(res => res.json()).then(res => {
                         resolve(res)
                     })

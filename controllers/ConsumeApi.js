@@ -3572,10 +3572,13 @@ class ConsumeApi extends Controller {
                 headers: {
                     Authorization: this.req.header("Authorization")
                 }
-            }).then(res => res.json()).then(res => {
+            }).then(res => res.json()).then(res => {   
+                          
                 resolve(res)
+            }).catch(err => {                
+                resolve({ error: err.toString() })
             })
-        })
+        })        
 
         const statistic = this.API.statistic.valueOrNot()
         const statistics = []        
@@ -3612,6 +3615,7 @@ class ConsumeApi extends Controller {
         })
 
         context.data = response.data;
+        context.error = response.error
         context.statistic = statistics;
         const fields = this.getFields(this.API.fields.valueOrNot().map(f => f.id))
         context.fields = [...fields, ...calculateDisplay]
@@ -3622,7 +3626,7 @@ class ConsumeApi extends Controller {
     REMOTE_POST = async () => {
         const body = this.req.body;
         const remoteURL = this.generateRemoteURL()
-        console.log(3470, remoteURL)
+        
         const response = await new Promise((resolve, reject) => {
             fetch(remoteURL, {
                 method: "POST",
@@ -3632,6 +3636,8 @@ class ConsumeApi extends Controller {
                 body: JSON.stringify(body)
             }).then(res => res.json()).then(res => {
                 resolve(res)
+            }).catch( err => {                
+                resolve({ error: err.toString() })
             })
         })
 

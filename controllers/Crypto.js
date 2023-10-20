@@ -21,6 +21,10 @@ class Crypto {
         decryptedData += this.#__decipher.final("utf8");
         return decryptedData
     }
+
+    md5Encrypt = (data) => {
+        return crypto.createHash('md5').update(data).digest("hex")
+    }
 }
 module.exports = Crypto
 
