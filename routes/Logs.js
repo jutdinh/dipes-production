@@ -10,4 +10,7 @@ const LogController = new EventLogsObject();
 
 router.get('/:lang', async ( req, res ) => { await LogController.get( req, res, [ permission.uad ] ) })
 router.post('/search', async ( req, res ) => { await LogController.search( req, res, [ permission.uad ] ) })
+
+router.post('/save/import/devices/json', async ( req, res ) => { await LogController.writeLogImportJSON( req, res ) })
+
 module.exports = router;

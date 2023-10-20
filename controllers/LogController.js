@@ -83,6 +83,37 @@ class LogController extends Controller {
         res.status(200).send(context)
     }
 
+
+    writeLogImportJSON = async (req, res) => {
+        /*
+            header{
+                Authorization: <Token>
+            }
+
+            body {
+                data: <Object>
+            }
+        */
+       const context = {
+            success: false, 
+            content: "Token không hợp lệ"
+       }
+
+        const verified = await this.verifyToken( req );
+
+        if( verified ){
+            const decodedToken = this.decodeToken( req.header("Authorization") )
+            const { username } = decodedToken;
+            
+            const json = req.body.data ? JSON.stringify(req.body.data) : "undefined"
+            await this.saveLog('info', req.ip, "Import devices' json", json, username)        
+            context.success = true;
+            context.content = "Lưu log thành công"
+        }
+        res.status(200).send(context)
+    }
+
+    
 }
 module.exports = LogController
 
