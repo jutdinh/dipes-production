@@ -8,6 +8,7 @@ const Fields = require('./fields')
 const Api = require('./api')
 const UI = require('./ui')
 const Privileges = require('./privileges')
+const Mailer = require('./mailer')
 const SocketController = require('./socket')
 
 module.exports = {
@@ -22,6 +23,7 @@ module.exports = {
     Api,
     UI,
     Privileges,
+    Mailer,
 
     SocketController
 }

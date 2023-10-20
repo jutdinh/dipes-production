@@ -30,7 +30,7 @@ const io = new Server(server, {
 });
 
 
-const { Auth, Projects, Versions, Logs, Tasks, Tables, Fields, Api, UI, Privileges, SocketController } = require('./routes');
+const { Auth, Projects, Versions, Logs, Tasks, Tables, Fields, Api, UI, Privileges, Mailer, SocketController } = require('./routes');
 
 io.on("connection", (socket) => {  
     SocketController(io, socket)
@@ -58,6 +58,7 @@ app.use('/versions', Versions );
 app.use('/apis', Api );
 // app.use('/uis', UI );
 app.use('/privileges', Privileges)
+app.use('/mail', Mailer)
 
 app.post('/api/foreign/data', async (req, res) => {
     req.credential = await verifyToken(req)

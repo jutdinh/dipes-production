@@ -202,7 +202,7 @@ class Auth extends Controller {
 
                 if (project_type == "api") {
                     const response = await new Promise((resolve, reject) => {
-                        fetch(`${remoteDomain}/auth/login`, {
+                        fetch(`${remoteDomain}/dipes/auth/login`, {
                             method: "POST",
                             headers: {
                                 'content-type': "application/json",
@@ -863,7 +863,7 @@ class Auth extends Controller {
             }            
             if (project_type == "api") {
                 const response = await new Promise((resolve, reject) => {
-                    fetch(`${remoteDomain}/auth/changePwd`, {
+                    fetch(`${remoteDomain}/dipes/auth/changePwd`, {
                         method: "POST",
                         headers: {
                             'content-type': "application/json",
