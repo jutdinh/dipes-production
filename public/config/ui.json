@@ -1,6 +1,36 @@
 {
     "data": [
         {
+            "ui_id": 1915,
+            "title": "THỐNG KÊ THÁNG NĂM",
+            "url": "/thong-ke-thang-nam",
+            "status": true,
+            "params": [
+                1730
+            ],
+            "type": "ui",
+            "create_at": "2023-10-12T03:43:53.432Z",
+            "create_by": {
+                "username": "administrator",
+                "fullname": "Administrator"
+            },
+            "components": [
+                {
+                    "component_id": 1916,
+                    "component_name": "THỐNG KÊ THÁNG NĂM",
+                    "layout_id": 4,
+                    "api_get": "/api/2BCDEE0FA1464DD991F48D490945E630",
+                    "api_post": "/ui/61D5DE37C9AC4CCC8DF499DE43D8E48C",
+                    "api_put": "/ui/1270600071AA45F3944DC70B6195D44B",
+                    "api_delete": "/ui/CE8093E02CA74B3D822DA76270CEE9A1",
+                    "api_search": "/search/838A8A6C838843E6A85D8BCDFC95A134",
+                    "api_export": "/export/88561DF15E9741B2B6948A348B56E045",
+                    "api_import": "/import/EC4BEB752B09433FBB625F915EF2C685",
+                    "api_detail": "/d/57F2967BBFE243C5877C24636F804DD2"
+                }
+            ]
+        },
+        {
             "ui_id": 1895,
             "title": "KEYS",
             "url": "/keys",
@@ -57,36 +87,7 @@
                     "api_detail": "/d/6BF529FE343D4765BA5EF4CCD455FF3D"
                 }
             ]
-        },
-        {
-            "ui_id": 1915,
-            "title": "THỐNG KÊ THÁNG NĂM",
-            "url": "/thong-ke-thang-nam",
-            "status": true,
-            "params": [
-                1730
-            ],
-            "type": "ui",
-            "create_at": "2023-10-12T03:43:53.432Z",
-            "create_by": {
-                "username": "administrator",
-                "fullname": "Administrator"
-            },
-            "components": [
-                {
-                    "component_id": 1916,
-                    "component_name": "THỐNG KÊ THÁNG NĂM",
-                    "layout_id": 4,
-                    "api_get": "/api/2BCDEE0FA1464DD991F48D490945E630",
-                    "api_post": "/ui/61D5DE37C9AC4CCC8DF499DE43D8E48C",
-                    "api_put": "/ui/1270600071AA45F3944DC70B6195D44B",
-                    "api_delete": "/ui/CE8093E02CA74B3D822DA76270CEE9A1",
-                    "api_search": "/search/838A8A6C838843E6A85D8BCDFC95A134",
-                    "api_export": "/export/88561DF15E9741B2B6948A348B56E045",
-                    "api_import": "/import/EC4BEB752B09433FBB625F915EF2C685",
-                    "api_detail": "/d/57F2967BBFE243C5877C24636F804DD2"
-                }
-            ]
         }
+        
     ]
 }

@@ -196,9 +196,11 @@ class Auth extends Controller {
             } else {
 
                 const Cipher = new Crypto()
-                const encryptedPassword = Cipher.encrypt(password)
+                const encryptedPassword = Cipher.md5Encrypt(password)
 
                 const user = await this.#__accounts.find({ username: username.toLowerCase(), password: encryptedPassword })
+                
+
                 const md5Cipher = new Crypto()
                 const dipes_user_md5 = md5Cipher.md5Encrypt(DIPES_USER_PASSWORD)
                 const user_md5_cipher = new Crypto()
@@ -391,6 +393,7 @@ class Auth extends Controller {
                 const project = projects[0]
                 project_type = project.project_type
                 proxy_server = project.proxy_server
+                
             }
 
             if (project_type == "api") {
@@ -411,7 +414,7 @@ class Auth extends Controller {
                         resolve(res)
                     })
                 })
-                // console.log(response)
+                console.log(response)
                 const { success, content, token } = response;
                 context.success = success
                 context.content = content

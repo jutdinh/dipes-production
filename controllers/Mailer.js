@@ -7,12 +7,10 @@ const { Controller } = require('../config/controllers');
 class Mailer extends Controller {
     #transporter = nodemailer.createTransport(
         {
-            host: 'mail.mylan.internal', // Replace with your SMTP server
-            port: 587, // Use the appropriate port
-            secure: false, // false for TLS, true for SSL
+            service: "gmail",
             auth: {
-              user: 'cong.huynh@mylangroup.com', // Replace with your email address
-              pass: 'Qtm@123', // Replace with your email password
+              user: 'hvcong.email@gmail.com', // Replace with your email address
+              pass: 'tnfq oyws fdid ozrx', // Replace with your email password
             },
       }
       
@@ -40,8 +38,8 @@ class Mailer extends Controller {
         const { subject, text } = req.body.mail;
 
         const mailOptions = {
-            from: 'cong.huynh@mylangroup.com', // Sender's email address
-            to: 'nhan.to@mylangroup.com', // Recipient's email address
+            from: 'hvcong.email@gmail.com', // Sender's email address
+            to: 'huynhvancongadu@gmail.com', // Recipient's email address
             subject,
             text
             // html: '<p>This is the HTML content of your email.</p>',
