@@ -204,6 +204,24 @@
 }
 
 
+.table_section {
+    display: flex;
+    flex-direction: column;
+    min-height: 75vh;  
+}
+
+.table-responsive {
+    overflow: auto;  
+    flex: 1;  
+}
+
+.d-flex {
+    margin-top: auto; 
+}
+
+
+
+
 
 /* CSS cho nút tải lên tùy chỉnh */
 .custom-file-upload {

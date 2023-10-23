@@ -297,7 +297,7 @@ export default (props) => {
                 })
         }
     }, [page])
-console.log(_token)
+    console.log(_token)
     const submit = () => {
         const requestBody = {
             ...dataFile,
@@ -337,10 +337,10 @@ console.log(_token)
                     })
                         .then(res => res.json())
                         .then(res => {
-            
+
                             const { data, success, content } = res;
                             console.log(res)
-                            
+
                         })
                         .catch(error => {
                             // Xử lý lỗi nếu cần
@@ -617,10 +617,8 @@ console.log(_token)
                                                                 {!fileError ? fileName : ''}
                                                                 {fileError && <div className="error-text">{fileError}</div>}
                                                             </label>
-
                                                         </div>
                                                     </div>
-
                                                     <div class="form-group">
                                                         <label for="serialNumber">Reason</label>
                                                         <input
@@ -631,7 +629,6 @@ console.log(_token)
                                                             onChange={(e) => setReason(e.target.value)}
                                                         />
                                                     </div>
-
                                                     <div className="button-group">
                                                         <button onClick={submit} style={{ minWidth: "100px" }} className="btn btn-primary" disabled={!enableNext}>{lang["next"]}</button>
                                                     </div>
@@ -639,7 +636,6 @@ console.log(_token)
                                             </div>
                                         </div>
                                     )}
-
                                     {currentStep === 2 && (
                                         <>
                                             <div class="row justify-content-center mt-3">
@@ -662,7 +658,6 @@ console.log(_token)
                                                                             if (value === undefined || value === null || value === '') {
                                                                                 value = lang["no data"];
                                                                             }
-
                                                                             return (
                                                                                 <tr key={index}>
                                                                                     <td>{key}</td>
@@ -701,7 +696,6 @@ console.log(_token)
                                                                                             printheadIndices.push(index + 1);
                                                                                         }
                                                                                     });
-
                                                                                     let printheadCounter = 0;
                                                                                     return current.map((row, index) => {
                                                                                         if (Object.keys(row).length > 0) {
@@ -723,7 +717,6 @@ console.log(_token)
                                                                                     })
                                                                                 })()}
                                                                             </tbody>
-
                                                                         </table>
                                                                     </div>
                                                                 </>
@@ -735,48 +728,37 @@ console.log(_token)
                                                     <div className="button-group">
                                                         <button onClick={handleReStep} style={{ minWidth: "100px" }} className="btn btn-info mr-2">{lang["back"]}</button>
                                                         {enable && (
-
                                                             <button onClick={handleNextStep} style={{ minWidth: "100px" }} className="btn btn-primary" disabled={isEmptyObject(data.controller)} title={lang["export to file"]}>{lang["create key"]}</button>
-
                                                         )
                                                         }
                                                     </div>
-
-
                                                 </div>
-
-
-
                                             </div>
                                         </>
                                     )}
                                     {currentStep === 3 && (
                                         <>
-                                            <div class="row justify-content-center mt-3">
-
-                                                <div class="col-md-12 p-20">
+                                            <div class="row justify-content-center mt-4">
+                                                <div class="col-lg-8 col-md-10 col-sm-12 p-2">
                                                     <div id="step1">
-
-
-                                                        <div className="form-group">
-                                                            <label class="font-weight-bold">Key License</label>
-                                                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                                <input
-                                                                    type="text"
-
-                                                                    className="form-control cell-key"
-                                                                    value={!isEmptyObject(dataKey) ? dataKey : ''}
-                                                                    style={{ marginRight: '10px' }}
-                                                                    readOnly
-                                                                />
-                                                                <button className="btn btn-primary" style={{ minWidth: "100px" }} onClick={exportLicense} title={lang["export to file"]}>
+                                                        <div class="text-center mb-4">
+                                                            <img src="/images/icon/success.png" alt="Success" class="img-fluid" style={{ maxWidth: "180px" }} />
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                                                <div class="mb-3 text-muted">
+                                                                    Tạo khóa kích hoạt thành công!
+                                                                </div>
+                                                                <button className="btn btn-primary mt-4" style={{ minWidth: "100px" }} onClick={exportLicense} title={lang["export to file"]}>
                                                                     <i class="fa fa-download mr-2 size-18 pointer" aria-hidden="true"></i>
                                                                     Export
                                                                 </button>
+                                                                <div class="mt-3 text-success d-none d-sm-block">
+                                                                    {lang["note not share"]}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-
                                                 </div>
                                             </div>
                                         </>

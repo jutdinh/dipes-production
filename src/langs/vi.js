@@ -353,7 +353,8 @@ export default {
     "step": "Bước",
     "upload file": "Tải File",
     "get data": "Nhận Dữ Liệu",
-    "get result": "Lấy Kết Quả"
+    "get result": "Lấy Kết Quả",
+    "note not share": "Lưu ý: Không chia sẻ khóa này cho bất kỳ ai không được ủy quyền."
 
 
 }

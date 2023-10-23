@@ -359,7 +359,8 @@ export default {
     "step": "Step",
     "upload file": "Upload File",
     "get data": "Retrieve Data",
-    "get result": "Get Results"
+    "get result": "Get Results",
+    "note not share": "Note: Do not share this key with anyone not authorized."
 }
 
 
