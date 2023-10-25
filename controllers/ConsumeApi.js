@@ -3667,6 +3667,42 @@ class ConsumeApi extends Controller {
             const { fomular_alias, display_name } = field;
             return { fomular_alias, display_name }
         })
+
+
+
+
+
+        const statistic = this.API.statistic.valueOrNot()
+        const statistics = []        
+        statistic.map(statis => {
+            const { display_name, fomular_alias, fomular, group_by } = statis;
+            const statisRecord = { display_name }
+            if (group_by && group_by.length > 0) {
+                const rawData = response[fomular_alias]
+                if (rawData != undefined) {
+                    if (fomular == "AVERAGE") {
+                        const headers = Object.keys(rawData)
+                        const values = Object.values(rawData).map(({ total, value }) => value)
+
+                        statisRecord["data"] = { headers, values }
+                        statisRecord["type"] = "table"
+                    } else {
+                        const headers = Object.keys(rawData)
+                        const values = Object.values(rawData)
+                        statisRecord["data"] = { headers, values }
+                        statisRecord["type"] = "table"
+                    }
+                }
+            } else {
+                statisRecord["type"] = "text"
+                statisRecord["data"] = response[fomular_alias]
+            }
+            statistics.push(statisRecord)
+        })
+
+
+        response.statistic = statistics
+
         response.fields = [...fields, ...calculateDisplay]
         
         this.res.status(200).send(response)
