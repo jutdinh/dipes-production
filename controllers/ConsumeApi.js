@@ -3661,6 +3661,14 @@ class ConsumeApi extends Controller {
             })
         })
 
+        const fields = this.getFields(this.API.fields.valueOrNot().map(f => f.id))
+        const calculates = this.API.calculates.valueOrNot();
+        const calculateDisplay = calculates.map(field => {
+            const { fomular_alias, display_name } = field;
+            return { fomular_alias, display_name }
+        })
+        response.fields = [...fields, ...calculateDisplay]
+
         this.res.status(200).send(response)
     }
 
