@@ -3668,7 +3668,7 @@ class ConsumeApi extends Controller {
             return { fomular_alias, display_name }
         })
         response.fields = [...fields, ...calculateDisplay]
-
+        
         this.res.status(200).send(response)
     }
 
