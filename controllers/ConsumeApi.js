@@ -3549,20 +3549,24 @@ class ConsumeApi extends Controller {
     }
 
     generateRemoteURL = () => {
-        const { proxy_server } = this.project ? this.project : { proxy_server: "http://127.0.0.1" };
-        const formatedUrl = this.req.url.replaceAll('//', '/')
-        let remoteDomain = proxy_server;
-        while (remoteDomain[remoteDomain.length - 1] == '/') {
-            remoteDomain = remoteDomain.slice(0, remoteDomain.length - 1)
-        }
+        const { proxy_server } = this.project ? this.project : { proxy_server: "http://127.0.0.1" };       
 
-        const remoteURL = `${remoteDomain}${formatedUrl}`
-        return remoteURL
+        const url = this.req.url;
+        const api_id = this.API.api_id.value()
+
+        const splitByAPIID = url.split(api_id)
+        const paramPart = splitByAPIID[1] ? splitByAPIID[1] : ""
+        const paramValues = paramPart.split('/').slice(1, 100000)
+        
+        
+
+        const remote_url = this.API.remote_url.value()
+        return `${ proxy_server }${ remote_url }${ paramValues.join() }`
     }
 
     REMOTE_GET = async () => {
         const remoteURL = this.generateRemoteURL()
-
+        console.log(remoteURL)
         const context = {
             success: true,
             data: [],
@@ -3628,14 +3632,28 @@ class ConsumeApi extends Controller {
     REMOTE_POST = async () => {
         const body = this.req.body;
         const remoteURL = this.generateRemoteURL()
+        const requestBody = body
+        const apiBody = this.API.body.valueOrNot()
+        const apiExternalBody = this.API.external_body.valueOrNot()
+
         
+
+        apiExternalBody.map( f => {
+            const { fomular_alias } = f;
+            requestBody[fomular_alias] = f.default_value;
+            if( body[fomular_alias] != undefined ){
+                requestBody[fomular_alias] = body[fomular_alias]
+            }
+        })
+
+
         const response = await new Promise((resolve, reject) => {
             fetch(remoteURL, {
                 method: "POST",
                 headers: {
                     "content-type": "application/json"
                 },
-                body: JSON.stringify(body)
+                body: JSON.stringify(requestBody)
             }).then(res => res.json()).then(res => {
                 resolve(res)
             }).catch( err => {                
@@ -5062,7 +5080,7 @@ class ConsumeApi extends Controller {
             if (project.project_type == "database") {
                 this.CONSUME_DETAIL_RECORD()
             } else {
-                this.REMOTE_GET()
+                this.consume(req, res, api_id)
             }
 
         } else {

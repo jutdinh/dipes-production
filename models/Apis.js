@@ -11,11 +11,17 @@ class Apis extends Model{
         this.__addField__( "tables", Model.types.array) // Các bảng 
         this.__addField__( "params", Model.types.array) // Đối số của API
         this.__addField__( "fields", Model.types.array) // { id, displayName }
+
         this.__addField__( "body", Model.types.array)
+        this.__addField__( "external_body", Model.types.array)
+
         this.__addField__( "calculates", Model.types.array ) // { displayName, fomular, fomular_alias }
         this.__addField__( "statistic", Model.types.array ) // { displayName, fomular: ENUM [ "SUM", "COUNT", "AVERAGE" ], field }
         this.__addField__( "status", Model.types.bool)
         this.__addField__( "url", Model.types.string , { required: true })
+        this.__addField__( "remote_url", Model.types.string)
+
+
         this.__addField__( "api_method", Model.types.enum, { required: true, values: [ "get", "post", "put", "delete" ] } )
         this.__addField__( "api_scope", Model.types.enum, { required: true, values: [ "public", "private" ] } )
         this.__addField__( "version_id", Model.types.int, { required: true })
@@ -56,9 +62,9 @@ class Apis extends Model{
     }
 }   
 class ApisRecord extends Apis {
-    constructor( { id,  api_id, api_name, tables, params, fields, body, url, api_method, api_scope, version_id,  create_at, calculates, statistic, status=false } ){
+    constructor( { id,  api_id, api_name, tables, params, fields, body, url, api_method, api_scope, version_id,  create_at, calculates, statistic, remote_url, external_body, status=false } ){
         super();
-        this.setDefaultValue( { id,  api_id, api_name, tables, params, fields, body, url, api_method, api_scope, version_id,  calculates, statistic, create_at, status } )        
+        this.setDefaultValue( { id,  api_id, api_name, tables, params, fields, body, url, api_method, api_scope, version_id,  calculates, statistic, create_at, status, remote_url, external_body } )        
     }
 
     get = async () => {
