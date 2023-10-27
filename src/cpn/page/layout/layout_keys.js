@@ -21,8 +21,8 @@ export default (props) => {
     const { formatNumber } = functions
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
-
-    console.log(_user)
+    const storedPwdString = localStorage.getItem("password_hash");
+    // console.log(storedPwdString)
     const page = props.page
     const [apiDataName, setApiDataName] = useState([])
     const [apiData, setApiData] = useState([])
@@ -80,12 +80,14 @@ export default (props) => {
         }
         const username = _user.username === "administrator" ? "" : _user.username;
         const requestBody = {
-            Customer: username
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            }
         }
         
         const apiGet = page.components?.[0]?.api_get;
-     
-
+    
 
         fetch(`${proxy()}${apiGet}`, {
             headers: headerApi,
@@ -134,14 +136,15 @@ export default (props) => {
                     })
             })
             const { success, data } = response;
+            
             if (success) {
-                const { params } = data;
+                
 
-                const stringifiedParams = params.map(param => {
+                const stringifiedParams = data.body.map(param => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                openTab(`/page/${url}/detail/${id_str}/${stringifiedParams}`)
+                openTab(`/page/${url}/detail-key/${id_str}/${stringifiedParams}`)
 
             }
         } else {
@@ -169,6 +172,7 @@ export default (props) => {
     }
 
     const handleSearchClick = () => {
+        setCurrentPage(1)
         setSearchValues(inputValues);
     };
 

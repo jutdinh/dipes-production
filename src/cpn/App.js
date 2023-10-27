@@ -23,7 +23,7 @@ import { Fetch, InputPost, InputPut, ImportData, Detail } from './page';
 import  {Active_Helpdesk, Table_Key, Chart_HelpDesk}  from "./page/step"
 import "../css/index.scss";
 import { SiteMap } from './site-map';
-
+import Layout_Detail from './page/layout/layout_detail'
 function App() {
 
   const dispatch = useDispatch()
@@ -156,6 +156,7 @@ function App() {
         <Route path="/active" element={<Navigation Child={Active_Key} />} />
         <Route path="/step" element={<Navigation Child={Active_Helpdesk} />} />
         <Route path="/table_key" element={<Navigation Child={Table_Key} />} />
+        <Route path="/page/:url/detail-key/:id_str/*" element={<Navigation Child={Layout_Detail} />} />
         <Route path="/chart" element={<Navigation Child={Chart_HelpDesk} />} />
         
        

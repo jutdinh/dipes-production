@@ -21,6 +21,7 @@ export default (props) => {
     const { formatNumber } = functions
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
+    const storedPwdString = localStorage.getItem("password_hash");
     const username = _user.username === "administrator" ? "" : _user.username;
     const page = props.page
     const [isActivated, setIsActivated] = useState(false);
@@ -49,9 +50,12 @@ export default (props) => {
         setCurrentStep(3);
 
         const requestBody = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            },
             ...dataFile,
-            reason: reason,
-            customer: username,
+            reason: reason
         }
         console.log(requestBody)
         fetch(`${proxy()}${page?.components?.[0]?.api_post}`, {
@@ -300,10 +304,14 @@ export default (props) => {
     console.log(_token)
     const submit = () => {
         const requestBody = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            },
             ...dataFile,
             reason: reason,
-            customer: username,
-            username: "MLG_ITC"
+      
+        
 
         }
         console.log(requestBody)

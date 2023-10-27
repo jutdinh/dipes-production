@@ -22,7 +22,7 @@ export default (props) => {
     const { formatNumber } = functions
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
-
+    const storedPwdString = localStorage.getItem("password_hash");
     console.log(_user)
     const page = props.page
     const [apiDataName, setApiDataName] = useState([])
@@ -84,9 +84,12 @@ export default (props) => {
         const apiGet = page.components?.[0]?.api_get;
         const username = _user.username === "administrator" ? "" : _user.username;
         const requestBody = {
-            Customer: username
+            checkCustomer: {
+                username: username,
+                password: storedPwdString
+            }
         }
-    
+
         fetch(`${proxy()}${apiGet}`, {
             headers: headerApi,
             method: "POST",
@@ -254,24 +257,24 @@ export default (props) => {
     console.log(dataStatis)
     return (
         <>
-        {dataStatis?.map((statis, index) => {
-                            const { display_name, type, data } = statis;
-                            if (type == "text") {
-                                return (
-                                    <div class="col-md-12  col-sm-4 d-flex ">
-                                        <p key={index} className="font-weight-bold ml-auto ">{display_name}: {data && data !== undefined && formatNumber(data.toFixed())}</p>
-                                    </div>
-                                )
-                            }
-                            else if (type == "table") {
-                                return (
-                                    // <StatisTable data={data} statis={statis} />
-                                    <StatisticChart data={data} statis={statis} page= {page} />
-                                )
-                            }
-                            else return null
-                        })}
-           
+            {dataStatis?.map((statis, index) => {
+                const { display_name, type, data } = statis;
+                if (type == "text") {
+                    return (
+                        <div class="col-md-12  col-sm-4 d-flex ">
+                            <p key={index} className="font-weight-bold ml-auto ">{display_name}: {data && data !== undefined && formatNumber(data.toFixed())}</p>
+                        </div>
+                    )
+                }
+                else if (type == "table") {
+                    return (
+                        // <StatisTable data={data} statis={statis} />
+                        <StatisticChart data={data} statis={statis} page={page} />
+                    )
+                }
+                else return null
+            })}
+
         </>
 
     )
