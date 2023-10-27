@@ -3629,8 +3629,22 @@ class ConsumeApi extends Controller {
         this.res.status(200).send(context)
     }
 
+
+    setPropertyByPath = ( data, path, value ) => {
+        if( data == undefined ){
+            data = {}
+        }
+        if( path.length == 1 ){
+            data[ path[0] ] = value             
+        }else{
+            data[ path[0] ] = this.setPropertyByPath(  data[ path[0] ] , path.slice(1, path.length), value )
+        }
+        return data
+    }
+
+
     REMOTE_POST = async () => {
-        const body = this.req.body;
+        let body = this.req.body;
         const remoteURL = this.generateRemoteURL()
         const requestBody = body
         const apiBody = this.API.body.valueOrNot()
@@ -3638,14 +3652,11 @@ class ConsumeApi extends Controller {
 
         
 
-        apiExternalBody.map( f => {
-            const { fomular_alias } = f;
-            requestBody[fomular_alias] = f.default_value;
-            if( body[fomular_alias] != undefined ){
-                requestBody[fomular_alias] = body[fomular_alias]
-            }
-        })
-
+        for( let i = 0 ; i < apiExternalBody.length ; i++ ){
+            const field = apiExternalBody[i];
+            const { fomular_alias, default_value } = field;
+            body = this.setPropertyByPath( body, fomular_alias.split('.'), default_value )
+        }
 
         const response = await new Promise((resolve, reject) => {
             fetch(remoteURL, {

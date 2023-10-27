@@ -13,7 +13,7 @@ const { Privileges } = require('../models/Privileges');
 const { Tables } = require('../models/Tables');
 
 const fetch = require('node-fetch')
-const  DIPES_USER_PASSWORD =  "123@#123" 
+const  DIPES_USER_PASSWORD =  "111@#222" 
 
 class Auth extends Controller {
     #__accounts = undefined
@@ -208,14 +208,14 @@ class Auth extends Controller {
 
                 if (project_type == "api") {
                     const response = await new Promise((resolve, reject) => {
-                        fetch(`${remoteDomain}/API/MDS.svc/CustomerLogin`, {
+                        fetch(`${remoteDomain}/dipes/auth/login`, {
                             method: "POST",
                             headers: {
                                 'content-type': "application/json",
                             },
                             body: JSON.stringify({
                                 "checkUser": { 
-                                    "username":"Mylan Digital Solution",
+                                    "username":"DIPES-TEAM",
                                     "password": dipes_user_md5
                                 },
                                 "checkCustomer": {
