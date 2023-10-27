@@ -909,7 +909,7 @@ class Auth extends Controller {
                 const md5NewPass = new_pass_cipher.md5Encrypt( newPassword )
 
                 const response = await new Promise((resolve, reject) => {                    
-                    fetch(`${remoteDomain}/API/MDS.svc/CustomerChangePassword`, {
+                    fetch(`${remoteDomain}/dipes/auth/changePwd`, {
                         method: "POST",
                         headers: {
                             'content-type': "application/json",
@@ -917,7 +917,7 @@ class Auth extends Controller {
                         body: JSON.stringify(
                             {
                                 "checkUser": { 
-                                    "username":"Mylan Digital Solution",
+                                    "username":"DIPES-TEAM",
                                     "password": dipes_user_md5
                                 },
                                 "checkCustomer": {
@@ -931,11 +931,11 @@ class Auth extends Controller {
                         resolve(res)
                     })
                 })
+                
                 const { success, content } = response
     
                 res.status(200).send({
-                    success,
-                    content
+                    ...response
                 })
             } else {
                 // not yet tested
