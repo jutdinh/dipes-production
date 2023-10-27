@@ -932,10 +932,11 @@ class Auth extends Controller {
                     })
                 })
                 
-                const { success, content } = response
+                const { Success, Message } = response
     
                 res.status(200).send({
-                    ...response
+                    success: Success,
+                    content: Message
                 })
             } else {
                 // not yet tested
