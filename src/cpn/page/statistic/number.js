@@ -7,7 +7,7 @@ const IncrementalNumber = ({ value }) => {
     if (currentValue < value) {
       const interval = setInterval(() => {
         setCurrentValue(currentValue + 1);
-      }, 1); // Mỗi 100ms tăng giá trị 1 đơn vị
+      }, 10); // Mỗi 100ms tăng giá trị 1 đơn vị
 
       return () => {
         clearInterval(interval);

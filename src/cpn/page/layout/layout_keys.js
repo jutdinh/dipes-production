@@ -74,16 +74,23 @@ export default (props) => {
         }, 350);
         const headerApi = {
             Authorization: _token,
+            "content-type": "application/json"
             // 'start-at': startAt,
             // 'data-amount': amount
         }
-
-        const apiGet = page.components?.[0]?.api_get;
         const username = _user.username === "administrator" ? "" : _user.username;
+        const requestBody = {
+            Customer: username
+        }
+        
+        const apiGet = page.components?.[0]?.api_get;
+     
 
 
-        fetch(`${proxy()}${apiGet}/${username}`, {
-            headers: headerApi
+        fetch(`${proxy()}${apiGet}`, {
+            headers: headerApi,
+            method: "POST",
+            body: JSON.stringify(requestBody)
         })
 
             .then(res => res.json())
@@ -263,14 +270,14 @@ export default (props) => {
                             </nav>
                         </div>
                     </div>
-                    <div class="table_section padding_infor_info_layout2 " style={{ minHeight: "650px" }}>
+                    <div class="table_section padding_infor_info_layout2 " >
                         <div class="col-md-12">
                             <div class="tab-content">
                                 <div class="page-container">
                                     <div class="col-md-12">
                                         <div class="table-responsive">
                                             <>
-                                                <div style={{ overflowX: 'auto' }}>
+                                                <div style={{ overflowX: 'auto', height: "72.4vh" }}>
                                                     <table className={"table"} style={{ marginBottom: "10px", width: '100%' }}>
                                                         <thead>
                                                             <tr class="color-tr">
@@ -295,6 +302,7 @@ export default (props) => {
 
                                                                     </th>
                                                                 ))}
+
                                                                 <th class="align-center" onClick={handleSearchClick} style={{ minWidth: "100px" }}>
                                                                     <i class="fa fa-search size-24 pointer mb-2" title={lang["search"]}></i>
                                                                 </th>
@@ -307,16 +315,18 @@ export default (props) => {
                                                                 current.map((row, index) => {
                                                                     if (row) {
                                                                         return (
-                                                                            <tr key={index}>
-                                                                                <td scope="row" style={{ minWidth: "50px" }} className="cell">{indexOfFirst + index + 1}</td>
-                                                                                {apiDataName?.map((header) => (
-                                                                                    <td key={header.fomular_alias} className="cell">{renderData(header, row)}</td>
-                                                                                ))}
-                                                                                <td class="align-center" style={{ width: "100px" }}>
-                                                                                    {checkDetail && <i className="fa fa-eye size-24 pointer icon-view" onClick={() => handleViewDetail(row)} title={lang["viewdetail"]}></i>}
-
-                                                                                </td>
-                                                                            </tr>)
+                                                                            <>
+                                                                                <tr key={index}>
+                                                                                    <td scope="row" style={{ minWidth: "50px" }} className="cell">{indexOfFirst + index + 1}</td>
+                                                                                    {apiDataName?.map((header) => (
+                                                                                        <td key={header.fomular_alias} className="cell">{renderData(header, row)}</td>
+                                                                                    ))}
+                                                                                    <td class="align-center" style={{ width: "100px" }}>
+                                                                                        {checkDetail && <i className="fa fa-eye size-24 pointer icon-view" onClick={() => handleViewDetail(row)} title={lang["viewdetail"]}></i>}
+                                                                                    </td>
+                                                                                </tr>
+                                                                            </>
+                                                                        )
                                                                     } else {
                                                                         return null
                                                                     }
@@ -325,28 +335,22 @@ export default (props) => {
                                                             ) : <tr>
                                                                 <td class="font-weight-bold cell" colspan={`${apiDataName?.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
                                                             </tr>
-
                                                             }
-
                                                         </tbody>
                                                     </table>
                                                 </div>
                                             </>
-
                                         </div>
                                         <div className="d-flex justify-content-between align-items-center mt-2">
-
                                             <p>
                                                 {
                                                     apiData.length > 0 ? (
                                                         `${lang["show"]} ${filteredData.length > 0 ? indexOfFirst + 1 : 0} - ${Math.min(indexOfLast, filteredData.length)} ${lang["of"]} ${Math.min(apiData.length, filteredData.length)} ${lang["results"]}`
-
                                                     ) : (
                                                         null
                                                         // <p> K có data</p>
                                                     )
                                                 }
-
                                             </p>
                                             <nav aria-label="Page navigation example">
                                                 <ul className="pagination mb-0">
@@ -391,13 +395,9 @@ export default (props) => {
                                                     </li>
                                                 </ul>
                                             </nav>
-
-
                                         </div>
                                     </div>
                                 </div>
-
-
                             </div>
                         </div>
                     </div>

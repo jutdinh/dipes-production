@@ -5,6 +5,7 @@ import ReactECharts from 'echarts-for-react';
 import $ from 'jquery'
 import IncrementalNumber from './number';
 import { PieChart, Pie, Cell, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line, ResponsiveContainer, AreaChart, Area, ComposedChart, ScatterChart, Scatter } from 'recharts';
+import label from "../../inputs/label";
 const RECORD_PER_PAGE = 10
 
 export default (props) => {
@@ -12,38 +13,39 @@ export default (props) => {
     const { formatNumber } = functions
 
     const { data, statis } = props
-    // console.log(props)
+    console.log(props)
     const { display_name, type } = statis;
     const { headers, values } = data;
     const page = props.page
-    console.log(props)
+
     const [display, setDisplay] = useState(headers.slice(0, RECORD_PER_PAGE))
     const [currentPage, setCurrentPage] = useState(0)
+    const [labeType, setLabelType] = useState([])
     const totalPages = Math.ceil(headers.length / RECORD_PER_PAGE);
 
-    function generateUniqueColors(num) {
-        const step = Math.cbrt((256 * 256 * 256) / num);
-        const colors = [];
+    // function generateUniqueColors(num) {
+    //     const step = Math.cbrt((256 * 256 * 256) / num);
+    //     const colors = [];
 
-        for (let r = 0; r < 256; r += step) {
-            for (let g = 0; g < 256; g += step) {
-                for (let b = 0; b < 256; b += step) {
-                    if (colors.length >= num) {
-                        return colors;
-                    }
-                    if (r === 0 && g === 0 && b === 0) {
-                        // Bỏ qua màu đen
-                        continue;
-                    }
-                    const color = `#${Math.round(r).toString(16).padStart(2, '0')}${Math.round(g).toString(16).padStart(2, '0')}${Math.round(b).toString(16).padStart(2, '0')}`;
-                    colors.push(color);
-                }
-            }
-        }
-        return colors;
-    }
+    //     for (let r = 0; r < 256; r += step) {
+    //         for (let g = 0; g < 256; g += step) {
+    //             for (let b = 0; b < 256; b += step) {
+    //                 if (colors.length >= num) {
+    //                     return colors;
+    //                 }
+    //                 if (r === 0 && g === 0 && b === 0) {
+    //                     // Bỏ qua màu đen
+    //                     continue;
+    //                 }
+    //                 const color = `#${Math.round(r).toString(16).padStart(2, '0')}${Math.round(g).toString(16).padStart(2, '0')}${Math.round(b).toString(16).padStart(2, '0')}`;
+    //                 colors.push(color);
+    //             }
+    //         }
+    //     }
+    //     return colors;
+    // }
 
-    const COLORS = generateUniqueColors(props.data.values.length);
+    // const COLORS = generateUniqueColors(props.data.values.length);
 
     // const MyBarChart1 = () => {
     //     const COLORS = ["#4D90FE", "#50E3C2"]; // Example colors
@@ -162,8 +164,21 @@ export default (props) => {
             lang["november"],
             lang["december"],
         ];
-        const LABELS = ["Controller", "Print head", "Printer"];
+        // const LABELS = ["Controller", "Print head", "Printer"];
 
+        const uniqueLabels = new Set();
+        data.headers.forEach(header => {
+            const parts = header.split(' ');
+            if (parts.length > 2) {
+                uniqueLabels.add(parts.slice(2).join(' '));
+            }
+        });
+        
+        
+
+        const LABELS = [...uniqueLabels];
+console.log(LABELS)
+       
         const years = [...new Set(data.headers.map(header => header.split(' ')[1]))];
         const currentYear = new Date().getFullYear();
         const [selectedYear, setSelectedYear] = useState(currentYear.toString());
@@ -200,6 +215,8 @@ export default (props) => {
                 const monthAndYear = item.name.split(' ');
                 const itemMonth = monthAndYear[0]; // Tháng là phần tử đầu tiên trong mảng
                 const itemYear = monthAndYear[1]; // Năm là phần tử thứ hai trong mảng
+
+
                 const monthAbbreviation = months[itemMonth - 1]; // Chuyển đổi thành viết tắt
 
                 if (monthAbbreviation === months[currentMonth - 1] && itemYear === selectedYear) {
@@ -208,6 +225,9 @@ export default (props) => {
                     monthPrinterTotal = item.printer;
                 }
             });
+            
+
+
 
             setTotalControllerForYear(yearControllerTotal);
             setTotalPrintheadForYear(yearPrintheadTotal);
@@ -217,6 +237,7 @@ export default (props) => {
             setTotalPrinterForCurrentMonth(monthPrinterTotal);
 
         }, [barData, selectedYear]);
+        console.log(barData)
 
         useEffect(() => {
             const filteredData = [];
@@ -276,12 +297,12 @@ export default (props) => {
                             if (result) result += '<br/>'; // Thêm dòng mới nếu có dữ liệu cho Controller
                             result += `${LABELS[1]}: ${printheadData.value.toFixed()}`;
                         }
-                         // Kiểm tra dữ liệu cho Printer
-                         const printerData = params.find(p => p.seriesName === LABELS[2]);
-                         if (printerData) {
-                             if (result) result += '<br/>'; // Thêm dòng mới nếu có dữ liệu cho Controller
-                             result += `${LABELS[2]}: ${printerData.value.toFixed()}`;
-                         }
+                        // Kiểm tra dữ liệu cho Printer
+                        const printerData = params.find(p => p.seriesName === LABELS[2]);
+                        if (printerData) {
+                            if (result) result += '<br/>'; // Thêm dòng mới nếu có dữ liệu cho Controller
+                            result += `${LABELS[2]}: ${printerData.value.toFixed()}`;
+                        }
                     }
 
                     return result;

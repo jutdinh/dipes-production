@@ -360,7 +360,8 @@ export default {
     "upload file": "Upload File",
     "get data": "Retrieve Data",
     "get result": "Get Results",
-    "note not share": "Note: Do not share this key with anyone not authorized."
+    "note not share": "Note: Do not share this key with anyone not authorized.",
+    "create key success": "Successfully generate activation key!"
 }
 
 

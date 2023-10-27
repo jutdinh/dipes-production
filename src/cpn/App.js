@@ -157,8 +157,10 @@ function App() {
         <Route path="/step" element={<Navigation Child={Active_Helpdesk} />} />
         <Route path="/table_key" element={<Navigation Child={Table_Key} />} />
         <Route path="/chart" element={<Navigation Child={Chart_HelpDesk} />} />
+        
        
         <Route path="/sitemap" element={<Navigation Child={SiteMap} />} />
+        <Route path="/logs" element={<Navigation Child={Logs} />} />
 
         <Route exac path="/page/:url/apis/api/:id_str/input_info" element={ < Navigation Child={InputPost} /> } />
         <Route path="/page/:url/put/api/:id_str/*" element={ < Navigation Child={InputPut} /> } />

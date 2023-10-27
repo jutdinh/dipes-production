@@ -149,26 +149,29 @@
     display: flex;
     justify-content: center;
 }
+ .size-img-success{
+    width: 180px;
+ }
 
 
 
 .my-box {
     height: 338px;
     /* background-color: #d9dfe4; */
-    color: #fff;
-    border: 2px solid #e7f1f8;
+    /* color: #fff; */
+    border: 1px solid #dee2e6;
     border-radius: 5px;
     padding: 20px;
     display: flex; /* Sử dụng Flexbox */
     justify-content: center; /* Căn giữa chữ theo chiều ngang */
     align-items: center; /* Căn giữa chữ theo chiều dọc */
    
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
     transition: background-color 0.3s ease-in-out;
 }
 
 .my-box:hover {
-    background-color: #abd0e9;
+    background-color: #e6eff5;
 }
 
 .my-box span {
@@ -181,20 +184,20 @@
 .my-box-half {
     height: 150px;
     /* background-color: #d9dfe4; */
-    color: #fff;
-    border: 2px solid #e7f1f8;
+    /* color: #fff; */
+    border: 1px solid #dee2e6;
     border-radius: 5px;
     padding: 20px;
     display: flex; /* Sử dụng Flexbox */
     justify-content: center; /* Căn giữa chữ theo chiều ngang */
     align-items: center; /* Căn giữa chữ theo chiều dọc */
  
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
     transition: background-color 0.3s ease-in-out;
 }
 
 .my-box-half:hover {
-    background-color: #abd0e9;
+    background-color: #e6eff5;
 }
 
 .my-box-half span {
@@ -203,21 +206,6 @@
     font-weight: bold; 
 }
 
-
-.table_section {
-    display: flex;
-    flex-direction: column;
-    min-height: 75vh;  
-}
-
-.table-responsive {
-    overflow: auto;  
-    flex: 1;  
-}
-
-.d-flex {
-    margin-top: auto; 
-}
 
 
 

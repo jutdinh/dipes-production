@@ -29,7 +29,7 @@ export default () => {
 
     const urlParams = new URLSearchParams(window.location.search);
     const myParam = urlParams.get('myParam');
-    console.log(id_str);
+ 
     const goToHomePage = () => {
         navigate(`/page/${myParam}`);
     };

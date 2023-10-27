@@ -76,15 +76,21 @@ export default (props) => {
         }, 350);
         const headerApi = {
             Authorization: _token,
+            "content-type": "application/json"
             // 'start-at': startAt,
             // 'data-amount': amount
         }
 
         const apiGet = page.components?.[0]?.api_get;
         const username = _user.username === "administrator" ? "" : _user.username;
-        console.log(`${proxy()}${apiGet}/${username}`)
-        fetch(`${proxy()}${apiGet}/${username}`, {
-            headers: headerApi
+        const requestBody = {
+            Customer: username
+        }
+    
+        fetch(`${proxy()}${apiGet}`, {
+            headers: headerApi,
+            method: "POST",
+            body: JSON.stringify(requestBody)
         })
 
             .then(res => res.json())

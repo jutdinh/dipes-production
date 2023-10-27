@@ -742,12 +742,13 @@ export default (props) => {
                                                 <div class="col-lg-8 col-md-10 col-sm-12 p-2">
                                                     <div id="step1">
                                                         <div class="text-center mb-4">
-                                                            <img src="/images/icon/success.png" alt="Success" class="img-fluid" style={{ maxWidth: "180px" }} />
+                                                            <img src="/images/icon/success.png" alt="Success" class="img-fluid size-img-success"  />
                                                         </div>
                                                         <div class="form-group">
                                                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                                                 <div class="mb-3 text-muted">
-                                                                    Tạo khóa kích hoạt thành công!
+                                                               
+                                                                    {lang["create key success"]}
                                                                 </div>
                                                                 <button className="btn btn-primary mt-4" style={{ minWidth: "100px" }} onClick={exportLicense} title={lang["export to file"]}>
                                                                     <i class="fa fa-download mr-2 size-18 pointer" aria-hidden="true"></i>

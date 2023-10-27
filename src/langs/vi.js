@@ -187,7 +187,7 @@ export default {
     "log.id": "ID",
     "log.listtitle": "Tiêu đề",
     "log.dayupdate": "Ngày cập nhật",
-    "log.action": "THAO TÁC",
+    "log.action": "Thao tác",
     "btn.ok": "Lọc",
     "btn.clear": "Xóa",
     "btn.viewdetail": "Xem chi tiết",
@@ -354,7 +354,8 @@ export default {
     "upload file": "Tải File",
     "get data": "Nhận Dữ Liệu",
     "get result": "Lấy Kết Quả",
-    "note not share": "Lưu ý: Không chia sẻ khóa này cho bất kỳ ai không được ủy quyền."
+    "note not share": "Lưu ý: Không chia sẻ khóa này cho bất kỳ ai không được ủy quyền.",
+    "create key success": "Tạo khóa kích hoạt thành công!"
 
 
 }

@@ -16,11 +16,11 @@ export default () => {
 
 
     const [showModal, setShowModal] = useState(false);
-    console.log(filter)
+
     let langItem = localStorage.getItem("lang") ? localStorage.getItem("lang") : "Vi";
 
     const languages = langItem.toLowerCase();
-
+    console.log(_token)
     const handleCloseModal = () => {
         setShowModal(false);
     };
@@ -30,10 +30,20 @@ export default () => {
         { id: 2, label: lang["log.error"], value: 3, color: "#FF0000", icon: "fa fa-times-circle fa-2x" },
 
     ]
+    useEffect(() => {
+        const stringifiedUser = localStorage.getItem("user");
+        const user = JSON.parse(stringifiedUser)
+        const { role } = user;
+        const validPrivileges = ["uad"]
+
+        if( validPrivileges.indexOf( role ) == -1 ){
+            window.location = "/404-notfound"
+        }
+    }, [])
 
     useEffect(() => {
 
-        fetch(`${proxy}/logs/${languages}`, {
+        fetch(`${proxy()}/logs/${languages}`, {
             headers: {
                 Authorization: _token
             }
@@ -44,9 +54,10 @@ export default () => {
                 console.log(resp)
                 if (success) {
                     if (data != undefined && data.length > 0) {
+
+
                         setLogs(data);
-                        setView(data)
-                        // console.log(data)
+                        setView(data);
                     }
                 } else {
                     window.location = "/login"
@@ -54,15 +65,12 @@ export default () => {
             })
     }, [])
 
+
     const [logDetail, setLogDetail] = useState([]);
+
     const detailLogs = async (logid) => {
         console.log(logid)
-
-
         setLogDetail(logid)
-
-
-
     };
 
     const submitFilter = (e) => {
@@ -103,12 +111,20 @@ export default () => {
             })
     };
     const [currentPageLogs, setCurrentPageLogs] = useState(1);
-    const rowsPerPageLogs = 8;
+    const rowsPerPageLogs = 12;
     const indexOfLastMemberLogs = currentPageLogs * rowsPerPageLogs;
     const indexOfFirstMemberLogs = indexOfLastMemberLogs - rowsPerPageLogs;
     const currentMembersLogs = view.slice(indexOfFirstMemberLogs, indexOfLastMemberLogs);
     const paginateLogs = (pageNumber) => setCurrentPageLogs(pageNumber);
     const totalPagesLogs = Math.ceil(view.length / rowsPerPageLogs);
+
+    function openModalWithContent(jsonContent) {
+        // Định dạng JSON để hiển thị đẹp hơn
+        const formattedJson = JSON.stringify(jsonContent, null, 4);
+
+
+    }
+
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -120,7 +136,7 @@ export default () => {
                     </div>
                 </div>
 
-                <div class="row">
+                {/* <div class="row">
                     <div class="col-md-12">
                         <div class="white_shd full margin_bottom_30">
                             <div class="full graph_head">
@@ -170,7 +186,7 @@ export default () => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
                 <div class="row">
                     <div class="col-md-12">
                         <div class="white_shd full margin_bottom_30">
@@ -203,7 +219,7 @@ export default () => {
 
                                                             return (
                                                                 <tr key={log.id}>
-                                                                    <td scope="row">{index + 1}</td>
+                                                                    <td scope="row">{indexOfFirstMemberLogs + index + 1}</td>
 
                                                                     <td class="align-center">
                                                                         {/* Kiểm tra xem có tìm thấy sự kiện không, nếu có thì hiển thị nhãn và icon */}
@@ -212,11 +228,14 @@ export default () => {
                                                                             <i class={`${event.icon}`} style={{ color: event.color }} title={event.label}></i>
                                                                         </>}
                                                                     </td>
-                                                                    <td>{log.event_title}</td>
-                                                                    <td>{log.event_description}</td>
-                                                                    <td>{log.create_at}</td>
-                                                                    <td class="align-center">
-                                                                        <i class="fa fa-eye size pointer icon-margin icon-view" onClick={() => detailLogs(log)} data-toggle="modal" data-target="#viewLog" style={{ color: "green" }} title={lang["btn.viewdetail"]}></i>
+                                                                    <td style={{ width: "160px" }}>{log.event_title}</td>
+                                                                    <td>
+                                                                        {log.event_description}
+                                                                    </td>
+
+                                                                    <td class="align-center" style={{ width: "120px" }}>{log.create_at}</td>
+                                                                    <td class="align-center" style={{ width: "80px" }}>
+                                                                        <i class="fa fa-eye size pointer icon-margin size-24 icon-view" onClick={() => detailLogs(log)} data-toggle="modal" data-target="#viewLog" style={{ color: "green" }} title={lang["btn.viewdetail"]}></i>
 
                                                                     </td>
                                                                 </tr>
@@ -233,7 +252,7 @@ export default () => {
                                                         <ul className="pagination mb-0">
                                                             <li className={`page-item ${currentPageLogs === 1 ? 'disabled' : ''}`}>
                                                                 <button className="page-link" onClick={() => paginateLogs(1)}>
-                                                                    &#8810; 
+                                                                    &#8810;
                                                                 </button>
                                                             </li>
                                                             <li className={`page-item ${currentPageLogs === 1 ? 'disabled' : ''}`}>
@@ -259,12 +278,12 @@ export default () => {
                                                             {currentPageLogs < totalPagesLogs - 2 && <li className="page-item"><span className="page-link">...</span></li>}
                                                             <li className={`page-item ${currentPageLogs === totalPagesLogs ? 'disabled' : ''}`}>
                                                                 <button className="page-link" onClick={() => paginateLogs(currentPageLogs + 1)}>
-                                                                    &raquo; 
+                                                                    &raquo;
                                                                 </button>
                                                             </li>
                                                             <li className={`page-item ${currentPageLogs === totalPagesLogs ? 'disabled' : ''}`}>
                                                                 <button className="page-link" onClick={() => paginateLogs(totalPagesLogs)}>
-                                                                    &#8811; 
+                                                                    &#8811;
                                                                 </button>
                                                             </li>
                                                         </ul>
@@ -313,39 +332,6 @@ export default () => {
                                             </div>
 
                                         </div>
-
-
-                                        {/* <div class="form-group col-lg-12">
-                                                            <label>{lang["log.listtitle"]} </label>
-                                                            <input type="text" class="form-control" value={logDetail.event_title} readOnly />
-                                                            <label>{lang["description"]} </label>
-                                                            <textarea rows={6} class="form-control"  value={logDetail.event_description} readOnly />
-                                                           
-                                                            
-                                                            <label>{lang["log.create_user"]} </label>
-                                                            <input type="text" class="form-control" value={logDetail.create_user} readOnly />
-                                                            <label>{lang["log.create_at"]} </label>
-                                                            <input type="text" class="form-control" value={logDetail.create_at} readOnly />
-                                                            <label>IP: </label>
-
-                                                            {
-                                                                (() => {
-                                                                    if (logDetail.ip) {
-                                                                        let ipString = logDetail.ip;
-                                                                        let ipParts = ipString.split("::ffff:");
-                                                                        let ipAddress = ipParts.length > 1 ? ipParts[1] : ipParts[0];
-
-                                                                        return (
-                                                                            <div>
-                                                                                <input type="text" className="form-control" value={ipAddress} readOnly />
-                                                                            </div>
-                                                                        );
-                                                                    }
-                                                                    return null; // Hoặc bạn có thể trả về một giá trị mặc định hoặc một thành phần khác tại đây
-                                                                })()
-                                                            }
-                                                        </div> */}
-
                                         <div class="form-group col-lg-12">
 
                                             <label><b>{lang["log.listtitle"]}</b></label>
@@ -353,18 +339,25 @@ export default () => {
                                                 {logDetail.event_title} </span>
                                         </div>
                                         <div class="form-group col-lg-12">
-                                            <label><b>{lang["description"]}</b> </label>
-                                            <span className="d-block">{logDetail.event_description} </span >
+                                            <label><b>{lang["description"]}</b></label>
+                                            <span className="d-block">
+                                                {
+                                                    logDetail.event_title === "Import devices' json" ?
+                                                        <pre>{JSON.stringify(JSON.parse(logDetail.event_description), null, 4)}</pre> :
+                                                        logDetail.event_description
+                                                }
+                                            </span>
                                         </div>
-                                        <div class="form-group col-lg-12">
+
+                                        <div class="form-group col-lg-4 col-sm-12">
                                             <label><b>{lang["log.create_user"]} </b></label>
                                             <span className="d-block">{logDetail.create_user} </span>
                                         </div>
-                                        <div class="form-group col-lg-12">
+                                        <div class="form-group col-lg-4 col-sm-12">
                                             <label><b>{lang["log.create_at"]}</b> </label>
                                             <span className="d-block">{logDetail.create_at} </span>
                                         </div>
-                                        <div class="form-group col-lg-12">
+                                        <div class="form-group col-lg-4 col-sm-12">
                                             <label><b>IP:</b></label>
 
                                             {
