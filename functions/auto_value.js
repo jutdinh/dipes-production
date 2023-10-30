@@ -30,6 +30,7 @@ const translateUnicodeToBlanText = (text) => {
 }
 
 
+
 module.exports = {
     autoID: id,
     formatDecNum,
