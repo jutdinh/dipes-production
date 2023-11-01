@@ -13,7 +13,7 @@ export default (props) => {
     const { formatNumber } = functions
 
     const { data, statis } = props
-    console.log(props)
+    // console.log(props)
     const { display_name, type } = statis;
     const { headers, values } = data;
     const page = props.page
@@ -178,14 +178,14 @@ export default (props) => {
 
 
         const LABELS = [...uniqueLabels];
-        console.log(LABELS[2])
+        // console.log(LABELS[2])
 
         const years = [...new Set(data.headers.map(header => header.split(' ')[1]))];
         const currentYear = new Date().getFullYear();
         const [selectedYear, setSelectedYear] = useState(currentYear.toString());
         const [currentMonth, setSurrentMonth] = useState(new Date().getMonth() + 1);
         const [barData, setBarData] = useState([]);
-        console.log(barData)
+        // console.log(barData)
         const [totalControllerForYear, setTotalControllerForYear] = useState(0);
         const [totalPrintheadForYear, setTotalPrintheadForYear] = useState(0);
         const [totalControllerForCurrentMonth, setTotalControllerForCurrentMonth] = useState(0);

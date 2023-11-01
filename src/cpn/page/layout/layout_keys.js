@@ -18,7 +18,7 @@ export default (props) => {
     const { openTab, renderDateTimeByFormat } = functions
     const { project_id, version_id, url } = useParams();
     const _token = localStorage.getItem("_token");
-    console.log(_token)
+    // console.log(_token)
     const { formatNumber } = functions
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
@@ -99,7 +99,7 @@ export default (props) => {
             .then(res => res.json())
             .then(res => {
                 const { success, content, data, count, fields } = res;
-                console.log(res)
+                // console.log(res)
                 setApiDataName(fields);
                 if (data && data.length > 0) {
                     setApiData(data.filter(record => record != undefined));
@@ -110,7 +110,7 @@ export default (props) => {
 
     }
     const handleViewDetail = async (record) => {
-        console.log(record)
+        // console.log(record)
         const { components } = page;
         const cpn = components[0]
         const { api_detail } = cpn;
@@ -127,7 +127,7 @@ export default (props) => {
                     .then(res => res.json())
                     .then(res => {
                         const { data, success, content } = res;
-                        console.log(res)
+                        // console.log(res)
                         if (success) {
                             // console.log("succcess", data)
                             // setDataTables(data.tables)

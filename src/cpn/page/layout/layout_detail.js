@@ -49,7 +49,7 @@ export default () => {
         }
     }, [pages]);
 
-    console.log(page)
+    // console.log(page)
 
     const result = pages?.filter(item => item.type !== "apiview" && item.components?.[0]?.api_detail).find(item => {
         // Lấy id từ api_get
@@ -59,13 +59,13 @@ export default () => {
     });
 
     useEffect(() => {
-        console.log(page)
+        // console.log(page)
         if (pages && pages.length > 0) {
 
             const url = window.location;
             const rawParams = url.pathname.split(`/${id_str}/`)[1];
             const paramsList = rawParams.split('/');
-            console.log(rawParams)
+            // console.log(rawParams)
             fetch(`${proxy()}/apis/api/${id_str}/input_info`,
                 {
                     headers: {
@@ -75,7 +75,7 @@ export default () => {
                 .then(res => res.json())
                 .then(res => {
                     const { success, data } = res;
-                    console.log(res)
+                    // console.log(res)
                     if (success) {
                         // const { tables } = data.tables;
                         const apiFields = data.fields;
@@ -118,7 +118,7 @@ export default () => {
                             body: JSON.stringify(requestBody)
                         })
                             .then(res => res.json()).then(res => {
-                                console.log(res);
+                                // console.log(res);
 
                                 const { data } = res;
                                 let initData = data;
@@ -147,7 +147,7 @@ export default () => {
                 })
         }
     }, [page, url])
-    console.log(initialData)
+    // console.log(initialData)
     useEffect(() => {
         // console.log(data)
     }, [data])

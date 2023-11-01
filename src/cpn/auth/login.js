@@ -14,7 +14,7 @@ export default () => {
     // console.log(`Password MD5: ${hashedPassword}`);
 
 
-    const hashedPassword = md5(auth.password|| '');
+ 
     
     
     const enterTriggered = (e) => {
@@ -41,11 +41,18 @@ export default () => {
         }
 
     }, []);
-  
+    // const a = localStorage.getItem("username");
+    // const b = localStorage.getItem("password_hash");
+    // const c = localStorage.getItem("password");
+    // const d = localStorage.getItem("remember_me");
+    // console.log(a)
+    // console.log(b)
+    // console.log(c)
+    // console.log(d)
 
     const submit = (e) => {
         e.preventDefault()
-       
+        const hashedPassword = md5(auth.password|| '');
         const requestBody = {
             account: {
                 username: auth.username,
@@ -67,20 +74,20 @@ export default () => {
             if (success) {
                 if (rememberMe) {
                     localStorage.setItem("username", auth.username);
-                    localStorage.setItem("password_hash", hashedPassword);
                     localStorage.setItem("password", auth.password);
                     localStorage.setItem("remember_me", rememberMe);
-                } else {
+                } 
+                else {
                     localStorage.removeItem("username");
-                    localStorage.removeItem("password_hash");
                     localStorage.removeItem("password");
                     localStorage.removeItem("remember_me");
                 }
-                // localStorage.setItem('role', data.data.role)
-                // localStorage.setItem('username', data.data.username)
+ 
+           
+                localStorage.setItem("password_hash", hashedPassword);
                 localStorage.setItem('_token', data.token)
 
-                // localStorage.setItem('fullname', data.data.fullname)
+    
                 const stringifiedUser = JSON.stringify(data.data)
                 localStorage.setItem('user', stringifiedUser);
 
@@ -153,7 +160,7 @@ export default () => {
                                             <div class="row">
                                                 <div class="col-md-4">
                                                 </div>
-                                                <div class="col-md-8">
+                                                <div class="col-md-8" style={{height: "25px"}}>
                                                     {authError && <span class="error-message error-login">{authError}</span>}
                                                 </div>
                                             </div>

@@ -23,7 +23,7 @@ export default (props) => {
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
     const storedPwdString = localStorage.getItem("password_hash");
-    console.log(_user)
+    // console.log(_user)
     const page = props.page
     const [apiDataName, setApiDataName] = useState([])
     const [apiData, setApiData] = useState([])
@@ -99,7 +99,7 @@ export default (props) => {
             .then(res => res.json())
             .then(res => {
                 const { success, content, data, count, fields, statistic } = res;
-                console.log(res)
+                // console.log(res)
                 setApiDataName(fields);
                 setDataStatis(statistic);
                 if (data && data.length > 0) {
@@ -283,7 +283,7 @@ export default (props) => {
 
     const rawKey = "PRTA123B45PRTA123B45";
     const formattedKey = formatPrinterKey(rawKey);
-    console.log(dataStatis)
+    // console.log(dataStatis)
     return (
         <>
             {dataStatis?.map((statis, index) => {

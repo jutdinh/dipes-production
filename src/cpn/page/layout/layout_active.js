@@ -22,7 +22,19 @@ export default (props) => {
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
     const storedPwdString = localStorage.getItem("password_hash");
-    console.log(storedPwdString)
+
+
+    // const a = localStorage.getItem("username");
+    // const b = localStorage.getItem("password_hash");
+    // const c = localStorage.getItem("password");
+    // const d = localStorage.getItem("remember_me");
+    // console.log(a)
+    // console.log(b)
+    // console.log(c)
+    // console.log(d)
+    // console.log(storedPwdString)
+
+
     const username = _user.username === "administrator" ? "" : _user.username;
     const page = props.page
     const [isActivated, setIsActivated] = useState(false);
@@ -67,7 +79,7 @@ export default (props) => {
             ...dataFile,
             reason: reason
         }
-        console.log(requestBody)
+        // console.log(requestBody)
         fetch(`${proxy()}${page?.components?.[0]?.api_post}`, {
             method: "POST",
             headers: {
@@ -80,7 +92,7 @@ export default (props) => {
             .then(res => {
 
                 const { keyLicense, success } = res;
-                console.log(res)
+                // console.log(res)
                 if (success) {
                     Swal.fire({
                         title: lang["success"],
@@ -138,7 +150,7 @@ export default (props) => {
     const handleFileChange = (event) => {
 
         const file = event.target.files[0];
-        console.log(file)
+        // console.log(file)
         if (event.target.files.length > 0) {
             setFileName(event.target.files[0].name);
         }
@@ -161,11 +173,11 @@ export default (props) => {
                     parsedContent = JSON.parse(fileContent);
 
                 } catch (error) {
-                    console.log(error)
+                    // console.log(error)
                     setFileError(`${lang["correct format"]}`);
                     return;
                 }
-                console.log(parsedContent)
+                // console.log(parsedContent)
 
 
                 // Kiểm tra cấu trúc của controller
@@ -331,7 +343,7 @@ export default (props) => {
         setControllerData({})
         setPrintheadsData([])
         setEnableNext(false)
-        console.log("hehe")
+        // console.log("hehe")
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
@@ -350,7 +362,7 @@ export default (props) => {
                 .then(res => res.json())
                 .then(res => {
                     const { data, success, content } = res;
-                    console.log(res)
+                    // console.log(res)
                     if (success) {
 
                         setApiDataName(data.fields)
@@ -361,7 +373,7 @@ export default (props) => {
                 })
         }
     }, [page])
-    console.log(_token)
+    // console.log(_token)
 
     const submit = () => {
         const requestBody = {
@@ -373,7 +385,7 @@ export default (props) => {
             reason: reason,
 
         }
-        console.log(requestBody)
+        // console.log(requestBody)
         fetch(`${proxy()}${page?.components?.[0]?.api_get}`, {
             method: "POST",
             headers: {
@@ -386,7 +398,7 @@ export default (props) => {
             .then(res => {
 
                 const { data, success, content } = res;
-                console.log(res)
+                // console.log(res)
                 if (success) {
                     if (data && Object.keys(data).length > 0) {
                         setData(data)
@@ -406,7 +418,7 @@ export default (props) => {
                         .then(res => {
 
                             const { data, success, content } = res;
-                            console.log(res)
+                            // console.log(res)
 
                         })
                         .catch(error => {
@@ -457,7 +469,7 @@ export default (props) => {
         }
     }
     const current = data.printhead
-    console.log(current)
+    // console.log(current)
     const getCurrentFormattedDate = () => {
         const date = new Date();
         const year = String(date.getFullYear()).slice(-2);
@@ -470,7 +482,7 @@ export default (props) => {
     };
 
     const exportLicense = () => {
-        
+
         // const content = Object.keys(dataKey).length === 0 ? 'null' : JSON.stringify(dataKey);  //Check dataKey
 
         const blob = new Blob([dataKey], { type: 'text/plain' });
@@ -634,13 +646,13 @@ export default (props) => {
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" onClick={handleUpdate} style={{ minWidth: "100px" }} data-dismiss="modal" disabled={enableSave ? true : false} class="btn btn-success" title={lang["btn.update"]}>{lang["btn.update"]}</button>
-                                    <button type="button" onClick={handleCloseModal} style={{ minWidth: "100px" }} data-dismiss="modal" class="btn btn-danger" title={lang["btn.close"]}>{lang["btn.close"]}</button>
+                                    <button type="button" onClick={handleCloseModal} style={{ minWidth: "100px" }} data-dismiss="modal" class="btn btn-danger" title={lang["btn.cancel"]}>{lang["btn.cancel"]}</button>
 
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="table_section padding_infor_info_layout2 " style={{minHeight: "80vh"}}>
+                    <div class="table_section padding_infor_info_layout2 " style={{ minHeight: "80vh" }}>
                         <div class="col-md-12">
                             <div class="tab-content">
                                 <div className="container justify-content-center mt-3">
@@ -729,7 +741,7 @@ export default (props) => {
                                                                                 value = data.printer[header.fomular_alias];
                                                                             } else if (data.controller) {
                                                                                 value = data.controller[header.fomular_alias];
-                                                                            } 
+                                                                            }
 
                                                                             if (value === undefined || value === null || value === '') {
                                                                                 value = lang["no data"];
@@ -748,58 +760,58 @@ export default (props) => {
                                                         </>
                                                     </div>
                                                 </div>
-                                                {  !isEmptyObject(data.controller) && current !== null && (
-                                                        <div className="col-md-12 p-20">
-                                                            <div className="table-responsive">
-                                                                <>
-                                                                    <div style={{ overflowX: 'auto' }}>
-                                                                        <table className={"table"} style={{ marginBottom: "10px", width: '100%' }}>
-                                                                            <thead>
-                                                                                <tr className="color-tr">
-                                                                                    <th className="font-weight-bold" style={{ minWidth: "100px" }}>{lang["log.no"]}</th>
-                                                                                    {apiDataName?.map((header, index) => (
-                                                                                        <th key={index} className="font-weight-bold" style={{ minWidth: "200px" }}>
-                                                                                            {header.display_name ? header.display_name : header.field_name}
-                                                                                        </th>
-                                                                                    ))}
-                                                                                </tr>
-                                                                            </thead>
-                                                                            <tbody>
-                                                                                {(() => {
-                                                                                    const printheadIndices = [];
-                                                                                    current.forEach((row, index) => {
-                                                                                        if (Object.keys(row).length > 0) {
-                                                                                            printheadIndices.push(index + 1);
-                                                                                        }
-                                                                                    });
-                                                                                    let printheadCounter = 0;
-                                                                                    return current.map((row, index) => {
-                                                                                        if (Object.keys(row).length > 0) {
-                                                                                            return (
-                                                                                                <tr key={index}>
-                                                                                                    <td className="cell">{`Printhead ${printheadIndices[printheadCounter++]}`}</td>
-                                                                                                    {apiDataName?.map((header) => (
-                                                                                                        <td key={header.fomular_alias} className="cell">{renderData(header, row)}</td>
-                                                                                                    ))}
-                                                                                                </tr>
-                                                                                            )
-                                                                                        } else {
-                                                                                            return (
-                                                                                                <tr>
-                                                                                                    <td class="font-weight-bold cell" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
-                                                                                                </tr>
-                                                                                            )
-                                                                                        }
-                                                                                    })
-                                                                                })()}
-                                                                            </tbody>
-                                                                        </table>
-                                                                    </div>
-                                                                </>
-                                                            </div>
+                                                {!isEmptyObject(data.controller) && current !== null && (
+                                                    <div className="col-md-12 p-20">
+                                                        <div className="table-responsive">
+                                                            <>
+                                                                <div style={{ overflowX: 'auto' }}>
+                                                                    <table className={"table"} style={{ marginBottom: "10px", width: '100%' }}>
+                                                                        <thead>
+                                                                            <tr className="color-tr">
+                                                                                <th className="font-weight-bold" style={{ minWidth: "100px" }}>{lang["log.no"]}</th>
+                                                                                {apiDataName?.map((header, index) => (
+                                                                                    <th key={index} className="font-weight-bold" style={{ minWidth: "200px" }}>
+                                                                                        {header.display_name ? header.display_name : header.field_name}
+                                                                                    </th>
+                                                                                ))}
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            {(() => {
+                                                                                const printheadIndices = [];
+                                                                                current.forEach((row, index) => {
+                                                                                    if (Object.keys(row).length > 0) {
+                                                                                        printheadIndices.push(index + 1);
+                                                                                    }
+                                                                                });
+                                                                                let printheadCounter = 0;
+                                                                                return current.map((row, index) => {
+                                                                                    if (Object.keys(row).length > 0) {
+                                                                                        return (
+                                                                                            <tr key={index}>
+                                                                                                <td className="cell">{`Printhead ${printheadIndices[printheadCounter++]}`}</td>
+                                                                                                {apiDataName?.map((header) => (
+                                                                                                    <td key={header.fomular_alias} className="cell">{renderData(header, row)}</td>
+                                                                                                ))}
+                                                                                            </tr>
+                                                                                        )
+                                                                                    } else {
+                                                                                        return (
+                                                                                            <tr>
+                                                                                                <td class="font-weight-bold cell" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
+                                                                                            </tr>
+                                                                                        )
+                                                                                    }
+                                                                                })
+                                                                            })()}
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </>
                                                         </div>
-                                                       
-                                                    )
+                                                    </div>
+
+                                                )
                                                 }
                                                 <div className="col-md-12 p-20">
                                                     <div className="button-group">
@@ -825,7 +837,7 @@ export default (props) => {
                                                         : (
                                                             <div id="step3">
                                                                 <div class="text-center mb-4 ">
-                                                                    <img src="/images/icon/success.png" alt="Success" class="img-fluid size-img-success"  onDragStart={handleDragStart} />
+                                                                    <img src="/images/icon/success.png" alt="Success" class="img-fluid size-img-success" onDragStart={handleDragStart} />
                                                                 </div>
                                                                 <div class="form-group">
                                                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

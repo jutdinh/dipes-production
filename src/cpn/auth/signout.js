@@ -7,6 +7,11 @@ export default () => {
         socket.emit("/dipe-production-user-logout", { username: auth.username })
         
         localStorage.removeItem( '_token' )
+       
+            
+            localStorage.removeItem("password_hash");
+  
+        
         // console.log( localStorage.getItem("_token") )
         window.location = "/login"
     }, [])

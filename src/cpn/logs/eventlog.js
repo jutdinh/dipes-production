@@ -20,7 +20,7 @@ export default () => {
     let langItem = localStorage.getItem("lang") ? localStorage.getItem("lang") : "Vi";
 
     const languages = langItem.toLowerCase();
-    console.log(_token)
+    // console.log(_token)
     const handleCloseModal = () => {
         setShowModal(false);
     };
@@ -51,7 +51,7 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, status, content } = resp;
-                console.log(resp)
+                // console.log(resp)
                 if (success) {
                     if (data != undefined && data.length > 0) {
 
@@ -69,7 +69,7 @@ export default () => {
     const [logDetail, setLogDetail] = useState([]);
 
     const detailLogs = async (logid) => {
-        console.log(logid)
+        // console.log(logid)
         setLogDetail(logid)
     };
 
@@ -91,7 +91,7 @@ export default () => {
             .then((resp) => {
                 if (resp) {
                     const { success, content, data, status } = resp;
-                    console.log(resp)
+                    // console.log(resp)
                     if (success) {
 
                         setView(data)
