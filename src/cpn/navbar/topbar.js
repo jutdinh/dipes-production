@@ -10,7 +10,8 @@ export default () => {
     const isMobile = useMediaQuery({ query: '(max-width: 767px)' })
     const [defaultValue, setDefaultValue] = useState({})
     const fullname = localStorage.getItem("fullname");
-
+    const stringifiedUser = localStorage.getItem("user");
+    const user = JSON.parse(stringifiedUser)
     // console.log(pages)
 
     const langs = [
@@ -135,7 +136,7 @@ export default () => {
                                         <span class="name_user"> {generateUserLastName()}</span>
                                     </a>
                                     <div class="dropdown-menu">
-                                        {/* <a class="dropdown-item" href="/users/profile">{lang["my profile"]}</a> */}
+                                        <a class="dropdown-item" href="/users/profile">{lang["my profile"]}</a>
                                         {/* <a class="dropdown-item" href="settings.html">{lang["settings"]}</a> */}
                                         <a class="dropdown-item" href="/changepassword">{lang["change password"]}</a>
 
@@ -146,7 +147,9 @@ export default () => {
                         </div>
                     </div>
 
-                  
+                    
+                   
+              
                 </div>
             </nav>
         </div>

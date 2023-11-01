@@ -87,7 +87,7 @@ export default (props) => {
             }
         };
 
-        console.log(requestBody)
+        // console.log(requestBody)
         fetch(`${proxy()}/auth/changePwd`, {
             method: 'POST',
             headers: {
@@ -100,7 +100,7 @@ export default (props) => {
             .then(res => res.json())
             .then((resp) => {
                 const { success, content, status } = resp;
-                console.log(resp)
+                // console.log(resp)
                 setErrorMessagesedit({})
                 if (success) {
                     Swal.fire({
@@ -138,7 +138,7 @@ export default (props) => {
                 {statusActive ? (
                     <div class="row column1">
                         <div class="col-md-12">
-                            <div class="white_shd full margin_bottom_30">
+                            <div class="white_shd full ">
                                 <div class="full graph_head">
 
                                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -149,7 +149,7 @@ export default (props) => {
                                     </div>
 
                                 </div>
-                                <div class="full price_table padding_infor_info">
+                                <div class="full price_table padding_infor_info" style={{height: "80vh"}}>
                                     <div className="container justify-content-center mt-3">
                                         <div class="row">
                                             <div class="form-group col-lg-4"></div>

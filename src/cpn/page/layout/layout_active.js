@@ -22,6 +22,7 @@ export default (props) => {
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
     const storedPwdString = localStorage.getItem("password_hash");
+    console.log(storedPwdString)
     const username = _user.username === "administrator" ? "" : _user.username;
     const page = props.page
     const [isActivated, setIsActivated] = useState(false);
@@ -36,9 +37,18 @@ export default (props) => {
 
     const [reason, setReason] = useState("")
     const [showModal, setShowModal] = useState(false);
-
+    const [loadingCreateKey, setLoadingCreatekey] = useState(false);
     const fileInputRef = useRef();
-    const isEmptyObject = (obj) => Object.keys(obj).length === 0;
+    const isEmptyObject = (obj) => {
+        return obj == null || Object.keys(obj).length === 0;
+    };
+    const handleDragStart = (e) => {
+        e.preventDefault();
+    };
+    function goBack() {
+
+        setCurrentStep(1);
+    }
 
     const handleReStep = (e) => {
         setCurrentStep(1);
@@ -48,7 +58,7 @@ export default (props) => {
     const handleNextStep = (e) => {
         e.preventDefault();
         setCurrentStep(3);
-
+        setLoadingCreatekey(true)
         const requestBody = {
             checkCustomer: {
                 username,
@@ -77,10 +87,32 @@ export default (props) => {
                         text: lang["success create key"],
                         icon: "success",
                         showConfirmButton: false,
-                        timer: 2000,
+                        timer: 2000
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+
+                            document.getElementById("step3").style.display = "block";
+                        }
                     });
-                    setDatKey(keyLicense)
+                    setDatKey(keyLicense);
+                    setLoadingCreatekey(false);
+                } else {
+                    Swal.fire({
+                        title: lang["faild"],
+                        text: lang["faild create key"],
+                        icon: "error",
+                        showConfirmButton: true,
+                        confirmButtonText: lang["back"],
+                        cancelButtonText: lang["btn.cancel"],
+                        showCancelButton: true,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            goBack();
+                        }
+                    });
                 }
+
+
                 // socket.emit("/dipe-production-new-data-added", dataSubmit);
             })
             .catch(error => {
@@ -106,6 +138,7 @@ export default (props) => {
     const handleFileChange = (event) => {
 
         const file = event.target.files[0];
+        console.log(file)
         if (event.target.files.length > 0) {
             setFileName(event.target.files[0].name);
         }
@@ -122,15 +155,41 @@ export default (props) => {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const fileContent = e.target.result;
+
                 let parsedContent;
                 try {
                     parsedContent = JSON.parse(fileContent);
+
                 } catch (error) {
+                    console.log(error)
+                    setFileError(`${lang["correct format"]}`);
+                    return;
+                }
+                console.log(parsedContent)
+
+
+                // Kiểm tra cấu trúc của controller
+                if (!parsedContent.controller ||
+                    typeof parsedContent.controller.key !== 'string' ||
+                    parsedContent.controller.key === '' ||
+                    typeof parsedContent.controller.serialNumber !== 'string') {
+                    setFileError(`${lang["correct format"]}`);
+                    return;
+                }
+                // Kiểm tra cấu trúc của printhead
+                if (
+                    !Array.isArray(parsedContent.printhead) || // Đảm bảo printhead là một mảng
+                    !parsedContent.printhead.every(printhead =>
+                        (printhead.key !== "" || printhead.serialNumber === "") && // Nếu `key` rỗng thì `serialNumber` cũng phải rỗng
+                        typeof printhead.serialNumber === 'string'
+
+                    )
+                ) {
                     setFileError(`${lang["correct format"]}`);
                     return;
                 }
 
-                // Cập nhật điều kiện kiểm tra, chấp nhận printhead không có key
+                // Kiểm tra cấu trúc của controller & printhead để add serialNumber
                 if (
                     !parsedContent.controller ||
                     typeof parsedContent.controller.key !== 'string' ||
@@ -217,21 +276,22 @@ export default (props) => {
         const isValidPrintHead = areSerialNumbersValid(printheadsData);
         const isValidController = isControllerValid(controllerData);
 
-        console.log(isValidPrintHead)
-        console.log(isValidController)
+        // console.log(isValidPrintHead)
+        // console.log(isValidController)
 
         if (isValidController && isValidPrintHead) {
             setEnableSave(false)
-
         } else {
             setEnableSave(true)
         }
+
         const updatedDataFile = {
             data: {
                 controller: controllerData,
                 printhead: printheadsData
             }
         };
+
         setDataFile(updatedDataFile);
     }, [controllerData, printheadsData])
 
@@ -302,6 +362,7 @@ export default (props) => {
         }
     }, [page])
     console.log(_token)
+
     const submit = () => {
         const requestBody = {
             checkCustomer: {
@@ -310,8 +371,6 @@ export default (props) => {
             },
             ...dataFile,
             reason: reason,
-      
-        
 
         }
         console.log(requestBody)
@@ -411,6 +470,9 @@ export default (props) => {
     };
 
     const exportLicense = () => {
+        
+        // const content = Object.keys(dataKey).length === 0 ? 'null' : JSON.stringify(dataKey);  //Check dataKey
+
         const blob = new Blob([dataKey], { type: 'text/plain' });
         const href = URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -425,15 +487,15 @@ export default (props) => {
     return (
         <>
             <div class="col-md-12">
-                <div class="white_shd full">
+                <div class="white_shd full height-82">
                     <div class="tab_style2 layout2">
                         <div class="tabbar">
                             <nav>
                                 <div className="nav nav-tabs" style={{ borderBottomStyle: "0px" }} >
                                     <div class="full graph_head_cus d-flex">
-                                        <div class="heading1_cus margin_0 nav-item nav-link ">
+                                        <div class="heading1_cus margin_0 nav-item nav-link " style={{ borderColor: "none" }}>
                                             <h5>{page?.components?.[0]?.component_name}</h5>
-                                            <div id="modalTrigger" class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#file" ></div>
+                                            <div id="modalTrigger" data-toggle="modal" data-target="#file" ></div>
                                         </div>
                                     </div>
                                 </div>
@@ -477,7 +539,7 @@ export default (props) => {
                                                                     updateSerialNumber(-1, upperValue);
                                                                     setErrorMessageForPrinthead(-1, ''); // Clear any existing error message
                                                                 } else {
-                                                                    setErrorMessageForPrinthead(-1, 'Chỉ được nhập ký tự từ A-Z và số từ 0-9');
+                                                                    setErrorMessageForPrinthead(-1, lang["error.serial"]);
                                                                 }
                                                             }}
                                                             maxLength="15"
@@ -532,7 +594,7 @@ export default (props) => {
                                                                                             updateSerialNumber(index, upperValue);  // Cập nhật giá trị đã được chuyển thành chữ in hoa
                                                                                             setErrorMessageForPrinthead(index, ''); // Xóa tất cả các lỗi
                                                                                         } else {
-                                                                                            setErrorMessageForPrinthead(index, 'Chỉ được nhập ký tự từ A-Z và số từ 0-9');
+                                                                                            setErrorMessageForPrinthead(index, lang["error.serial"]);
                                                                                         }
                                                                                     }}
                                                                                     onBlur={() => {
@@ -578,7 +640,7 @@ export default (props) => {
                             </div>
                         </div>
                     </div>
-                    <div class="table_section padding_infor_info_layout2 ">
+                    <div class="table_section padding_infor_info_layout2 " style={{minHeight: "80vh"}}>
                         <div class="col-md-12">
                             <div class="tab-content">
                                 <div className="container justify-content-center mt-3">
@@ -661,11 +723,18 @@ export default (props) => {
                                                                     <tbody>
                                                                         {apiDataName?.map((header, index) => {
                                                                             const key = header.display_name ? header.display_name : header.field_name;
-                                                                            let value = data.controller[header.fomular_alias];
+
+                                                                            let value;
+                                                                            if (data.printer) {
+                                                                                value = data.printer[header.fomular_alias];
+                                                                            } else if (data.controller) {
+                                                                                value = data.controller[header.fomular_alias];
+                                                                            } 
 
                                                                             if (value === undefined || value === null || value === '') {
                                                                                 value = lang["no data"];
                                                                             }
+
                                                                             return (
                                                                                 <tr key={index}>
                                                                                     <td>{key}</td>
@@ -679,8 +748,7 @@ export default (props) => {
                                                         </>
                                                     </div>
                                                 </div>
-                                                { // Điều kiện hiển thị
-                                                    !isEmptyObject(data.controller) && (
+                                                {  !isEmptyObject(data.controller) && current !== null && (
                                                         <div className="col-md-12 p-20">
                                                             <div className="table-responsive">
                                                                 <>
@@ -730,13 +798,14 @@ export default (props) => {
                                                                 </>
                                                             </div>
                                                         </div>
+                                                       
                                                     )
                                                 }
                                                 <div className="col-md-12 p-20">
                                                     <div className="button-group">
-                                                        <button onClick={handleReStep} style={{ minWidth: "100px" }} className="btn btn-info mr-2">{lang["back"]}</button>
+                                                        <button onClick={handleReStep} style={{ minWidth: "100px" }} className="btn btn-info mr-2" title={lang["back"]}>{lang["back"]}</button>
                                                         {enable && (
-                                                            <button onClick={handleNextStep} style={{ minWidth: "100px" }} className="btn btn-primary" disabled={isEmptyObject(data.controller)} title={lang["export to file"]}>{lang["create key"]}</button>
+                                                            <button onClick={handleNextStep} style={{ minWidth: "100px" }} className="btn btn-primary" disabled={isEmptyObject(data.controller) && isEmptyObject(data.printer)} title={lang["create key"]}>{lang["create key"]}</button>
                                                         )
                                                         }
                                                     </div>
@@ -748,26 +817,34 @@ export default (props) => {
                                         <>
                                             <div class="row justify-content-center mt-4">
                                                 <div class="col-lg-8 col-md-10 col-sm-12 p-2">
-                                                    <div id="step1">
+
+                                                    {loadingCreateKey ?
                                                         <div class="text-center mb-4">
-                                                            <img src="/images/icon/success.png" alt="Success" class="img-fluid size-img-success"  />
+                                                            <img src="/images/icon/loading.gif" alt="Success" class="img-fluid size-img-success" />
                                                         </div>
-                                                        <div class="form-group">
-                                                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                                                <div class="mb-3 text-muted">
-                                                               
-                                                                    {lang["create key success"]}
+                                                        : (
+                                                            <div id="step3">
+                                                                <div class="text-center mb-4 ">
+                                                                    <img src="/images/icon/success.png" alt="Success" class="img-fluid size-img-success"  onDragStart={handleDragStart} />
                                                                 </div>
-                                                                <button className="btn btn-primary mt-4" style={{ minWidth: "100px" }} onClick={exportLicense} title={lang["export to file"]}>
-                                                                    <i class="fa fa-download mr-2 size-18 pointer" aria-hidden="true"></i>
-                                                                    Export
-                                                                </button>
-                                                                <div class="mt-3 text-success d-none d-sm-block">
-                                                                    {lang["note not share"]}
+                                                                <div class="form-group">
+                                                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                                                        <div class="mt-3 text-muted">
+
+                                                                            {lang["create key success"]}
+                                                                        </div>
+                                                                        <button className="btn btn-primary mt-3" style={{ minWidth: "100px" }} onClick={exportLicense} title={lang["export to file"]}>
+                                                                            <i class="fa fa-download mr-2 size-18 pointer" aria-hidden="true"></i>
+                                                                            Export
+                                                                        </button>
+                                                                        <div class="mt-3 text-success d-none d-sm-block">
+                                                                            {lang["note not share"]}
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
+                                                        )}
+
                                                 </div>
                                             </div>
                                         </>

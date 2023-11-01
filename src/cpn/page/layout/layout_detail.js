@@ -178,7 +178,7 @@ export default () => {
                                 <i class="fa fa-newspaper-o icon-ui"></i>
                             </div> */}
                             </div>
-                            <div class="table_section padding_infor_info">
+                            <div class="table_section padding_infor_info" style={{height: "78vh"}}>
                                 <div class="row column1">
                                     <div class="form-group col-lg-4">
 

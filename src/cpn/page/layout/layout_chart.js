@@ -104,13 +104,42 @@ export default (props) => {
                 setDataStatis(statistic);
                 if (data && data.length > 0) {
                     setApiData(data.filter(record => record != undefined));
-
                 }
                 clearTimeout(loadingTimeout);
                 setLoading(false)
             });
-
     }
+
+    // const callApiView = () => {
+
+    //     let loadingTimeout;
+    //     loadingTimeout = setTimeout(() => {
+    //         setLoading(true)
+    //     }, 350);
+    //     const headerApi = {
+    //         Authorization: _token,
+    //         "content-type": "application/json"
+    //         // 'start-at': startAt,
+    //         // 'data-amount': amount
+    //     }
+
+        
+
+    //     fetch(`${proxy()}/api/test/statistic`, {
+    //         headers: headerApi,
+    //     })
+    //         .then(res => res.json())
+    //         .then(res => {
+    //             const { success, content, data, count, fields, statistic } = res;
+    //             console.log(res)
+        
+    //             setDataStatis(statistic);
+                
+    //             clearTimeout(loadingTimeout);
+    //             setLoading(false)
+    //         });
+    // }
+
     const handleViewDetail = async (record) => {
 
         const { components } = page;
@@ -268,8 +297,11 @@ export default (props) => {
                 }
                 else if (type == "table") {
                     return (
-                        // <StatisTable data={data} statis={statis} />
+                       
+                   
                         <StatisticChart data={data} statis={statis} page={page} />
+
+                        // <StatisticChart data={statis} statis={statis} page={page} />
                     )
                 }
                 else return null

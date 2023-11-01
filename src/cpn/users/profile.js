@@ -71,7 +71,7 @@ export default (props) => {
                 if (data != undefined) {
                     setProfile(data);
                     setEditUser(data)
-               
+
                 }
             })
     }, [])
@@ -188,6 +188,7 @@ export default (props) => {
                 }
             });
     }
+    console.log(user)
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -199,130 +200,157 @@ export default (props) => {
                     </div>
                 </div>
                 {statusActive ? (
+                    // <div class="row column1">
+                    //     <div class="col-md-12">
+                    //         <div class="white_shd full margin_bottom_30">
+                    //             <div class="full graph_head">
+
+                    //                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    //                     <div className="heading1 margin_0">
+                    //                         <h5>{lang["profile user"]}</h5>
+                    //                     </div>
+                    //                     {user.role !== "uad" ? (
+                    //                         <i className="fa fa-edit size-24 icon-edit pointer" data-toggle="modal" data-target="#editMember"></i>
+                    //                     ) : null}
+
+                    //                 </div>
+                    //                 <div class="modal fade" tabindex="-1" role="dialog" id="editMember" aria-labelledby="edit" aria-hidden="true">
+                    //                     <div class="modal-dialog modal-lg modal-dialog-center" role="document">
+                    //                         <div class="modal-content p-md-3">
+                    //                             <div class="modal-header">
+                    //                                 <h4 class="modal-title">{lang["profile.title"]} </h4>
+
+                    //                                 {/* <button class="close" type="button" onClick={handleCloseModal} data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> */}
+                    //                             </div>
+                    //                             <div class="modal-body">
+                    //                                 <form>
+                    //                                     <div class="row">
+                    //                                         <div class="form-group col-lg-6">
+                    //                                             <label class="font-weight-bold text-small" for="firstname">{lang["fullname"]}<span className='red_star ml-1'>*</span></label>
+                    //                                             <input type="text" class="form-control" value={editUser.fullname} onChange={
+                    //                                                 (e) => { setEditUser({ ...editUser, fullname: e.target.value }) }
+                    //                                             } placeholder={lang["p.fullname"]} />
+                    //                                             {errorMessagesedit.fullname && <span class="error-message">{errorMessagesedit.fullname}</span>}
+                    //                                         </div>
+
+
+                    //                                         <div class="form-group col-lg-12">
+                    //                                             <label class="font-weight-bold text-small" for="email">{lang["email"]}<span class="red_star ml-1">*</span></label>
+                    //                                             <input type="email" class="form-control" value={editUser.email} onChange={
+                    //                                                 (e) => { setEditUser({ ...editUser, email: e.target.value }) }
+                    //                                             } placeholder={lang["p.email"]} />
+                    //                                             {errorMessagesedit.email && <span class="error-message">{errorMessagesedit.email}</span>}
+                    //                                         </div>
+                    //                                         <div class="form-group col-lg-6">
+                    //                                             <label class="font-weight-bold text-small" for="phone">{lang["phone"]}<span class="red_star ml-1">*</span></label>
+                    //                                             <input type="phone" class="form-control" value={editUser.phone} onChange={
+                    //                                                 (e) => { setEditUser({ ...editUser, phone: e.target.value }) }
+                    //                                             } placeholder={lang["p.phone"]} />
+                    //                                             {errorMessagesedit.phone && <span class="error-message">{errorMessagesedit.phone}</span>}
+                    //                                         </div>
+
+
+                    //                                         <div class="form-group col-lg-12">
+                    //                                             <label class="font-weight-bold text-small" for="projectdetail">{lang["address"]}<span class="red_star ml-1">*</span></label>
+                    //                                             <textarea maxlength="500" rows="5" type="text" class="form-control" value={editUser.address} onChange={
+                    //                                                 (e) => { setEditUser({ ...editUser, address: e.target.value }) }
+                    //                                             } placeholder={lang["p.address"]} />
+                    //                                             {errorMessagesedit.address && <span class="error-message">{errorMessagesedit.address}</span>}
+                    //                                         </div>
+                    //                                         <div class="form-group col-lg-12">
+                    //                                             <label class="font-weight-bold text-small" for="projectdetail">{lang["note"]}</label>
+                    //                                             <textarea maxlength="500" rows="5" type="text" class="form-control" value={editUser.note} onChange={
+                    //                                                 (e) => { setEditUser({ ...editUser, note: e.target.value }) }
+                    //                                             } placeholder={lang["p.note"]} />
+
+                    //                                         </div>
+
+                    //                                     </div>
+                    //                                 </form>
+                    //                             </div>
+                    //                             <div class="modal-footer">
+                    //                                 <button type="button" onClick={submitUpdate} class="btn btn-success">{lang["btn.update"]}</button>
+                    //                                 <button type="button" data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
+
+                    //                             </div>
+                    //                         </div>
+                    //                     </div>
+                    //                 </div>
+                    //             </div>
+                    //             <div class="full price_table padding_infor_info">
+                    //                 <div class="row">
+                    //                     <div class="col-lg-8">
+                    //                         <div class="full dis_flex center_text">
+                    //                             <div className="profile_img" onClick={handleClick}>
+                    //                                 <img
+                    //                                     width="80"
+                    //                                     className="rounded-circle pointer"
+                    //                                     src={profile.avatar && profile.avatar.length < 255 ? (proxy() + profile.avatar) : profile.avatar}
+                    //                                     alt="#"
+                    //                                     title={lang["select file"]}
+                    //                                 />
+                    //                                 <input type="file"
+                    //                                     accept='image/*'
+                    //                                     ref={fileInputRef} style={{ display: "none" }} onChange={handleFileUpload} />
+                    //                             </div>
+                    //                             <div class="profile_contant">
+                    //                                 <div class="contact_inner">
+                    //                                     <h3>{profile.fullname || "Administrator"}</h3>
+                    //                                     <ul class="list-unstyled">
+                    //                                         <li class="mt-2">{lang["username"]}: {profile.username}</li>
+                    //                                         <li class="mt-2">{lang["permission"]}: {profile.role === "ad" ? lang["administrator"] :
+                    //                                             profile.role === "pm" ? lang["uprojectmanager"] :
+                    //                                                 profile.role === "pd" ? lang["normal"] :
+                    //                                                     profile.role}</li>
+                    //                                         <li class="mt-2"><i class="fa fa-envelope-o"></i> : {profile.email || "nhan.to@mylangroup.com"}</li>
+                    //                                         <li class="mt-2"> <i class="fa fa-phone"></i> : {profile.phone || "0359695554"}</li>
+                    //                                         <li class="mt-2">{lang["address"]}: {profile.address || "Phong Thạnh, Cầu Kè, Trà Vinh"}</li>
+                    //                                         {/* <li class="mt-2">{lang["note"]}: {profile.note || lang["note"]}</li> */}
+                    //                                     </ul>
+                    //                                 </div>
+                    //                                 {/* <div class="user_progress_bar">
+                    //                                 <div class="progress_bar">
+                    //                                     <span class="skill" style={{ width: 500 }}>Web Applications <span class="info_valume">85%</span></span>
+                    //                                     <div class="progress skill-bar ">
+                    //                                         <div class="progress-bar progress-bar-animated progress-bar-striped" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style={{ width: 500 }}>
+                    //                                         </div>
+                    //                                     </div>
+                    //                                 </div>
+                    //                             </div> */}
+                    //                             </div>
+                    //                         </div>
+
+                    //                     </div>
+
+
+                    //                     <div class="col-lg-4">
+
+                    //                     </div>
+                    //                 </div>
+                    //             </div>
+                    //         </div>
+                    //     </div>
+                    // </div>
                     <div class="row column1">
-                        <div class="col-md-12">
-                            <div class="white_shd full margin_bottom_30">
-                                <div class="full graph_head">
-
-                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                                        <div className="heading1 margin_0">
-                                            <h5>{lang["profile user"]}</h5>
-                                        </div>
-                                        {user.role !== "uad" ? (
-                                            <i className="fa fa-edit size-24 icon-edit pointer" data-toggle="modal" data-target="#editMember"></i>
-                                        ) : null}
-
-                                    </div>
-                                    <div class="modal fade" tabindex="-1" role="dialog" id="editMember" aria-labelledby="edit" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg modal-dialog-center" role="document">
-                                            <div class="modal-content p-md-3">
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">{lang["profile.title"]} </h4>
-
-                                                    {/* <button class="close" type="button" onClick={handleCloseModal} data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button> */}
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form>
-                                                        <div class="row">
-                                                            <div class="form-group col-lg-6">
-                                                                <label class="font-weight-bold text-small" for="firstname">{lang["fullname"]}<span className='red_star ml-1'>*</span></label>
-                                                                <input type="text" class="form-control" value={editUser.fullname} onChange={
-                                                                    (e) => { setEditUser({ ...editUser, fullname: e.target.value }) }
-                                                                } placeholder={lang["p.fullname"]} />
-                                                                {errorMessagesedit.fullname && <span class="error-message">{errorMessagesedit.fullname}</span>}
-                                                            </div>
+                        <div className="container justify-content-center">
+                            <div class="col-md-12 col-lg-12">
+                                <div class="full_profile white_shd">
+                                    <div class="info_people">
 
 
-                                                            <div class="form-group col-lg-12">
-                                                                <label class="font-weight-bold text-small" for="email">{lang["email"]}<span class="red_star ml-1">*</span></label>
-                                                                <input type="email" class="form-control" value={editUser.email} onChange={
-                                                                    (e) => { setEditUser({ ...editUser, email: e.target.value }) }
-                                                                } placeholder={lang["p.email"]} />
-                                                                {errorMessagesedit.email && <span class="error-message">{errorMessagesedit.email}</span>}
-                                                            </div>
-                                                            <div class="form-group col-lg-6">
-                                                                <label class="font-weight-bold text-small" for="phone">{lang["phone"]}<span class="red_star ml-1">*</span></label>
-                                                                <input type="phone" class="form-control" value={editUser.phone} onChange={
-                                                                    (e) => { setEditUser({ ...editUser, phone: e.target.value }) }
-                                                                } placeholder={lang["p.phone"]} />
-                                                                {errorMessagesedit.phone && <span class="error-message">{errorMessagesedit.phone}</span>}
-                                                            </div>
+                                        <div class="profile_contant">
+                                            <div class="contact_inner">
+                                                <h3>{user.role === "pd" ? "Customer" : "Administrator"}</h3>
+                                                <ul class="list-unstyled">
+                                                    <li class="mt-2 inline">{lang["fullname"]}:  {user.fullname}</li>
+                                                    <li class="mt-2 inline">{lang["username"]}:  {user.username}</li>
+                                                    <li class="mt-2"><i class="fa fa-envelope-o"></i> : {user.email || lang["no info"]}</li>
+                                                    <li class="mt-2"> <i class="fa fa-phone"></i> : {user.phone || lang["no info"]}</li>
 
 
-                                                            <div class="form-group col-lg-12">
-                                                                <label class="font-weight-bold text-small" for="projectdetail">{lang["address"]}<span class="red_star ml-1">*</span></label>
-                                                                <textarea maxlength="500" rows="5" type="text" class="form-control" value={editUser.address} onChange={
-                                                                    (e) => { setEditUser({ ...editUser, address: e.target.value }) }
-                                                                } placeholder={lang["p.address"]} />
-                                                                {errorMessagesedit.address && <span class="error-message">{errorMessagesedit.address}</span>}
-                                                            </div>
-                                                            <div class="form-group col-lg-12">
-                                                                <label class="font-weight-bold text-small" for="projectdetail">{lang["note"]}</label>
-                                                                <textarea maxlength="500" rows="5" type="text" class="form-control" value={editUser.note} onChange={
-                                                                    (e) => { setEditUser({ ...editUser, note: e.target.value }) }
-                                                                } placeholder={lang["p.note"]} />
 
-                                                            </div>
-
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" onClick={submitUpdate} class="btn btn-success">{lang["btn.update"]}</button>
-                                                    <button type="button" data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
-
-                                                </div>
+                                                </ul>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="full price_table padding_infor_info">
-                                    <div class="row">
-                                        <div class="col-lg-8">
-                                            <div class="full dis_flex center_text">
-                                                <div className="profile_img" onClick={handleClick}>
-                                                    <img
-                                                        width="80"
-                                                        className="rounded-circle pointer"
-                                                        src={profile.avatar && profile.avatar.length < 255 ? (proxy() + profile.avatar) : profile.avatar}
-                                                        alt="#"
-                                                        title={lang["select file"]}
-                                                    />
-                                                    <input type="file"
-                                                        accept='image/*'
-                                                        ref={fileInputRef} style={{ display: "none" }} onChange={handleFileUpload} />
-                                                </div>
-                                                <div class="profile_contant">
-                                                    <div class="contact_inner">
-                                                        <h3>{profile.fullname || "Administrator"}</h3>
-                                                        <ul class="list-unstyled">
-                                                            <li class="mt-2">{lang["username"]}: {profile.username}</li>
-                                                            <li class="mt-2">{lang["permission"]}: {profile.role === "ad" ? lang["administrator"] :
-                                                                profile.role === "pm" ? lang["uprojectmanager"] :
-                                                                    profile.role === "pd" ? lang["normal"] :
-                                                                        profile.role}</li>
-                                                            <li class="mt-2"><i class="fa fa-envelope-o"></i> : {profile.email || "nhan.to@mylangroup.com"}</li>
-                                                            <li class="mt-2"> <i class="fa fa-phone"></i> : {profile.phone || "0359695554"}</li>
-                                                            <li class="mt-2">{lang["address"]}: {profile.address || "Phong Thạnh, Cầu Kè, Trà Vinh"}</li>
-                                                            {/* <li class="mt-2">{lang["note"]}: {profile.note || lang["note"]}</li> */}
-                                                        </ul>
-                                                    </div>
-                                                    {/* <div class="user_progress_bar">
-                                                    <div class="progress_bar">
-                                                        <span class="skill" style={{ width: 500 }}>Web Applications <span class="info_valume">85%</span></span>
-                                                        <div class="progress skill-bar ">
-                                                            <div class="progress-bar progress-bar-animated progress-bar-striped" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style={{ width: 500 }}>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div> */}
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-
-                                        <div class="col-lg-4">
 
                                         </div>
                                     </div>

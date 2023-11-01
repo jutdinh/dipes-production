@@ -24,7 +24,6 @@ export default () => {
     }
     const check = pages[0]?.url
 
-    console.log(check)
     const [statusActive, setStatusActive] = useState(false);
 
     useEffect(() => {
@@ -54,7 +53,7 @@ export default () => {
             }
 
         }
-        console.log(requestBody)
+        // console.log(requestBody)
         fetch(`${proxy()}/auth/login`, {
             method: "post",
             headers: {
@@ -65,7 +64,6 @@ export default () => {
             const { success, content, data } = resp;
             const credential = data
             // console.log(resp)
-
             if (success) {
                 if (rememberMe) {
                     localStorage.setItem("username", auth.username);
@@ -116,7 +114,7 @@ export default () => {
                                 if (check !== "") {
                                     window.location = `/page${check}`;
                                 } else {
-                                    window.location = `/ưewqeeqwewqe`;
+                                    window.location = `/page-not-found-404`;
                                 }
 
                             }

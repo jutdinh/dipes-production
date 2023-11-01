@@ -171,21 +171,35 @@
 }
 
 .my-box:hover {
-    background-color: #e6eff5;
+    /* background-color: #f3f7fa; */
 }
 
 .my-box span {
     font-size: 48px; 
-    color: #ffc107; 
+    color: #445069; 
     font-weight: bold; 
 }
+.sticky-header th {
+    position: sticky;
+    top: 0;
+    z-index: 100; 
+    background-color: #f0eaea; 
+}
 
-
+.social_icon {
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    background: black;
+    padding: 10px 0 10px;
+    color: #fcf7f7 !important;
+    background: #222;
+}
 .my-box-half {
     height: 150px;
     /* background-color: #d9dfe4; */
     /* color: #fff; */
-    border: 1px solid #dee2e6;
+    /* border: 1px solid #dee2e6; */
     border-radius: 5px;
     padding: 20px;
     display: flex; /* Sử dụng Flexbox */
@@ -195,20 +209,81 @@
     /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
     transition: background-color 0.3s ease-in-out;
 }
-
-.my-box-half:hover {
-    background-color: #e6eff5;
+.login_section {
+    max-width: 640px;
+    background: #fff;
+    min-height: 540px;
+    width: 100%;
+    box-shadow: 0px 0 15px -6px #000;
+    margin: 0px;
+    padding: 0;
+    border-radius: 10px;
+    overflow: hidden;
 }
-
+.my-box-half:hover {
+    /* background-color: #f3f7fa; */
+}
+.size-img-success {
+    pointer-events: none;
+}
+#content {
+    width: 100%;
+    min-height: 100vh;
+    transition: ease all 0.3s;
+    position: relative;
+    padding: 60px 25px 0px 305px;
+    background: #f8f8f8;
+}
+.controller .social_icon {
+    background: #4D90FE;
+}
+.printhead .social_icon {
+    background: #96C291;
+}
+.printer .social_icon {
+    background: #E19898;
+}
+.height-82{
+   min-height: 82vh;
+}
+.color_month{
+    color: '#333';
+     font-weight: bold
+}
+.info_people {
+    padding: 15px !important;
+    display: flex;
+}
 .my-box-half span {
     font-size: 48px; 
-    color: #ffc107; 
+    color: #445069; 
     font-weight: bold; 
 }
 
+.white_shd_cus {
+    border: 1px solid #dee2e6;
+    background: #fff;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+    margin-top: 0;
+}
 
+.socile_icons .social_cont {
+    float: left;
+    text-align: center;
+    width: 100%;
+    padding: 8px 10px 8px;
+}
 
-
+.color-whiteh5{
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: normal;
+    /* color: #4dd591; */
+    color: #434360;
+}
 
 
 /* CSS cho nút tải lên tùy chỉnh */
@@ -328,7 +403,47 @@
 
 
 
+.full_profile {
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+}
 
+
+.user-card {
+    background-color: #f9f9f9; /* Light gray background */
+    transition: all 0.3s ease;
+}
+
+.user-card:hover {
+    transform: scale(1.03); /* Slight zoom in effect on hover */
+    box-shadow: 0px 0px 20px rgba(0,0,0,0.1);
+}
+
+.info_people {
+    display: flex;
+    align-items: center;
+}
+
+.user_info_cont h5 {
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.user_info_cont p {
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.user_info_cont a {
+    color: #007BFF; /* Blue color for links */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.user_info_cont a:hover {
+    color: #0056b3; /* Darker blue color on hover */
+}
 
 
 
@@ -383,6 +498,7 @@
 
 .cell {
     max-width: 380px;
+    
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -403,12 +519,18 @@
 
 
 .graph_head {
-    padding: 15px 25px 5px;
+    padding: 10px 25px 10px;
     float: left;
     width: 100%;
-    border-bottom: solid #f3f3f3 2px;
+    border-bottom: solid #dee2e6 1px;
+    
 }
-
+.graph_head_cus {
+    padding: 10px 25px 10px;
+    float: left;
+    width: 100%;
+    border-bottom: solid #dee2e6 1px;
+}
 
 .circle-image_list_user {
     border-radius: 100%;
@@ -1410,7 +1532,7 @@ h5 {
 }
 
 .tabbar .nav-tabs {
-    border-bottom: solid #eee 0px !important;
+    border-bottom: solid #ffffff 0px !important;
 }
 
 .icon-ui {
@@ -1917,14 +2039,19 @@ h5 {
 }
 
 .input-group-text {
-    margin-bottom: 0; /* Chắc chắn rằng không có khoảng cách dư thừa ở đáy */
+    margin-bottom: 0; /
 }
 
 .blur-modal {
     filter: blur(3px);
     pointer-events: none;
   }
-  
+
+.icon-active {
+    transform: scale(0.9); 
+    transition: transform 0.3s; 
+}
+
 
   .no-select-modal {
 

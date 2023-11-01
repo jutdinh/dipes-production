@@ -355,7 +355,11 @@ export default {
     "get data": "Nhận Dữ Liệu",
     "get result": "Lấy Kết Quả",
     "note not share": "Lưu ý: Không chia sẻ khóa này cho bất kỳ ai không được ủy quyền.",
-    "create key success": "Tạo khóa kích hoạt thành công!"
-
+    "create key success": "Tạo khóa kích hoạt thành công!",
+    "error.serial": "Chỉ được nhập ký tự từ A-Z và số từ 0-9",
+    "no info": "Thông tin chưa được cập nhật",
+    "faild key success": "Tạo khóa kích hoạt thất bại!",
+    "total quantity": "Tổng số lượng năm",
+    "license create": "License đã tạo năm"
 
 }

@@ -268,10 +268,10 @@ export default (props) => {
 
         const option = {
             grid: {
-                left: '0%',
-                right: '0%',
+                left: '5%',
+                right: '3%',
                 top: '9%',
-                bottom: '7%'
+                bottom: '8%'
             },
             xAxis: {
                 type: 'category',
@@ -281,7 +281,7 @@ export default (props) => {
                     textStyle: {
                         color: '#333',
                         fontFamily: 'UTM avo',
-                        fontSize: 13,
+                        fontSize: 14,
                         // fontWeight: 'bold'   
                     }
                 }
@@ -326,7 +326,7 @@ export default (props) => {
                 padding: 5,
                 itemGap: 15,
                 textStyle: {
-                    fontSize: 15,
+                    fontSize: 14,
                     fontFamily: 'UTM Avo'
                 }
             },
@@ -369,7 +369,7 @@ export default (props) => {
 
                                     <div class="full graph_head d-flex">
                                         <div class="heading1 margin_0 ">
-                                            <h5>{lang["license create"]} {selectedYear}</h5>
+                                            <h5>License created in {selectedYear}</h5>
                                         </div>
                                     </div>
 
@@ -404,7 +404,7 @@ export default (props) => {
 
                                     <div class="full graph_head d-flex text-center">
                                         <div class="heading1 margin_0 ">
-                                            <h5> {lang["total quantity"]} {selectedYear}</h5>
+                                            <h5> Total quantity in {selectedYear}</h5>
                                         </div>
                                     </div>
                                 </div>

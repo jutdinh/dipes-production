@@ -18,6 +18,7 @@ export default (props) => {
     const { openTab, renderDateTimeByFormat } = functions
     const { project_id, version_id, url } = useParams();
     const _token = localStorage.getItem("_token");
+    console.log(_token)
     const { formatNumber } = functions
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
@@ -31,7 +32,7 @@ export default (props) => {
 
     const [inputValues, setInputValues] = useState({});
     const [searchValues, setSearchValues] = useState({});
-
+    const [isActive, setIsActive] = useState(false);
 
     const checkDetail = page.components?.[0]?.api_detail
 
@@ -174,6 +175,12 @@ export default (props) => {
     const handleSearchClick = () => {
         setCurrentPage(1)
         setSearchValues(inputValues);
+
+
+        setIsActive(true);
+        setTimeout(() => {
+            setIsActive(false);
+        }, 300);
     };
 
 
@@ -277,22 +284,21 @@ export default (props) => {
                     <div class="table_section padding_infor_info_layout2 " >
                         <div class="col-md-12">
                             <div class="tab-content">
-                                <div class="page-container">
+                           
                                     <div class="col-md-12">
                                         <div class="table-responsive">
                                             <>
-                                                <div style={{ overflowX: 'auto', height: "72.4vh" }}>
-                                                    <table className={"table"} style={{ marginBottom: "10px", width: '100%' }}>
-                                                        <thead>
-                                                            <tr class="color-tr">
-                                                                <th class="font-weight-bold " style={{ width: "50px" }} scope="col">{lang["log.no"]}</th>
+                                                <div style={{ overflowX: 'auto', height: "74vh" }}>
+                                                    <table className={"table"} style={{ marginBottom: "0px", width: '100%', borderCollapse: 'collapse' }}>
+                                                        <thead class="">
+                                                            <tr class="color-tr sticky-header">
+                                                                <th class="font-weight-bold " style={{ width: "50px", minWidth: "50px" }} scope="col">{lang["log.no"]}</th>
                                                                 {apiDataName?.map((header, index) => (
-                                                                    <th key={index} class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
+                                                                    <th key={index} class="font-weight-bold"style={{minWidth: "150px"}}>{header.display_name ? header.display_name : header.field_name}</th>
                                                                 ))}
                                                                 <th class="font-weight-bold align-center" style={{ width: "100px" }}>{lang["log.action"]}</th>
                                                             </tr>
-
-                                                            <tr>
+                                                            <tr >
                                                                 <th></th>
                                                                 {apiDataName?.map((header, index) => (
                                                                     <th key={index}>
@@ -306,13 +312,13 @@ export default (props) => {
 
                                                                     </th>
                                                                 ))}
-
                                                                 <th class="align-center" onClick={handleSearchClick} style={{ minWidth: "100px" }}>
-                                                                    <i class="fa fa-search size-24 pointer mb-2" title={lang["search"]}></i>
+                                                                    <i class={`fa fa-search size-24 pointer mb-2 ${isActive ? 'icon-active' : ''}`} title={lang["search"]}></i>
                                                                 </th>
                                                             </tr>
 
                                                         </thead>
+                                                        
                                                         <tbody>
                                                             {current && current.length > 0 ? (
 
@@ -337,7 +343,7 @@ export default (props) => {
                                                                 })
 
                                                             ) : <tr>
-                                                                <td class="font-weight-bold cell" colspan={`${apiDataName?.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
+                                                                <td class="" colspan={`${apiDataName?.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
                                                             </tr>
                                                             }
                                                         </tbody>
@@ -345,7 +351,7 @@ export default (props) => {
                                                 </div>
                                             </>
                                         </div>
-                                        <div className="d-flex justify-content-between align-items-center mt-2">
+                                        <div className="d-flex justify-content-between align-items-center mt-1">
                                             <p>
                                                 {
                                                     apiData.length > 0 ? (
@@ -361,7 +367,7 @@ export default (props) => {
                                                     {/* Nút đến trang đầu */}
                                                     <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                                                         <button className="page-link" onClick={() => paginate(1)}>
-                                                            &#8810;
+                                                            &#8810; 
                                                         </button>
                                                     </li>
                                                     {/* Nút đến trang trước */}
@@ -401,7 +407,7 @@ export default (props) => {
                                             </nav>
                                         </div>
                                     </div>
-                                </div>
+                               
                             </div>
                         </div>
                     </div>

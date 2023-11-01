@@ -194,7 +194,7 @@ export default {
     "log.id": "ID",
     "log.listtitle": "Title",
     "log.dayupdate": "Date",
-    "log.action": "ACTION",
+    "log.action": "Action",
     "btn.ok": "Filter",
     "btn.clear": "Clear",
     "btn.viewdetail": "View details",
@@ -361,7 +361,12 @@ export default {
     "get data": "Retrieve Data",
     "get result": "Get Results",
     "note not share": "Note: Do not share this key with anyone not authorized.",
-    "create key success": "Successfully generate activation key!"
+    "create key success": "Successfully generate activation key!",
+    "error.serial": "Only characters from A-Z and numbers from 0-9 are allowed",
+    "no info": "Information not updated",
+    "faild key success": "Activation key generation failed!",
+    "total quantity": "Total quantity in",
+    "license create": "License created in"
 }
 
 
