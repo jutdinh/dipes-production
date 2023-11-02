@@ -268,7 +268,7 @@ export default (props) => {
 
         const option = {
             grid: {
-                left: '0%',
+                left: '2%',
                 right: '0%',
                 top: '9%',
                 bottom: '7%'
