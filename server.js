@@ -69,6 +69,14 @@ app.post('/api/foreign/data', async (req, res) => {
 })
 
 
+function repeatableTask() {
+  console.log('Task is running. Time:', new Date().toISOString());
+}
+
+const intervalId = setInterval(repeatableTask, 1000); // Runs every 5 seconds
+
+
+
 app.get('/api/test/statistic', async (req, res) => {
 
   const response = await fetch(`http://192.168.15.29:8085/activeonline/apistatistical2?customer=Mylan Digital Solution`)

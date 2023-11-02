@@ -99,6 +99,9 @@ class ConsumeApi extends Controller {
 
         this.writeReq(req)
         const start = new Date()
+        
+        console.log(req)
+        console.log(req.ip)
 
         const { url, method } = req;
 /*(1)*/ this.url = decodeURI(url);
