@@ -11,7 +11,11 @@ const cors = require("cors");
 const bodyparser = require('body-parser');
 
 require('dotenv').config();
+const ACCESS_CACHE = 'access_cache';
 
+
+
+const { Database } = require('./config/models/database')
 const Activation = require('./controllers/Activation')
 
 app.use(bodyparser.urlencoded({
@@ -69,11 +73,13 @@ app.post('/api/foreign/data', async (req, res) => {
 })
 
 
-function repeatableTask() {
-  console.log('Task is running. Time:', new Date().toISOString());
+const repeatableTask = async () => {
+  
+  await Database.deleteMany(ACCESS_CACHE, {})
+  console.log(`DELETE ACCESS CACHE`);
 }
 
-const intervalId = setInterval(repeatableTask, 1000); // Runs every 5 seconds
+setInterval(repeatableTask, 1000 * 60 ); 
 
 
 
@@ -242,32 +248,68 @@ verifyToken = async (req) => {
   }
 }
 
+
+const accessCatch = async (req) => {
+  const ip = req.ip;
+  const url = req.url;
+
+  const MAX_ACCESS_IN_AN_HOUR = process.env.MAX_ACCESS_IN_AN_HOUR || 10
+  
+  const accessCount = await Database.select(ACCESS_CACHE, { ip, url })
+  if( accessCount ){
+    const { count } = accessCount
+    if( count >= MAX_ACCESS_IN_AN_HOUR ){
+      return false
+    }else{
+      await Database.update( ACCESS_CACHE, {ip, url}, { count: count + 1  } )
+      return true
+    }
+
+  }else{
+    await Database.insert( ACCESS_CACHE, {ip, url, count: 1} )
+    return true
+  }
+}
+
+
 app.use(async (req, res, next) => {
   const { url } = req;
   req.credential = await verifyToken(req)
   const requestType = url.split('/')[1]
   const api_id = url.split('/')[2]
   const Consumer = new ConsumeApi();
-  if (requestType == "ui") {
-    Consumer.consumeUI(req, res, api_id)
-  } else {
-    if (requestType == "search") {
-      Consumer.consumeSearch(req, res, api_id)
+
+  const accessable = await accessCatch(req);
+  if( accessable ){
+
+    if (requestType == "ui") {
+      Consumer.consumeUI(req, res, api_id)
     } else {
-      if (requestType == "export") {
-        Consumer.consumeExport(req, res, api_id)
+      if (requestType == "search") {
+        Consumer.consumeSearch(req, res, api_id)
       } else {
-        if (requestType == "import") {
-          Consumer.consumeImport(req, res, api_id)
+        if (requestType == "export") {
+          Consumer.consumeExport(req, res, api_id)
         } else {
-          if (requestType == "d") {
-            Consumer.consumeDetail(req, res, api_id)
+          if (requestType == "import") {
+            Consumer.consumeImport(req, res, api_id)
           } else {
-            Consumer.consume(req, res, api_id)
+            if (requestType == "d") {
+              Consumer.consumeDetail(req, res, api_id)
+            } else {
+              Consumer.consume(req, res, api_id)
+            }
           }
         }
       }
     }
+  }else{
+    res.status(200).send({
+      success: false,
+      message: "Access denied due to huge request",
+      data : [],
+      fields: []
+    })
   }
 
 })
