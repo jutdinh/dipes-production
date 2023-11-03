@@ -35,6 +35,7 @@ const io = new Server(server, {
 
 
 const { Auth, Projects, Versions, Logs, Tasks, Tables, Fields, Api, UI, Privileges, Mailer, SocketController } = require('./routes');
+const MAX_ACCESS_IN_AN_HOUR = process.env.MAX_ACCESS_IN_AN_HOUR || 50
 
 io.on("connection", (socket) => {
   SocketController(io, socket)
@@ -43,6 +44,21 @@ io.on("connection", (socket) => {
 
 const ConsumeApi = require('./controllers/ConsumeApi');
 const { formatDecNum } = require('./functions/auto_value');
+
+app.use( async (req, res, next) => {
+  const accessable = await accessCatch(req);
+  if(accessable){
+    next()
+  }else{
+    res.status(403).send({
+      success: false,
+      message: `Access denied due to maximum request reach, you can only make ${ MAX_ACCESS_IN_AN_HOUR } requests in a minute`,
+      data: [],
+      fields: []
+    })
+  }
+})
+
 
 app.use('/auth', Auth)
 
@@ -253,7 +269,7 @@ const accessCatch = async (req) => {
   const ip = req.ip;
   const url = req.url;
 
-  const MAX_ACCESS_IN_AN_HOUR = process.env.MAX_ACCESS_IN_AN_HOUR || 10
+  
   
   const accessCount = await Database.select(ACCESS_CACHE, { ip, url })
   if( accessCount ){
@@ -279,39 +295,27 @@ app.use(async (req, res, next) => {
   const api_id = url.split('/')[2]
   const Consumer = new ConsumeApi();
 
-  const accessable = await accessCatch(req);
-  if( accessable ){
-
-    if (requestType == "ui") {
-      Consumer.consumeUI(req, res, api_id)
+  if (requestType == "ui") {
+    Consumer.consumeUI(req, res, api_id)
+  } else {
+    if (requestType == "search") {
+      Consumer.consumeSearch(req, res, api_id)
     } else {
-      if (requestType == "search") {
-        Consumer.consumeSearch(req, res, api_id)
+      if (requestType == "export") {
+        Consumer.consumeExport(req, res, api_id)
       } else {
-        if (requestType == "export") {
-          Consumer.consumeExport(req, res, api_id)
+        if (requestType == "import") {
+          Consumer.consumeImport(req, res, api_id)
         } else {
-          if (requestType == "import") {
-            Consumer.consumeImport(req, res, api_id)
+          if (requestType == "d") {
+            Consumer.consumeDetail(req, res, api_id)
           } else {
-            if (requestType == "d") {
-              Consumer.consumeDetail(req, res, api_id)
-            } else {
-              Consumer.consume(req, res, api_id)
-            }
+            Consumer.consume(req, res, api_id)
           }
         }
       }
     }
-  }else{
-    res.status(200).send({
-      success: false,
-      message: "Access denied due to huge request",
-      data : [],
-      fields: []
-    })
   }
-
 })
 
 server.listen(process.env.PORT, () => {
