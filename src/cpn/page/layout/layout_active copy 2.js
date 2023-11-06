@@ -42,14 +42,13 @@ export default (props) => {
     const [enableNext, setEnableNext] = useState(false)
     const [enable, setEnable] = useState(false)
     const [checkDataValidityDataRespon, setCheckDataValidity] = useState(false)
-    const [notificationErrorInfo, setNotificationErrorInfo] = useState('');
+    console.log(checkDataValidityDataRespon)
     const [enableSave, setEnableSave] = useState(false)
     const [dataKey, setDatKey] = useState({})
     const [apiDataName, setApiDataName] = useState([])
     const [data, setData] = useState({});
-   
     const [dataFile, setDataFile] = useState({})
-   
+    console.log(dataFile)
     const [reason, setReason] = useState("")
     const [showModal, setShowModal] = useState(false);
     const [loadingCreateKey, setLoadingCreatekey] = useState(false);
@@ -181,16 +180,7 @@ export default (props) => {
                     return;
                 }
                 // console.log(parsedContent)
-                if (
-                    !Array.isArray(parsedContent.printhead) || // Đảm bảo printhead là một mảng
-                    parsedContent.printhead.every(printhead =>
-                        (printhead.key === "" && printhead.serialNumber === "") && // Nếu `key` rỗng thì `serialNumber` cũng phải rỗng
-                        (parsedContent.controller.key === '' && parsedContent.controller.serialNumber === '')
-                    )
-                ) {
-                    setFileError(`${lang["correct format"]}`);
-                    return;
-                }
+
 
                 // // Kiểm tra cấu trúc của controller
                 // if (!parsedContent.controller ||
@@ -218,7 +208,7 @@ export default (props) => {
                     !parsedContent.controller ||
                     typeof parsedContent.controller.key !== 'string' ||
                     typeof parsedContent.controller.serialNumber !== 'string' ||
-                    parsedContent.controller.key !== '' && parsedContent.controller.serialNumber === '' // Kiểm tra nếu serialNumber của controller rỗng
+                    parsedContent.controller.serialNumber === '' // Kiểm tra nếu serialNumber của controller rỗng
                 ) {
                     // setFileError(`${lang["correct format"]}`);
                     $('#modalTrigger').click();
@@ -253,7 +243,6 @@ export default (props) => {
             reader.readAsText(file);
         }
     };
-
 
     // const areAllSerialNumbersEmpty = () => {
     //     if (controllerData.serialNumber) return false;
@@ -294,13 +283,7 @@ export default (props) => {
     };
 
     const isControllerValid = (controller) => {
-       
-        if (controller?.key === "" && controller?.serialNumber === "") {
-            return true
-        } else {
-            return controller?.serialNumber;
-        }
-
+        return controller?.serialNumber;
     };
 
     useEffect(() => {
@@ -329,13 +312,13 @@ export default (props) => {
     const handleUpdate = () => {
         // Cập nhật cho controller
         const controllerInput = document.getElementById('controllerSerialNumber');
-        // console.log(controllerInput);
-
-        if (controllerInput !== null) {
-            const updatedControllerData = { ...controllerData, serialNumber: controllerInput.value };
-            setControllerData(updatedControllerData);
+        if (controllerInput.value.length > 8) {
+            setErrorMessageForPrinthead(-1, lang["error.serial"]);
+            return
         }
 
+        const updatedControllerData = { ...controllerData, serialNumber: controllerInput.value };
+        setControllerData(updatedControllerData);
 
         // Cập nhật cho printheads
         const newPrintheadsData = printheadsData.map((printhead, index) => {
@@ -357,15 +340,6 @@ export default (props) => {
             }
         };
         setDataFile(updatedDataFile);
-
-        // if (controllerData.serialNlength < 8) {
-        //     setErrorMessageForPrinthead(-1, lang["error.number"]);
-        //     return
-
-        // }
-        // $('#closeModal').click()
-
-
     };
 
     const handleCloseModal = () => {
@@ -532,128 +506,49 @@ export default (props) => {
     };
 
     function checkDataValidity(dataFile, dataResponse) {
-        // Kiểm tra nếu cả dataFile và dataResponse có tồn tại
-        if (!dataFile?.data) {
-            // console.log('Lỗi: Thiếu dataFile hoặc dataFile không có thuộc tính dữ liệu.');
-            setNotificationErrorInfo('Lỗi: Thiếu dataFile hoặc dataFile không có thuộc tính dữ liệu.');
+        // Đảm bảo cả hai đối tượng tồn tại và có mảng printhead.
+        if (!dataFile || !dataFile.data || !dataResponse || !dataResponse.printhead) {
             return false;
         }
 
-        if (!dataResponse) {
-            // console.log('Lỗi: Thiếu dataResponse.');
-            return false;
-        }
-
-        // Kiểm tra sự tồn tại của các trường cần thiết trong dataFile
-        const fileController = dataFile.data.controller;
         const filePrintheads = dataFile.data.printhead;
+        const responsePrintheads = dataResponse.printhead;
 
-        // Trường hợp dataResponse chỉ có printer có dữ liệu và controller và printhead là null
-        // Kiểm tra nếu dataResponse có controller và printhead là null
-        if (dataResponse.controller === null && dataResponse.printhead === null) {
-            // Kiểm tra nếu dataResponse có printer
-            if (dataResponse.printer) {
-                // Từ dataResponse.printer, lấy ra các giá trị '1U' và '10S'
-                const printerKeys = dataResponse.printer['1U'].split(', ').filter(key => key);
-                const printerSerialNumbers = dataResponse.printer['10S'].split(', ').filter(sn => sn);
+        // Kiểm tra số lượng printhead có khớp nhau không.
+        if (filePrintheads.length !== responsePrintheads.length) {
+            return false;
+        }
 
-                // Kiểm tra khớp thông tin từ dataFile với dataResponse.printer
-                if (fileController && fileController.key && !printerKeys.includes(fileController.key)) {
-                    // console.log(`Lỗi: Khóa '${fileController.key}' từ bộ điều khiển dataFile không có trong máy in dataResponse.`);
-                    
-                    return false;
-                }
-                if (fileController && fileController.serialNumber && !printerSerialNumbers.includes(fileController.serialNumber)) {
-                    // console.log(`Lỗi: Số serial '${fileController.serialNumber}' từ bộ điều khiển dataFile không có trong máy in dataResponse.`);
-                    return false;
-                }
+        // Lặp qua từng printhead để kiểm tra.
+        for (let i = 0; i < filePrintheads.length; i++) {
+            const filePrinthead = filePrintheads[i];
+            const responsePrinthead = responsePrintheads[i];
 
-                // Nếu tất cả các printhead trong dataFile có key và serialNumber rỗng, và dataResponse không có printhead, hàm sẽ trả về true
-                if (filePrintheads.every(printhead => printhead.key === "" && printhead.serialNumber === "")) {
-                    return true;
-                }
-            } else {
-                // console.log('Lỗi: dataResponse không có thông tin printer khi controller và printhead là null.');
-                return false;
-            }
-        } else {
-
-            // Kiểm tra sự tồn tại của các trường cần thiết trong dataResponse
-            if (!dataResponse.controller || dataResponse.printhead === undefined) {
-                // console.log('Lỗi: dataResponse thiếu bộ điều khiển hoặc đầu in.');
-                return false;
-            }
-
-            // Kiểm tra cấu trúc của controller
-            if (fileController.key && !dataResponse.controller['1U']) {
-                // console.log(`Lỗi: Khóa '${fileController.key}' từ bộ điều khiển dataFile không khớp với dataResponse.`);
-                return false;
-            }
-            if (fileController.serialNumber && !dataResponse.controller['10S']) {
-                // console.log(`Lỗi: Số serial '${fileController.serialNumber}' từ bộ điều khiển dataFile không khớp với dataResponse.`);
-                return false;
-            }
-
-            // Kiểm tra cấu trúc của printhead
-            if (Array.isArray(filePrintheads)) {
-                // Nếu dataResponse.printhead là null, kiểm tra xem tất cả các printhead trong dataFile có rỗng không
-                if (dataResponse.printhead === null) {
-                    const allPrintheadsEmpty = filePrintheads.every(printhead => !printhead.key && !printhead.serialNumber);
-                    if (!allPrintheadsEmpty) {
-                        // console.log('Lỗi: Không tất cả các printhead trong dataFile đều rỗng khi dataResponse.printhead là null.');
+            // Kiểm tra nếu filePrinthead có đầy đủ key và serialNumber.
+            // Nếu key hoặc serialNumber trống, tất cả các trường trong responsePrinthead phải là null.
+            if (!filePrinthead.key && !filePrinthead.serialNumber) {
+                for (const key in responsePrinthead) {
+                    if (responsePrinthead[key] !== null) {
                         return false;
                     }
-                } else {
-                    // Nếu dataResponse.printhead không phải là null, thực hiện các kiểm tra cụ thể hơn
-                    for (let i = 0; i < filePrintheads.length; i++) {
-                        const filePrinthead = filePrintheads[i];
-                        const responsePrinthead = dataResponse.printhead[i];
-
-                        if (filePrinthead.key && (!responsePrinthead || !responsePrinthead['1U'])) {
-                            // console.log(`Lỗi: Khóa '${filePrinthead.key}' từ đầu in dataFile không khớp với dataResponse.`);
-                            return false;
-                        }
-                        if (filePrinthead.serialNumber && (!responsePrinthead || !responsePrinthead['10S'])) {
-                            // console.log(`Lỗi: Số serial '${filePrinthead.serialNumber}' từ đầu in dataFile không khớp với dataResponse.`);
-                            return false;
-                        }
-                    }
                 }
+            } else {
+                // Nếu key và serialNumber có giá trị, không cần kiểm tra các trường null trong responsePrinthead.
+                // Bất kỳ kiểm tra thêm nào cho các trường không null trong responsePrinthead sẽ được thực hiện ở đây.
             }
         }
-        // Tất cả các kiểm tra đều đúng
+
+        // Nếu tất cả các kiểm tra đều vượt qua, trả về true.
         return true;
     }
 
 
-    // Hàm kiểm tra xem tất cả giá trị trong đối tượng có phải là null không
-    const isAllValuesNull = (obj) => Object.values(obj).every(value => value === null);
-    // Hàm kiểm tra xem tất cả giá trị trong mảng có phải là null không
-    function checkAllPrintheadsNull(printheads) {
-        // Trả về true ngay lập tức nếu printheads không phải là một mảng hoặc rỗng
-        if (!Array.isArray(printheads) || printheads.length === 0) {
-            return true;
-        }
-
-        // Kiểm tra từng printhead
-        for (let printhead of printheads) {
-            // Nếu printhead có ít nhất một thuộc tính không phải là null, trả về true
-            if (Object.values(printhead).some(value => value !== null)) {
-                return true;
-            }
-        }
-
-        // Nếu tất cả printhead đều chỉ chứa giá trị null, trả về false
-        return false;
-    }
-
-    const checkPrinthead = checkAllPrintheadsNull(current);
 
 
 
 
     // console.log(isValid)
-   
+    console.log(data)
     return (
         <>
             <div class="col-md-12">
@@ -685,7 +580,7 @@ export default (props) => {
                                     <form>
                                         <div class="row">
                                             {/* Thông tin Controller */}
-                                            {controllerData?.key !== "" &&
+                                            {(controllerData?.key !== "") &&
                                                 <div class="col-md-12">
                                                     <h5>Controller</h5>
                                                     <div class="form-group">
@@ -730,86 +625,84 @@ export default (props) => {
                                                     </div>
                                                 </div>
                                             }
+
                                             {/* Thông tin Printheads */}
-                                            {printheadsData.every(printhead => printhead.key !== "")  &&
-                                                <div class="col-md-12 mt-2">
-                                                    <h5>Print Heads</h5>
-                                                    {
-                                                        (() => {
-                                                            let validPrintheadCount = 0;
-                                                            return printheadsData.map((printhead, index) => {
-                                                                validPrintheadCount++;
-                                                                if (printhead.key) {
+                                            <div class="col-md-12 mt-2">
+                                                <h5>Print Heads</h5>
+                                                {
+                                                    (() => {
+                                                        let validPrintheadCount = 0;
+                                                        return printheadsData.map((printhead, index) => {
+                                                            validPrintheadCount++;
+                                                            if (printhead.key) {
 
-                                                                    return (
-                                                                        <div key={index}>
-                                                                            <label class="font-weight-bold">Print Head {validPrintheadCount}</label><br />
-                                                                            <div class="form-group">
-                                                                                <label>UUID: {printhead.key}</label><br />
+                                                                return (
+                                                                    <div key={index}>
+                                                                        <label class="font-weight-bold">Print Head {validPrintheadCount}</label><br />
+                                                                        <div class="form-group">
+                                                                            <label>UUID: {printhead.key}</label><br />
 
-                                                                                <div class="input-group">
-                                                                                    <label for="printheadSerialNumber" class="input-group-text">
-                                                                                        Serial Number
-                                                                                    </label>
-                                                                                    <input
-                                                                                        type="text"
-                                                                                        class="form-control"
-                                                                                        id={`printheadSerialNumber_${index}`}
-                                                                                        placeholder={lang["enter serialnumber"]}
-                                                                                        value={printhead?.serialNumber || ''}
-                                                                                        onChange={(e) => {
-                                                                                            // Chuyển ký tự nhập vào thành chữ in hoa
-                                                                                            const upperValue = e.target.value.toUpperCase();
+                                                                            <div class="input-group">
+                                                                                <label for="printheadSerialNumber" class="input-group-text">
+                                                                                    Serial Number
+                                                                                </label>
+                                                                                <input
+                                                                                    type="text"
+                                                                                    class="form-control"
+                                                                                    id={`printheadSerialNumber_${index}`}
+                                                                                    placeholder={lang["enter serialnumber"]}
+                                                                                    value={printhead?.serialNumber || ''}
+                                                                                    onChange={(e) => {
+                                                                                        // Chuyển ký tự nhập vào thành chữ in hoa
+                                                                                        const upperValue = e.target.value.toUpperCase();
 
-                                                                                            // Kiểm tra ký tự chỉ cho phép in hoa và số
-                                                                                            const regex = /^[A-Z0-9]*$/;
-                                                                                            if (regex.test(upperValue) && upperValue.length <= 15) {
-                                                                                                updateSerialNumber(index, upperValue);  // Cập nhật giá trị đã được chuyển thành chữ in hoa
-                                                                                                setErrorMessageForPrinthead(index, ''); // Xóa tất cả các lỗi
-                                                                                            } else {
-                                                                                                setErrorMessageForPrinthead(index, lang["error.serial"]);
-                                                                                            }
-                                                                                        }}
-                                                                                        onBlur={() => {
-                                                                                            setErrorMessageForPrinthead(index, ''); // Xóa lỗi khi dừng focus
-                                                                                        }}
-                                                                                        maxLength="15"
-                                                                                        onKeyPress={(e) => {
-                                                                                            if (e.key === ' ') {
-                                                                                                e.preventDefault();
-                                                                                            }
-                                                                                        }}
-                                                                                    />
+                                                                                        // Kiểm tra ký tự chỉ cho phép in hoa và số
+                                                                                        const regex = /^[A-Z0-9]*$/;
+                                                                                        if (regex.test(upperValue) && upperValue.length <= 15) {
+                                                                                            updateSerialNumber(index, upperValue);  // Cập nhật giá trị đã được chuyển thành chữ in hoa
+                                                                                            setErrorMessageForPrinthead(index, ''); // Xóa tất cả các lỗi
+                                                                                        } else {
+                                                                                            setErrorMessageForPrinthead(index, lang["error.serial"]);
+                                                                                        }
+                                                                                    }}
+                                                                                    onBlur={() => {
+                                                                                        setErrorMessageForPrinthead(index, ''); // Xóa lỗi khi dừng focus
+                                                                                    }}
+                                                                                    maxLength="15"
+                                                                                    onKeyPress={(e) => {
+                                                                                        if (e.key === ' ') {
+                                                                                            e.preventDefault();
+                                                                                        }
+                                                                                    }}
+                                                                                />
 
-                                                                                </div>
-                                                                                <div style={{ height: "15px" }}>
-                                                                                    {errorMessage[index] && <div style={{ color: 'red' }}>{errorMessage[index]}</div>}
-                                                                                </div>
+                                                                            </div>
+                                                                            <div style={{ height: "15px" }}>
+                                                                                {errorMessage[index] && <div style={{ color: 'red' }}>{errorMessage[index]}</div>}
                                                                             </div>
                                                                         </div>
-                                                                    );
-                                                                } else {
-                                                                    return (
-                                                                        // <div key={index}>
-                                                                        //     <div class="form-group">
-                                                                        //         <label class="font-weight-bold mt-2 mb-2">Print Head {validPrintheadCount}: Not Connect</label><br />
-                                                                        //     </div>
-                                                                        // </div>
-                                                                        null
-                                                                    );
-                                                                }
-                                                            }).filter(Boolean);  // filter out the nulls
-                                                        })()
-                                                    }
-                                                </div>
-                                            }
-
+                                                                    </div>
+                                                                );
+                                                            } else {
+                                                                return (
+                                                                    // <div key={index}>
+                                                                    //     <div class="form-group">
+                                                                    //         <label class="font-weight-bold mt-2 mb-2">Print Head {validPrintheadCount}: Not Connect</label><br />
+                                                                    //     </div>
+                                                                    // </div>
+                                                                    null
+                                                                );
+                                                            }
+                                                        }).filter(Boolean);  // filter out the nulls
+                                                    })()
+                                                }
+                                            </div>
                                         </div>
                                     </form>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" onClick={handleUpdate} style={{ minWidth: "100px" }} data-dismiss="modal" disabled={enableSave ? true : false} class="btn btn-success" title={lang["btn.update"]}>{lang["btn.update"]}</button>
-                                    <button type="button" onClick={handleCloseModal} style={{ minWidth: "100px" }} id="closeModal" data-dismiss="modal" class="btn btn-danger" title={lang["btn.cancel"]}>{lang["btn.cancel"]}</button>
+                                    <button type="button" onClick={handleCloseModal} style={{ minWidth: "100px" }} data-dismiss="modal" class="btn btn-danger" title={lang["btn.cancel"]}>{lang["btn.cancel"]}</button>
 
                                 </div>
                             </div>
@@ -888,43 +781,42 @@ export default (props) => {
                                                     <div class="table-responsive">
                                                         <>
                                                             <div style={{ overflowX: 'auto' }}>
-                                                                {(data.controller && !isAllValuesNull(data.controller) || data.printer && !isAllValuesNull(data.printer)) && (
-                                                                    <table className={"table"} style={{ marginBottom: "10px", width: '100%' }}>
-                                                                        <thead>
-                                                                            <tr className="color-tr">
-                                                                                <th className="font-weight-bold" style={{ width: "50px" }} scope="col">Key</th>
-                                                                                <th className="font-weight-bold" style={{ width: "100px" }} scope="col">Value</th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>
-                                                                            {apiDataName?.map((header, index) => {
-                                                                                const key = header.display_name ? header.display_name : header.field_name;
-                                                                                let value;
-                                                                                if (data.printer) {
-                                                                                    value = data.printer[header.fomular_alias];
-                                                                                } else if (data.controller) {
-                                                                                    value = data.controller[header.fomular_alias];
-                                                                                }
+                                                                <table className={"table"} style={{ marginBottom: "10px", width: '100%' }}>
+                                                                    <thead>
+                                                                        <tr className="color-tr">
+                                                                            <th className="font-weight-bold" style={{ width: "50px" }} scope="col">Key</th>
+                                                                            <th className="font-weight-bold" style={{ width: "100px" }} scope="col">Value</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {apiDataName?.map((header, index) => {
+                                                                            const key = header.display_name ? header.display_name : header.field_name;
 
-                                                                                if (value === undefined || value === null || value === '') {
-                                                                                    value = lang["no data"];
-                                                                                }
+                                                                            let value;
+                                                                            if (data.printer) {
+                                                                                value = data.printer[header.fomular_alias];
+                                                                            } else if (data.controller) {
+                                                                                value = data.controller[header.fomular_alias];
+                                                                            }
 
-                                                                                return (
-                                                                                    <tr key={index}>
-                                                                                        <td>{key}</td>
-                                                                                        <td>{value}</td>
-                                                                                    </tr>
-                                                                                );
-                                                                            })}
-                                                                        </tbody>
-                                                                    </table>
-                                                                )}
+                                                                            if (value === undefined || value === null || value === '') {
+                                                                                value = lang["no data"];
+                                                                            }
+
+                                                                            return (
+                                                                                <tr key={index}>
+                                                                                    <td>{key}</td>
+                                                                                    <td>{value}</td>
+                                                                                </tr>
+                                                                            );
+                                                                        })}
+                                                                    </tbody>
+                                                                </table>
                                                             </div>
                                                         </>
                                                     </div>
                                                 </div>
-                                                {(!isEmptyObject(data.controller) && checkPrinthead && current !== null) && (
+                                                {!isEmptyObject(data.controller) && current !== null && (
                                                     <div className="col-md-12 p-20">
                                                         <div className="table-responsive">
                                                             <>
@@ -1045,7 +937,7 @@ export default (props) => {
                                                                         </div>
                                                                         <button className="btn btn-primary mt-3" style={{ minWidth: "100px" }} onClick={exportLicense} title={lang["export to file"]}>
                                                                             <i class="fa fa-download mr-2 size-18 pointer" aria-hidden="true"></i>
-                                                                           {lang["export file"]}
+                                                                            Export
                                                                         </button>
                                                                         <div class="mt-3 text-success d-none d-sm-block">
                                                                             {lang["note not share"]}

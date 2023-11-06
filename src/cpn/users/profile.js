@@ -100,7 +100,7 @@ export default (props) => {
                         body: JSON.stringify({ image: e.target.result })
                     }).then(res => res.json()).then(data => {
                         const { success, content } = data;
-                        console.log(data)
+                        // console.log(data)
 
                         // if (success) {
                         //     Swal.fire({
@@ -178,7 +178,7 @@ export default (props) => {
             .then(res => res.json())
             .then((resp) => {
                 const { success, content, status } = resp;
-                console.log(resp)
+                // console.log(resp)
                 if (success) {
                     const stringifiedUser = JSON.stringify(requestBody.account)
                     localStorage.setItem("user", stringifiedUser)
@@ -188,7 +188,7 @@ export default (props) => {
                 }
             });
     }
-    console.log(user)
+    // console.log(user)
     return (
         <div class="midde_cont">
             <div class="container-fluid">

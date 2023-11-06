@@ -152,14 +152,18 @@
  .size-img-success{
     width: 180px;
  }
-
+ .logo_section img {
+    height: 42px;
+    padding: 0;
+    margin: 6px 2px 0;
+}
 
 
 .my-box {
-    height: 338px;
+    height: 420px;
     /* background-color: #d9dfe4; */
     /* color: #fff; */
-    border: 1px solid #dee2e6;
+    /* border: 1px solid #dee2e6; */
     border-radius: 5px;
     padding: 20px;
     display: flex; /* Sử dụng Flexbox */
@@ -179,13 +183,20 @@
     color: #445069; 
     font-weight: bold; 
 }
+.f-24{
+    font-size: 48px !important;
+}
 .sticky-header th {
     position: sticky;
     top: 0;
     z-index: 100; 
     background-color: #f0eaea; 
 }
-
+.total-box{
+    padding-top: 50px !important;
+    padding-bottom: 50px !important;
+    font-size: 24px !important;
+}
 .social_icon {
     width: 100%;
     text-align: center;
@@ -194,6 +205,10 @@
     padding: 10px 0 10px;
     color: #fcf7f7 !important;
     background: #222;
+    /* padding-bottom: 15px;
+    height: 55px;
+    padding-top: 15px */
+
 }
 .my-box-half {
     height: 150px;
@@ -235,13 +250,23 @@
     background: #f8f8f8;
 }
 .controller .social_icon {
-    background: #4D90FE;
+  
+    background: #4988ef;
+    padding-bottom: 15px;
+    height: 55px;
+    padding-top: 14px
 }
 .printhead .social_icon {
-    background: #96C291;
+    background: #72c05d;
+    padding-bottom: 15px;
+    height: 55px;
+    padding-top: 14px
 }
 .printer .social_icon {
-    background: #E19898;
+    background: #ff7170;
+    padding-bottom: 15px;
+    height: 55px;
+    padding-top: 14px
 }
 .height-82{
    min-height: 82vh;
@@ -276,7 +301,7 @@
 }
 
 .color-whiteh5{
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
     text-transform: uppercase;
     margin: 0;
@@ -1851,7 +1876,7 @@ h5 {
     padding: 5px 20px 5px 20px;
     float: left;
     width: 100%;
-    min-height: 380px;
+    min-height: 480px;
 
 }
 .padding_infor_info_layout_chart_half {

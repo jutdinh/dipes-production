@@ -150,7 +150,7 @@ export default () => {
                         <div className="login_section">
                             <div className="logo_login">
                                 <div className="center">
-                                    <img width="210" src="images/logo/logo.png" alt="#" />
+                                    <img width={280} height={50} src="images/logo/logo.png" alt="#" />
                                 </div>
                             </div>
                             <div className="login_form">

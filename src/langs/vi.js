@@ -360,6 +360,8 @@ export default {
     "no info": "Thông tin chưa được cập nhật",
     "faild key success": "Tạo khóa kích hoạt thất bại!",
     "total quantity": "Tổng số lượng năm",
-    "license create": "License đã tạo năm"
+    "license create": "License đã tạo năm",
+    "error.number": "Tối thiểu 8 và tối đa 16 kí tự",
+    "export file": "Xuất file"
 
 }

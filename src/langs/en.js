@@ -355,7 +355,7 @@ export default {
     "faild.password": "Incorrect password",
     "update.config": "Update information",
     "enter serialnumber": "Enter Serial Number",
-    "export to file": "Export to file",
+    "export to file": "Export file",
     "step": "Step",
     "upload file": "Upload File",
     "get data": "Retrieve Data",
@@ -366,7 +366,9 @@ export default {
     "no info": "Information not updated",
     "faild key success": "Activation key generation failed!",
     "total quantity": "Total quantity in",
-    "license create": "License created in"
+    "license create": "License created in",
+    "error.number": "Minimum 8 and maximum 16 characters",
+    "export file": "Export"
 }
 
 

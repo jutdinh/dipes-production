@@ -150,7 +150,8 @@ export default (props) => {
     const MyBarChart1 = () => {
 
 
-        const COLORS = ["#4D90FE", "#96C291", "#E19898"];
+        // const COLORS = ["#4D90FE", "#96C291", "#E19898"];
+        const COLORS = ["#4988ef", "#72c05d", "#ff7170"];
         const months = [
             lang["january"],
             lang["february"],
@@ -380,7 +381,7 @@ export default (props) => {
                                     <div className="select-container">
                                         {years.length > 1 && (
                                             <select
-                                                className="form-control"
+                                                className="form-control pointer"
                                                 value={selectedYear}
                                                 onChange={e => setSelectedYear(e.target.value)}
                                             >
@@ -391,7 +392,7 @@ export default (props) => {
                                         )}
                                     </div>
                                     <ResponsiveContainer className="bar-chart-container">
-                                        <ReactECharts option={option} style={{ height: 350, width: '100%' }} />
+                                        <ReactECharts option={option} style={{ height: 460, width: '100%' }} />
                                     </ResponsiveContainer>
                                 </div>
                             </div>
@@ -424,7 +425,8 @@ export default (props) => {
                         </div>
                     </div>
                 </div>
-                <div class="row column1">
+              
+                {/* <div class="row column1">
                     {LABELS[0] !== undefined &&
                         <div className={`col-lg-${columnWidth}`}>
                             <div class="full socile_icons controller margin_bottom_30">
@@ -445,7 +447,7 @@ export default (props) => {
                                                         <div class="col-md-12">
                                                             <div class="ml-4 mt-3 mr-4 mb-3 my-box-half">
                                                                 <span>
-                                                                    {/* <IncrementalNumber value={totalControllerForCurrentMonth || 0} /> */}
+                                                                   
                                                                     {totalControllerForCurrentMonth || 0}
                                                                 </span>
                                                             </div>
@@ -466,7 +468,7 @@ export default (props) => {
                                                         <div class="col-md-12">
                                                             <div class="ml-4 mt-3 mr-4 mb-3 my-box-half">
                                                                 <span>
-                                                                    {/* <IncrementalNumber value={totalControllerForYear || 0} /> */}
+                                                                  
                                                                     {totalControllerForYear || 0}
                                                                 </span>
                                                             </div>
@@ -500,7 +502,7 @@ export default (props) => {
                                                         <div class="col-md-12">
                                                             <div class="ml-4 mt-3 mr-4 mb-3 my-box-half">
                                                                 <span>
-                                                                    {/* <IncrementalNumber value={totalControllerForCurrentMonth || 0} /> */}
+                                                                   
                                                                     {totalPrintheadForCurrentMonth || 0}
                                                                 </span>
                                                             </div>
@@ -521,7 +523,7 @@ export default (props) => {
                                                         <div class="col-md-12">
                                                             <div class="ml-4 mt-3 mr-4 mb-3 my-box-half">
                                                                 <span>
-                                                                    {/* <IncrementalNumber value={totalControllerForYear || 0} /> */}
+                                                                   
                                                                     {totalPrintheadForYear || 0}
                                                                 </span>
                                                             </div>
@@ -555,7 +557,7 @@ export default (props) => {
                                                         <div class="col-md-12">
                                                             <div class="ml-4 mt-3 mr-4 mb-3 my-box-half">
                                                                 <span>
-                                                                    {/* <IncrementalNumber value={totalControllerForCurrentMonth || 0} /> */}
+                                                                  
                                                                     {totalPrinterForCurrentMonth || 0}
                                                                 </span>
                                                             </div>
@@ -576,7 +578,7 @@ export default (props) => {
                                                         <div class="col-md-12">
                                                             <div class="ml-4 mt-3 mr-4 mb-3 my-box-half">
                                                                 <span>
-                                                                    {/* <IncrementalNumber value={totalControllerForYear || 0} /> */}
+                                                                  
                                                                     {totalPrinterForYear || 0}
                                                                 </span>
                                                             </div>
@@ -590,7 +592,71 @@ export default (props) => {
                             </div>
                         </div>
                     }
-                </div>
+                </div> */}
+
+                <div class="row column1 social_media_section">
+                        <div class="col-md-4 col-lg-4">
+                           <div class="full socile_icons controller margin_bottom_30">
+                              <div class="social_icon color-whiteh5">
+                               
+                                 {LABELS[0]}
+                              </div>
+                              <div class="social_cont total-box">
+                                 <ul>
+                                    <li>
+                                       <span><strong class="f-24"> {totalControllerForCurrentMonth || 0}</strong></span>
+                                       <span>  {lang["month"]} {currentMonth}</span>
+                                    </li>
+                                    <li>
+                                       <span><strong class="f-24">  {totalControllerForYear || 0}</strong></span>
+                                       <span> {lang["year"]} {selectedYear}</span>
+                                    </li>
+                                 </ul>
+                              </div>
+                           </div>
+                        </div>
+                        
+                        <div class="col-md-4 col-lg-4">
+                           <div class="full socile_icons printhead margin_bottom_30">
+                              <div class="social_icon color-whiteh5">
+                               
+                                 {LABELS[1]}
+                              </div>
+                              <div class="social_cont total-box">
+                                 <ul>
+                                    <li>
+                                       <span><strong class="f-24"> {totalPrintheadForCurrentMonth || 0}</strong></span>
+                                       <span>  {lang["month"]} {currentMonth}</span>
+                                    </li>
+                                    <li>
+                                       <span><strong class="f-24">  {totalPrintheadForYear || 0}</strong></span>
+                                       <span> {lang["year"]} {selectedYear}</span>
+                                    </li>
+                                 </ul>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-md-4 col-lg-4">
+                           <div class="full socile_icons printer margin_bottom_30">
+                              <div class="social_icon color-whiteh5">
+                               
+                                 {LABELS[2]}
+                              </div>
+                              <div class="social_cont total-box">
+                                 <ul>
+                                    <li>
+                                       <span><strong class="f-24"> {totalPrinterForCurrentMonth || 0}</strong></span>
+                                       <span>  {lang["month"]} {currentMonth}</span>
+                                    </li>
+                                    <li>
+                                       <span><strong class="f-24">  {totalPrinterForYear || 0}</strong></span>
+                                       <span> {lang["year"]} {selectedYear}</span>
+                                    </li>
+                                 </ul>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
             </>
         );
     };
