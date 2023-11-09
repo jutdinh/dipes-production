@@ -47,9 +47,9 @@ export default (props) => {
     const [dataKey, setDatKey] = useState({})
     const [apiDataName, setApiDataName] = useState([])
     const [data, setData] = useState({});
-   
+
     const [dataFile, setDataFile] = useState({})
-   
+
     const [reason, setReason] = useState("")
     const [showModal, setShowModal] = useState(false);
     const [loadingCreateKey, setLoadingCreatekey] = useState(false);
@@ -192,27 +192,44 @@ export default (props) => {
                     return;
                 }
 
-                // // Kiểm tra cấu trúc của controller
+
+
+                //  // // Kiểm tra cấu trúc của controller
                 // if (!parsedContent.controller ||
+                //     !parsedContent.controller.key||
                 //     typeof parsedContent.controller.key !== 'string' ||
-                //     parsedContent.controller.key === '' ||
-                //     typeof parsedContent.controller.serialNumber !== 'string') {
+                //     !parsedContent.controller.serialNumber||
+                //     typeof parsedContent.controller.serialNumber !== 'string' 
+
+                //     ) {
                 //     setFileError(`${lang["correct format"]}`);
                 //     return;
                 // }
+
+
+
+                //  // // Kiểm tra cấu trúc của controller
+                if (
+                    !parsedContent.controller || parsedContent.controller.key === undefined || parsedContent.controller.serialNumber === undefined
+                ) {
+                    setFileError(`${lang["correct format"]}`);
+                    // console.log("Lỗi controller")
+                    return;
+                }
                 // Kiểm tra cấu trúc của printhead
                 if (
                     !Array.isArray(parsedContent.printhead) || // Đảm bảo printhead là một mảng
                     !parsedContent.printhead.every(printhead =>
-                        (printhead.key !== "" || printhead.serialNumber === "") && // Nếu `key` rỗng thì `serialNumber` cũng phải rỗng
-                        typeof printhead.serialNumber === 'string'
-
+                        typeof printhead === 'object' &&
+                        printhead.key !== undefined &&
+                        printhead.serialNumber !== undefined &&
+                        (printhead.key !== "" || printhead.serialNumber === "") &&
+                        (printhead.serialNumber === "" || typeof printhead.serialNumber === 'string')
                     )
                 ) {
                     setFileError(`${lang["correct format"]}`);
                     return;
                 }
-
                 // Kiểm tra cấu trúc của controller & printhead để add serialNumber
                 if (
                     !parsedContent.controller ||
@@ -294,7 +311,7 @@ export default (props) => {
     };
 
     const isControllerValid = (controller) => {
-       
+
         if (controller?.key === "" && controller?.serialNumber === "") {
             return true
         } else {
@@ -560,7 +577,7 @@ export default (props) => {
                 // Kiểm tra khớp thông tin từ dataFile với dataResponse.printer
                 if (fileController && fileController.key && !printerKeys.includes(fileController.key)) {
                     // console.log(`Lỗi: Khóa '${fileController.key}' từ bộ điều khiển dataFile không có trong máy in dataResponse.`);
-                    
+
                     return false;
                 }
                 if (fileController && fileController.serialNumber && !printerSerialNumbers.includes(fileController.serialNumber)) {
@@ -650,10 +667,12 @@ export default (props) => {
     const checkPrinthead = checkAllPrintheadsNull(current);
 
 
+    const shouldDisplayPrintHeads = printheadsData.some(printhead =>
+        printhead.key !== "" || printhead.serialNumber !== ""
+    );
 
+    // console.log(printheadsData)
 
-    // console.log(isValid)
-   
     return (
         <>
             <div class="col-md-12">
@@ -731,7 +750,7 @@ export default (props) => {
                                                 </div>
                                             }
                                             {/* Thông tin Printheads */}
-                                            {printheadsData.every(printhead => printhead.key !== "")  &&
+                                            {shouldDisplayPrintHeads ? (
                                                 <div class="col-md-12 mt-2">
                                                     <h5>Print Heads</h5>
                                                     {
@@ -802,6 +821,7 @@ export default (props) => {
                                                         })()
                                                     }
                                                 </div>
+                                            ): null
                                             }
 
                                         </div>
@@ -1045,7 +1065,7 @@ export default (props) => {
                                                                         </div>
                                                                         <button className="btn btn-primary mt-3" style={{ minWidth: "100px" }} onClick={exportLicense} title={lang["export to file"]}>
                                                                             <i class="fa fa-download mr-2 size-18 pointer" aria-hidden="true"></i>
-                                                                           {lang["export file"]}
+                                                                            {lang["export file"]}
                                                                         </button>
                                                                         <div class="mt-3 text-success d-none d-sm-block">
                                                                             {lang["note not share"]}
