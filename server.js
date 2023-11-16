@@ -99,154 +99,6 @@ setInterval(repeatableTask, 1000 * 60 );
 
 
 
-app.get('/api/test/statistic', async (req, res) => {
-
-  const response = await fetch(`http://192.168.15.29:8085/activeonline/apistatistical2?customer=Mylan Digital Solution`)
-  const serialized = await response.json()
-
-  const { data } = serialized;
-
-  const { followModel } = data;
-
-  const years = Object.keys(followModel)
-
-  const statistic = {}
-
-  const formateDeviceName = (name) => {
-    if (name == 'printhead') {
-      name = "print head"
-    }
-    const firstChar = name[0].toUpperCase()
-    return firstChar + name.slice(1, name.length)
-  }
-
-
-  const sortStatis = (statis) => {
-    let keys = Object.keys(statis);
-    keys.sort((a, b) => {
-      const splittedA = a.split(' ')
-      const splittedB = b.split(' ')
-
-      const yearAPart = parseInt(splittedA[1])
-      const monthAPart = parseInt(splittedA[0])
-
-      const yearBPart = parseInt(splittedB[1])
-      const monthBPart = parseInt(splittedB[0])
-
-      return (yearAPart * 12 + monthAPart) > (yearBPart * 12 + monthBPart) ? 1 : -1
-    })
-
-    if (keys.length > 0) {
-
-      const startTime = keys[0]
-      const endTime = keys[keys.length - 1]
-
-      const minYear = parseInt(startTime.split(' ')[1])
-      const maxYear = parseInt(endTime.split(' ')[1])
-
-      for (let i = minYear; i <= maxYear; i++) {
-        for (let j = 1; j <= 12; j++) {
-          const controller = statis[`${(j)} ${i} Controller`]
-          const printhead = statis[`${(j)} ${i} Print head`]
-          const printer = statis[`${(j)} ${i} Printer`]
-
-          if (controller == undefined) {
-            statis[`${(j)} ${i} Controller`] = 0
-          }
-          if (printhead == undefined) {
-            statis[`${(j)} ${i} Print head`] = 0
-          }
-          if (printer == undefined) {
-            statis[`${(j)} ${i} Printer`] = 0
-          }
-        }
-      }
-
-      keys = Object.keys(statis);
-      keys.sort((a, b) => {
-        const splittedA = a.split(' ')
-        const splittedB = b.split(' ')
-
-        const yearAPart = parseInt(splittedA[1])
-        const monthAPart = parseInt(splittedA[0])
-
-        const yearBPart = parseInt(splittedB[1])
-        const monthBPart = parseInt(splittedB[0])
-
-        return (yearAPart * 12 + monthAPart) > (yearBPart * 12 + monthBPart) ? 1 : -1
-      })
-
-      const Keysvalue = {
-        "Printer": 0,
-        "Print": 1, // it mean print head
-        "Controller": 2
-      }
-
-      for (let i = 0; i < keys.length; i += 3) {
-        const a = keys[i]
-        const b = keys[i + 1]
-        const c = keys[i + 2]
-
-        const arr = [a, b, c]
-        arr.sort((x, y) => Keysvalue[x.split(' ')[2]] > Keysvalue[y.split(' ')[2]] ? -1 : 1)
-
-
-        keys[i] = arr[0]
-        keys[i + 1] = arr[1]
-        keys[i + 2] = arr[2]
-
-      }
-    }
-
-    const sortedStatis = {}
-    for (let i = 0; i < keys.length; i++) {
-      sortedStatis[keys[i]] = statis[keys[i]]
-    }
-
-    return sortedStatis
-  }
-
-
-
-  for (let i = 0; i < years.length; i++) {
-    const year = years[i]
-    const yearData = followModel[year]
-
-    const devices = Object.keys(yearData)
-
-    for (let j = 0; j < devices.length; j++) {
-      const device = devices[j]
-      const deviceData = yearData[device]
-
-      const deviceSeries = Object.keys(deviceData)
-      for (let k = 0; k < deviceSeries.length; k++) {
-        const series = deviceSeries[k]
-        const seriesData = deviceData[series]
-
-        for (let h = 1; h <= 12; h++) {
-
-          if (statistic[`${h} ${year} ${formateDeviceName(device)}`] == undefined) {
-            statistic[`${h} ${year} ${formateDeviceName(device)}`] = {}
-          }
-          statistic[`${h} ${year} ${formateDeviceName(device)}`][series] = seriesData[h - 1]
-        }
-      }
-    }
-  }
-
-  const sortedStatis = sortStatis(statistic) 
-
-  const statis = {
-    display_name: "Thống kê giả trân",
-    type: "table",
-    headers:  Object.keys(sortedStatis),
-    values: Object.values(sortedStatis),
-  }
-  
-  res.status(200).send({ success: true, statistic: [statis]})
-})
-
-
 verifyToken = async (req) => {
   const token = req.header('Authorization');
   if (!token) {
@@ -296,21 +148,21 @@ app.use(async (req, res, next) => {
   const Consumer = new ConsumeApi();
 
   if (requestType == "ui") {
-    Consumer.consumeUI(req, res, api_id)
+    await Consumer.consumeUI(req, res, api_id)
   } else {
     if (requestType == "search") {
-      Consumer.consumeSearch(req, res, api_id)
+      await Consumer.consumeSearch(req, res, api_id)
     } else {
       if (requestType == "export") {
-        Consumer.consumeExport(req, res, api_id)
+        await Consumer.consumeExport(req, res, api_id)
       } else {
         if (requestType == "import") {
-          Consumer.consumeImport(req, res, api_id)
+          await Consumer.consumeImport(req, res, api_id)
         } else {
           if (requestType == "d") {
-            Consumer.consumeDetail(req, res, api_id)
+            await Consumer.consumeDetail(req, res, api_id)
           } else {
-            Consumer.consume(req, res, api_id)
+            await Consumer.consume(req, res, api_id)
           }
         }
       }
