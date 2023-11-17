@@ -472,9 +472,16 @@
 
 
 
+.italic {
+    font-style: italic;
+}
 
-
-
+.size-32{
+    font-size: 32px;
+}
+.size-16{
+    font-size: 16px;
+}
 
 
 .no-select {
