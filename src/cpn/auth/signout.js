@@ -3,15 +3,15 @@ import { useSelector } from "react-redux"
 export default () => {
     const { socket, auth } = useSelector(state => state)
 
-    useEffect(() => {     
+    useEffect(() => {
         socket.emit("/dipe-production-user-logout", { username: auth.username })
-        
-        localStorage.removeItem( '_token' )
-       
-            
-            localStorage.removeItem("password_hash");
-  
-        
+
+        localStorage.removeItem('_token')
+
+
+        localStorage.removeItem("password_hash");
+        localStorage.removeItem("user");
+        localStorage.setItem("user", JSON.stringify({}));
         // console.log( localStorage.getItem("_token") )
         window.location = "/login"
     }, [])

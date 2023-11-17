@@ -345,7 +345,7 @@ export default {
     "error.input": "Trường này không được để trống",
     "duPassword": "Vui lòng không sử dụng lại mật khẩu cũ",
     "validPassword": "Mật khẩu nhập lại không khớp",
-    "success.password": "Thay đổi mật khẩu thành công",
+    "success.password": "Mật khẩu của bạn đã được cập nhật. Xin hãy đăng nhập lại để tiếp tục sử dụng dịch vụ với thông tin bảo mật mới ",
     "faild.password": "Mật khẩu không đúng",
     "update.config": "Cập nhật thông tin",
     "enter serialnumber": "Nhập Serial Number",
@@ -361,7 +361,13 @@ export default {
     "faild key success": "Tạo khóa kích hoạt thất bại!",
     "total quantity": "Tổng số lượng năm",
     "license create": "License đã tạo năm",
-    "error.number": "Tối thiểu 8 và tối đa 16 kí tự",
-    "export file": "Xuất file"
+    "error.number": "Tối thiểu 8 và tối đa 15 kí tự",
+    "export file": "Xuất file",
+    "wrong account": "Tài khoản hoặc mật khẩu không chính xác.",
+    "wrong info": "Vui lòng nhập cả tên người dùng và mật khẩu.",
+    "failed.password": "Thay đổi mật khẩu thất bại",
+    "wrong password": "Mật khẩu cũ không chính xác"
+    
+
 
 }

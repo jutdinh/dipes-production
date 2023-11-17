@@ -339,7 +339,7 @@ export default {
     "back": "Back",
     "create key": "Create Key",
     "success create key": "Create license success",
-    "change password": "Change password",
+    "change password": "Change Password",
     "new password": "New password",
     "p.new password": "Enter the new password",
     "old password": "Old password",
@@ -351,7 +351,7 @@ export default {
     "error.input": "This field can't be blank",
     "duPassword": "Please do not reuse old passwords",
     "validPassword": "The password re-entered does not match",
-    "success.password": "Change password successfully",
+    "success.password": "Your password has been updated. Please log in again to continue using the service with the new security details",
     "faild.password": "Incorrect password",
     "update.config": "Update information",
     "enter serialnumber": "Enter Serial Number",
@@ -367,8 +367,14 @@ export default {
     "faild key success": "Activation key generation failed!",
     "total quantity": "Total quantity in",
     "license create": "License created in",
-    "error.number": "Minimum 8 and maximum 16 characters",
-    "export file": "Export"
+    "error.number": "Minimum 8 and maximum 15 characters",
+    "export file": "Export",
+    "wrong account": "Incorrect username or password.",
+    "wrong info": "Please enter both username and password.",
+    "failed.password": "Password change failed",
+    "wrong password": "Incorrect old password"
+    
+
 }
 
 

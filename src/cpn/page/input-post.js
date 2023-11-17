@@ -156,7 +156,7 @@ export default () => {
                 api_id: id_str,
                 data: data
             }
-           console.log(dataSubmit)
+        //    console.log(dataSubmit)
             socket.emit("/dipe-production-new-data-added", dataSubmit);
         })
         .catch(error => {

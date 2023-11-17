@@ -12,8 +12,11 @@ export default (props) => {
     const [profile, setProfile] = useState({});
     const [editUser, setEditUser] = useState({});
     const [errorMessagesedit, setErrorMessagesedit] = useState({});
+    const [errorPassword, setErrorPassword] = useState("");
     const [statusActive, setStatusActive] = useState(false);
-
+    const md5 = require('md5');
+    const storedPwdString = localStorage.getItem("password_hash");
+    // console.log(storedPwdString)
     const isValidEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
@@ -59,7 +62,15 @@ export default (props) => {
         const errors = {};
         if (!editUser.oldPassword) {
             errors.oldPassword = lang["error.input"]
+        } else {
+            const hashPass = md5(editUser.oldPassword)
+
+
+            if (hashPass !== storedPwdString) {
+                errors.oldPassword = lang["wrong password"]
+            }
         }
+
         if (!editUser.newPassword) {
             errors.newPassword = lang["error.input"]
         }
@@ -67,9 +78,9 @@ export default (props) => {
             errors.rePassword = lang["error.input"]
         }
         if (editUser.oldPassword !== "" && editUser.newPassword !== "" && editUser.oldPassword === editUser.newPassword) {
-            errors.duPassword =lang["duPassword"];
+            errors.duPassword = lang["duPassword"];
         }
-        
+
         if (editUser.newPassword && editUser.rePassword && editUser.newPassword !== editUser.rePassword) {
             errors.validPassword = lang["validPassword"]
         }
@@ -102,26 +113,32 @@ export default (props) => {
                 const { success, content, status } = resp;
                 // console.log(resp)
                 setErrorMessagesedit({})
+
+
                 if (success) {
                     Swal.fire({
                         title: lang["success"],
                         text: lang["success.password"],
                         icon: "success",
-                        showConfirmButton: false,
-                        timer: 1500,
-                    })
-                    .then(function () {
-                        window.location.reload();
+                        showConfirmButton: true,
+                        confirmButtonText: lang["confirm"],
+                        allowOutsideClick: false,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location = '/signout';
+                        }
                     });
                 } else {
+                    // setErrorPassword(lang["wrong password"])
                     Swal.fire({
                         title: lang["error"],
-                        text: lang["faild.password"],
+                        text: lang["failed.password"], 
                         icon: "error",
                         showConfirmButton: false,
                         timer: 1500,
-                    })
+                    });
                 }
+
             });
     }
 
@@ -149,7 +166,7 @@ export default (props) => {
                                     </div>
 
                                 </div>
-                                <div class="full price_table padding_infor_info" style={{height: "80vh"}}>
+                                <div class="full price_table padding_infor_info" style={{ height: "80vh" }}>
                                     <div className="container justify-content-center mt-3">
                                         <div class="row">
                                             <div class="form-group col-lg-4"></div>
@@ -168,6 +185,7 @@ export default (props) => {
                                                 } placeholder={lang["p.old password"]} />
                                                 <div class="fixed-height">
                                                     {errorMessagesedit.oldPassword && <span class="error-message">{errorMessagesedit.oldPassword}</span>}
+                                                    {errorPassword && <span class="error-message">{errorPassword}</span>}
                                                 </div>
 
                                             </div>
@@ -191,7 +209,7 @@ export default (props) => {
                                                 <input type="password" class="form-control" value={editUser.rePassword} onChange={
                                                     (e) => { setEditUser({ ...editUser, rePassword: e.target.value }) }
                                                 } placeholder={lang["p.re password"]} />
-                                               
+
                                                 <div class="fixed-height">
                                                     {errorMessagesedit.rePassword ? (errorMessagesedit.rePassword && <span class="error-message">{errorMessagesedit.rePassword}</span>)
                                                         : (errorMessagesedit.validPassword && <span class="error-message ">{errorMessagesedit.validPassword}</span>)}

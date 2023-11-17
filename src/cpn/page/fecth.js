@@ -124,7 +124,6 @@ export default () => {
             })
 
     }, [])
-    
     useEffect(() => {
         if (pages && pages.length > 0) {
 
