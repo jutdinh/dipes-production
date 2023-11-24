@@ -475,6 +475,10 @@
 .italic {
     font-style: italic;
 }
+.italic-non {
+    font-style: normal;
+}
+
 
 .size-32{
     font-size: 32px;
@@ -886,16 +890,11 @@
     margin-bottom: 10px;
 }
 
-
-
-
 .table-rounded {
     border-radius: 3px;
     /* Adjust as needed */
     overflow: hidden;
 }
-
-
 
 .table-scrollable tbody {
     display: block;
@@ -1201,17 +1200,13 @@ table tr {
 }
 
 .modal-dialog {
-
     margin-top: 4.7rem;
-
-
     height: 100%;
     /* Chiều cao của modal bằng chiều cao của viewport */
 }
 
 /* .form-group {
     width: 100%;
-
     padding: 0px 100px;
 } */
 
@@ -1235,7 +1230,6 @@ table tr {
 
 .page_title {
     background: #fff;
-
     margin-bottom: 10px;
     box-shadow: 1px 0 5px rgba(0, 0, 0, 0.1);
     margin-left: -40px;
@@ -1246,8 +1240,8 @@ table tr {
     padding: 18px 25px 1px;
 }
 
-h5 {
-    font-size: 16px;
+.case-box h5 {
+    font-size: 14px;
     font-weight: 700;
     text-transform: uppercase;
     margin: 0;
@@ -1268,7 +1262,6 @@ h5 {
 }
 
 .page_title h4 {
-
     font-size: 18px;
     /* color: #434360; */
     color: #4dd591;
@@ -1276,7 +1269,6 @@ h5 {
     font-weight: 700;
     text-transform: uppercase;
     padding-left: 15px;
-
 }
 
 .heading1 h4 {

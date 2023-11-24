@@ -1,3 +1,74 @@
+.container-case::-webkit-scrollbar {
+    /* display: none; */
+}
+
+.container-case-main .midde_cont {
+    height: calc(100vh - 64px)
+}
+
+.container-case-main .midde_cont .container-fluid {
+    height: inherit;
+    display: flex;
+    flex-direction: column;
+}
+
+.container-case-main .container-fluid .row {
+    flex-grow: 1
+}
+
+.container-case-main .container-fluid .row .col-md-5 {
+    height: 100%;
+}
+
+.container-case-main .container-fluid .row .col-md-7 {
+    height: 100%;
+}
+
+.container-case-main .container-fluid .row .col-md-7 .col-md-12 {
+    height: 100%;
+
+}
+
+.container-fluid .row .col-md-7 .col-md-12 .white_shd {
+    height: 99%
+}
+
+.container-fluid .row .col-md-7 .col-md-12 .white_shd .messages-wrapper {
+    /* height: % */
+}
+
+
+.show-more {
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.font-weight-bold-black{
+    color: #000;
+    font-weight: 700 !important;
+}
+
+
+.table-td-product-pl-5 {
+   padding-left: 5px;
+   padding-top: 0px !important;
+   padding-bottom: 0px !important;
+}
+.table-td-product-pl-6 {
+    padding-left: 6px;
+ }
+ .table-td-product-height {
+    height: 49px;
+ }
+
+
+
+
+
+
+
+
+
 .modal-header-review {
     display: flex;
     justify-content: center;
@@ -16,12 +87,209 @@
 }
 
 .modal-button-review {
-    width: 130px;
+    width: 90px;
+}
+
+.align-center-case {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.btn {
+    margin-top: 10px;
 }
 
 
+
+/* Style cho container của dropdown */
+.dropdown-custom {
+    position: relative;
+    display: inline-block;
+}
+
+
+.size-16 {
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Style cho menu dropdown */
+.popup-menu-custom {
+    display: none;
+    position: absolute;
+    background-color: #ffffff;
+    min-width: 160px;
+    box-shadow: 0 4px 9px 5px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    right: 0;
+    border-radius: 5px;
+}
+
+
+.popup-menu-custom.show {
+    display: block;
+}
+
+
+
+.menu-item-custom {
+    color: #58718a;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    white-space: nowrap;
+}
+
+/* Style cho item khi hover hoặc focus */
+.menu-item-custom:hover,
+.menu-item-custom:focus {
+    background-color: #f1f1f1;
+}
+
+
+
+
+
+.icon-rate-small {
+    width: 32px;
+    margin-left: 2px;
+}
+
+.icon-rate {
+    width: 64px;
+    margin-left: 6px;
+}
+
+
+.icon-rate {
+    position: relative;
+    display: inline-block;
+    margin: 0 10px;
+    filter: grayscale(100%);
+}
+
+
+
+.icon-rate:hover {
+    filter: grayscale(1%);
+}
+
+.tooltip-text1 {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    bottom: -30px;
+    left: 65%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-weight: 700;
+    color: #49b27e;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    transition: all 0.3s ease;
+}
+
+.tooltip-text2 {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    bottom: -30px;
+    left: 65%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-weight: 700;
+    color: #49b27e;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    transition: all 0.3s ease;
+}
+
+.tooltip-text3 {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    bottom: -30px;
+    left: 65%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-weight: 700;
+    color: #e9a440;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    transition: all 0.3s ease;
+}
+
+.tooltip-text4 {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    bottom: -30px;
+    left: 65%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-weight: 700;
+    color: #e75544;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    transition: all 0.3s ease;
+}
+
+.tooltip-text5 {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    bottom: -30px;
+    left: 65%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-weight: 700;
+    color: #ec1d24;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    transition: all 0.3s ease;
+}
+
+.icon-rate:hover .tooltip-text1 {
+    display: block;
+}
+
+.icon-rate:hover .tooltip-text2 {
+    display: block;
+}
+
+.icon-rate:hover .tooltip-text3 {
+    display: block;
+}
+
+.icon-rate:hover .tooltip-text4 {
+    display: block;
+}
+
+.icon-rate:hover .tooltip-text5 {
+    display: block;
+}
+
+
+
+
+.btn-rate {
+    background-color: #0971b8;
+    width: 100px;
+    color: #fff;
+    border-radius: 8px;
+
+}
+
 .status_label {
-    color: blue;
+    color: #0971b8;
     font-weight: 600;
     text-transform: uppercase;
     padding-left: 10px;
@@ -29,15 +297,30 @@
 }
 
 .card-block {
-    padding: 10px;
+    height: 100%;
+    padding: 0 10px 5px 10px;
+    /* box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); */
 }
 
-
-.padding_infor_info_case_detail {
+.padding_infor_info_case_add {
     padding: 0px 0px 5px 0px;
     float: left;
     width: 100%;
-    min-height: 75vh
+    min-height: 79.6vh
+}
+
+.padding_infor_info_case_detail {
+    padding: 0px 0px 0px 0px;
+    float: left;
+    width: 100%;
+    min-height: 76vh
+}
+
+.padding_infor_info_case_non {
+    padding: 0px 0px 5px 0px;
+    float: left;
+    width: 100%;
+    min-height: 83.6vh
 }
 
 .card {
@@ -62,14 +345,14 @@
     justify-content: space-between;
 }
 
-.graph_head .heading1 {
+.graph_head_cus .heading1 {
     float: left;
     padding: 0;
     width: 100%;
 }
 
-.graph_head {
-    padding: 5px 25px 5px;
+.graph_head_cus {
+    padding: 5px 15px 5px;
     float: left;
     width: 100%;
     border-bottom: solid #dee2e6 1px;
@@ -97,6 +380,42 @@
 
 }
 
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 10px 10px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    outline: none;
+    background-color: #fff;
+    /* background-image: url('path_to_search_icon.png');  */
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    background-size: 16px 16px;
+
+}
+
+.search-input::placeholder {
+    color: #aaa;
+}
+
+.search-input:focus {
+    border-color: #66afe9;
+    box-shadow: 0 0 8px rgba(102, 175, 233, 0.6);
+}
+
+
+
+
 .color_icon_plus {
     color: #0066cc
 }
@@ -107,7 +426,7 @@
 
 .lable_add {
     font-weight: 600;
-    color: #0066cc;
+    color: #0971b8;
     text-transform: uppercase;
 }
 
@@ -124,30 +443,70 @@
     /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
     margin: 0px;
     margin-top: 10px;
-
+    cursor: pointer;
 }
+
+
+.box-case h4 {
+    font-size: 14px;
+    color: #000;
+    line-height: 21px;
+    font-weight: 600;
+    text-transform: none;
+    margin-bottom: 5px;
+}
+
+.case-detail h4 {
+    font-size: 14px;
+    color: #000;
+    line-height: 21px;
+    font-weight: 600;
+    text-transform: none;
+    margin-bottom: 5px;
+}
+
+.case-detail h5 {
+    font-size: 14px;
+    font-weight: 700;
+    /* padding-left: 5px; */
+    text-transform: uppercase;
+    margin: 0;
+    line-height: normal;
+    /* color: #4dd591; */
+    color: #000;
+}
+
+
+.box-case p {
+    margin-bottom: 5px;
+}
+
+
+
+.container-case .selected {
+    border: 2px solid #0971b8;
+}
+
 
 .sort-case {}
 
 .container-case {
     margin-top: 10px;
-    height: 585px;
+    height: 644px;
     border-radius: 4px;
-    padding:  0 5px  5px 5px;
+    padding: 0 5px 5px 5px;
     overflow-y: auto;
     /* background-color: #fff; */
     box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.1);
 }
 
-.container-case::-webkit-scrollbar {
+
+
+.scaled-hover-target {
     display: none;
 }
 
-.scaled-hover-target{
-    display: none;
-}
-
-.box-case:hover .scaled-hover-target{
+.box-case:hover .scaled-hover-target {
     display: block;
 }
 
@@ -192,4 +551,462 @@ img[class="scaled-hover-target"] {
 
 .icon-hover:hover .scaled-hover-target {
     transform: scale(1.1);
+}
+
+
+.card-block h5 {
+    font-size: 14px;
+    font-weight: 700;
+    /* padding-left: 5px; */
+    text-transform: uppercase;
+    margin: 0;
+    line-height: normal;
+    /* color: #4dd591; */
+    color: #000;
+}
+
+.card-header {
+    padding: 10px 15px;
+    margin-bottom: 0;
+    background-color: rgba(0, 0, 0, .03);
+    border-bottom: 1px solid rgba(0, 0, 0, .125);
+}
+
+.info-case {
+    padding-left: 5px;
+}
+
+.image-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.image-icon {
+    /* margin-top: 10px;
+    height: 200px;
+    max-width: 400px;
+    margin-right: 8px; */
+
+    width: 100%;
+    /* height: 180px; */
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    position: relative;
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px;
+    overflow: hidden;
+}
+
+
+
+.image-icon:last-child {
+    margin-right: 0;
+}
+
+.title-suggest {
+    color: #0971b8;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.content-suggest {
+    color: #0971b8;
+    font-size: 14px;
+    font-weight: 400;
+    /* text-transform: uppercase; */
+    margin: 0;
+}
+
+.icon-add-production {
+    color: #0971b8
+}
+
+.margin-bottom-0 {
+    margin-bottom: 0;
+}
+
+.add-case {
+    padding-left: 15px;
+    padding-bottom: 15px;
+    padding-top: 0px;
+    padding-right: 15px;
+}
+
+.field-case {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/* Ẩn input file mặc định */
+.custom-file-upload {
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+    background-color: #f8f8f8;
+    border: 1px dashed #ccc;
+    color: #000;
+    border-radius: 4px;
+    font-size: 12px;
+    text-align: center;
+    width: auto;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.custom-file-upload:hover {
+    background-color: #e8e8e8;
+}
+
+.upload-container-case {
+    width: 100%;
+    /* height: 180px; */
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    position: relative;
+    /* padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 10px; */
+    overflow: hidden;
+}
+
+/* .upload-container-case img {
+    width: auto;
+    height: 100%;
+    min-width: 100%;
+    max-width: none;
+    object-fit: cover;
+} */
+
+
+
+
+/* Message */
+/* Cơ bản cho cả hai bong bóng */
+.bg-message {
+    background-color: #d8d9d5;
+}
+
+.message-container {
+    max-width: 335px;
+    border-radius: 15px;
+    padding: 10px;
+    margin: 10px;
+    position: relative;
+}
+
+/* Đặc biệt cho tin nhắn gửi đi */
+.sent {
+    background-color: #e5efff;
+    color: white;
+    align-self: flex-end;
+    /* Đẩy bong bóng sang phải */
+}
+
+/* Đặc biệt cho tin nhắn nhận được */
+.received {
+    background-color: #ffffff;
+    color: black;
+    align-self: flex-start;
+    /* Đẩy bong bóng sang trái */
+}
+
+/* Khung chứa cả hai loại bong bóng */
+.messages-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    /* height: 300px; */
+    height: 610px;
+    overflow: auto;
+}
+
+.messages-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+/* Ẩn thanh cuộn cho Firefox */
+.messages-wrapper {
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+/* Thời gian gửi/nhận */
+.message-timestamp {
+    font-size: 12px;
+    color: #666;
+    text-align: right;
+}
+
+/* Đối với mũi tên của bong bóng */
+.message-container::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+}
+
+/* Mũi tên cho tin nhắn gửi đi */
+.sent::before {
+    /* border-right: 10px solid #007bff; */
+    left: 100%;
+    top: 50%;
+    transform: translate(0, -50%);
+}
+
+/* Mũi tên cho tin nhắn nhận được */
+.received::before {
+    /* border-left: 10px solid #e9ecef; */
+    right: 100%;
+    top: 50%;
+    transform: translate(0, -50%);
+}
+
+/* Điều chỉnh cho hình ảnh trong tin nhắn */
+.message-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+
+
+/* Chat */
+
+.chat-input-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px;
+    border: 1px solid #ccc;
+    /* border-radius: 20px; */
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    /* margin: 10px; */
+}
+
+.chat-input {
+    flex-grow: 1;
+    border: none;
+    padding: 10px;
+    margin-right: 10px;
+    border-radius: 15px;
+    outline: none;
+}
+
+.chat-send-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.chat-send-button img {
+    height: 20px;
+    width: 20px;
+}
+
+
+.message-image-preview {
+    width: 100%;
+ 
+    max-width: 150px;
+
+    border-radius: 15px;
+  
+    margin-bottom: 10px;
+
+}
+
+.selected-images-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 5px;
+    justify-content: start;
+    height: 60px;
+    overflow-x: auto;
+   
+
+    /* Or 'space-around' for even spacing */
+}
+
+.selected-image-wrapper {
+    position: relative;
+    margin: 5px;
+}
+.selected-image-wrapper-add{
+    position: relative;
+    margin: 5px;
+}
+
+.selected-image {
+    width: 50px;
+    /* Or your preferred size */
+    height: 50px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.remove-image {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background: #7589a3;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: normal; 
+    font-size: 12px; 
+    line-height: 16px;
+}
+
+.video-duration {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    position: absolute;
+    bottom: 0px;
+    /* right: -54px; */
+    width: 50px;
+    font-size: 0.8rem;
+}
+.upload-container-case-add {
+    width: 100%;
+    height: 120px; /* Chiều cao cố định để chứa khoảng 2 dòng, tùy chỉnh giá trị này để phù hợp với kích thước thực tế của các hình ảnh */
+    display: flex;
+    flex-direction: row; /* Đặt hướng của các item là hàng ngang */
+    flex-wrap: wrap; /* Cho phép các items chuyển xuống hàng mới */
+    align-items: flex-start; /* Căn các items ở đầu container */
+    justify-content: flex-start; /* Căn các items từ bên trái */
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    position: relative;
+    padding: 5px;
+    overflow-x: hidden; /* Ẩn thanh cuộn ngang */
+    overflow-y: auto; /* Cho phép cuộn dọc nếu các items vượt quá chiều cao của container */
+}
+
+.selected-image-wrapper-add {
+    position: relative;
+    margin: 5px;
+    flex: 0 0 auto; /* Đảm bảo rằng các items không co giãn */
+}
+
+.selected-images-container-add {
+    display: flex;
+    flex-direction: row; /* Các item sắp xếp theo hàng ngang */
+    flex-wrap: wrap; /* Cho phép các items chuyển xuống hàng mới */
+    width: 100%; /* Đảm bảo container chiếm toàn bộ chiều rộng của phần tử cha */
+     /* padding-bottom: 5px; */
+}
+
+.selected-image-add {
+    width: 50px; /* Chiều rộng của hình ảnh */
+    height: 50px; /* Chiều cao của hình ảnh */
+    object-fit: cover; /* Đảm bảo hình ảnh phủ đầy không gian mà không mất tỉ lệ */
+    border-radius: 10px; /* Bo góc cho hình ảnh */
+}
+
+.remove-image-case {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #7589a3;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Định hình container chứa tab bar */
+.custom-tab-container {
+    display: flex;
+    /* justify-content: center; */
+    background: #f0f0f0;
+    /* Màu nền sẽ là màu xám nhạt */
+    border-bottom: 1px solid #ccc;
+}
+
+/* Định hình cho từng tab */
+.custom-tab {
+    padding: 10px 30px;
+    text-transform: uppercase;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    color: #000;
+    background-color: transparent;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* Hiệu ứng khi di chuột qua tab */
+.custom-tab:hover {
+    background-color: #e7e2e2;
+}
+
+/* Hiệu ứng cho tab đang hoạt động */
+.custom-tab-active {
+
+    background-color: #ffffff;
 }
