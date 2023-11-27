@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import responseMessages from "../../cpn/enum/response-code"
 import Swal from 'sweetalert2';
+import { format, parseISO } from 'date-fns';
 
 const dateGenerator = ( dateString ) => {
     const date = new Date( dateString );
@@ -163,9 +164,31 @@ function generateUniqueColors(num) {
     }
     return colors;
 }
+function formatDate(isoString) {
+    if (!isoString) return "";
+
+    try {
+        const date = parseISO(isoString); // parse ISO string
+        return format(date, 'dd-MM-yyyy  HH:mm:ss'); // format date
+    } catch (error) {
+        
+        return "";  // or maybe return a default date or another string to indicate the error
+    }
+}
+function formatDateCase(isoString) {
+    if (!isoString) return "";
+
+    try {
+        const date = new Date(isoString);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    } catch (error) {
+        console.error(error);
+        return "";  // or maybe return a default date or another string to indicate the error
+    }
+}
 
 
 export default {
     uid, removeDuplicate, titleCase, openTab, dateGenerator, renderDateTimeByFormat,
-    showApiResponseMessage, formatNumberWithCommas, formatNumber, generateUniqueColors
+    showApiResponseMessage, formatNumberWithCommas, formatNumber, generateUniqueColors, formatDate, formatDateCase
 }

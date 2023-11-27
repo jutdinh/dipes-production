@@ -366,8 +366,18 @@ export default {
     "wrong account": "Tài khoản hoặc mật khẩu không chính xác.",
     "wrong info": "Vui lòng nhập cả tên người dùng và mật khẩu.",
     "failed.password": "Thay đổi mật khẩu thất bại",
-    "wrong password": "Mật khẩu cũ không chính xác"
+    "wrong password": "Mật khẩu cũ không chính xác",
+
+    "just now": "Vừa xong",
+    "mins ago": "phút trước",
+    "secs ago": "giây trước",
+    "hours ago": "giờ trước",
+    "days ago": "ngày trước",
+    "months ago": "tháng trước",
+    "years ago": "năm trước",
     
+    "success create": "Tạo thành công",
+    "faild create": "Tạo thất bại"
 
 
 }

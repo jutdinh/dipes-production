@@ -6,14 +6,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMaximize, faMinimize, faDownload, faCompress, faChartBar, faPlusCircle, faCirclePlus, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
 import Swal from 'sweetalert2';
-import TableInput from './table/table-input'
+import TableInputUpdate from './table/table-input-update'
+import TableInputAdd from './table/table-input-add'
 import $ from 'jquery'
 
 export default () => {
-    const { lang, proxy, auth } = useSelector(state => state);
+    const { lang, proxy, auth, functions } = useSelector(state => state);
     const _token = localStorage.getItem("_token");
     const [logs, setLogs] = useState([]);
-
+    const stringifiedUser = localStorage.getItem("user");
+    const _user = JSON.parse(stringifiedUser) || {}
+    const username = _user.username === "administrator" ? "Mylan Digital Solution" : _user.username;
+    const storedPwdString = localStorage.getItem("password_hash");
     const [view, setView] = useState([
         {
             "serial_Number": "C3412J1K011N055",
@@ -43,6 +47,8 @@ export default () => {
 
         }
     ])
+    const [serverImage, setServerImage] = useState("");
+    const [cases, setCases] = useState([]);
     const [filter, setFilter] = useState({ type: 'info' });
     const [showModal, setShowModal] = useState(false);
 
@@ -50,31 +56,174 @@ export default () => {
 
     const languages = langItem.toLowerCase();
     const [supportQuanlity, setSupportQuanlity] = useState(0);
-    console.log(supportQuanlity)
     const [dataMessage, setDataMassage] = useState({});
+    const [errorMessagesadd, setErrorMessagesadd] = useState({});
+    //Post case 
+
+    const [postCase, setPostCase] = useState({ casetype: "Undefined" });
+    console.log("data post case:", postCase)
     // 
     // console.log(view)
 
+    // Data table 
+    const [tableData, setTableData] = useState([]);// Nhận từ Cpn
+    const [tableDataProduct, setTableDataProduct] = useState([]);
+
+    console.log(tableDataProduct)
+
+    const mappedArray = tableData.map(item => ({
+        "2SN": item.col1,
+        "1SV": item.col2,
+        "1HV": item.col3,
+        "1FV": item.col4,
+        "10Q": item.col5
+    }));
+
+    const resultObject = { "11P": mappedArray };
+
+    console.log(resultObject)
+
+
+
+    const handleDataFromChild = (newData) => {
+        // Cập nhật state ở đây
+        setTableData(newData);
+    };
     // console.log(dataMessage)
     const handleCloseModal = () => {
         setShowModal(false);
     };
 
+
+    const [currentTimestamp, setCurrentTimestamp] = useState(new Date());
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            // Cập nhật thời gian hiện tại mỗi 60 giây
+            setCurrentTimestamp(new Date());
+        }, 60000);
+
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
+    const getElapsedTime = (notifyAt) => {
+        const notifyTimestamp = new Date(notifyAt);
+        const elapsedMilliseconds = currentTimestamp - notifyTimestamp;
+        const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
+        const elapsedMinutes = Math.floor(elapsedSeconds / 60);
+        const elapsedHours = Math.floor(elapsedMinutes / 60);
+        const elapsedDays = Math.floor(elapsedHours / 24);
+        const elapsedMonths = Math.floor(elapsedDays / 30);
+        const elapsedYears = Math.floor(elapsedMonths / 12);
+
+        if (elapsedYears > 0) {
+            return `${elapsedYears} ${lang["years ago"]}`;
+        } else if (elapsedMonths > 0) {
+            return `${elapsedMonths} ${lang["months ago"]}`;
+        } else if (elapsedDays > 0) {
+            return `${elapsedDays} ${lang["days ago"]}`;
+        } else if (elapsedHours > 0) {
+            return `${elapsedHours} ${lang["hours ago"]}`;
+        } else if (elapsedMinutes > 0) {
+            return `${elapsedMinutes} ${lang["mins ago"]}`;
+        } else if (elapsedMilliseconds > 0) {
+            return `${elapsedSeconds} ${lang["secs ago"]}`;
+        } else {
+            return lang["just now"];
+        }
+    };
+    const [dataCaseDetail, setDataCaseDetail] = useState({});
+    console.log(dataCaseDetail)
+    const [selectedCaseDetail, setSelectedCaseDetail] = useState("");
     const [showPageDetail, setShowPageDetail] = useState(false);
-    const handlePageDetail = () => {
+    const handlePageDetail = (caseid) => {
+        console.log(caseid)
+        setSelectedCaseDetail(caseid.id)
         setShowPageDetail(true)
         setShowPageAdd(false)
+        const requestBody = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            },
+            "1CI": caseid.id
+        }
+        fetch(`${proxy()}/api/1281201C63B6454BB5629E2DFE1186BD`, {
+            headers: {
+                Authorization: _token,
+                "content-type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(requestBody)
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success, data, activated, status, content } = resp;
+                console.log(resp)
+                const fieldMappings = resp.fields.reduce((acc, field) => {
+                    acc[field.fomular_alias] = field.field_name;
+                    return acc;
+                }, {});
+
+
+                const mappedCase = Object.keys(resp.Case).reduce((newCase, key) => {
+                    const newKey = fieldMappings[key] || key;
+                    newCase[newKey] = resp.Case[key];
+                    return newCase;
+                }, {});
+
+                console.log(mappedCase);
+
+                const caseDetail = {
+                    id: mappedCase["CASE ID"],
+                    title: mappedCase["CASE TITLE"],
+                    date: mappedCase["CREATED DATE"],
+                    issue: mappedCase["ISSUE DESCRIPTION"],
+                    customer: mappedCase["CUSTOMER"],
+                    status: mappedCase["STATUS"],
+                    imgcase: mappedCase["CASE IMAGE"],
+                    solution: mappedCase["SOLUTION DESCRIPTION"],
+                    attachMedia: mappedCase["1CA"]
+                };
+                console.log(caseDetail);
+                setDataCaseDetail(caseDetail);
+            })
+
+        // List Product information
+
+
+        const requestBodyProduct = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            },
+            "3CI": caseid.id
+        }
+        fetch(`${proxy()}/api/F256DE8ACBC449F3A4B5E2056FF8F18E`, {
+            headers: {
+                Authorization: _token,
+                "content-type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(requestBodyProduct)
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success, data, activated, status, content } = resp;
+                console.log("Product infor", resp)
+                setTableDataProduct(resp.Products)
+
+            })
+
 
     }
-
     const [showPageAdd, setShowPageAdd] = useState(false);
     const handlePageAdd = () => {
         setShowPageAdd(true)
         setShowPageDetail(false)
 
     }
-
-
 
     const initialActiveTab = localStorage.getItem('activeTab') || 'general';
     const [activeTab, setActiveTab] = useState(initialActiveTab);
@@ -149,12 +298,70 @@ export default () => {
         }
 
     }, [])
+    // List case
+    useEffect(() => {
+        const requestBody = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            }
+        }
+        fetch(`${proxy()}/api/B65ACE825222422694B02D850D18C3BA`, {
+            headers: {
+                Authorization: _token,
+                "content-type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(requestBody)
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success, data, activated, status, content } = resp;
+                console.log(resp)
+                setServerImage(resp.remote_server)
+                const fieldMappings = resp.fields.reduce((acc, field) => {
+                    acc[field.fomular_alias] = field.field_name;
+                    return acc;
+                }, {});
+
+                // Bước 2: Map dữ liệu Cases sang tên trường mới
+                const mappedCases = resp.Cases.map((caseItem) => {
+                    return Object.keys(caseItem).reduce((newCase, key) => {
+                        const newKey = fieldMappings[key] || key; // Sử dụng field_name mới nếu tồn tại, nếu không giữ nguyên key
+                        newCase[newKey] = caseItem[key];
+                        return newCase;
+                    }, {});
+                });
+
+                console.log(mappedCases);
+                const caseTitlesAndDates = mappedCases.map((caseItem) => ({
+                    id: caseItem["CASE ID"],
+                    title: caseItem["CASE TITLE"],
+                    date: caseItem["CREATED DATE"],
+                    issue: caseItem["ISSUE DESCRIPTION"],
+                    customer: caseItem["CUSTOMER"]
+
+                }));
+
+                console.log(caseTitlesAndDates);
+                setCases(caseTitlesAndDates)
+            })
+
+    }, [])
+
+
+
+
+
+
+
 
     useEffect(() => {
         $('#messages-wrapper').css({
             height: 0
         })
     }, [view])
+
     //////Ảnh chính
     const [selectedImage, setSelectedImage] = useState(null);
     // console.log(selectedImage)
@@ -233,9 +440,6 @@ export default () => {
             }
         });
     };
-
-
-
     const removeAttachMedia = (media) => {
         const updatedMediaList = attachMedia.filter(item => item.url !== media.url);
         setAttachMedia(updatedMediaList)
@@ -244,7 +448,6 @@ export default () => {
     const openModalPreview = (media) => {
         setDataPreviewMedia(media)
     };
-
 
 
     //Popup dấu 3 chấm
@@ -257,7 +460,6 @@ export default () => {
 
 
     const menuRef = useRef();
-
     useEffect(() => {
         function handleClickOutside(event) {
             // Nếu click ra ngoài menu, đóng menu
@@ -284,14 +486,83 @@ export default () => {
         setShowFullMessage(!showFullMessage);
     };
 
+
     // Chia nội dung tin nhắn thành các từ
     const words = text.split(' ');
-
     // Nếu số từ nhiều hơn 100 và không hiển thị toàn bộ nội dung
     const shouldTruncate = words.length > 20 && !showFullMessage;
     const textToDisplay = shouldTruncate ? words.slice(0, 20).join(' ') + '...' : text;
 
+    const submitPostCase = (e) => {
+        e.preventDefault();
+        const { casetitle, casetype, productname, issue } = postCase;
+        const errors = {};
+        if (!casetitle) {
+            errors.casetitle = "Lỗi casetile";
+        }
+        if (!productname) {
+            errors.productname = "Lỗi Productname";
+        }
+        if (!issue) {
+            errors.issue = "Lỗi mô tả";
+        }
 
+
+        if (Object.keys(errors).length > 0) {
+            setErrorMessagesadd(errors);
+            return;
+        }
+
+
+        // console.log(_token);
+        const requestBody = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            },
+            "1CT": postCase.casetitle,
+            "2CT": postCase.casetype,
+            "2PN": postCase.productname,
+            "2CI": selectedImage,
+            "1ID": postCase.issue,
+            "1CA": attachMedia.map(item => item.dataUrl),
+            "11P": mappedArray
+        }
+        console.log(requestBody)
+
+        fetch(`${proxy()}/api/EF381DD02A6A4FF8B087D5B6BCDE36C9`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `${_token}`,
+            },
+            body: JSON.stringify(requestBody),
+        })
+            .then((res) => res.json())
+            .then((resp) => {
+                const { Success, content, data, status } = resp;
+                if (Success) {
+                    Swal.fire({
+                        title: lang["success"],
+                        text: lang["success create"],
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 2000
+                    })
+                } else {
+                    Swal.fire({
+                        title: lang["faild"],
+                        text: lang["faild create"],
+                        icon: "error",
+                        showConfirmButton: true,
+                        // confirmButtonText: lang["back"],
+                        cancelButtonText: lang["btn.cancel"],
+                        // showCancelButton: true,
+                    })
+                }
+            });
+
+    };
 
     const [currentPageLogs, setCurrentPageLogs] = useState(1);
     const rowsPerPageLogs = 4;
@@ -471,109 +742,37 @@ export default () => {
                                             <a class="dropdown-item" href="#">Something else here</a>
                                         </div>
                                     </div>
-                                    <div class="ml-auto"> Total: <span class="font-weight-bold  ">12</span> case(s)</div>
+                                    <div class="ml-auto"> Total: <span class="font-weight-bold  ">{cases.length || 0}</span> case(s)</div>
                                 </div>
                             </div>
 
                             <div class="container-case">
 
-                                <div class="box-case selected" onClick={handlePageDetail}>
-                                    <div class="d-flex">
-                                        <h4>Bad Print quality_RMA for APC901 #8080</h4>
-                                        <div class="ml-auto">
-                                            <div className="dropdown-custom">
-                                                <FontAwesomeIcon icon={faEllipsisVertical} className="size-24 ml-auto pointer" onClick={toggleMenu} />
-                                                {isMenuOpen && (
-                                                    <div className="popup-menu-custom show" ref={menuRef}>
-                                                        <span className="menu-item-custom" data-toggle="modal" data-target="#updateCase">Update Case</span>
-                                                        <span className="menu-item-custom">Delete Case</span>
-                                                        <span className="menu-item-custom">Cancel Case</span>
-                                                    </div>
-                                                )}
-                                            </div>
+                                {cases.map((item) => (
+                                    <div class={`box-case ${selectedCaseDetail === item.id ? "selected" : ""}`} onClick={() => handlePageDetail(item)}>
+                                        <div class="d-flex">
+                                            <h4>{item.title}</h4>
+                                            <div class="ml-auto">
+                                                <div className="dropdown-custom">
+                                                    <FontAwesomeIcon icon={faEllipsisVertical} className="size-24 ml-auto pointer" onClick={toggleMenu} />
+                                                    {isMenuOpen && (
+                                                        <div className="popup-menu-custom show" ref={menuRef}>
+                                                            <span className="menu-item-custom" data-toggle="modal" data-target="#updateCase">Update Case</span>
+                                                            <span className="menu-item-custom">Delete Case</span>
+                                                            <span className="menu-item-custom">Cancel Case</span>
+                                                        </div>
+                                                    )}
+                                                </div>
 
+                                            </div>
+                                        </div>
+                                        <p>{item.issue}</p>
+                                        <div class="d-flex ">
+                                            <p class="italic" style={{ marginBottom: 0 }}>{functions.formatDateCase(item.date)} by <span class="italic-non font-weight-bold-black">{item.customer}</span> </p>
+                                            <div class="ml-auto"> <img width={32} src={"/images/review/ex.png"}></img></div>
                                         </div>
                                     </div>
-
-                                    <p>5 returned cartridges are tested and claim for warranty</p>
-                                    <div class="d-flex ">
-                                        <p class="italic" style={{ marginBottom: 0 }}>Latest support on Nov 11, 2023 by <span class="italic-non font-weight-bold-black">Duy Tan Do</span> </p>
-                                        <div class="ml-auto"> <img width={32} src={"/images/review/ex.png"}></img></div>
-                                    </div>
-                                </div>
-
-                                <div class="box-case">
-                                    <div class="d-flex">
-                                        <h4>Bad Print quality_RMA for APC901 #8080</h4>
-                                        <FontAwesomeIcon icon={faEllipsisVertical} className="size-16  ml-auto pointer" />
-                                    </div>
-
-                                    <p>5 returned cartridges are tested and claim for warranty</p>
-                                    <div class="d-flex ">
-                                        <p class="italic" style={{ marginBottom: 0 }}>Posted 25 days ago. </p>
-                                        <div class="ml-auto"> <img width={32} src={"/images/review/ex.png"}></img></div>
-                                    </div>
-                                </div>
-                                <div class="box-case">
-                                    <div class="d-flex">
-                                        <h4>Bad Print quality_RMA for APC901 #8080</h4>
-                                        <FontAwesomeIcon icon={faEllipsisVertical} className="size-16  ml-auto pointer" />
-                                    </div>
-
-                                    <p>5 returned cartridges are tested and claim for warranty</p>
-                                    <div class="d-flex ">
-                                        <p class="italic" style={{ marginBottom: 0 }}>Posted 25 days ago. </p>
-                                        <div class="ml-auto"> <img width={32} src={"/images/review/ex.png"}></img></div>
-                                    </div>
-                                </div>
-                                <div class="box-case">
-                                    <div class="d-flex">
-                                        <h4>Bad Print quality_RMA for APC901 #8080</h4>
-                                        <FontAwesomeIcon icon={faEllipsisVertical} className="size-16  ml-auto pointer" />
-                                    </div>
-
-                                    <p>5 returned cartridges are tested and claim for warranty</p>
-                                    <div class="d-flex ">
-                                        <p class="italic" style={{ marginBottom: 0 }}>Posted 25 days ago. </p>
-                                        <div class="ml-auto"> <img width={32} src={"/images/review/ex.png"}></img></div>
-                                    </div>
-                                </div>
-                                <div class="box-case">
-                                    <div class="d-flex">
-                                        <h4>Bad Print quality_RMA for APC901 #8080</h4>
-                                        <FontAwesomeIcon icon={faEllipsisVertical} className="size-16  ml-auto pointer" />
-                                    </div>
-
-                                    <p>5 returned cartridges are tested and claim for warranty</p>
-                                    <div class="d-flex ">
-                                        <p class="italic" style={{ marginBottom: 0 }}>Posted 25 days ago. </p>
-                                        <div class="ml-auto"> <img width={32} src={"/images/review/ex.png"}></img></div>
-                                    </div>
-                                </div>
-                                <div class="box-case">
-                                    <div class="d-flex">
-                                        <h4>Bad Print quality_RMA for APC901 #8080</h4>
-                                        <FontAwesomeIcon icon={faEllipsisVertical} className="size-16  ml-auto pointer" />
-                                    </div>
-
-                                    <p>5 returned cartridges are tested and claim for warranty</p>
-                                    <div class="d-flex ">
-                                        <p class="italic" style={{ marginBottom: 0 }}>Posted 25 days ago. </p>
-                                        <div class="ml-auto"> <img width={32} src={"/images/review/ex.png"}></img></div>
-                                    </div>
-                                </div>
-                                <div class="box-case">
-                                    <div class="d-flex">
-                                        <h4>Bad Print quality_RMA for APC901 #8080</h4>
-                                        <FontAwesomeIcon icon={faEllipsisVertical} className="size-16  ml-auto pointer" />
-                                    </div>
-
-                                    <p>5 returned cartridges are tested and claim for warranty</p>
-                                    <div class="d-flex ">
-                                        <p class="italic" style={{ marginBottom: 0 }}>Posted 25 days ago. </p>
-                                        <div class="ml-auto"> <img width={32} src={"/images/review/ex.png"}></img></div>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
                         </div>
 
@@ -581,42 +780,63 @@ export default () => {
                         {showPageAdd &&
                             (
                                 < div class="col-md-7" style={{ paddingLeft: "5px", paddingRight: "5px" }}>
-
                                     <div class="white_shd full margin_bottom_30">
                                         <div class="full graph_head_cus">
                                             <div class="heading1 margin_0 d-flex">
-                                                <h4 class="margin-bottom-0">New Case</h4>
-                                                <FontAwesomeIcon icon={faPaperPlane} className={`size-24 ml-auto icon-add-production pointer `} />
+                                                <h4 class="margin-bottom-0">New Case </h4>
+                                                <FontAwesomeIcon icon={faPaperPlane} onClick={submitPostCase} className={`size-24 ml-auto icon-add-production pointer `} />
                                             </div>
                                         </div>
                                         <div class="table_section padding_infor_info_case_add">
                                             <div class="add-case">
                                                 <div class="row field-case">
                                                     <div class="col-md-8">
-                                                        <h5 class="mb-2">Case Title</h5>
-                                                        <input type="text" class="form-control" placeholder="Enter case title" ></input>
+
+                                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                            <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>Case Title<span className='red_star'>*</span></h5>
+                                                            {errorMessagesadd.casetitle && (
+                                                                <span class="error-message mb-1">{errorMessagesadd.casetitle}</span>
+                                                            )}
+                                                        </div>
+
+                                                        <input type="text" class="form-control" value={postCase.casetitle} onChange={
+                                                            (e) => { setPostCase({ ...postCase, casetitle: e.target.value }) }} placeholder="Enter case title" ></input>
                                                     </div>
                                                     <div class="col-md-4">
                                                         <h5 class="mb-2">Case Type</h5>
-                                                        <select className="form-control" name="role">
-                                                            <option value={0}>Undefined</option>
-                                                            <option value={1}>Troublshooting</option>
-                                                            <option value={2}>Error</option>
-                                                            <option value={3}>Question</option>
-                                                            <option value={4}>Feature</option>
-                                                            <option value={5}>Project</option>
+                                                        <select className="form-control" name="role" value={postCase.casetype} onChange={
+                                                            (e) => { setPostCase({ ...postCase, casetype: e.target.value }) }}>
+                                                            <option value={"Undefined"}>Undefined</option>
+                                                            <option value={"Troublshooting"}>Troublshooting</option>
+                                                            <option value={"Error"}>Error</option>
+                                                            <option value={"Question"}>Question</option>
+                                                            <option value={"Feature"}>Feature</option>
+                                                            <option value={"Project"}>Project</option>
                                                         </select>
                                                     </div>
                                                 </div>
-
                                                 <div class="col-md-12 field-case">
-                                                    <h5 class="mb-2">PRODUCT NAME</h5>
-                                                    <input type="text" class="form-control" placeholder="Enter Product Name" ></input>
+
+                                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                        <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>PRODUCT NAME<span className='red_star'>*</span></h5>
+                                                        {errorMessagesadd.casetitle && (
+                                                            <span class="error-message mb-1">{errorMessagesadd.productname}</span>
+                                                        )}
+                                                    </div>
+                                                    <input type="text" class="form-control" value={postCase.productname} onChange={
+                                                        (e) => { setPostCase({ ...postCase, productname: e.target.value }) }} placeholder="Enter Product Name" ></input>
                                                 </div>
 
                                                 <div class="col-md-12">
-                                                    <h5 class="mb-2">ISSUE DESCRIPTION</h5>
-                                                    <textarea class="form-control" rows={6}></textarea>
+
+                                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                        <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>ISSUE DESCRIPTION<span className='red_star'>*</span></h5>
+                                                        {errorMessagesadd.casetitle && (
+                                                            <span class="error-message mb-1">{errorMessagesadd.issue}</span>
+                                                        )}
+                                                    </div>
+                                                    <textarea class="form-control" rows={6} value={postCase.issue} onChange={
+                                                        (e) => { setPostCase({ ...postCase, issue: e.target.value }) }}></textarea>
                                                 </div>
                                                 <div class="row field-case">
                                                     <div className="col-md-4">
@@ -659,11 +879,9 @@ export default () => {
                                                     <div class="col-md-8">
                                                         <div class="d-flex">
                                                             <h5 className="mb-2"></h5>
-
                                                             <label style={{ marginBottom: 0 }} htmlFor="file-upload-media" class="ml-auto" >
                                                                 <FontAwesomeIcon icon={faPlusSquare} className={`size-24 mb-1 icon-add pointer `} title="Choose File" />
                                                             </label>
-
                                                             <input
                                                                 id="file-upload-media"
                                                                 type="file"
@@ -674,7 +892,6 @@ export default () => {
                                                         </div>
 
                                                         <div className="upload-container-case-add">
-
                                                             {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
                                                             {attachMedia && (
                                                                 <div className="selected-images-container-add">
@@ -698,12 +915,8 @@ export default () => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <TableInput />
+                                                <TableInputAdd stateAdd={true} stateUpdate={false} />
                                             </div>
-
-
-
-
                                         </div>
                                     </div>
                                 </div>
@@ -729,9 +942,9 @@ export default () => {
                                 <div class="white_shd full margin_bottom_30">
                                     <div class="full graph_head_cus">
                                         <div class="heading1 margin_0 case-detail">
-                                            <h4>Bad Print quality_RMA for APC901 #8080</h4>
+                                            <h4>{dataCaseDetail.title}</h4>
                                             <div class="d-flex ">
-                                                <p class="italic" style={{ marginBottom: 0 }}>Posted 25 days ago. <b class="status_label">Resolved</b></p>
+                                                <p class="italic" style={{ marginBottom: 0 }}>Posted on {functions.formatDateCase(dataCaseDetail.date)} ({getElapsedTime(dataCaseDetail.date)}). <b class="status_label">{dataCaseDetail.status}</b></p>
                                                 <div class="ml-auto">
                                                     <img class="icon-rate-small" src={"/images/icon/i1.png"}></img>
                                                     <img class="icon-rate-small" src={"/images/icon/i2.png"}></img>
@@ -766,24 +979,61 @@ export default () => {
                                                         <div class="col-md-12">
                                                             <div class="info-case">
                                                                 <h5 class="mt-1">Issue Description</h5>
-                                                                <span>5 returned cartridges are tested and claim for warranty</span>
+                                                                <span>{dataCaseDetail.issue}</span>
 
                                                                 <div class="row field-case">
                                                                     <div className="col-md-4">
 
                                                                         <div className="upload-container-case">
-                                                                            <img class="" src="/images/helpdesk/r10.png" />
+                                                                            <img class=""
+                                                                                style={{
+                                                                                    maxWidth: 'calc(100% - 40px)',
+                                                                                    maxHeight: 'calc(100% - 10px)',
+                                                                                    objectFit: 'contain',
+                                                                                    borderRadius: '8px',
+                                                                                    cursor: 'pointer'
+                                                                                }}
+                                                                                src={serverImage + dataCaseDetail.imgcase}
+                                                                                onClick={() => openModalPreview({ type: "imageDetail", url: dataCaseDetail.imgcase })}
+                                                                                data-toggle="modal" data-target="#previewMedia" />
                                                                         </div>
                                                                     </div>
-                                                                    <div class="col-md-8">
+                                                                    {/* <div class="col-md-8">
                                                                         <div className="upload-container-case">
                                                                             <img class="" src="/images/helpdesk/r10.png" />
+                                                                        </div>
+                                                                    </div> */}
+                                                                    <div class="col-md-8">
+                                                                        
+
+                                                                        <div className="upload-container-case-add">
+                                                                            {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+                                                                           
+                                                                                <div className="selected-images-container-add">
+                                                                                    {dataCaseDetail?.attachMedia?.map((media, index) => (
+                                                                                        <div key={index} className="selected-image-wrapper-add">
+                                                                                            {media.type === 'image' && (
+                                                                                                <img src={serverImage + media["6U"]} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
+                                                                                            )}
+                                                                                            {media.type === 'video' && (
+                                                                                                <div>
+                                                                                                    <img src={serverImage + media["6U"]} alt={`Cover for ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
+                                                                                                    {/* <div class="video-duration"> {media.name}</div> */}
+                                                                                                    <div class="video-duration">Video</div>
+                                                                                                </div>
+                                                                                            )}
+                                                                                            
+                                                                                            
+                                                                                        </div>
+                                                                                    ))}
+                                                                                </div>
+                                                                           
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                                 <div class="title-suggest">Suggested Solution</div>
-                                                                <span class="content-suggest">Thank you for your information, please help me test again with another EXT head run with firmware 1.8.5.L.4</span>
-                                                                <TableInput data={view} />
+                                                                <span class="content-suggest">{dataCaseDetail.solution}</span>
+                                                                <TableInputUpdate onDataUpdate={handleDataFromChild} data={tableDataProduct} stateAdd={false} caseId={dataCaseDetail.id} stateUpdate={true} />
                                                             </div>
                                                         </div>
                                                     </div></div>
@@ -1270,8 +1520,8 @@ export default () => {
                     <div class={`modal no-select-modal ${showModal ? 'show' : ''}`} id="previewMedia">
                         <div class="modal-dialog modal-dialog-center ">
                             <div class="modal-content">
-                                <div class="modal-header modal-header-review">
-                                    <h4 class="modal-title modal-title-review">PreView Media</h4>
+                                <div class="modal-header">
+                                    <h4 class="modal-title">PreView Media</h4>
                                     <button type="button" class="close" onClick={handleCloseModal} data-dismiss="modal">&times;</button>
                                 </div>
                                 <div class="modal-body">
@@ -1279,14 +1529,15 @@ export default () => {
                                         <div class="row">
                                             <div class="form-group col-lg-12 align-center">
                                                 {/* <img width={500} src={dataPreviewMedia?.url}></img> */}
-
+                                                {dataPreviewMedia?.type === 'imageDetail' && (
+                                                    <img src={serverImage + dataPreviewMedia?.url} alt={dataPreviewMedia?.name} style={{ width: '70%' }} />
+                                                )}
                                                 {dataPreviewMedia?.type === 'image' && (
                                                     <img src={dataPreviewMedia?.url} alt={dataPreviewMedia?.name} style={{ width: '100%' }} />
                                                 )}
                                                 {dataPreviewMedia?.type === 'video' && (
                                                     <video autoplay controls style={{ width: '100%' }} src={dataPreviewMedia?.dataUrl} >
                                                         <source src={dataPreviewMedia?.dataUrl} type="video/*" />
-                                                        Your browser does not support the video tag.
                                                     </video>
                                                 )}
 

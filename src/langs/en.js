@@ -372,8 +372,16 @@ export default {
     "wrong account": "Incorrect username or password.",
     "wrong info": "Please enter both username and password.",
     "failed.password": "Password change failed",
-    "wrong password": "Incorrect old password"
-    
+    "wrong password": "Incorrect old password",
+    "mins ago": "mins ago",
+    "just now": "just now",
+    "secs ago": "secs ago",
+    "hours ago": "hours ago",
+    "days ago": "days ago",
+    "months ago": "months ago",
+    "years ago": "years ago",
+    "success create": "Created successfully",
+    "faild create": "Create failed"
 
 }
 

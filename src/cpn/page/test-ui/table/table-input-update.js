@@ -1,28 +1,90 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMaximize, faMinimize, faDownload, faCompress, faChartBar, faPlusCircle, faCirclePlus, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft, faTrashCan, faShareSquare } from '@fortawesome/free-solid-svg-icons';
 function EditableTable(props) {
+    console.log(props)
     const { lang, proxy, auth } = useSelector(state => state);
+    const stringifiedUser = localStorage.getItem("user");
+    const _token = localStorage.getItem("_token");
+    const _user = JSON.parse(stringifiedUser) || {}
+    const username = _user.username === "administrator" ? "Mylan Digital Solution" : _user.username;
+    const storedPwdString = localStorage.getItem("password_hash");
     const [data, setData] = useState([
-        { id: 1, col1: 'C3412J1K011N055', col2: '1.3', col3: '', col4: '1.2.3.6', col5: '1', isEditing: false },
+        { id: 1, col1: '', col2: '', col3: '', col4: '', col5: '', isEditing: false },
     ]);
     const dataProduct = props.data
-    // console.log(dataProduct)
+    const dataStateUpdate = props.stateUpdate
+    const dataCaseId = props.caseId
+    console.log(dataCaseId)
+    const mappedArray = dataProduct?.map(item => ({
+        "col1": item["2SN"],
+        "col2": item["1SV"],
+        "col3": item["1HV"],
+        "col4": item["1FV"],
+        "col5": item["10Q"],
+
+    }));
+    console.log(data)
+    useEffect(() => {
+        if (dataStateUpdate) {
+            setData(mappedArray)
+        }
+
+    }, [dataCaseId]);
+
     const [selectedRowId, setSelectedRowId] = useState(null);
 
     const addRow = () => {
         const newRow = { id: data.length + 1, col1: '', col2: '', col3: '', col4: '', col5: '', isEditing: false };
         setData([...data, newRow]);
+
+
+
+        const requestBodyProduct = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            },
+            "3CI": dataCaseId
+           
+        }
+        fetch(`${proxy()}/api/C4F20640B94F4FEE85C35DF21D06F058`, {
+            headers: {
+                Authorization: _token,
+                "content-type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(requestBodyProduct)
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success, data, activated, status, content } = resp;
+                console.log("Product infor", resp)
+               
+
+            })
     };
 
+
+
+
+
+
+
+
+
+
     const handleInputChange = (rowId, colName, value) => {
-        setData((prevData) =>
-            prevData.map((row) =>
-                row.id === rowId ? { ...row, [colName]: value } : row
-            )
+        // Cập nhật dữ liệu như trước
+        const newData = data.map((row) =>
+            row.id === rowId ? { ...row, [colName]: value } : row
         );
+        setData(newData);
+        // Gọi hàm callback để thông báo cho component cha
+        props.onDataUpdate(newData);
     };
 
     const handleRowClick = (rowId) => {
@@ -50,8 +112,13 @@ function EditableTable(props) {
     };
 
     const handleDeleteRow = (rowId) => {
-        setData((prevData) => prevData.filter((row) => row.id !== rowId));
+        // Cập nhật state để loại bỏ hàng dựa trên rowId
+        const newData = data.filter((row) => row.id !== rowId);
+        setData(newData);
+        // Gọi hàm callback để thông báo cho component cha
+        props.onDataUpdate(newData);
     };
+
     const handleFocus = (rowId) => {
         // Đặt isEditing thành true khi một input được focus
         setData((prevData) =>

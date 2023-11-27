@@ -149,7 +149,6 @@ export default (props) => {
 
     const MyBarChart1 = () => {
 
-
         // const COLORS = ["#4D90FE", "#96C291", "#E19898"];
         const COLORS = ["#4988ef", "#72c05d", "#ff7170"];
         const months = [
@@ -317,6 +316,7 @@ export default (props) => {
                         }
                     }
 
+
                     return result;
                 }
             },
@@ -331,7 +331,6 @@ export default (props) => {
                     fontFamily: 'UTM Avo'
                 }
             },
-
             series: [{
                 name: LABELS[0], // Controller
                 type: 'bar',
@@ -425,7 +424,7 @@ export default (props) => {
                         </div>
                     </div>
                 </div>
-              
+
                 {/* <div class="row column1">
                     {LABELS[0] !== undefined &&
                         <div className={`col-lg-${columnWidth}`}>
@@ -595,68 +594,70 @@ export default (props) => {
                 </div> */}
 
                 <div class="row column1 social_media_section">
-                        <div class="col-md-4 col-lg-4">
-                           <div class="full socile_icons controller margin_bottom_30">
-                              <div class="social_icon color-whiteh5">
-                               
-                                 {LABELS[0]}
-                              </div>
-                              <div class="social_cont total-box">
-                                 <ul>
+                    <div class="col-md-4 col-lg-4">
+                        <div class="full socile_icons controller margin_bottom_30">
+                            <div class="social_icon color-whiteh5">
+
+                                {LABELS[0]}
+                            </div>
+                            <div class="social_cont total-box">
+                                <ul>
                                     <li>
-                                       <span><strong class="f-24"> {totalControllerForCurrentMonth || 0}</strong></span>
-                                       <span>  {lang["month"]} {currentMonth}</span>
+                                        <span><strong class="f-24"> {totalControllerForCurrentMonth || 0}</strong></span>
+                                        <span class="mt-2">{months[currentMonth-1]}</span>
                                     </li>
                                     <li>
-                                       <span><strong class="f-24">  {totalControllerForYear || 0}</strong></span>
-                                       <span> {lang["year"]} {selectedYear}</span>
+                                        <span><strong class="f-24">  {totalControllerForYear || 0}</strong></span>
+                                        <span class="mt-2"> {lang["year"]} {selectedYear}
+                                    
+                                        </span>
                                     </li>
-                                 </ul>
-                              </div>
-                           </div>
+                                </ul>
+                            </div>
                         </div>
-                        
-                        <div class="col-md-4 col-lg-4">
-                           <div class="full socile_icons printhead margin_bottom_30">
-                              <div class="social_icon color-whiteh5">
-                               
-                                 {LABELS[1]}
-                              </div>
-                              <div class="social_cont total-box">
-                                 <ul>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="full socile_icons printhead margin_bottom_30">
+                            <div class="social_icon color-whiteh5">
+
+                                {LABELS[1]}
+                            </div>
+                            <div class="social_cont total-box">
+                                <ul>
                                     <li>
-                                       <span><strong class="f-24"> {totalPrintheadForCurrentMonth || 0}</strong></span>
-                                       <span>  {lang["month"]} {currentMonth}</span>
+                                        <span><strong class="f-24"> {totalPrintheadForCurrentMonth || 0}</strong></span>
+                                        <span class="mt-2">  {months[currentMonth-1]}</span>
                                     </li>
                                     <li>
-                                       <span><strong class="f-24">  {totalPrintheadForYear || 0}</strong></span>
-                                       <span> {lang["year"]} {selectedYear}</span>
+                                        <span><strong class="f-24">  {totalPrintheadForYear || 0}</strong></span>
+                                        <span class="mt-2"> {lang["year"]} {selectedYear}</span>
                                     </li>
-                                 </ul>
-                              </div>
-                           </div>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="col-md-4 col-lg-4">
-                           <div class="full socile_icons printer margin_bottom_30">
-                              <div class="social_icon color-whiteh5">
-                               
-                                 {LABELS[2]}
-                              </div>
-                              <div class="social_cont total-box">
-                                 <ul>
+                    </div>
+                    <div class="col-md-4 col-lg-4">
+                        <div class="full socile_icons printer margin_bottom_30">
+                            <div class="social_icon color-whiteh5">
+
+                                {LABELS[2]}
+                            </div>
+                            <div class="social_cont total-box">
+                                <ul>
                                     <li>
-                                       <span><strong class="f-24"> {totalPrinterForCurrentMonth || 0}</strong></span>
-                                       <span>  {lang["month"]} {currentMonth}</span>
+                                        <span><strong class="f-24"> {totalPrinterForCurrentMonth || 0}</strong></span>
+                                        <span class="mt-2">  {months[currentMonth-1]}</span>
                                     </li>
                                     <li>
-                                       <span><strong class="f-24">  {totalPrinterForYear || 0}</strong></span>
-                                       <span> {lang["year"]} {selectedYear}</span>
+                                        <span><strong class="f-24">  {totalPrinterForYear || 0}</strong></span>
+                                        <span class="mt-2"> {lang["year"]} {selectedYear}</span>
                                     </li>
-                                 </ul>
-                              </div>
-                           </div>
+                                </ul>
+                            </div>
                         </div>
-                     </div>
+                    </div>
+                </div>
             </>
         );
     };
