@@ -3625,7 +3625,7 @@ class ConsumeApi extends Controller {
         context.statistic = statistics;
         const fields = this.getFields(this.API.fields.valueOrNot().map(f => f.id))
         context.fields = [...fields, ...calculateDisplay]
-
+        context.remote_server = this.project?.proxy_server
         this.res.status(200).send(context)
     }
 
@@ -3713,7 +3713,7 @@ class ConsumeApi extends Controller {
 
 
         response.statistic = statistics
-
+        response.remote_server = this.project?.proxy_server
         response.fields = [...fields, ...calculateDisplay]
         
         this.res.status(200).send(response)
