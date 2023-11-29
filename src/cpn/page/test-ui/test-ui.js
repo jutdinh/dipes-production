@@ -1,6 +1,6 @@
 
 import { useParams } from "react-router-dom";
-
+import ReactDOM from 'react-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -49,6 +49,8 @@ export default () => {
     ])
     const [serverImage, setServerImage] = useState("");
     const [cases, setCases] = useState([]);
+    console.log(cases)
+    const [caseUpdate, setCaseUpdate] = useState({});
     const [filter, setFilter] = useState({ type: 'info' });
     const [showModal, setShowModal] = useState(false);
 
@@ -56,22 +58,41 @@ export default () => {
 
     const languages = langItem.toLowerCase();
     const [supportQuanlity, setSupportQuanlity] = useState(0);
-    const [dataMessage, setDataMassage] = useState({});
+    const [dataMessageSent, setDataMessageSent] = useState({});
+    const [dataMessage, setDataMessage] = useState([]);
+    const [dataMessageMedia, setDataMessageMedia] = useState([]);
     const [errorMessagesadd, setErrorMessagesadd] = useState({});
-    //Post case 
+    const [errorMessagesUpdate, setErrorMessagesUpdate] = useState({});
 
+    const qualityToImage = {
+        "Excellent": "i1.png",
+        "Good": "i2.png",
+        "Medium": "i3.png",
+        "Poor": "i4.png",
+        "Very Bad": "i5.png"
+    };
+
+    console.log(dataMessage)
+    //Post case 
     const [postCase, setPostCase] = useState({ casetype: "Undefined" });
-    console.log("data post case:", postCase)
+    // console.log("data post case:", postCase)
     // 
     // console.log(view)
 
     // Data table 
     const [tableData, setTableData] = useState([]);// Nhận từ Cpn
     const [tableDataProduct, setTableDataProduct] = useState([]);
+    // console.log("Data Table", tableData)
+    // console.log(tableDataProduct)
 
-    console.log(tableDataProduct)
+    const filteredTableData = tableData.filter(item => {
+        // Kiểm tra xem có ít nhất một trong các thuộc tính col1, col2, col3, col4, col5 có giá trị không
+        return item.col1 || item.col2 || item.col3 || item.col4 || item.col5;
+    });
 
-    const mappedArray = tableData.map(item => ({
+
+
+    const mappedArray = filteredTableData.map(item => ({
         "2SN": item.col1,
         "1SV": item.col2,
         "1HV": item.col3,
@@ -81,9 +102,7 @@ export default () => {
 
     const resultObject = { "11P": mappedArray };
 
-    console.log(resultObject)
-
-
+    // console.log(resultObject)
 
     const handleDataFromChild = (newData) => {
         // Cập nhật state ở đây
@@ -137,8 +156,50 @@ export default () => {
     console.log(dataCaseDetail)
     const [selectedCaseDetail, setSelectedCaseDetail] = useState("");
     const [showPageDetail, setShowPageDetail] = useState(false);
+    console.log(selectedCaseDetail)
+
+    const fetchData = async (caseid) => {
+        try {
+            const requestBodyProduct = {
+                checkCustomer: {
+                    username,
+                    password: storedPwdString
+                },
+                "3CI": caseid.id
+            }
+            // Trước khi gọi API, đặt giá trị của tableDataProduct thành một mảng rỗng
+            setTableDataProduct([]);
+
+            const response = await fetch(`${proxy()}/api/F256DE8ACBC449F3A4B5E2056FF8F18E`, {
+                headers: {
+                    Authorization: _token,
+                    "content-type": "application/json"
+                },
+                method: "POST",
+                body: JSON.stringify(requestBodyProduct)
+            });
+
+            const resp = await response.json();
+
+            const { success, data, activated, status, content } = resp;
+            // console.log("Product infor", resp)
+            setTableDataProduct(resp.Products);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+    const dataUpdateCase = (dataUpdate) => {
+        console.log(dataUpdate)
+        setCaseUpdate(dataUpdate)
+    }
+
+
+
     const handlePageDetail = (caseid) => {
-        console.log(caseid)
+
+        fetchData(caseid);
+        // console.log(caseid)
+        setTableDataProduct([]);
         setSelectedCaseDetail(caseid.id)
         setShowPageDetail(true)
         setShowPageAdd(false)
@@ -159,7 +220,7 @@ export default () => {
         })
             .then(res => res.json())
             .then(resp => {
-                const { success, data, activated, status, content } = resp;
+                const { Success, data, activated, status, content } = resp;
                 console.log(resp)
                 const fieldMappings = resp.fields.reduce((acc, field) => {
                     acc[field.fomular_alias] = field.field_name;
@@ -184,37 +245,19 @@ export default () => {
                     status: mappedCase["STATUS"],
                     imgcase: mappedCase["CASE IMAGE"],
                     solution: mappedCase["SOLUTION DESCRIPTION"],
-                    attachMedia: mappedCase["1CA"]
+                    attachMedia: mappedCase["1CA"],
+                    supportquanlity: mappedCase["SUPPORT QUALITY"],
+                    supportdescription: mappedCase["SUPPORT QUALITY DESCRIPTION"]
                 };
-                console.log(caseDetail);
+                // console.log(caseDetail);
                 setDataCaseDetail(caseDetail);
+
             })
 
         // List Product information
 
 
-        const requestBodyProduct = {
-            checkCustomer: {
-                username,
-                password: storedPwdString
-            },
-            "3CI": caseid.id
-        }
-        fetch(`${proxy()}/api/F256DE8ACBC449F3A4B5E2056FF8F18E`, {
-            headers: {
-                Authorization: _token,
-                "content-type": "application/json"
-            },
-            method: "POST",
-            body: JSON.stringify(requestBodyProduct)
-        })
-            .then(res => res.json())
-            .then(resp => {
-                const { success, data, activated, status, content } = resp;
-                console.log("Product infor", resp)
-                setTableDataProduct(resp.Products)
 
-            })
 
 
     }
@@ -237,6 +280,18 @@ export default () => {
     useEffect(() => {
         localStorage.setItem('activeTab', activeTab);
     }, [activeTab]);
+
+    useEffect(() => {
+        if (dataCaseDetail.supportquanlity !== undefined) {
+            setSupportQuanlity(1)
+            setRating(dataCaseDetail.supportquanlity)
+
+            setPostRating({ content: dataCaseDetail.supportdescription });
+        }
+        else {
+            setSupportQuanlity(0)
+        }
+    }, [dataCaseDetail]);
 
     // console.log("Chi tiết", showPageDetail)
     // console.log("Thêm", showPageAdd)
@@ -299,7 +354,7 @@ export default () => {
 
     }, [])
     // List case
-    useEffect(() => {
+    const callApiListCase = () => {
         const requestBody = {
             checkCustomer: {
                 username,
@@ -339,19 +394,24 @@ export default () => {
                     title: caseItem["CASE TITLE"],
                     date: caseItem["CREATED DATE"],
                     issue: caseItem["ISSUE DESCRIPTION"],
-                    customer: caseItem["CUSTOMER"]
+                    customer: caseItem["CUSTOMER"],
+                    casetype: caseItem["CASE TYPE"],
+                    productname: caseItem["2PN"],
+                    caseimage: caseItem["CASE IMAGE"],
+                    attachMedia: caseItem["1CA"],
+                    supportquanlity: caseItem["SUPPORT QUALITY"],
+                    supportdescription: caseItem["SUPPORT QUALITY DESCRIPTION"]
 
                 }));
 
                 console.log(caseTitlesAndDates);
                 setCases(caseTitlesAndDates)
             })
+    }
 
+    useEffect(() => {
+        callApiListCase()
     }, [])
-
-
-
-
 
 
 
@@ -384,15 +444,14 @@ export default () => {
         }
     };
     //Ảnh phụ
-
-    const removeImageCase = () => {
-
+    const removeImageCase = (e) => {
+        e.preventDefault();
         setSelectedImage(null)
     };
 
     const [attachMedia, setAttachMedia] = useState([]);
-
     console.log("anh phụ", attachMedia)
+
     const handleAttachMedia = (e) => {
         const newFiles = Array.from(e.target.files);
 
@@ -440,22 +499,54 @@ export default () => {
             }
         });
     };
+
     const removeAttachMedia = (media) => {
         const updatedMediaList = attachMedia.filter(item => item.url !== media.url);
         setAttachMedia(updatedMediaList)
     };
+
+    const removeImageCaseUpdate = (e) => {
+        e.preventDefault();
+        setCaseUpdate(prevState => ({
+            ...prevState,
+            caseimage: '' // Cập nhật caseimage thành rỗng
+        }));
+    };
+
+    const removeAttachMediaUpdate = (e, media) => {
+        e.preventDefault();
+        console.log(media);
+
+        // Tạo một bản sao của caseUpdate
+        const updatedCaseUpdate = { ...caseUpdate };
+
+        // Lọc ra các phần tử khỏi mảng attachMedia
+        updatedCaseUpdate.attachMedia = updatedCaseUpdate.attachMedia.filter(item => item["6U"] !== media["6U"]);
+
+        // Cập nhật caseUpdate
+        setCaseUpdate(updatedCaseUpdate);
+    };
+
     const [dataPreviewMedia, setDataPreviewMedia] = useState();
     const openModalPreview = (media) => {
         setDataPreviewMedia(media)
     };
-
-
+    // console.log(dataPreviewMedia)
     //Popup dấu 3 chấm
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    const toggleMenu = (event) => {
+    const [openMenuCaseId, setOpenMenuCaseId] = useState(null);
+
+    // Hàm mở menu cho case cụ thể
+    const toggleMenu = (event, caseId) => {
         event.stopPropagation();
-        setIsMenuOpen(!isMenuOpen);
+        // Kiểm tra xem menu cho case này đã được mở chưa
+        if (openMenuCaseId === caseId) {
+            // Nếu đã mở, đóng lại
+            setOpenMenuCaseId(null);
+        } else {
+            // Nếu chưa mở, mở menu cho case này
+            setOpenMenuCaseId(caseId);
+        }
     };
 
 
@@ -464,12 +555,12 @@ export default () => {
         function handleClickOutside(event) {
             // Nếu click ra ngoài menu, đóng menu
             if (menuRef.current && !menuRef.current.contains(event.target)) {
-                setIsMenuOpen(false);
+                setOpenMenuCaseId(false);
             }
         }
 
         // Thêm event listener khi menu được mở
-        if (isMenuOpen) {
+        if (openMenuCaseId) {
             document.addEventListener('click', handleClickOutside);
         }
 
@@ -477,21 +568,21 @@ export default () => {
         return () => {
             document.removeEventListener('click', handleClickOutside);
         };
-    }, [isMenuOpen]);
+    }, [openMenuCaseId]);
     ////Message
     const [showFullMessage, setShowFullMessage] = useState(false);
 
-    const text = "Contrary to popular belief, Lorem Ipsum is not simply random text.It has in a piece of classical Latin literature from 45 BC, making it over 2000 old Richard McClintock, a Latin professor at Hampden-Sydney College in 9. looked up one ofthe more obscure Latin words."
-    const toggleShowFullMessage = () => {
-        setShowFullMessage(!showFullMessage);
+
+    const toggleShowFullMessage = (id) => {
+        setShowFullMessage(prevState => ({
+            ...prevState,
+            [id]: !prevState[id]
+        }));
     };
 
 
-    // Chia nội dung tin nhắn thành các từ
-    const words = text.split(' ');
-    // Nếu số từ nhiều hơn 100 và không hiển thị toàn bộ nội dung
-    const shouldTruncate = words.length > 20 && !showFullMessage;
-    const textToDisplay = shouldTruncate ? words.slice(0, 20).join(' ') + '...' : text;
+
+
 
     const submitPostCase = (e) => {
         e.preventDefault();
@@ -507,12 +598,10 @@ export default () => {
             errors.issue = "Lỗi mô tả";
         }
 
-
         if (Object.keys(errors).length > 0) {
             setErrorMessagesadd(errors);
             return;
         }
-
 
         // console.log(_token);
         const requestBody = {
@@ -564,27 +653,97 @@ export default () => {
 
     };
 
-    const [currentPageLogs, setCurrentPageLogs] = useState(1);
-    const rowsPerPageLogs = 4;
-    const indexOfLastMemberLogs = currentPageLogs * rowsPerPageLogs;
-    const indexOfFirstMemberLogs = indexOfLastMemberLogs - rowsPerPageLogs;
-    const currentMembersLogs = view.slice(indexOfFirstMemberLogs, indexOfLastMemberLogs);
-    const paginateLogs = (pageNumber) => setCurrentPageLogs(pageNumber);
-    const totalPagesLogs = Math.ceil(view.length / rowsPerPageLogs);
+    const submitUpdateCase = (e) => {
+        e.preventDefault();
 
+        const { title, productname, issue } = caseUpdate;
+        const errors = {};
+        if (!title) {
+            errors.title = "Lỗi casetile";
+        }
+        if (!productname) {
+            errors.productname = "Lỗi Productname";
+        }
+        if (!issue) {
+            errors.issue = "Lỗi mô tả";
+        }
+
+
+        if (Object.keys(errors).length > 0) {
+            setErrorMessagesUpdate(errors);
+            return;
+        }
+
+
+        const requestBody = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            },
+            "1CI": caseUpdate.id,
+            "1CT": caseUpdate.title,
+            "2CT": caseUpdate.casetype,
+            "2PN": caseUpdate.productname,
+            "2CI": selectedImage, //selectedImage caseUpdate.caseimage
+            "1ID": caseUpdate.issue,
+            "1CA": attachMedia.map(item => ({ Base64: item.dataUrl })).concat(caseUpdate.attachMedia.map(item => item))
+        }
+        console.log(requestBody)
+
+        fetch(`${proxy()}/api/56ABDE49FFD24A09B89174526314F4B8`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `${_token}`,
+            },
+            body: JSON.stringify(requestBody),
+        })
+            .then((res) => res.json())
+            .then((resp) => {
+                const { Success, content, data, status } = resp;
+                if (Success) {
+                    Swal.fire({
+                        title: lang["success"],
+                        text: lang["success.update"],
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 2000
+                    })
+                } else {
+                    Swal.fire({
+                        title: lang["faild"],
+                        text: lang["fail.update"],
+                        icon: "error",
+                        showConfirmButton: true,
+                        // confirmButtonText: lang["back"],
+                        cancelButtonText: lang["btn.cancel"],
+                        // showCancelButton: true,
+                    })
+                }
+            });
+
+    };
 
     const [selectedImagesSent, setSelectedImagesSent] = useState([]);
-    // console.log(selectedImagesSent)
+    console.log(selectedImagesSent)
     // Hàm check totalSize
     const calculateTotalSize = (additionalFiles) => {
         return selectedImagesSent.reduce((acc, file) => acc + file.size, 0) + additionalFiles.reduce((acc, file) => acc + file.size, 0);
     };
-    const handleImageChangeSent = (e) => {
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    })
+
+    const handleImageChangeSent = async (e) => {
         const newFiles = Array.from(e.target.files);
         // console.log(newFiles);
 
-        const newMediaPromises = newFiles.map(file => {
+        const newMediaPromises = newFiles.map(async file => {
             const name = file.name;
+            const base64 = await toBase64(file);
             if (file.type.startsWith('video/')) {
                 // Sử dụng hàm getVideoThumbnail để lấy thông tin thumbnail và duration
                 return getVideoThumbnail(file).then(({ thumbnailUrl, duration }) => ({
@@ -592,6 +751,7 @@ export default () => {
                     size: file.size,
                     url: URL.createObjectURL(file),
                     type: 'video',
+                    base64: base64,
                     cover: thumbnailUrl, // Sử dụng URL của ảnh bìa từ hàm getVideoThumbnail
                     duration, // Sử dụng thời lượng từ hàm getVideoThumbnail
                 }));
@@ -599,6 +759,7 @@ export default () => {
                 return Promise.resolve({
                     name: name,
                     size: file.size,
+                    base64: base64,
                     url: URL.createObjectURL(file),
                     type: 'image',
                 });
@@ -624,6 +785,7 @@ export default () => {
             }
         });
     };
+
 
     // Hàm trợ giúp để chụp ảnh bìa từ video
     const getVideoThumbnail = (file) => new Promise((resolve, reject) => {
@@ -654,6 +816,242 @@ export default () => {
         setSelectedImagesSent(updatedMediaList)
     };
 
+    // Đánh giá 
+    const [rating, setRating] = useState(null);
+    const handleRatingClick = (newRating) => {
+        setRating(newRating);
+    };
+
+    const [postRating, setPostRating] = useState({});
+    console.log(postRating)
+    const submitRate = (e) => {
+        e.preventDefault();
+
+
+
+        const requestBody = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            },
+            "1CI": selectedCaseDetail,
+            "1SQ": rating,
+            "1SQD": postRating.content
+        }
+        console.log(requestBody)
+
+        fetch(`${proxy()}/api/188CD259D6E742A2B31334767298337D`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `${_token}`,
+            },
+            body: JSON.stringify(requestBody),
+        })
+            .then((res) => res.json())
+            .then((resp) => {
+                const { Success, content, data, status } = resp;
+                if (Success) {
+                    callApiListCase()
+                    Swal.fire({
+                        title: lang["success"],
+                        text: lang["success.update"],
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 2000
+                    })
+                } else {
+                    Swal.fire({
+                        title: lang["faild"],
+                        text: lang["fail.update"],
+                        icon: "error",
+                        showConfirmButton: true,
+                        // confirmButtonText: lang["back"],
+                        cancelButtonText: lang["btn.cancel"],
+                        // showCancelButton: true,
+                    })
+                }
+            });
+
+    };
+
+    //Tin nhắn
+
+    const callApiMessage = () => {
+        const requestBody = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            },
+            "4CI": selectedCaseDetail
+        }
+        fetch(`${proxy()}/api/35DAEDC33BF24327A03373D4D66B1D2B`, {
+            headers: {
+                Authorization: _token,
+                "content-type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(requestBody)
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success, data, activated, status, content } = resp;
+                console.log(resp)
+                setDataMessage(resp.Messages)
+
+
+            })
+    }
+    const callApiMessageMedia = () => {
+        const requestBody = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            },
+            "5CI": selectedCaseDetail
+        }
+        fetch(`${proxy()}/api/C859083907874976BA90AAA4D14D8E61`, {
+            headers: {
+                Authorization: _token,
+                "content-type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(requestBody)
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success, data, activated, status, content } = resp;
+                console.log(resp)
+                setDataMessageMedia(resp.Media)
+            })
+    }
+
+
+    const withDrawMessage = () => {
+        const requestBody = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            },
+            "4CI": contextMenu.item["4CI"],
+            "1MI": contextMenu.item["1MI"]
+        }
+        fetch(`${proxy()}/api/600303965B5F45299EDDBB47AFF407E1`, {
+            headers: {
+                Authorization: _token,
+                "content-type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(requestBody)
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { Success, data, activated, status, content } = resp;
+                console.log(resp)
+                // setDataMessageMedia(resp.Media)
+                if(Success)
+                {
+                    callApiMessage()
+                    callApiMessageMedia()
+                }
+            })
+    }
+
+
+    useEffect(() => {
+        callApiMessage()
+        callApiMessageMedia()
+    }, [selectedCaseDetail])
+
+    const submitMessage = (e) => {
+        e.preventDefault();
+        const requestBody = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            },
+            "4CI": selectedCaseDetail,
+            "1MC": dataMessageSent.message,
+            "1MM": selectedImagesSent.map(item => ({ "9MT": item.type, "5U": item.base64 }))
+
+        }
+        console.log(requestBody)
+
+        fetch(`${proxy()}/api/50DA7C504DF5439AA5FFE8D734D7CA79`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `${_token}`,
+            },
+            body: JSON.stringify(requestBody),
+        })
+            .then((res) => res.json())
+            .then((resp) => {
+                const { Success, content, data, status } = resp;
+                console.log(resp)
+                if (Success) {
+                    callApiMessage()
+                    callApiMessageMedia()
+                }
+            });
+
+    };
+
+
+
+    useEffect(() => {
+
+        const mediaMap = new Map(dataMessageMedia?.map(mediaItem => [mediaItem["2MI"], mediaItem]));
+
+        // Bước 2: Duyệt qua mảng messages và gộp thông tin từ media
+        const mergedArray = dataMessage?.map(messageItem => {
+            const mediaItem = mediaMap.get(messageItem["1MI"]);
+            if (mediaItem && mediaItem["5CI"] === messageItem["4CI"]) {
+                // Bước 3: Gộp thông tin media vào message nếu khớp
+                return {
+                    ...messageItem, // Giữ nguyên thông tin tin nhắn
+                    media: mediaItem, // Thêm thông tin media
+                };
+            }
+            return messageItem; // Nếu không khớp hoặc không tìm thấy, trả về tin nhắn không thay đổi
+        });
+
+        // Cập nhật state dataMessage với giá trị đã gộp
+        setDataMessage(mergedArray);
+    }, [dataMessageMedia]); // Chỉ chạy effect này khi dataMessageMedia thay đổi
+
+
+    const [contextMenu, setContextMenu] = useState({ visible: false, position: { x: 0, y: 0 }, item: null });
+
+    console.log(contextMenu)
+    // Hàm xử lý chuột phải
+    const handleContextMenu = (event, item) => {
+        event.preventDefault();
+        setContextMenu({
+            visible: true,
+            position: { x: event.pageX, y: event.pageY },
+            item: item,
+        });
+
+    };
+
+    // Hàm để ẩn context menu
+    const closeContextMenu = () => {
+        setContextMenu({ visible: false, position: { x: 0, y: 0 }, item: null });
+    };
+
+    // Đóng menu khi click bên ngoài
+    useEffect(() => {
+        const handleOutsideClick = () => {
+            if (contextMenu.visible) {
+                closeContextMenu();
+            }
+        };
+
+        document.addEventListener('click', handleOutsideClick);
+        return () => document.removeEventListener('click', handleOutsideClick);
+    }, [contextMenu.visible]);
+    console.log('Rendering context menu:', contextMenu);
     return (
         <div class="container-case-main">
             <div class="midde_cont">
@@ -665,54 +1063,9 @@ export default () => {
                             </div>
                         </div>
                     </div>
-
-                    {/* <div class="row">
-                    <div class="col-md-12">
-                        <div class="white_shd full margin_bottom_30">
-                            <div class="full graph_head">
-                                <div class="heading1 margin_0">
-                                    <h5>{lang["log.statis"]}</h5>
-                                </div>
-                            </div>
-                            <div class="table_section padding_infor_info-logs">
-                                <div class="member-cus">
-                                    <div class="msg_list_main">
-                                        <div className="row column1 mb-3 mt-3">
-                                            <div className="col-lg-3">
-                                                <label>{lang["log.type"]}:</label>
-                                                <select className="form-control" value={filter.type} onChange={(e) => { setFilter({ ...filter, type: e.target.value }) }}>
-                                                    <option value="info">{lang["log.information"]}</option>
-                                                    <option value="warn">{lang["log.warning"]}</option>
-                                                    <option value="error">{lang["log.error"]}</option>
-
-                                                </select>
-                                            </div>
-                                            <div className="col-lg-3">
-                                                <label>{lang["log.daystart"]}:</label>
-                                                <input type="datetime-local" className="form-control" value={filter.start} onChange={
-                                                    (e) => { setFilter({ ...filter, start: e.target.value }) }
-                                                } />
-                                            </div>
-                                            <div className="col-lg-3">
-                                                <label>{lang["log.dayend"]}:</label>
-                                                <input type="datetime-local" className="form-control" value={filter.end} onChange={
-                                                    (e) => { setFilter({ ...filter, end: e.target.value }) }
-                                                } />
-                                            </div>
-                                            <div className="col-lg-3 d-flex align-items-end justify-content-end">
-                                                <button className="btn btn-primary mr-2 mt-2 btn-log" onClick={submitFilter}>{lang["btn.ok"]}</button>
-                                                <button className="btn btn-secondary btn-log" onClick={() => {
-                                                    setView(logs)
-                                                }}>{lang["btn.clear"]}</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div> */}
                     <div class="row">
+                        <div id="portal-root"></div>
+
                         {/* List Case */}
                         <div class="col-md-5" style={{ paddingLeft: "5px", paddingRight: "5px" }}>
                             <div class="search-container">
@@ -748,28 +1101,31 @@ export default () => {
 
                             <div class="container-case">
 
-                                {cases.map((item) => (
-                                    <div class={`box-case ${selectedCaseDetail === item.id ? "selected" : ""}`} onClick={() => handlePageDetail(item)}>
-                                        <div class="d-flex">
+                                {cases.map((item, index) => (
+                                    <div key={index} className={`box-case ${selectedCaseDetail === item.id ? "selected" : ""}`} onClick={() => handlePageDetail(item)}>
+                                        <div className="d-flex">
                                             <h4>{item.title}</h4>
-                                            <div class="ml-auto">
+                                            <div className="ml-auto">
                                                 <div className="dropdown-custom">
-                                                    <FontAwesomeIcon icon={faEllipsisVertical} className="size-24 ml-auto pointer" onClick={toggleMenu} />
-                                                    {isMenuOpen && (
+                                                    <FontAwesomeIcon icon={faEllipsisVertical} className="size-24 ml-auto pointer" onClick={(e) => toggleMenu(e, item.id)} />
+                                                    {openMenuCaseId === item.id && (
                                                         <div className="popup-menu-custom show" ref={menuRef}>
-                                                            <span className="menu-item-custom" data-toggle="modal" data-target="#updateCase">Update Case</span>
+                                                            <span className="menu-item-custom" data-toggle="modal" onClick={() => dataUpdateCase(item)} data-target="#updateCase">Update Case</span>
                                                             <span className="menu-item-custom">Delete Case</span>
                                                             <span className="menu-item-custom">Cancel Case</span>
                                                         </div>
                                                     )}
                                                 </div>
-
                                             </div>
                                         </div>
                                         <p>{item.issue}</p>
-                                        <div class="d-flex ">
-                                            <p class="italic" style={{ marginBottom: 0 }}>{functions.formatDateCase(item.date)} by <span class="italic-non font-weight-bold-black">{item.customer}</span> </p>
-                                            <div class="ml-auto"> <img width={32} src={"/images/review/ex.png"}></img></div>
+                                        <div className="d-flex">
+                                            <p className="italic" style={{ marginBottom: 0 }}>{functions.formatDateCase(item.date)} by <span className="italic-non font-weight-bold-black">{item.customer}</span> </p>
+                                            <div className="ml-auto">
+                                                {item.supportquanlity !== undefined &&
+                                                    <img width={32} src={`/images/icon/${qualityToImage[item.supportquanlity]}`} alt="ex" />
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
@@ -915,7 +1271,7 @@ export default () => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <TableInputAdd stateAdd={true} stateUpdate={false} />
+                                                <TableInputAdd onDataUpdate={handleDataFromChild} stateAdd={true} stateUpdate={false} />
                                             </div>
                                         </div>
                                     </div>
@@ -945,14 +1301,13 @@ export default () => {
                                             <h4>{dataCaseDetail.title}</h4>
                                             <div class="d-flex ">
                                                 <p class="italic" style={{ marginBottom: 0 }}>Posted on {functions.formatDateCase(dataCaseDetail.date)} ({getElapsedTime(dataCaseDetail.date)}). <b class="status_label">{dataCaseDetail.status}</b></p>
-                                                <div class="ml-auto">
-                                                    <img class="icon-rate-small" src={"/images/icon/i1.png"}></img>
-                                                    <img class="icon-rate-small" src={"/images/icon/i2.png"}></img>
-                                                    <img class="icon-rate-small" src={"/images/icon/i3.png"}></img>
-                                                    <img class="icon-rate-small" src={"/images/icon/i4.png"}></img>
-                                                    <img class="icon-rate-small" src={"/images/icon/i5.png"}></img>
-
-                                                </div>
+                                                {/* <div class="ml-auto">
+                                                    {dataCaseDetail.supportquanlity !== undefined ?
+                                                        <img width={32} src={`/images/icon/${qualityToImage[dataCaseDetail.supportquanlity]}`} alt="ex" />
+                                                        :
+                                                        <div style={{ height: "32px" }}></div>
+                                                    }
+                                                </div> */}
                                             </div>
                                         </div>
                                     </div>
@@ -1004,30 +1359,40 @@ export default () => {
                                                                         </div>
                                                                     </div> */}
                                                                     <div class="col-md-8">
-                                                                        
+
 
                                                                         <div className="upload-container-case-add">
                                                                             {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
-                                                                           
-                                                                                <div className="selected-images-container-add">
-                                                                                    {dataCaseDetail?.attachMedia?.map((media, index) => (
-                                                                                        <div key={index} className="selected-image-wrapper-add">
-                                                                                            {media.type === 'image' && (
-                                                                                                <img src={serverImage + media["6U"]} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
-                                                                                            )}
-                                                                                            {media.type === 'video' && (
-                                                                                                <div>
-                                                                                                    <img src={serverImage + media["6U"]} alt={`Cover for ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
-                                                                                                    {/* <div class="video-duration"> {media.name}</div> */}
-                                                                                                    <div class="video-duration">Video</div>
-                                                                                                </div>
-                                                                                            )}
-                                                                                            
-                                                                                            
-                                                                                        </div>
-                                                                                    ))}
-                                                                                </div>
-                                                                           
+
+                                                                            <div className="selected-images-container-add">
+                                                                                {dataCaseDetail?.attachMedia?.map((media, index) => (
+                                                                                    <div key={index} className="selected-image-wrapper-add">
+                                                                                        {media["28T"] === 'image' && (
+                                                                                            <img src={serverImage + media["6U"]} alt={`Selected ${index}`}
+                                                                                                className="selected-image-add pointer" data-toggle="modal" data-target="#previewMedia"
+                                                                                                onClick={() => openModalPreview({ type: "attachImageDetail", url: serverImage + media["6U"] })}
+                                                                                                title="Click to preview" />
+                                                                                        )}
+                                                                                        {media["28T"] === 'video' && (
+                                                                                            <div>
+
+                                                                                                <video autoplay controls={false} src={serverImage + media["6U"]}
+                                                                                                    className="selected-image-add pointer"
+                                                                                                    data-toggle="modal" data-target="#previewMedia"
+                                                                                                    onClick={() => openModalPreview({ type: "attachVideoDetail", url: serverImage + media["6U"] })}
+                                                                                                    title="Click to preview"   >
+
+                                                                                                </video>
+                                                                                                {/* <div class="video-duration"> {media.name}</div> */}
+                                                                                                <div class="video-duration">Video</div>
+                                                                                            </div>
+                                                                                        )}
+
+
+                                                                                    </div>
+                                                                                ))}
+                                                                            </div>
+
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1140,51 +1505,81 @@ export default () => {
                                                                 <div class="info-case">
                                                                     <div class="messages-wrapper" style={{ height: selectedImagesSent.length > 0 ? "545px" : "" }} id="messages-wrapper">
 
-                                                                        <div class="message-container received">
-                                                                            {/* <img class="message-image" src="path_to_image_received.jpg" alt="Received message image" /> */}
-                                                                            <p>
-                                                                                {textToDisplay}
-                                                                                {shouldTruncate && (
-                                                                                    <span className="show-more" onClick={toggleShowFullMessage}> Show more</span>
-                                                                                )}
-                                                                            </p>
-                                                                            <div class="message-timestamp">Nov 15th, 07:19</div>
-                                                                        </div>
-                                                                        <div class="message-container sent">
-                                                                            {/* <img class="message-image" src="path_to_image_sent.jpg" alt="Sent message image" /> */}
-                                                                            <p>is a long established fact that a reader will be distracted by the readable content
-                                                                                of a page when looking at its layout. The point of using Lorem Ipsum is that it has
-                                                                                a more-or-less normal distribution of letters, as opposed to us at Hampden-Sydney College in Virginia.
-                                                                            </p>
-                                                                            <img class="message-image" src="/images/helpdesk/1.png" />
-                                                                            <img class="message-image" src="/images/helpdesk/1.png" />
-                                                                            <img class="message-image" src="/images/helpdesk/1.png" />
-                                                                            <div class="message-timestamp">Nov 16th, 08:23</div>
-                                                                        </div>
-                                                                        <div class="message-container sent">
-                                                                            {/* <img class="message-image" src="path_to_image_sent.jpg" alt="Sent message image" /> */}
-                                                                            <p>is a long established fact that a reader will be distracted by the readable content
-                                                                                of a page when looking at its layout. The point of using Lorem Ipsum is that it has
-                                                                                a more-or-less normal distribution of letters, as opposed to us at Hampden-Sydney College in Virginia.
-                                                                            </p>
 
+                                                                        {contextMenu.visible && ReactDOM.createPortal(
+                                                                            <div
+                                                                                className="custom-context-menu"
+                                                                                style={{
+                                                                                    position: 'absolute',
+                                                                                    top: `${contextMenu.position.y}px`,
+                                                                                    left: `${contextMenu.position.x}px`,
+                                                                                    zIndex: 1000,
+                                                                                }}
+                                                                            >
+                                                                                <ul>
+                                                                                    <li onClick={() => withDrawMessage()}>Thu hồi</li>
+                                                                                   
+                                                                                    {/* More options */}
+                                                                                </ul>
+                                                                            </div>,
+                                                                            document.getElementById('portal-root')
+                                                                        )}
+
+
+                                                                        {(dataMessage && dataMessage.length > 0) && dataMessage.map((item, index) => {
+                                                                            const words = item["1MC"].split(' ');
+                                                                            const shouldTruncate = words.length > 50 && !showFullMessage[item["1MI"]];
+                                                                            const truncatedText = words.slice(0, 50).join(' ');
+
+                                                                            return (
+                                                                                <div
+                                                                                    key={index}
+                                                                                    className={`message-container ${item["1PB"] === username ? "sent" : "received"}`}
+                                                                                    onContextMenu={(event) => handleContextMenu(event, item)}
+                                                                                >
+                                                                                    <span className="message-image-user">{item["1PB"] || "Unknown"}</span>
+                                                                                    <p onClick={() => toggleShowFullMessage(item["1MI"])}>
+                                                                                        {shouldTruncate ? (
+                                                                                            <>
+                                                                                                {truncatedText}
+                                                                                                <a className="font-weight-bold pointer">... Show more</a>
+                                                                                            </>
+                                                                                        ) : (
+                                                                                            item["1MC"]
+                                                                                        )}
+                                                                                    </p>
+                                                                                    {item.media && (
+                                                                                        item.media["9MT"] === "image" ? (
+                                                                                            <img className="message-image" src={serverImage + item.media["5U"]} alt="Media content" />
+                                                                                        ) : (
+                                                                                            <video className="message-image" controls={false} src={serverImage + item.media["5U"]} type="video/mp4">
+                                                                                            </video>
+                                                                                        )
+                                                                                    )}
+
+                                                                                    <div className="message-timestamp">{functions.formatDateMessage(item["1PA"])}</div>
+                                                                                </div>
+                                                                            );
+                                                                        })}
+
+
+
+
+                                                                        {/* <div class="message-container sent">
+                                                                         
+                                                                            <p>is a long established fact that a reader will be distracted by the readable content
+                                                                                of a page when looking at its layout. The point of using Lorem Ipsum is that it has
+                                                                                a more-or-less normal distribution of letters, as opposed to us at Hampden-Sydney College in Virginia.
+                                                                            </p>
+                                                                            <img class="message-image" src="/images/helpdesk/1.png" />
+                                                                            <img class="message-image" src="/images/helpdesk/1.png" />
+                                                                            <img class="message-image" src="/images/helpdesk/1.png" />
                                                                             <div class="message-timestamp">Nov 16th, 08:23</div>
-                                                                        </div>
+                                                                        </div> */}
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        {/* {selectedImagesSent.length > 0 ?
-                                                            (<div className="selected-images-container">
-                                                                {selectedImagesSent.map((image, index) => (
-                                                                    <div key={index} className="selected-image-wrapper">
-                                                                        <img src={image} alt={`Selected ${index}`} className="selected-image" />
-                                                                        <button onClick={() => removeMedia(image)} className="remove-image">X</button>
-                                                                    </div>
-                                                                ))}
-                                                            </div>) : null
-
-                                                        } */}
                                                         {selectedImagesSent.length > 0 && (
                                                             <div className="selected-images-container">
                                                                 {selectedImagesSent.map((media, index) => (
@@ -1207,8 +1602,8 @@ export default () => {
 
                                                         <div class="chat-input-container">
 
-                                                            <input type="text" class="chat-input" value={dataMessage.message} onChange={
-                                                                (e) => { setDataMassage({ ...dataMessage, message: e.target.value }) }
+                                                            <input type="text" class="chat-input" value={dataMessageSent.message} onChange={
+                                                                (e) => { setDataMessageSent({ ...dataMessageSent, message: e.target.value }) }
                                                             } placeholder="Type a message..." />
                                                             <input
                                                                 type="file"
@@ -1222,13 +1617,13 @@ export default () => {
                                                                 className="size-24 mr-2 pointer"
                                                                 onClick={() => document.getElementById('imageInput').click()}
                                                             />
-                                                            <FontAwesomeIcon icon={faPaperPlane} className={`size-24 ml-auto mr-2 icon-add-production pointer `} />
+                                                            <FontAwesomeIcon onClick={submitMessage} icon={faPaperPlane} className={`size-24 ml-auto mr-2 icon-add-production pointer `} />
                                                         </div>
                                                     </>
                                                 }
                                                 {activeTab === 'support' &&
                                                     <div class="card-block">
-                                                        {supportQuanlity === 0 &&
+                                                        {dataCaseDetail.supportquanlity === undefined && supportQuanlity === 0 &&
                                                             <div class="col-md-12">
                                                                 <div class="info-case align-center-case">
                                                                     <span>You have not rated the quality of support</span>
@@ -1236,61 +1631,55 @@ export default () => {
                                                                 </div>
                                                             </div>
                                                         }
-                                                        {supportQuanlity === 1 &&
+                                                        {(dataCaseDetail.supportquanlity !== undefined || supportQuanlity === 1) &&
                                                             <>
                                                                 <h5 class="mt-1 mb-3">APPRICIATE THE SERVICE QUALITY</h5>
                                                                 <div class="row">
-
                                                                     <div class="form-group col-lg-12 align-center">
-
                                                                         <div class="form-group col-lg-12 align-center">
-                                                                            <div class="icon-rate" data-text="Excellent">
-                                                                                <img class="icon-rate" src="/images/icon/i1.png" />
-                                                                                <span class="tooltip-text1">Excellent</span>
+                                                                            <div className={`icon-rate ${rating === 'Excellent' ? 'icon-rate-selected' : ''}`} data-text="Excellent" onClick={() => handleRatingClick('Excellent')}>
+                                                                                <img className="icon-rate" style={{ filter: rating === 'Excellent' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i1.png" />
+                                                                                <span className="tooltip-text1">Excellent</span>
                                                                             </div>
-                                                                            <div class="icon-rate" data-text="Good">
-                                                                                <img class="icon-rate" src="/images/icon/i2.png" />
+                                                                            <div className={`icon-rate ${rating === 'Good' ? 'icon-rate-selected' : ''}`} data-text="Good" onClick={() => handleRatingClick('Good')}>
+                                                                                <img class="icon-rate" style={{ filter: rating === 'Good' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i2.png" />
                                                                                 <span class="tooltip-text2">Good</span>
                                                                             </div>
-                                                                            <div class="icon-rate" data-text="Medium">
-                                                                                <img class="icon-rate" src="/images/icon/i3.png" />
+                                                                            <div className={`icon-rate ${rating === 'Medium' ? 'icon-rate-selected' : ''}`} data-text="Medium" onClick={() => handleRatingClick('Medium')}>
+                                                                                <img class="icon-rate" style={{ filter: rating === 'Medium' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i3.png" />
                                                                                 <span class="tooltip-text3">Medium</span>
                                                                             </div>
-                                                                            <div class="icon-rate" data-text="Poor">
-                                                                                <img class="icon-rate" src="/images/icon/i4.png" />
+                                                                            <div className={`icon-rate ${rating === 'Poor' ? 'icon-rate-selected' : ''}`} data-text="Poor" onClick={() => handleRatingClick('Poor')}>
+                                                                                <img class="icon-rate" style={{ filter: rating === 'Poor' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i4.png" />
                                                                                 <span class="tooltip-text4">Poor</span>
                                                                             </div>
-                                                                            <div class="icon-rate" data-text="Very Bad">
-                                                                                <img class="icon-rate" src="/images/icon/i5.png" />
+                                                                            <div className={`icon-rate ${rating === 'Very Bad' ? 'icon-rate-selected' : ''}`} data-text="Very Bad" onClick={() => handleRatingClick('Very Bad')}>
+                                                                                <img class="icon-rate" style={{ filter: rating === 'Very Bad' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i5.png" />
                                                                                 <span class="tooltip-text5">Very Bad</span>
                                                                             </div>
                                                                         </div>
-
-
                                                                     </div>
                                                                     <div class="form-group col-lg-12">
-                                                                        <textarea class="form-control" rows={8} placeholder="Let us know how you feel"></textarea>
+                                                                        <textarea class="form-control" value={postRating.content} onChange={
+                                                                            (e) => { setPostRating({ ...postRating, content: e.target.value }) }}
+                                                                            rows={8} placeholder="Let us know how you feel"></textarea>
                                                                     </div>
 
                                                                 </div>
                                                                 <div class="form-group col-md-12">
                                                                     <div class="d-flex">
-
-                                                                        Last updated by <span class="font-weight-bold-black ml-1"> Van Cong Huynh</span>
-                                                                        <button type="button" onClick={handleCloseModal} data-dismiss="modal" class="btn btn-primary ml-auto modal-button-review">Submit</button>
+                                                                        Last updated by <span class="font-weight-bold-black ml-1"> {dataCaseDetail.customer}</span>
+                                                                        <button type="button" onClick={submitRate} data-dismiss="modal" class="btn btn-primary ml-auto modal-button-review">Submit</button>
                                                                     </div>
                                                                 </div>
                                                             </>
                                                         }
-
                                                     </div>
                                                 }
                                             </div>
                                         </div>
-
                                     </div>
                                 </div>
-
                             </div>
                         )}
                     </div>
@@ -1398,36 +1787,67 @@ export default () => {
                                     <form>
                                         <div class="row field-case">
                                             <div class="col-md-8">
-                                                <h5 class="mb-2">Case Title</h5>
-                                                <input type="text" class="form-control" placeholder="Enter case title" ></input>
+
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>Case Title<span className='red_star'>*</span></h5>
+                                                    {errorMessagesUpdate.title && (
+                                                        <span class="error-message mb-1">{errorMessagesUpdate.title}</span>
+                                                    )}
+                                                </div>
+
+                                                <input type="text" class="form-control"
+                                                    value={caseUpdate.title} onChange={
+                                                        (e) => { setCaseUpdate({ ...caseUpdate, title: e.target.value }) }}
+                                                    placeholder="Enter case title" ></input>
+
                                             </div>
                                             <div class="col-md-4">
                                                 <h5 class="mb-2">Case Type</h5>
-                                                <select className="form-control" name="role">
-                                                    <option value={0}>Undefined</option>
-                                                    <option value={1}>Troublshooting</option>
-                                                    <option value={2}>Error</option>
-                                                    <option value={3}>Question</option>
-                                                    <option value={4}>Feature</option>
-                                                    <option value={5}>Project</option>
+                                                <select className="form-control" name="role" value={caseUpdate.casetype} onChange={
+                                                    (e) => { setCaseUpdate({ ...caseUpdate, casetype: e.target.value }) }}>
+                                                    <option value={"Undefined"}>Undefined</option>
+                                                    <option value={"Troublshooting"}>Troublshooting</option>
+                                                    <option value={"Error"}>Error</option>
+                                                    <option value={"Question"}>Question</option>
+                                                    <option value={"Feature"}>Feature</option>
+                                                    <option value={"Project"}>Project</option>
                                                 </select>
                                             </div>
                                         </div>
 
                                         <div style={{ paddingLeft: "0px", paddingRight: "0px" }} class="col-md-12 field-case">
-                                            <h5 class="mb-2">PRODUCT NAME</h5>
-                                            <input type="text" class="form-control" placeholder="Enter Product Name" ></input>
+
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>PRODUCT NAME<span className='red_star'>*</span></h5>
+                                                {errorMessagesUpdate.productname && (
+                                                    <span class="error-message mb-1">{errorMessagesUpdate.productname}</span>
+                                                )}
+                                            </div>
+
+                                            <input type="text" class="form-control"
+                                                value={caseUpdate.productname} onChange={
+                                                    (e) => { setCaseUpdate({ ...caseUpdate, productname: e.target.value }) }}
+                                                placeholder="Enter Product Name" ></input>
                                         </div>
 
                                         <div style={{ paddingLeft: "0px", paddingRight: "0px" }} class="col-md-12">
-                                            <h5 class="mb-2">ISSUE DESCRIPTION</h5>
-                                            <textarea class="form-control" rows={6}></textarea>
+
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+
+                                                <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>ISSUE DESCRIPTION<span className='red_star'>*</span></h5>
+                                                {errorMessagesUpdate.issue && (
+                                                    <span class="error-message mb-1">{errorMessagesUpdate.issue}</span>
+                                                )}
+                                            </div>
+                                            <textarea class="form-control" rows={6}
+                                                value={caseUpdate.issue} onChange={
+                                                    (e) => { setCaseUpdate({ ...caseUpdate, issue: e.target.value }) }}></textarea>
                                         </div>
                                         <div class="row field-case">
                                             <div className="col-md-4">
                                                 <h5 className="mb-2">ATTACHMENT</h5>
                                                 <div className="upload-container-case">
-                                                    {!selectedImage && (
+                                                    {((caseUpdate.caseimage === "" && selectedImage == null)) && (
                                                         <label style={{ margin: 0 }} htmlFor="file-upload" className="custom-file-upload">
                                                             CHOOSE FILE
                                                         </label>
@@ -1440,6 +1860,25 @@ export default () => {
                                                         accept="image/*"
                                                     />
                                                     {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+                                                    {!selectedImage && caseUpdate.caseimage !== "" && (
+                                                        <>
+                                                            <img
+                                                                id="image-preview"
+                                                                src={serverImage + caseUpdate.caseimage}
+                                                                alt="Image Preview"
+                                                                style={{
+                                                                    maxWidth: 'calc(100% - 40px)',
+                                                                    maxHeight: 'calc(100% - 10px)',
+                                                                    objectFit: 'contain',
+                                                                    borderRadius: '8px',
+                                                                    cursor: 'pointer'
+                                                                }}
+                                                                onClick={() => document.getElementById('file-upload').click()}
+                                                                title="Click to change image"
+                                                            />
+                                                            <button onClick={(e) => removeImageCaseUpdate(e)} className="remove-image-case">X</button>
+                                                        </>
+                                                    )}
                                                     {selectedImage && (
                                                         <>
                                                             <img
@@ -1456,7 +1895,7 @@ export default () => {
                                                                 onClick={() => document.getElementById('file-upload').click()}
                                                                 title="Click to change image"
                                                             />
-                                                            <button onClick={() => removeImageCase()} className="remove-image-case">X</button>
+                                                            <button onClick={(e) => removeImageCase(e)} className="remove-image-case">X</button>
                                                         </>
                                                     )}
                                                 </div>
@@ -1464,11 +1903,9 @@ export default () => {
                                             <div class="col-md-8">
                                                 <div class="d-flex">
                                                     <h5 className="mb-2"></h5>
-
                                                     <label style={{ marginBottom: 0 }} htmlFor="file-upload-media" class="ml-auto" >
                                                         <FontAwesomeIcon icon={faPlusSquare} className={`size-24 mb-1 icon-add pointer `} title="Choose File" />
                                                     </label>
-
                                                     <input
                                                         id="file-upload-media"
                                                         type="file"
@@ -1479,27 +1916,46 @@ export default () => {
                                                 </div>
 
                                                 <div className="upload-container-case-add">
-
                                                     {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
-                                                    {attachMedia && (
-                                                        <div className="selected-images-container-add">
-                                                            {attachMedia.map((media, index) => (
-                                                                <div key={index} className="selected-image-wrapper-add">
-                                                                    {media.type === 'image' && (
-                                                                        <img src={media.url} alt={`Selected ${index}`} className="selected-image-add" />
-                                                                    )}
-                                                                    {media.type === 'video' && (
-                                                                        <div>
-                                                                            <img src={media.cover} alt={`Cover for ${index}`} className="selected-image-add" />
-                                                                            {/* <div class="video-duration"> {media.name}</div> */}
-                                                                            <div class="video-duration">Video</div>
-                                                                        </div>
-                                                                    )}
-                                                                    <button onClick={() => removeAttachMedia(media)} className="remove-image">X</button>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
+
+                                                    <div className="selected-images-container-add">
+                                                        {/* Hình cũ */}
+                                                        {caseUpdate.attachMedia?.map((media, index) => (
+                                                            <div key={index} className="selected-image-wrapper-add">
+                                                                {media["28T"] === 'image' && (
+                                                                    <img src={serverImage + media["6U"]} alt={`Selected ${index}`} className="selected-image-add" />
+                                                                )}
+                                                                {media["28T"] === 'video' && (
+                                                                    <div>
+                                                                        <video autoplay controls={false} src={serverImage + media["6U"]} className="selected-image-add pointer" >
+                                                                        </video>
+                                                                        {/* <div class="video-duration"> {media.name}</div> */}
+                                                                        <div class="video-duration">Video</div>
+                                                                    </div>
+                                                                )}
+                                                                <button onClick={(e) => removeAttachMediaUpdate(e, media)} className="remove-image">X</button>
+                                                            </div>
+                                                        ))}
+
+                                                        {attachMedia.map((media, index) => (
+                                                            <div key={index} className="selected-image-wrapper-add">
+                                                                {media.type === 'image' && (
+                                                                    <img src={media.url} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
+                                                                )}
+                                                                {media.type === 'video' && (
+                                                                    <div>
+                                                                        <img src={media.cover} alt={`Cover for ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
+                                                                        {/* <div class="video-duration"> {media.name}</div> */}
+                                                                        <div class="video-duration">Video</div>
+                                                                    </div>
+                                                                )}
+                                                                <button onClick={() => removeAttachMedia(media)} className="remove-image">X</button>
+                                                            </div>
+                                                        ))}
+
+                                                    </div>
+
+
                                                 </div>
                                             </div>
                                         </div>
@@ -1509,7 +1965,7 @@ export default () => {
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" onClick={handleCloseModal} data-dismiss="modal" class="btn btn-primary modal-button-review">Update</button>
+                                    <button type="button" onClick={submitUpdateCase} class="btn btn-primary modal-button-review">Update</button>
                                     <button type="button" onClick={handleCloseModal} data-dismiss="modal" class="btn btn-danger modal-button-review">Close</button>
                                 </div>
                             </div>
@@ -1530,7 +1986,23 @@ export default () => {
                                             <div class="form-group col-lg-12 align-center">
                                                 {/* <img width={500} src={dataPreviewMedia?.url}></img> */}
                                                 {dataPreviewMedia?.type === 'imageDetail' && (
-                                                    <img src={serverImage + dataPreviewMedia?.url} alt={dataPreviewMedia?.name} style={{ width: '70%' }} />
+                                                    <img src={serverImage + dataPreviewMedia?.url}
+                                                        style={{
+                                                            maxWidth: 'calc(100% - 40px)',
+                                                            maxHeight: 'calc(100% - 10px)',
+                                                            objectFit: 'contain',
+                                                            borderRadius: '8px',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                        alt={dataPreviewMedia?.name} />
+                                                )}
+                                                {dataPreviewMedia?.type === 'attachImageDetail' && (
+                                                    <img src={dataPreviewMedia?.url} alt={dataPreviewMedia?.name} style={{ width: '70%' }} />
+                                                )}
+                                                {dataPreviewMedia?.type === 'attachVideoDetail' && (
+                                                    <video autoplay controls style={{ width: '100%' }} src={dataPreviewMedia?.url} >
+
+                                                    </video>
                                                 )}
                                                 {dataPreviewMedia?.type === 'image' && (
                                                     <img src={dataPreviewMedia?.url} alt={dataPreviewMedia?.name} style={{ width: '100%' }} />

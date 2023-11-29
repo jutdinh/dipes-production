@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMaximize, faMinimize, faDownload, faCompress, faChartBar, faPlusCircle, faCirclePlus, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft, faTrashCan, faShareSquare } from '@fortawesome/free-solid-svg-icons';
 function EditableTable(props) {
-    console.log(props)
+    // console.log(props)
     const { lang, proxy, auth } = useSelector(state => state);
     const stringifiedUser = localStorage.getItem("user");
     const _token = localStorage.getItem("_token");
@@ -17,7 +17,7 @@ function EditableTable(props) {
     ]);
     const dataProduct = props.data
     const dataStateUpdate = props.stateUpdate
-    console.log(dataProduct)
+    // console.log(dataProduct)
     const mappedArray = dataProduct?.map(item => ({
         "col1": item["2SN"],
         "col2": item["1SV"],
@@ -39,30 +39,7 @@ function EditableTable(props) {
         const newRow = { id: data.length + 1, col1: '', col2: '', col3: '', col4: '', col5: '', isEditing: false };
         setData([...data, newRow]);
 
-
-
-        const requestBodyProduct = {
-            checkCustomer: {
-                username,
-                password: storedPwdString
-            },
-           
-        }
-        fetch(`${proxy()}/api/F256DE8ACBC449F3A4B5E2056FF8F18E`, {
-            headers: {
-                Authorization: _token,
-                "content-type": "application/json"
-            },
-            method: "POST",
-            body: JSON.stringify(requestBodyProduct)
-        })
-            .then(res => res.json())
-            .then(resp => {
-                const { success, data, activated, status, content } = resp;
-                console.log("Product infor", resp)
-               
-
-            })
+        props.onDataUpdate([...data, newRow]);
     };
 
 
@@ -105,6 +82,7 @@ function EditableTable(props) {
                     )
                 );
             }
+            props.onDataUpdate(data);
         }, 100); // Thời gian chờ có thể điều chỉnh
     };
 

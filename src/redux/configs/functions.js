@@ -187,8 +187,44 @@ function formatDateCase(isoString) {
     }
 }
 
+function formatDateMessage(isoString) {
+    if (!isoString) return "";
+
+    try {
+        const date = new Date(isoString);
+        
+        // Định dạng ngày
+        const day = date.getDate();
+        let daySuffix;
+        switch (day) {
+            case 1: case 21: case 31: daySuffix = 'st'; break;
+            case 2: case 22: daySuffix = 'nd'; break;
+            case 3: case 23: daySuffix = 'rd'; break;
+            default: daySuffix = 'th';
+        }
+
+        // Định dạng tháng và năm
+        const month = date.toLocaleString('en-US', { month: 'short' });
+        const year = date.getFullYear();
+
+        // Định dạng thời gian
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const formattedTime = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
+
+        return `${month} ${day}${daySuffix}, ${formattedTime}`;
+    } catch (error) {
+        console.error(error);
+        return "";
+    }
+}
+
+
+
+
+
 
 export default {
     uid, removeDuplicate, titleCase, openTab, dateGenerator, renderDateTimeByFormat,
-    showApiResponseMessage, formatNumberWithCommas, formatNumber, generateUniqueColors, formatDate, formatDateCase
+    showApiResponseMessage, formatNumberWithCommas, formatNumber, generateUniqueColors, formatDate, formatDateCase, formatDateMessage
 }
