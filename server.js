@@ -35,7 +35,7 @@ const io = new Server(server, {
 
 
 const { Auth, Projects, Versions, Logs, Tasks, Tables, Fields, Api, UI, Privileges, Mailer, SocketController } = require('./routes');
-const MAX_ACCESS_IN_AN_HOUR = process.env.MAX_ACCESS_IN_AN_HOUR || 50
+const MAX_ACCESS_IN_A_MINUTE = process.env.MAX_ACCESS_IN_A_MINUTE || 50
 
 io.on("connection", (socket) => {
   SocketController(io, socket)
@@ -52,7 +52,7 @@ app.use( async (req, res, next) => {
   }else{
     res.status(403).send({
       success: false,
-      message: `Access denied due to maximum request reach, you can only make ${ MAX_ACCESS_IN_AN_HOUR } requests in a minute`,
+      message: `Access denied due to maximum request reach, you can only make ${ MAX_ACCESS_IN_A_MINUTE } requests in a minute`,
       data: [],
       fields: []
     })
@@ -126,7 +126,7 @@ const accessCatch = async (req) => {
   const accessCount = await Database.select(ACCESS_CACHE, { ip, url })
   if( accessCount ){
     const { count } = accessCount
-    if( count >= MAX_ACCESS_IN_AN_HOUR ){
+    if( count >= MAX_ACCESS_IN_A_MINUTE ){
       return false
     }else{
       await Database.update( ACCESS_CACHE, {ip, url}, { count: count + 1  } )

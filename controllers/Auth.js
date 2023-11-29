@@ -208,7 +208,7 @@ class Auth extends Controller {
 
                 if (project_type == "api") {
                     const response = await new Promise((resolve, reject) => {
-                        fetch(`${remoteDomain}/dipes/auth/login`, {
+                        fetch(`${remoteDomain}/API/MDS.svc/CustomerLogin`, {
                             method: "POST",
                             headers: {
                                 'content-type': "application/json",
@@ -909,7 +909,7 @@ class Auth extends Controller {
                 const md5NewPass = new_pass_cipher.md5Encrypt( newPassword )
 
                 const response = await new Promise((resolve, reject) => {                    
-                    fetch(`${remoteDomain}/dipes/auth/changePwd`, {
+                    fetch(`${remoteDomain}/API/MDS.svc/CustomerChangePassword`, {
                         method: "POST",
                         headers: {
                             'content-type': "application/json",
