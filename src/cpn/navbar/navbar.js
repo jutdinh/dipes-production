@@ -11,7 +11,7 @@ export default () => {
    const [activeLink, setActiveLink] = useState("/");
    const [uis, setUis] = useState([]);
    const [isOpen, setIsOpen] = useState(false);
-   // console.log(pages)
+   console.log(pages)
    const [isExpanded, setIsExpanded] = useState(true);
 
    useEffect(() => {
@@ -59,7 +59,7 @@ export default () => {
             </div>
          </div>
          <div class="sidebar_blog_2">
-            <h4>{lang["general"]}</h4>
+            {/* <h4>{lang["general"]}</h4> */}
             <ul class="list-unstyled components">
                {/* <li className="navbar-item">
                   <NavLink to="/" activeClassName="nav-active">
@@ -126,8 +126,46 @@ export default () => {
                   </li>
 
                ) : null}
+               {pages && pages.map((ui, index) => (
+                  ui.status && ui.title === "HOME" ? (
+                     <li key={index} className="navbar-item">
+                        <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
+                           <i class="fa fa-home"></i>
+                           <span>{ui.title}</span>
+                        </NavLink>
+                     </li>
+                  ) : null
+               ))}
+               <li className="navbar-item">
+                  <NavLink to="/test" activeClassName="nav-active">
+                     <i class=" fa fa-gears icon-technical"></i>
+                     <span>TECHNICAL SERVICE</span>
+                  </NavLink>
+               </li>
+               <li>
+                  <a href="#dashboard" onClick={toggleMenu} aria-expanded="false" class="dropdown-toggle">
+                     <i class="fa fa-dashboard yellow_color"></i>
+                     {/* <span>{lang["data management"]}</span> */}
+                     <span>ONLINE ACTIVATION</span>
+                     <i class="fa "></i>
+                  </a>
+                  <ul className={`collapse list-unstyled ${isExpanded ? 'show' : ''} scrollable`} id="dashboard">
+                     {pages && pages.map((ui, index) => (
+                        
+                        ui.status && ui.title !== "HOME" ? (
+                           <li key={index} className="navbar-item">
+                              <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
+                                 <i class="fa fa-newspaper-o"></i>
+                                 <span>{ui.title}</span>
+                              </NavLink>
+                           </li>
+                        ) : null
+                     ))}
+                  </ul>
+               </li>
 
-               <div class={`scrollable_user ${user.role === "pd" ? 'no_shadow' : ''}`}>
+
+               {/* <div class={`scrollable_user ${user.role === "pd" ? 'no_shadow' : ''}`}>
                   {user.role === "pd" ? (
                      <li>
                         {pages && pages.map(ui => (
@@ -142,11 +180,11 @@ export default () => {
                         ))}
                      </li>
                   ) : null}
-               </div>
+               </div> */}
 
 
 
-               { user.role === "uad" ? (
+               {user.role === "uad" ? (
                   <>
                      <li className="navbar-item">
                         <NavLink to="/diagram_db" activeClassName="nav-active">
@@ -166,12 +204,7 @@ export default () => {
                            <span>{lang["log.title"]}</span>
                         </NavLink>
                      </li>
-                     <li className="navbar-item">
-                        <NavLink to="/test" activeClassName="nav-active">
-                           <i class=" fa fa-shield"></i>
-                           <span>Test</span>
-                        </NavLink>
-                     </li>
+
                   </>
 
                ) : null}

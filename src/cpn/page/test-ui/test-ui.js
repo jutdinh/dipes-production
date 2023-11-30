@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMaximize, faMinimize, faDownload, faCompress, faChartBar, faPlusCircle, faCirclePlus, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
+import { faMaximize, faMinimize, faDownload, faCompress, faChartBar, faPlusCircle, faCirclePlus, faCirclePlay, faRectangleXmark, faCircle, faCircleXmark, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft, faClose } from '@fortawesome/free-solid-svg-icons';
 import Swal from 'sweetalert2';
 import TableInputUpdate from './table/table-input-update'
 import TableInputAdd from './table/table-input-add'
@@ -16,7 +16,9 @@ export default () => {
     const [logs, setLogs] = useState([]);
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
-    const username = _user.username === "administrator" ? "Mylan Digital Solution" : _user.username;
+    const username = _user.username === "nhan.to" ? "Mylan Digital Solution" : _user.username;
+    // const username = (_user.username === "administrator" || _user.username === "nhan.to") ? "Mylan Digital Solution" : _user.username;
+
     const storedPwdString = localStorage.getItem("password_hash");
     const [view, setView] = useState([
         {
@@ -62,8 +64,12 @@ export default () => {
     const [dataMessage, setDataMessage] = useState([]);
     const [dataMessageMedia, setDataMessageMedia] = useState([]);
     const [errorMessagesadd, setErrorMessagesadd] = useState({});
+    const [dataMessageMerged, setDataMessageMerged] = useState([]);
     const [errorMessagesUpdate, setErrorMessagesUpdate] = useState({});
 
+    console.log("data message", dataMessage)
+    console.log("data media", dataMessageMedia)
+    console.log("data merged", dataMessageMerged)
     const qualityToImage = {
         "Excellent": "i1.png",
         "Good": "i2.png",
@@ -72,7 +78,7 @@ export default () => {
         "Very Bad": "i5.png"
     };
 
-    console.log(dataMessage)
+    // console.log(dataMessage)
     //Post case 
     const [postCase, setPostCase] = useState({ casetype: "Undefined" });
     // console.log("data post case:", postCase)
@@ -85,6 +91,7 @@ export default () => {
     // console.log("Data Table", tableData)
     // console.log(tableDataProduct)
 
+    const textareaRef = useRef(null);
     const filteredTableData = tableData.filter(item => {
         // Kiểm tra xem có ít nhất một trong các thuộc tính col1, col2, col3, col4, col5 có giá trị không
         return item.col1 || item.col2 || item.col3 || item.col4 || item.col5;
@@ -112,6 +119,68 @@ export default () => {
     const handleCloseModal = () => {
         setShowModal(false);
     };
+
+
+
+
+
+    // search
+    const [searchValue, setSearchValue] = useState('');
+    const [filteredCases, setFilteredCases] = useState(cases);
+
+    // Hàm xử lý sự kiện khi giá trị của input thay đổi
+    const handleInputChangeSearch = (event) => {
+        const value = event.target.value;
+        setSearchValue(value);
+
+        // Lọc danh sách cases dựa trên giá trị nhập vào
+        const filtered = cases.filter((caseItem) => {
+            const { title, issue, customer } = caseItem;
+            const searchString = `${title} ${issue} ${customer}`.toLowerCase();
+            return searchString.includes(value.toLowerCase());
+        });
+
+        setFilteredCases(filtered);
+    };
+
+    //sort
+    const [sortBy, setSortBy] = useState('newest'); // Mặc định là 'newest'
+    const [sortedCases, setSortedCases] = useState([]);
+    const handleSortChange = (sortType) => {
+        setSortBy(sortType);
+    };
+    const isToday = (date) => {
+        const today = new Date();
+        const d = new Date(date);
+        return d.getDate() === today.getDate() &&
+            d.getMonth() === today.getMonth() &&
+            d.getFullYear() === today.getFullYear();
+    };
+    const sortCases = (cases, sortBy) => {
+        switch (sortBy) {
+
+            case 'today':
+                return cases.filter(caseItem => isToday(caseItem.date));
+            case 'aToZ':
+                return [...cases].sort((a, b) => a.title.localeCompare(b.title));
+            case 'zToA':
+                return [...cases].sort((a, b) => b.title.localeCompare(a.title));
+            case 'newest':
+                return [...cases].sort((a, b) => new Date(b.date) - new Date(a.date));
+            case 'oldest':
+                return [...cases].sort((a, b) => new Date(a.date) - new Date(b.date));
+            default:
+                return cases;
+        }
+    };
+
+    useEffect(() => {
+        // Cập nhật danh sách cases khi sortBy thay đổi
+        const sortedCases = sortCases(cases, sortBy);
+        setSortedCases(sortedCases)
+        // Cập nhật UI hoặc state với danh sách đã sắp xếp
+    }, [sortBy, cases]);
+
 
 
     const [currentTimestamp, setCurrentTimestamp] = useState(new Date());
@@ -153,10 +222,10 @@ export default () => {
         }
     };
     const [dataCaseDetail, setDataCaseDetail] = useState({});
-    console.log(dataCaseDetail)
+    // console.log(dataCaseDetail)
     const [selectedCaseDetail, setSelectedCaseDetail] = useState("");
     const [showPageDetail, setShowPageDetail] = useState(false);
-    console.log(selectedCaseDetail)
+    // console.log(selectedCaseDetail)
 
     const fetchData = async (caseid) => {
         try {
@@ -189,7 +258,7 @@ export default () => {
         }
     };
     const dataUpdateCase = (dataUpdate) => {
-        console.log(dataUpdate)
+        // console.log(dataUpdate)
         setCaseUpdate(dataUpdate)
     }
 
@@ -221,7 +290,7 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { Success, data, activated, status, content } = resp;
-                console.log(resp)
+                // console.log(resp)
                 const fieldMappings = resp.fields.reduce((acc, field) => {
                     acc[field.fomular_alias] = field.field_name;
                     return acc;
@@ -234,7 +303,7 @@ export default () => {
                     return newCase;
                 }, {});
 
-                console.log(mappedCase);
+                // console.log(mappedCase);
 
                 const caseDetail = {
                     id: mappedCase["CASE ID"],
@@ -342,17 +411,17 @@ export default () => {
         { id: 2, label: lang["log.error"], value: 3, color: "#FF0000", icon: "fa fa-times-circle fa-2x" },
 
     ]
-    useEffect(() => {
-        const stringifiedUser = localStorage.getItem("user");
-        const user = JSON.parse(stringifiedUser)
-        const { role } = user;
-        const validPrivileges = ["uad"]
+    // useEffect(() => {
+    //     const stringifiedUser = localStorage.getItem("user");
+    //     const user = JSON.parse(stringifiedUser)
+    //     const { role } = user;
+    //     const validPrivileges = ["uad"]
 
-        if (validPrivileges.indexOf(role) == -1) {
-            window.location = "/404-notfound"
-        }
+    //     if (validPrivileges.indexOf(role) == -1) {
+    //         window.location = "/404-notfound"
+    //     }
 
-    }, [])
+    // }, [])
     // List case
     const callApiListCase = () => {
         const requestBody = {
@@ -372,7 +441,7 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                console.log(resp)
+                // console.log(resp)
                 setServerImage(resp.remote_server)
                 const fieldMappings = resp.fields.reduce((acc, field) => {
                     acc[field.fomular_alias] = field.field_name;
@@ -388,7 +457,7 @@ export default () => {
                     }, {});
                 });
 
-                console.log(mappedCases);
+                // console.log(mappedCases);
                 const caseTitlesAndDates = mappedCases.map((caseItem) => ({
                     id: caseItem["CASE ID"],
                     title: caseItem["CASE TITLE"],
@@ -404,7 +473,7 @@ export default () => {
 
                 }));
 
-                console.log(caseTitlesAndDates);
+                // console.log(caseTitlesAndDates);
                 setCases(caseTitlesAndDates)
             })
     }
@@ -426,7 +495,7 @@ export default () => {
     const [selectedImage, setSelectedImage] = useState(null);
     // console.log(selectedImage)
     const [errorMessage, setErrorMessage] = useState('');
-    console.log("ảnh chính", selectedImage)
+    // console.log("ảnh chính", selectedImage)
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -450,7 +519,7 @@ export default () => {
     };
 
     const [attachMedia, setAttachMedia] = useState([]);
-    console.log("anh phụ", attachMedia)
+    // console.log("anh phụ", attachMedia)
 
     const handleAttachMedia = (e) => {
         const newFiles = Array.from(e.target.files);
@@ -515,7 +584,7 @@ export default () => {
 
     const removeAttachMediaUpdate = (e, media) => {
         e.preventDefault();
-        console.log(media);
+        // console.log(media);
 
         // Tạo một bản sao của caseUpdate
         const updatedCaseUpdate = { ...caseUpdate };
@@ -531,7 +600,7 @@ export default () => {
     const openModalPreview = (media) => {
         setDataPreviewMedia(media)
     };
-    // console.log(dataPreviewMedia)
+    console.log(dataPreviewMedia)
     //Popup dấu 3 chấm
 
     const [openMenuCaseId, setOpenMenuCaseId] = useState(null);
@@ -617,7 +686,7 @@ export default () => {
             "1CA": attachMedia.map(item => item.dataUrl),
             "11P": mappedArray
         }
-        console.log(requestBody)
+        // console.log(requestBody)
 
         fetch(`${proxy()}/api/EF381DD02A6A4FF8B087D5B6BCDE36C9`, {
             method: "POST",
@@ -688,7 +757,7 @@ export default () => {
             "1ID": caseUpdate.issue,
             "1CA": attachMedia.map(item => ({ Base64: item.dataUrl })).concat(caseUpdate.attachMedia.map(item => item))
         }
-        console.log(requestBody)
+        // console.log(requestBody)
 
         fetch(`${proxy()}/api/56ABDE49FFD24A09B89174526314F4B8`, {
             method: "POST",
@@ -725,7 +794,7 @@ export default () => {
     };
 
     const [selectedImagesSent, setSelectedImagesSent] = useState([]);
-    console.log(selectedImagesSent)
+    // console.log(selectedImagesSent)
     // Hàm check totalSize
     const calculateTotalSize = (additionalFiles) => {
         return selectedImagesSent.reduce((acc, file) => acc + file.size, 0) + additionalFiles.reduce((acc, file) => acc + file.size, 0);
@@ -823,12 +892,10 @@ export default () => {
     };
 
     const [postRating, setPostRating] = useState({});
-    console.log(postRating)
+    // console.log(postRating)
+
     const submitRate = (e) => {
         e.preventDefault();
-
-
-
         const requestBody = {
             checkCustomer: {
                 username,
@@ -838,7 +905,7 @@ export default () => {
             "1SQ": rating,
             "1SQD": postRating.content
         }
-        console.log(requestBody)
+        // console.log(requestBody)
 
         fetch(`${proxy()}/api/188CD259D6E742A2B31334767298337D`, {
             method: "POST",
@@ -896,9 +963,9 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                console.log(resp)
+                // console.log(resp)
                 setDataMessage(resp.Messages)
-
+                return resp;
 
             })
     }
@@ -921,8 +988,9 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                console.log(resp)
+                // console.log(resp)
                 setDataMessageMedia(resp.Media)
+                return resp;
             })
     }
 
@@ -947,12 +1015,15 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { Success, data, activated, status, content } = resp;
-                console.log(resp)
+                // console.log(resp)
                 // setDataMessageMedia(resp.Media)
-                if(Success)
-                {
+                if (Success) {
                     callApiMessage()
                     callApiMessageMedia()
+                    Promise.all([callApiMessage(), callApiMessageMedia()])
+                        .then(() => {
+                            mergedDataMessage();
+                        });
                 }
             })
     }
@@ -961,6 +1032,11 @@ export default () => {
     useEffect(() => {
         callApiMessage()
         callApiMessageMedia()
+        Promise.all([callApiMessage(), callApiMessageMedia()])
+        .then(() => {
+            mergedDataMessage();
+        });
+        
     }, [selectedCaseDetail])
 
     const submitMessage = (e) => {
@@ -976,54 +1052,94 @@ export default () => {
 
         }
         console.log(requestBody)
+        if (/\S/.test(dataMessageSent.message || dataMessageSent.length > 0)) {
+            fetch(`${proxy()}/api/50DA7C504DF5439AA5FFE8D734D7CA79`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${_token}`,
+                },
+                body: JSON.stringify(requestBody),
+            })
+                .then((res) => res.json())
+                .then((resp) => {
+                    const { Success, content, data, status } = resp;
+                    console.log(resp)
+                    if (Success) {
+                        callApiMessage()
+                        callApiMessageMedia()
+                        Promise.all([callApiMessage(), callApiMessageMedia()])
+                            .then(() => {
+                                mergedDataMessage();
+                            });
+                        setDataMessageSent({ message: '' });
 
-        fetch(`${proxy()}/api/50DA7C504DF5439AA5FFE8D734D7CA79`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `${_token}`,
-            },
-            body: JSON.stringify(requestBody),
-        })
-            .then((res) => res.json())
-            .then((resp) => {
-                const { Success, content, data, status } = resp;
-                console.log(resp)
-                if (Success) {
-                    callApiMessage()
-                    callApiMessageMedia()
-                }
-            });
+                        if (textareaRef.current) {
+                            textareaRef.current.style.height = '40px';
+                        }
+                        setHeightChat(40)
+                        // Cập nhật các states khác
+                        setSelectedImagesSent([]);
+                    }
+                });
+        }
 
+
+    };
+
+    const mergedDataMessage = () => {
+        // Bước 1: Tạo một map với key là sự kết hợp của '2MI' và '5CI' và value là một mảng các media items
+        const mediaMap = new Map();
+        dataMessageMedia?.forEach(mediaItem => {
+            const key = mediaItem["2MI"] + "_" + mediaItem["5CI"];
+            if (!mediaMap.has(key)) {
+                mediaMap.set(key, []);
+            }
+            mediaMap.get(key).push(mediaItem);
+        });
+
+        // Bước 2: Duyệt qua mảng messages và gộp thông tin từ media
+        const mergedArray = dataMessage?.map(messageItem => {
+            const key = messageItem["1MI"] + "_" + messageItem["4CI"];
+            const mediaItems = mediaMap.get(key) || [];
+            return {
+                ...messageItem, // Giữ nguyên thông tin tin nhắn
+                media: mediaItems, // Thêm thông tin media tương ứng
+            };
+        });
+
+        // Cập nhật state dataMessage với giá trị đã gộp
+        setDataMessageMerged(mergedArray);
     };
 
 
 
     useEffect(() => {
-
-        const mediaMap = new Map(dataMessageMedia?.map(mediaItem => [mediaItem["2MI"], mediaItem]));
-
-        // Bước 2: Duyệt qua mảng messages và gộp thông tin từ media
-        const mergedArray = dataMessage?.map(messageItem => {
-            const mediaItem = mediaMap.get(messageItem["1MI"]);
-            if (mediaItem && mediaItem["5CI"] === messageItem["4CI"]) {
-                // Bước 3: Gộp thông tin media vào message nếu khớp
-                return {
-                    ...messageItem, // Giữ nguyên thông tin tin nhắn
-                    media: mediaItem, // Thêm thông tin media
-                };
-            }
-            return messageItem; // Nếu không khớp hoặc không tìm thấy, trả về tin nhắn không thay đổi
-        });
-
-        // Cập nhật state dataMessage với giá trị đã gộp
-        setDataMessage(mergedArray);
+        mergedDataMessage()
     }, [dataMessageMedia]); // Chỉ chạy effect này khi dataMessageMedia thay đổi
+
+
+
+
+
+
+
+
+    const messagesEndRef = useRef(null);
+
+    // Hàm cuộn đến cuối container
+    const scrollToBottom = () => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+        }
+    };
+
+    // Cuộn đến cuối sau mỗi lần danh sách tin nhắn thay đổi
+    useEffect(scrollToBottom, [dataMessageMerged, activeTab]);
 
 
     const [contextMenu, setContextMenu] = useState({ visible: false, position: { x: 0, y: 0 }, item: null });
 
-    console.log(contextMenu)
     // Hàm xử lý chuột phải
     const handleContextMenu = (event, item) => {
         event.preventDefault();
@@ -1032,7 +1148,6 @@ export default () => {
             position: { x: event.pageX, y: event.pageY },
             item: item,
         });
-
     };
 
     // Hàm để ẩn context menu
@@ -1041,17 +1156,81 @@ export default () => {
     };
 
     // Đóng menu khi click bên ngoài
-    useEffect(() => {
-        const handleOutsideClick = () => {
-            if (contextMenu.visible) {
+    const handleOutsideClick = (event) => {
+        if (contextMenu.visible) {
+            const isContextMenuClicked = event.target.closest('.context-menu'); // Kiểm tra xem có click vào context menu không
+            if (!isContextMenuClicked) {
                 closeContextMenu();
             }
-        };
+        }
+    };
 
+    // Sử dụng useEffect để thêm và loại bỏ event listener cho sự kiện cuộn và click
+    useEffect(() => {
+        document.addEventListener('scroll', handleOutsideClick);
         document.addEventListener('click', handleOutsideClick);
-        return () => document.removeEventListener('click', handleOutsideClick);
+
+        return () => {
+            document.removeEventListener('scroll', handleOutsideClick);
+            document.removeEventListener('click', handleOutsideClick);
+        };
     }, [contextMenu.visible]);
-    console.log('Rendering context menu:', contextMenu);
+
+
+
+
+
+    // Textarea Chat
+    const [heightChat, setHeightChat] = useState(40);
+
+    const handleInputChange = (e) => {
+
+        const textarea = e.target;
+        // Đặt chiều cao ban đầu để scrollHeight có thể được đo lường chính xác
+        textarea.style.height = 'auto';
+        // Đặt lại chiều cao dựa trên chiều cao nội dung
+        textarea.style.height = `${textarea.scrollHeight}px`;
+
+        setHeightChat(textarea.scrollHeight)
+        // Cập nhật nội dung tin nhắn
+        setDataMessageSent({ ...dataMessageSent, message: e.target.value });
+    };
+
+
+
+    const calculateHeight = () => {
+        let baseHeight = 625;
+        const imageAdjustment = selectedImagesSent.length > 0 ? 70 : 0; // Điều chỉnh nếu có hình ảnh
+        const maxHeightReduction = 96 - 40; // Giới hạn giảm chiều cao tối đa
+
+        if (heightChat > 40) {
+            const heightReduction = Math.min(heightChat - 40, maxHeightReduction);
+            baseHeight -= heightReduction;
+        }
+        // Trừ đi imageAdjustment trước khi áp dụng giới hạn tối thiểu 588
+
+
+        // Đảm bảo baseHeight không thấp hơn 588
+        baseHeight = Math.max(baseHeight, 585);
+        baseHeight -= imageAdjustment;
+        // console.log('heightChat:', heightChat);
+        // console.log('selectedImagesSent:', selectedImagesSent.length);
+        // console.log('imageAdjustment:', imageAdjustment);
+        // console.log('baseHeight:', baseHeight);
+        return `${baseHeight}px`;
+    };
+
+
+    // const [isIconDisabled, setIsIconDisabled] = useState(true);
+    // useEffect(() => {
+    //     // Kiểm tra điều kiện và cập nhật trạng thái của biến isIconDisabled
+    //     if (dataMessageSent.message !== '' || selectedImagesSent.length > 0) {
+    //         setIsIconDisabled(false);
+    //     } else {
+    //         setIsIconDisabled(true);
+    //     }
+    // }, [dataMessageSent.message, selectedImagesSent]);
+
     return (
         <div class="container-case-main">
             <div class="midde_cont">
@@ -1059,7 +1238,7 @@ export default () => {
                     <div class="row column_title">
                         <div class="col-md-12">
                             <div class="page_title">
-                                <h4>Trang test</h4>
+                                <h4>TECHNICAL SERVICE</h4>
                             </div>
                         </div>
                     </div>
@@ -1069,7 +1248,14 @@ export default () => {
                         {/* List Case */}
                         <div class="col-md-5" style={{ paddingLeft: "5px", paddingRight: "5px" }}>
                             <div class="search-container">
-                                <input type="search" class="search-input" placeholder="Case title, case description, or anything" />
+
+                                <input
+                                    type="search"
+                                    className="search-input"
+                                    placeholder="Case title, case description, or anything"
+                                    value={searchValue}
+                                    onChange={handleInputChangeSearch}
+                                />
                             </div>
 
                             <div class="mt-3" >
@@ -1084,7 +1270,7 @@ export default () => {
                                 <div class="d-flex ">
                                     {/* <p style={{ marginBottom: 0 }}>Sorted by: Created date   <FontAwesomeIcon icon={faAngleDown} className="size-16  ml-auto pointer" /> </p> */}
 
-                                    <div class="dropdown">
+                                    {/* <div class="dropdown">
                                         <span data-toggle="dropdown" aria-expanded="false">
                                             Sorted by: Created date  < FontAwesomeIcon icon={faAngleDown} className="size-16  ml-auto pointer" />
                                         </span>
@@ -1094,14 +1280,39 @@ export default () => {
                                             <a class="dropdown-item" href="#">Another action</a>
                                             <a class="dropdown-item" href="#">Something else here</a>
                                         </div>
+                                    </div> */}
+                                    <div className="dropdown">
+                                        <span class="pointer" data-toggle="dropdown" aria-expanded="false">
+                                            Sorted by: {sortBy === 'today' ? 'Today' : sortBy === 'aToZ' ? 'A-Z' : sortBy === 'zToA' ? 'Z-A' : sortBy === 'newest' ? 'Newest' : 'Oldest'}
+                                            <FontAwesomeIcon icon={faAngleDown} className="size-15 ml-1 pointer" />
+                                        </span>
+
+                                        <div className="dropdown-menu">
+                                            <a className="dropdown-item " href="#" onClick={() => handleSortChange('today')}>
+                                                Today
+                                            </a>
+                                            <a className="dropdown-item" href="#" onClick={() => handleSortChange('aToZ')}>
+                                                A-Z
+                                            </a>
+                                            <a className="dropdown-item" href="#" onClick={() => handleSortChange('zToA')}>
+                                                Z-A
+                                            </a>
+                                            <a className="dropdown-item" href="#" onClick={() => handleSortChange('newest')}>
+                                                Newest
+                                            </a>
+                                            <a className="dropdown-item" href="#" onClick={() => handleSortChange('oldest')}>
+                                                Oldest
+                                            </a>
+                                        </div>
                                     </div>
-                                    <div class="ml-auto"> Total: <span class="font-weight-bold  ">{cases.length || 0}</span> case(s)</div>
+
+                                    <div class="ml-auto"> Total: <span class="font-weight-bold  ">{(searchValue === '' ? sortedCases.length : filteredCases.length) || 0}</span> case(s)</div>
                                 </div>
                             </div>
 
                             <div class="container-case">
 
-                                {cases.map((item, index) => (
+                                {(searchValue === '' ? sortedCases : filteredCases).map((item, index) => (
                                     <div key={index} className={`box-case ${selectedCaseDetail === item.id ? "selected" : ""}`} onClick={() => handlePageDetail(item)}>
                                         <div className="d-flex">
                                             <h4>{item.title}</h4>
@@ -1110,9 +1321,9 @@ export default () => {
                                                     <FontAwesomeIcon icon={faEllipsisVertical} className="size-24 ml-auto pointer" onClick={(e) => toggleMenu(e, item.id)} />
                                                     {openMenuCaseId === item.id && (
                                                         <div className="popup-menu-custom show" ref={menuRef}>
-                                                            <span className="menu-item-custom" data-toggle="modal" onClick={() => dataUpdateCase(item)} data-target="#updateCase">Update Case</span>
-                                                            <span className="menu-item-custom">Delete Case</span>
-                                                            <span className="menu-item-custom">Cancel Case</span>
+                                                            <span className="menu-item-custom pointer" data-toggle="modal" onClick={() => dataUpdateCase(item)} data-target="#updateCase">Update Case</span>
+                                                            {/* <span className="menu-item-custom">Delete Case</span>
+                                                            <span className="menu-item-custom">Cancel Case</span> */}
                                                         </div>
                                                     )}
                                                 </div>
@@ -1120,7 +1331,7 @@ export default () => {
                                         </div>
                                         <p>{item.issue}</p>
                                         <div className="d-flex">
-                                            <p className="italic" style={{ marginBottom: 0 }}>{functions.formatDateCase(item.date)} by <span className="italic-non font-weight-bold-black">{item.customer}</span> </p>
+                                            <p className="italic" style={{ marginBottom: 0 }}>Latest support on {functions.formatDateCase(item.date)} by <span className="italic-non font-weight-bold-black">{item.customer}</span> </p>
                                             <div className="ml-auto">
                                                 {item.supportquanlity !== undefined &&
                                                     <img width={32} src={`/images/icon/${qualityToImage[item.supportquanlity]}`} alt="ex" />
@@ -1340,17 +1551,22 @@ export default () => {
                                                                     <div className="col-md-4">
 
                                                                         <div className="upload-container-case">
+                                                                            {dataCaseDetail.imgcase !== null ? 
                                                                             <img class=""
-                                                                                style={{
-                                                                                    maxWidth: 'calc(100% - 40px)',
-                                                                                    maxHeight: 'calc(100% - 10px)',
-                                                                                    objectFit: 'contain',
-                                                                                    borderRadius: '8px',
-                                                                                    cursor: 'pointer'
-                                                                                }}
-                                                                                src={serverImage + dataCaseDetail.imgcase}
-                                                                                onClick={() => openModalPreview({ type: "imageDetail", url: dataCaseDetail.imgcase })}
-                                                                                data-toggle="modal" data-target="#previewMedia" />
+                                                                            style={{
+                                                                                maxWidth: 'calc(100% - 40px)',
+                                                                                maxHeight: 'calc(100% - 10px)',
+                                                                                objectFit: 'contain',
+                                                                                borderRadius: '8px',
+                                                                                cursor: 'pointer'
+                                                                            }}
+                                                                            src={serverImage + dataCaseDetail.imgcase}
+                                                                            onClick={() => openModalPreview({ type: "imageDetail", url: dataCaseDetail.imgcase })}
+                                                                            data-toggle="modal" data-target="#previewMedia" />: 
+                                                                           <span>No Case Image</span> 
+
+                                                                            }
+                                                                            
                                                                         </div>
                                                                     </div>
                                                                     {/* <div class="col-md-8">
@@ -1500,10 +1716,10 @@ export default () => {
                                                 } */}
                                                 {activeTab === 'discussion' &&
                                                     <>
-                                                        <div class="card-block bg-message">
+                                                        <div class="card-block-message  bg-message">
                                                             <div class="col-md-12">
                                                                 <div class="info-case">
-                                                                    <div class="messages-wrapper" style={{ height: selectedImagesSent.length > 0 ? "545px" : "" }} id="messages-wrapper">
+                                                                    <div className="messages-wrapper" style={{ height: calculateHeight() }} ref={messagesEndRef} id="messages-wrapper">
 
 
                                                                         {contextMenu.visible && ReactDOM.createPortal(
@@ -1517,25 +1733,29 @@ export default () => {
                                                                                 }}
                                                                             >
                                                                                 <ul>
-                                                                                    <li onClick={() => withDrawMessage()}>Thu hồi</li>
-                                                                                   
-                                                                                    {/* More options */}
+                                                                                    <li onClick={() => withDrawMessage()}>
+                                                                                        <FontAwesomeIcon icon={faRectangleXmark} className={`size-16 mr-2 icon-close-message pointer`} />
+                                                                                        Remove
+                                                                                    </li>
                                                                                 </ul>
                                                                             </div>,
                                                                             document.getElementById('portal-root')
                                                                         )}
-
-
-                                                                        {(dataMessage && dataMessage.length > 0) && dataMessage.map((item, index) => {
-                                                                            const words = item["1MC"].split(' ');
+                                                                        {(dataMessageMerged && dataMessageMerged.length > 0) && dataMessageMerged.map((item, index) => {
+                                                                            const words = (item["1MC"] || "").split(' ');
                                                                             const shouldTruncate = words.length > 50 && !showFullMessage[item["1MI"]];
                                                                             const truncatedText = words.slice(0, 50).join(' ');
+                                                                            const isSentByUser = item["1PB"] === username;
 
                                                                             return (
                                                                                 <div
                                                                                     key={index}
-                                                                                    className={`message-container ${item["1PB"] === username ? "sent" : "received"}`}
-                                                                                    onContextMenu={(event) => handleContextMenu(event, item)}
+                                                                                    className={`message-container ${isSentByUser ? "sent" : "received"}`}
+                                                                                    onContextMenu={(event) => {
+                                                                                        if (isSentByUser) {
+                                                                                            handleContextMenu(event, item);
+                                                                                        }
+                                                                                    }}
                                                                                 >
                                                                                     <span className="message-image-user">{item["1PB"] || "Unknown"}</span>
                                                                                     <p onClick={() => toggleShowFullMessage(item["1MI"])}>
@@ -1549,12 +1769,32 @@ export default () => {
                                                                                         )}
                                                                                     </p>
                                                                                     {item.media && (
-                                                                                        item.media["9MT"] === "image" ? (
-                                                                                            <img className="message-image" src={serverImage + item.media["5U"]} alt="Media content" />
-                                                                                        ) : (
-                                                                                            <video className="message-image" controls={false} src={serverImage + item.media["5U"]} type="video/mp4">
-                                                                                            </video>
-                                                                                        )
+                                                                                        <div className="media-container">
+                                                                                            {item.media.map(media => (
+                                                                                                media["9MT"] === "image" ? (
+                                                                                                    <img className="message-image pointer" src={serverImage + media["5U"]}
+                                                                                                        data-toggle="modal" data-target="#previewMedia"
+                                                                                                        onClick={() => openModalPreview({ type: "imageMessageMedia", url: serverImage + media["5U"] })}
+                                                                                                        alt="Media content"
+                                                                                                        title="Click to preview" />
+                                                                                                ) : (
+                                                                                                    <div className="video-container">
+                                                                                                        <video className="message-image pointer" controls={false} src={serverImage + media["5U"]} type="video/mp4"
+
+                                                                                                        >
+                                                                                                        </video>
+
+                                                                                                        <div className="video-overlay pointer" data-toggle="modal" data-target="#previewMedia"
+                                                                                                            onClick={() => openModalPreview({ type: "videoMessageMedia", url: serverImage + media["5U"] })}
+                                                                                                            title="Click to preview"></div>
+                                                                                                        <div className="video-icon play-icon">
+                                                                                                            < FontAwesomeIcon icon={faCirclePlay} className="size-16  color_icon_plus" />
+                                                                                                        </div>
+
+                                                                                                    </div>
+                                                                                                )
+                                                                                            ))}
+                                                                                        </div>
                                                                                     )}
 
                                                                                     <div className="message-timestamp">{functions.formatDateMessage(item["1PA"])}</div>
@@ -1562,20 +1802,6 @@ export default () => {
                                                                             );
                                                                         })}
 
-
-
-
-                                                                        {/* <div class="message-container sent">
-                                                                         
-                                                                            <p>is a long established fact that a reader will be distracted by the readable content
-                                                                                of a page when looking at its layout. The point of using Lorem Ipsum is that it has
-                                                                                a more-or-less normal distribution of letters, as opposed to us at Hampden-Sydney College in Virginia.
-                                                                            </p>
-                                                                            <img class="message-image" src="/images/helpdesk/1.png" />
-                                                                            <img class="message-image" src="/images/helpdesk/1.png" />
-                                                                            <img class="message-image" src="/images/helpdesk/1.png" />
-                                                                            <div class="message-timestamp">Nov 16th, 08:23</div>
-                                                                        </div> */}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1602,9 +1828,19 @@ export default () => {
 
                                                         <div class="chat-input-container">
 
-                                                            <input type="text" class="chat-input" value={dataMessageSent.message} onChange={
+                                                            {/* <input type="text" class="chat-input" value={dataMessageSent.message} onChange={
                                                                 (e) => { setDataMessageSent({ ...dataMessageSent, message: e.target.value }) }
                                                             } placeholder="Type a message..." />
+                                                             */}
+                                                            <textarea
+                                                                ref={textareaRef}
+                                                                className="chat-input"
+                                                                value={dataMessageSent.message}
+                                                                onChange={handleInputChange}
+                                                                placeholder="Type a message..."
+                                                                rows={1}
+                                                                style={{ resize: 'none', overflowY: 'auto' }}
+                                                            />
                                                             <input
                                                                 type="file"
                                                                 id="imageInput"
@@ -1617,7 +1853,7 @@ export default () => {
                                                                 className="size-24 mr-2 pointer"
                                                                 onClick={() => document.getElementById('imageInput').click()}
                                                             />
-                                                            <FontAwesomeIcon onClick={submitMessage} icon={faPaperPlane} className={`size-24 ml-auto mr-2 icon-add-production pointer `} />
+                                                            <FontAwesomeIcon onClick={submitMessage} icon={faPaperPlane} className={`size-24 ml-auto mr-2 icon-add-production pointer`} />
                                                         </div>
                                                     </>
                                                 }
@@ -1662,7 +1898,9 @@ export default () => {
                                                                     <div class="form-group col-lg-12">
                                                                         <textarea class="form-control" value={postRating.content} onChange={
                                                                             (e) => { setPostRating({ ...postRating, content: e.target.value }) }}
-                                                                            rows={8} placeholder="Let us know how you feel"></textarea>
+                                                                            rows={8}
+                                                                            style={{ resize: 'none' }}
+                                                                            placeholder="Let us know how you feel"></textarea>
                                                                     </div>
 
                                                                 </div>
@@ -1971,7 +2209,6 @@ export default () => {
                             </div>
                         </div>
                     </div>
-
                     {/* Preview Image*/}
                     <div class={`modal no-select-modal ${showModal ? 'show' : ''}`} id="previewMedia">
                         <div class="modal-dialog modal-dialog-center ">
@@ -2012,7 +2249,15 @@ export default () => {
                                                         <source src={dataPreviewMedia?.dataUrl} type="video/*" />
                                                     </video>
                                                 )}
+                                                {/* Chat */}
+                                                {dataPreviewMedia?.type === 'imageMessageMedia' && (
+                                                    <img src={dataPreviewMedia?.url} alt={dataPreviewMedia?.name} style={{ width: '70%' }} />
+                                                )}
+                                                {dataPreviewMedia?.type === 'videoMessageMedia' && (
+                                                    <video autoplay controls style={{ width: '100%' }} src={dataPreviewMedia?.url} >
 
+                                                    </video>
+                                                )}
                                             </div>
 
                                         </div>
