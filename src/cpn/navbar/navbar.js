@@ -137,7 +137,7 @@ export default () => {
                   ) : null
                ))}
                <li className="navbar-item">
-                  <NavLink to="/test" activeClassName="nav-active">
+                  <NavLink to="/technical" activeClassName="nav-active">
                      <i class=" fa fa-gears icon-technical"></i>
                      <span>TECHNICAL SERVICE</span>
                   </NavLink>

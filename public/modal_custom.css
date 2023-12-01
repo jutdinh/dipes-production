@@ -36,8 +36,20 @@
 .container-fluid .row .col-md-7 .col-md-12 .white_shd .messages-wrapper {
     /* height: % */
 }
-
-
+.ellipsis-header-case {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%
+  }
+  
+.modal-header-f18{
+    font-size: 18px;
+    color: #000;
+    line-height: normal;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+}
 .show-more {
     font-weight: 600;
     cursor: pointer;
@@ -87,7 +99,8 @@
 }
 
 .modal-button-review {
-    width: 90px;
+    width: 120px;
+    
 }
 
 .align-center-case {
@@ -877,7 +890,8 @@ img[class="scaled-hover-target"] {
 .video-container {
     position: relative;
     display: inline-block; 
-    max-width: 100px; 
+    max-width: 100px;
+    padding-right: 5px; 
   
 }
 .video-container video {
@@ -889,14 +903,14 @@ img[class="scaled-hover-target"] {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
+    right: 5px;
+    bottom: 5px;
     background: rgba(0, 0, 0, 0.5); /* Màu nền mờ đen */
     z-index: 1;
     border-radius: 10px; /* Bo tròn góc nếu video của bạn cũng có góc bo tròn */
 }
 .icon-technical{
-    color:#49b27e
+    color:#38ef93
 }
 .video-icon {
     position: absolute;

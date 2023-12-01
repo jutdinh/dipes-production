@@ -12,6 +12,9 @@ import $ from 'jquery'
 
 export default () => {
     const { lang, proxy, auth, functions } = useSelector(state => state);
+    console.log(lang)
+    let langItemCheck = localStorage.getItem("lang");
+
     const _token = localStorage.getItem("_token");
     const [logs, setLogs] = useState([]);
     const stringifiedUser = localStorage.getItem("user");
@@ -195,6 +198,8 @@ export default () => {
             clearInterval(interval);
         };
     }, []);
+
+
     const getElapsedTime = (notifyAt) => {
         const notifyTimestamp = new Date(notifyAt);
         const elapsedMilliseconds = currentTimestamp - notifyTimestamp;
@@ -265,7 +270,10 @@ export default () => {
 
 
     const handlePageDetail = (caseid) => {
-
+        // đặt lại giá trị support quality
+        setRating(null)
+        setPostRating({})
+        // 
         fetchData(caseid);
         // console.log(caseid)
         setTableDataProduct([]);
@@ -353,6 +361,7 @@ export default () => {
     useEffect(() => {
         if (dataCaseDetail.supportquanlity !== undefined) {
             setSupportQuanlity(1)
+
             setRating(dataCaseDetail.supportquanlity)
 
             setPostRating({ content: dataCaseDetail.supportdescription });
@@ -1029,15 +1038,43 @@ export default () => {
     }
 
 
+    // useEffect(() => {
+    //     callApiMessage()
+    //     callApiMessageMedia()
+    //     Promise.all([callApiMessage(), callApiMessageMedia()])
+    //         .then(() => {
+    //             mergedDataMessage();
+    //         });
+
+    // }, [selectedCaseDetail])
+    // Goi api sau 10s
     useEffect(() => {
-        callApiMessage()
-        callApiMessageMedia()
-        Promise.all([callApiMessage(), callApiMessageMedia()])
-        .then(() => {
-            mergedDataMessage();
-        });
-        
-    }, [selectedCaseDetail])
+        const fetchData = () => {
+            callApiMessage();
+            callApiMessageMedia();
+            Promise.all([callApiMessage(), callApiMessageMedia()])
+                .then(() => {
+                    mergedDataMessage();
+                });
+        };
+    
+        // Gọi fetchData ban đầu
+        fetchData();
+    
+        // Thiết lập interval để tự động gọi lại fetchData mỗi 10 giây
+        const intervalId = setInterval(() => {
+            fetchData();
+        }, 20000); // 10 giây
+    
+        // Xóa interval khi component unmount
+        return () => {
+            clearInterval(intervalId);
+        };
+    }, [selectedCaseDetail]);
+    
+
+    //  Cập nhật tin nhắn 20s
+
 
     const submitMessage = (e) => {
         e.preventDefault();
@@ -1049,9 +1086,8 @@ export default () => {
             "4CI": selectedCaseDetail,
             "1MC": dataMessageSent.message,
             "1MM": selectedImagesSent.map(item => ({ "9MT": item.type, "5U": item.base64 }))
-
         }
-        console.log(requestBody)
+        // console.log(requestBody)
         if (/\S/.test(dataMessageSent.message || dataMessageSent.length > 0)) {
             fetch(`${proxy()}/api/50DA7C504DF5439AA5FFE8D734D7CA79`, {
                 method: "POST",
@@ -1252,7 +1288,7 @@ export default () => {
                                 <input
                                     type="search"
                                     className="search-input"
-                                    placeholder="Case title, case description, or anything"
+                                    placeholder={lang["Case title, case description, or anything"]}
                                     value={searchValue}
                                     onChange={handleInputChangeSearch}
                                 />
@@ -1260,7 +1296,7 @@ export default () => {
 
                             <div class="mt-3" >
                                 <span class="pointer" onClick={handlePageAdd}>
-                                    < FontAwesomeIcon icon={faCirclePlus} className="size-16  color_icon_plus" /> <span class="lable_add">Post Your Case </span>
+                                    < FontAwesomeIcon icon={faCirclePlus} className="size-16  color_icon_plus" title={lang["post your case"]} /> <span class="lable_add">{lang["post your case"]}</span>
                                 </span>
 
                             </div>
@@ -1268,28 +1304,16 @@ export default () => {
                             <hr></hr>
                             <div class="sort-case">
                                 <div class="d-flex ">
-                                    {/* <p style={{ marginBottom: 0 }}>Sorted by: Created date   <FontAwesomeIcon icon={faAngleDown} className="size-16  ml-auto pointer" /> </p> */}
-
-                                    {/* <div class="dropdown">
-                                        <span data-toggle="dropdown" aria-expanded="false">
-                                            Sorted by: Created date  < FontAwesomeIcon icon={faAngleDown} className="size-16  ml-auto pointer" />
-                                        </span>
-
-                                        <div class="dropdown-menu">
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <a class="dropdown-item" href="#">Something else here</a>
-                                        </div>
-                                    </div> */}
+                                   
                                     <div className="dropdown">
                                         <span class="pointer" data-toggle="dropdown" aria-expanded="false">
-                                            Sorted by: {sortBy === 'today' ? 'Today' : sortBy === 'aToZ' ? 'A-Z' : sortBy === 'zToA' ? 'Z-A' : sortBy === 'newest' ? 'Newest' : 'Oldest'}
-                                            <FontAwesomeIcon icon={faAngleDown} className="size-15 ml-1 pointer" />
+                                            {lang["sorted by"]}: {sortBy === 'today' ? lang["today"] : sortBy === 'aToZ' ? 'A-Z' : sortBy === 'zToA' ? 'Z-A' : sortBy === 'newest' ? lang["newest"] : lang["oldest"]}
+                                            <FontAwesomeIcon icon={faAngleDown} className="size-15 ml-1 pointer" title={lang["sorted by"]} />
                                         </span>
 
                                         <div className="dropdown-menu">
                                             <a className="dropdown-item " href="#" onClick={() => handleSortChange('today')}>
-                                                Today
+                                                {lang["today"]}
                                             </a>
                                             <a className="dropdown-item" href="#" onClick={() => handleSortChange('aToZ')}>
                                                 A-Z
@@ -1298,15 +1322,15 @@ export default () => {
                                                 Z-A
                                             </a>
                                             <a className="dropdown-item" href="#" onClick={() => handleSortChange('newest')}>
-                                                Newest
+                                                {lang["newest"]}
                                             </a>
                                             <a className="dropdown-item" href="#" onClick={() => handleSortChange('oldest')}>
-                                                Oldest
+                                                {lang["oldest"]}
                                             </a>
                                         </div>
                                     </div>
 
-                                    <div class="ml-auto"> Total: <span class="font-weight-bold  ">{(searchValue === '' ? sortedCases.length : filteredCases.length) || 0}</span> case(s)</div>
+                                    <div class="ml-auto"> {lang["total"]}: <span class="font-weight-bold  ">{(searchValue === '' ? sortedCases.length : filteredCases.length) || 0}</span> {lang["case(s)"]}</div>
                                 </div>
                             </div>
 
@@ -1315,13 +1339,13 @@ export default () => {
                                 {(searchValue === '' ? sortedCases : filteredCases).map((item, index) => (
                                     <div key={index} className={`box-case ${selectedCaseDetail === item.id ? "selected" : ""}`} onClick={() => handlePageDetail(item)}>
                                         <div className="d-flex">
-                                            <h4>{item.title}</h4>
+                                            <h4 class="ellipsis-header-case" title={item.title}>{item.title}</h4>
                                             <div className="ml-auto">
                                                 <div className="dropdown-custom">
-                                                    <FontAwesomeIcon icon={faEllipsisVertical} className="size-24 ml-auto pointer" onClick={(e) => toggleMenu(e, item.id)} />
+                                                    <FontAwesomeIcon icon={faEllipsisVertical} className="size-24 ml-auto pointer" onClick={(e) => toggleMenu(e, item.id)} title={lang["update"]} />
                                                     {openMenuCaseId === item.id && (
                                                         <div className="popup-menu-custom show" ref={menuRef}>
-                                                            <span className="menu-item-custom pointer" data-toggle="modal" onClick={() => dataUpdateCase(item)} data-target="#updateCase">Update Case</span>
+                                                            <span className="menu-item-custom pointer" data-toggle="modal" onClick={() => dataUpdateCase(item)} data-target="#updateCase">{lang["update"]}</span>
                                                             {/* <span className="menu-item-custom">Delete Case</span>
                                                             <span className="menu-item-custom">Cancel Case</span> */}
                                                         </div>
@@ -1329,9 +1353,9 @@ export default () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <p>{item.issue}</p>
+                                        <p class="ellipsis-header-case">{item.issue}</p>
                                         <div className="d-flex">
-                                            <p className="italic" style={{ marginBottom: 0 }}>Latest support on {functions.formatDateCase(item.date)} by <span className="italic-non font-weight-bold-black">{item.customer}</span> </p>
+                                            <p className="italic" style={{ marginBottom: 0 }}>{lang["latest support on"]} {langItemCheck === "Vi" ? functions.translateDateToVietnamese(functions.formatDateCase(item.date)) : functions.formatDateCase(item.date)} {lang["by"]}<span className="italic-non font-weight-bold-black">{item.customer}</span> </p>
                                             <div className="ml-auto">
                                                 {item.supportquanlity !== undefined &&
                                                     <img width={32} src={`/images/icon/${qualityToImage[item.supportquanlity]}`} alt="ex" />
@@ -1342,7 +1366,6 @@ export default () => {
                                 ))}
                             </div>
                         </div>
-
                         {/* Add Case */}
                         {showPageAdd &&
                             (
@@ -1350,8 +1373,8 @@ export default () => {
                                     <div class="white_shd full margin_bottom_30">
                                         <div class="full graph_head_cus">
                                             <div class="heading1 margin_0 d-flex">
-                                                <h4 class="margin-bottom-0">New Case </h4>
-                                                <FontAwesomeIcon icon={faPaperPlane} onClick={submitPostCase} className={`size-24 ml-auto icon-add-production pointer `} />
+                                                <h4 class="margin-bottom-0">{lang["new case"]} </h4>
+                                                <FontAwesomeIcon icon={faPaperPlane} onClick={submitPostCase} className={`size-24 ml-auto icon-add-production pointer `} title={lang["submit case"]} />
                                             </div>
                                         </div>
                                         <div class="table_section padding_infor_info_case_add">
@@ -1360,7 +1383,7 @@ export default () => {
                                                     <div class="col-md-8">
 
                                                         <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                            <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>Case Title<span className='red_star'>*</span></h5>
+                                                            <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>{lang["case title"]}<span className='red_star'>*</span></h5>
                                                             {errorMessagesadd.casetitle && (
                                                                 <span class="error-message mb-1">{errorMessagesadd.casetitle}</span>
                                                             )}
@@ -1370,7 +1393,7 @@ export default () => {
                                                             (e) => { setPostCase({ ...postCase, casetitle: e.target.value }) }} placeholder="Enter case title" ></input>
                                                     </div>
                                                     <div class="col-md-4">
-                                                        <h5 class="mb-2">Case Type</h5>
+                                                        <h5 class="mb-2">{lang["case type"]}</h5>
                                                         <select className="form-control" name="role" value={postCase.casetype} onChange={
                                                             (e) => { setPostCase({ ...postCase, casetype: e.target.value }) }}>
                                                             <option value={"Undefined"}>Undefined</option>
@@ -1385,7 +1408,7 @@ export default () => {
                                                 <div class="col-md-12 field-case">
 
                                                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                        <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>PRODUCT NAME<span className='red_star'>*</span></h5>
+                                                        <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>{lang["product name"]}<span className='red_star'>*</span></h5>
                                                         {errorMessagesadd.casetitle && (
                                                             <span class="error-message mb-1">{errorMessagesadd.productname}</span>
                                                         )}
@@ -1397,7 +1420,7 @@ export default () => {
                                                 <div class="col-md-12">
 
                                                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                        <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>ISSUE DESCRIPTION<span className='red_star'>*</span></h5>
+                                                        <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>{lang["ISSUE DESCRIPTION"]}<span className='red_star'>*</span></h5>
                                                         {errorMessagesadd.casetitle && (
                                                             <span class="error-message mb-1">{errorMessagesadd.issue}</span>
                                                         )}
@@ -1407,11 +1430,11 @@ export default () => {
                                                 </div>
                                                 <div class="row field-case">
                                                     <div className="col-md-4">
-                                                        <h5 className="mb-2">ATTACHMENT</h5>
+                                                        <h5 className="mb-2">{lang["attachment"]}</h5>
                                                         <div className="upload-container-case">
                                                             {!selectedImage && (
                                                                 <label style={{ margin: 0 }} htmlFor="file-upload" className="custom-file-upload">
-                                                                    CHOOSE FILE
+                                                                    {lang["CHOOSE FILE"]}
                                                                 </label>
                                                             )}
                                                             <input
@@ -1436,7 +1459,7 @@ export default () => {
                                                                             cursor: 'pointer'
                                                                         }}
                                                                         onClick={() => document.getElementById('file-upload').click()}
-                                                                        title="Click to change image"
+                                                                        title={lang["Click to change image"]}
                                                                     />
                                                                     <button onClick={() => removeImageCase()} className="remove-image-case">X</button>
                                                                 </>
@@ -1447,7 +1470,7 @@ export default () => {
                                                         <div class="d-flex">
                                                             <h5 className="mb-2"></h5>
                                                             <label style={{ marginBottom: 0 }} htmlFor="file-upload-media" class="ml-auto" >
-                                                                <FontAwesomeIcon icon={faPlusSquare} className={`size-24 mb-1 icon-add pointer `} title="Choose File" />
+                                                                <FontAwesomeIcon icon={faPlusSquare} className={`size-24 mb-1 icon-add pointer `} title={lang["attachment"]} />
                                                             </label>
                                                             <input
                                                                 id="file-upload-media"
@@ -1509,9 +1532,9 @@ export default () => {
                                 <div class="white_shd full margin_bottom_30">
                                     <div class="full graph_head_cus">
                                         <div class="heading1 margin_0 case-detail">
-                                            <h4>{dataCaseDetail.title}</h4>
+                                            <h4 class="ellipsis-header-case" title={dataCaseDetail.title}>{dataCaseDetail.title}</h4>
                                             <div class="d-flex ">
-                                                <p class="italic" style={{ marginBottom: 0 }}>Posted on {functions.formatDateCase(dataCaseDetail.date)} ({getElapsedTime(dataCaseDetail.date)}). <b class="status_label">{dataCaseDetail.status}</b></p>
+                                                <p class="italic" style={{ marginBottom: 0 }}>{lang["Posted on"]} {dataCaseDetail && langItemCheck === "Vi" ? functions.translateDateToVietnamese(functions.formatDateCase(dataCaseDetail.date)) : functions.formatDateCase(dataCaseDetail.date)} ({getElapsedTime(dataCaseDetail.date)}). <b class="status_label">{dataCaseDetail.status}</b></p>
                                                 {/* <div class="ml-auto">
                                                     {dataCaseDetail.supportquanlity !== undefined ?
                                                         <img width={32} src={`/images/icon/${qualityToImage[dataCaseDetail.supportquanlity]}`} alt="ex" />
@@ -1526,16 +1549,17 @@ export default () => {
                                         <div>
                                             <div className="custom-tab-container">
                                                 <div className={`custom-tab ${activeTab === 'general' ? 'custom-tab-active' : ''}`} onClick={() => handleTabClick('general')}>
-                                                    General
+                                                    {lang["general"]}
                                                 </div>
                                                 {/* <div className={`custom-tab ${activeTab === 'products' ? 'custom-tab-active' : ''}`} onClick={() => handleTabClick('products')}>
                                                     Products
                                                 </div> */}
                                                 <div className={`custom-tab ${activeTab === 'discussion' ? 'custom-tab-active' : ''}`} onClick={() => handleTabClick('discussion')}>
-                                                    Discussion
+                                                    {lang["DISCUSSION"]}
                                                 </div>
                                                 <div className={`custom-tab ${activeTab === 'support' ? 'custom-tab-active' : ''}`} onClick={() => handleTabClick('support')}>
-                                                    Support Quality
+                                                    {lang["SUPPORT QUALITY"]}
+
                                                 </div>
                                             </div>
 
@@ -1544,29 +1568,29 @@ export default () => {
                                                     <div>  <div class="card-block">
                                                         <div class="col-md-12">
                                                             <div class="info-case">
-                                                                <h5 class="mt-1">Issue Description</h5>
+                                                                <h5 class="mt-1">{lang["ISSUE DESCRIPTION"]}</h5>
                                                                 <span>{dataCaseDetail.issue}</span>
 
                                                                 <div class="row field-case">
                                                                     <div className="col-md-4">
 
                                                                         <div className="upload-container-case">
-                                                                            {dataCaseDetail.imgcase !== null ? 
-                                                                            <img class=""
-                                                                            style={{
-                                                                                maxWidth: 'calc(100% - 40px)',
-                                                                                maxHeight: 'calc(100% - 10px)',
-                                                                                objectFit: 'contain',
-                                                                                borderRadius: '8px',
-                                                                                cursor: 'pointer'
-                                                                            }}
-                                                                            src={serverImage + dataCaseDetail.imgcase}
-                                                                            onClick={() => openModalPreview({ type: "imageDetail", url: dataCaseDetail.imgcase })}
-                                                                            data-toggle="modal" data-target="#previewMedia" />: 
-                                                                           <span>No Case Image</span> 
+                                                                            {dataCaseDetail.imgcase !== null ?
+                                                                                <img class=""
+                                                                                    style={{
+                                                                                        maxWidth: 'calc(100% - 40px)',
+                                                                                        maxHeight: 'calc(100% - 10px)',
+                                                                                        objectFit: 'contain',
+                                                                                        borderRadius: '8px',
+                                                                                        cursor: 'pointer'
+                                                                                    }}
+                                                                                    src={serverImage + dataCaseDetail.imgcase}
+                                                                                    onClick={() => openModalPreview({ type: "imageDetail", url: dataCaseDetail.imgcase })}
+                                                                                    data-toggle="modal" data-target="#previewMedia" /> :
+                                                                                <span>No Case Image</span>
 
                                                                             }
-                                                                            
+
                                                                         </div>
                                                                     </div>
                                                                     {/* <div class="col-md-8">
@@ -1612,7 +1636,7 @@ export default () => {
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div class="title-suggest">Suggested Solution</div>
+                                                                <div class="title-suggest">{lang["SUGGESTED SOLUTION"]}</div>
                                                                 <span class="content-suggest">{dataCaseDetail.solution}</span>
                                                                 <TableInputUpdate onDataUpdate={handleDataFromChild} data={tableDataProduct} stateAdd={false} caseId={dataCaseDetail.id} stateUpdate={true} />
                                                             </div>
@@ -1758,11 +1782,11 @@ export default () => {
                                                                                     }}
                                                                                 >
                                                                                     <span className="message-image-user">{item["1PB"] || "Unknown"}</span>
-                                                                                    <p onClick={() => toggleShowFullMessage(item["1MI"])}>
+                                                                                    <p >
                                                                                         {shouldTruncate ? (
                                                                                             <>
                                                                                                 {truncatedText}
-                                                                                                <a className="font-weight-bold pointer">... Show more</a>
+                                                                                                <a onClick={() => toggleShowFullMessage(item["1MI"])} className="font-weight-bold pointer">... {lang["Show more"]}</a>
                                                                                             </>
                                                                                         ) : (
                                                                                             item["1MC"]
@@ -1797,7 +1821,7 @@ export default () => {
                                                                                         </div>
                                                                                     )}
 
-                                                                                    <div className="message-timestamp">{functions.formatDateMessage(item["1PA"])}</div>
+                                                                                    <div className="message-timestamp"> {dataCaseDetail && langItemCheck === "Vi" ? functions.translateDateTimeToVietnamese(functions.formatDateMessage(item["1PA"])) : functions.formatDateMessage(item["1PA"])} </div>
                                                                                 </div>
                                                                             );
                                                                         })}
@@ -1837,7 +1861,7 @@ export default () => {
                                                                 className="chat-input"
                                                                 value={dataMessageSent.message}
                                                                 onChange={handleInputChange}
-                                                                placeholder="Type a message..."
+                                                                placeholder={lang["Type a message"]}
                                                                 rows={1}
                                                                 style={{ resize: 'none', overflowY: 'auto' }}
                                                             />
@@ -1852,8 +1876,9 @@ export default () => {
                                                                 icon={faPaperclip}
                                                                 className="size-24 mr-2 pointer"
                                                                 onClick={() => document.getElementById('imageInput').click()}
+                                                                title={lang["attachment"]}
                                                             />
-                                                            <FontAwesomeIcon onClick={submitMessage} icon={faPaperPlane} className={`size-24 ml-auto mr-2 icon-add-production pointer`} />
+                                                            <FontAwesomeIcon onClick={submitMessage} icon={faPaperPlane} className={`size-24 ml-auto mr-2 icon-add-production pointer`} title={lang["send message"]} />
                                                         </div>
                                                     </>
                                                 }
@@ -1861,37 +1886,37 @@ export default () => {
                                                     <div class="card-block">
                                                         {dataCaseDetail.supportquanlity === undefined && supportQuanlity === 0 &&
                                                             <div class="col-md-12">
-                                                                <div class="info-case align-center-case">
-                                                                    <span>You have not rated the quality of support</span>
-                                                                    <button class="btn btn-primary" onClick={() => { setSupportQuanlity(1) }}>Rate Now</button>
+                                                                <div class="info-case align-center-case mt-2">
+                                                                    <span>{lang["You have not rated the quality of support"]}</span>
+                                                                    <button class="btn btn-primary" onClick={() => { setSupportQuanlity(1) }}>{lang["rate now"]}</button>
                                                                 </div>
                                                             </div>
                                                         }
                                                         {(dataCaseDetail.supportquanlity !== undefined || supportQuanlity === 1) &&
                                                             <>
-                                                                <h5 class="mt-1 mb-3">APPRICIATE THE SERVICE QUALITY</h5>
+                                                                <h5 class="mt-1 mb-3">{lang["APPRICIATE THE SERVICE QUALITY"]}</h5>
                                                                 <div class="row">
                                                                     <div class="form-group col-lg-12 align-center">
                                                                         <div class="form-group col-lg-12 align-center">
                                                                             <div className={`icon-rate ${rating === 'Excellent' ? 'icon-rate-selected' : ''}`} data-text="Excellent" onClick={() => handleRatingClick('Excellent')}>
                                                                                 <img className="icon-rate" style={{ filter: rating === 'Excellent' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i1.png" />
-                                                                                <span className="tooltip-text1">Excellent</span>
+                                                                                <span className="tooltip-text1">{lang["Excellent"]}</span>
                                                                             </div>
                                                                             <div className={`icon-rate ${rating === 'Good' ? 'icon-rate-selected' : ''}`} data-text="Good" onClick={() => handleRatingClick('Good')}>
                                                                                 <img class="icon-rate" style={{ filter: rating === 'Good' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i2.png" />
-                                                                                <span class="tooltip-text2">Good</span>
+                                                                                <span class="tooltip-text2">{lang["Good"]}</span>
                                                                             </div>
                                                                             <div className={`icon-rate ${rating === 'Medium' ? 'icon-rate-selected' : ''}`} data-text="Medium" onClick={() => handleRatingClick('Medium')}>
                                                                                 <img class="icon-rate" style={{ filter: rating === 'Medium' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i3.png" />
-                                                                                <span class="tooltip-text3">Medium</span>
+                                                                                <span class="tooltip-text3">{lang["Medium"]}</span>
                                                                             </div>
                                                                             <div className={`icon-rate ${rating === 'Poor' ? 'icon-rate-selected' : ''}`} data-text="Poor" onClick={() => handleRatingClick('Poor')}>
                                                                                 <img class="icon-rate" style={{ filter: rating === 'Poor' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i4.png" />
-                                                                                <span class="tooltip-text4">Poor</span>
+                                                                                <span class="tooltip-text4">{lang["Poor"]}</span>
                                                                             </div>
                                                                             <div className={`icon-rate ${rating === 'Very Bad' ? 'icon-rate-selected' : ''}`} data-text="Very Bad" onClick={() => handleRatingClick('Very Bad')}>
                                                                                 <img class="icon-rate" style={{ filter: rating === 'Very Bad' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i5.png" />
-                                                                                <span class="tooltip-text5">Very Bad</span>
+                                                                                <span class="tooltip-text5">{lang["Very Bad"]}</span>
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -1900,14 +1925,14 @@ export default () => {
                                                                             (e) => { setPostRating({ ...postRating, content: e.target.value }) }}
                                                                             rows={8}
                                                                             style={{ resize: 'none' }}
-                                                                            placeholder="Let us know how you feel"></textarea>
+                                                                            placeholder={lang["Let us know how you feel"]}></textarea>
                                                                     </div>
 
                                                                 </div>
                                                                 <div class="form-group col-md-12">
                                                                     <div class="d-flex">
-                                                                        Last updated by <span class="font-weight-bold-black ml-1"> {dataCaseDetail.customer}</span>
-                                                                        <button type="button" onClick={submitRate} data-dismiss="modal" class="btn btn-primary ml-auto modal-button-review">Submit</button>
+                                                                        <p style={{ marginBottom: 0 }}> {lang["Last updated by"]} {lang["by"]}<span className="italic-non font-weight-bold-black">{dataCaseDetail.customer}</span> </p>
+                                                                        <button type="button" onClick={submitRate} data-dismiss="modal" class="btn mt-0 btn-primary ml-auto modal-button-review">{lang["Submit Review"]}</button>
                                                                     </div>
                                                                 </div>
                                                             </>
@@ -2018,7 +2043,7 @@ export default () => {
                         <div class="modal-dialog modal-dialog-center ">
                             <div class="modal-content">
                                 <div class="modal-header ">
-                                    <h4 class="modal-title">Case Update</h4>
+                                    <h4 class="modal-title modal-header-f18">{lang["Case Update"]}</h4>
                                     <button type="button" class="close" onClick={handleCloseModal} data-dismiss="modal">&times;</button>
                                 </div>
                                 <div class="modal-body">
@@ -2027,7 +2052,7 @@ export default () => {
                                             <div class="col-md-8">
 
                                                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                    <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>Case Title<span className='red_star'>*</span></h5>
+                                                    <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>{lang["case title"]}<span className='red_star'>*</span></h5>
                                                     {errorMessagesUpdate.title && (
                                                         <span class="error-message mb-1">{errorMessagesUpdate.title}</span>
                                                     )}
@@ -2040,7 +2065,7 @@ export default () => {
 
                                             </div>
                                             <div class="col-md-4">
-                                                <h5 class="mb-2">Case Type</h5>
+                                                <h5 class="mb-2">{lang["case type"]}</h5>
                                                 <select className="form-control" name="role" value={caseUpdate.casetype} onChange={
                                                     (e) => { setCaseUpdate({ ...caseUpdate, casetype: e.target.value }) }}>
                                                     <option value={"Undefined"}>Undefined</option>
@@ -2056,7 +2081,7 @@ export default () => {
                                         <div style={{ paddingLeft: "0px", paddingRight: "0px" }} class="col-md-12 field-case">
 
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>PRODUCT NAME<span className='red_star'>*</span></h5>
+                                                <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>{lang["product name"]}<span className='red_star'>*</span></h5>
                                                 {errorMessagesUpdate.productname && (
                                                     <span class="error-message mb-1">{errorMessagesUpdate.productname}</span>
                                                 )}
@@ -2072,7 +2097,7 @@ export default () => {
 
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
 
-                                                <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>ISSUE DESCRIPTION<span className='red_star'>*</span></h5>
+                                                <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>{lang["ISSUE DESCRIPTION"]}<span className='red_star'>*</span></h5>
                                                 {errorMessagesUpdate.issue && (
                                                     <span class="error-message mb-1">{errorMessagesUpdate.issue}</span>
                                                 )}
@@ -2083,11 +2108,11 @@ export default () => {
                                         </div>
                                         <div class="row field-case">
                                             <div className="col-md-4">
-                                                <h5 className="mb-2">ATTACHMENT</h5>
+                                                <h5 className="mb-2">{lang["attachment"]}</h5>
                                                 <div className="upload-container-case">
                                                     {((caseUpdate.caseimage === "" && selectedImage == null)) && (
                                                         <label style={{ margin: 0 }} htmlFor="file-upload" className="custom-file-upload">
-                                                            CHOOSE FILE
+                                                            {lang["CHOOSE FILE"]}
                                                         </label>
                                                     )}
                                                     <input
@@ -2112,7 +2137,7 @@ export default () => {
                                                                     cursor: 'pointer'
                                                                 }}
                                                                 onClick={() => document.getElementById('file-upload').click()}
-                                                                title="Click to change image"
+                                                                title={lang["Click to change image"]}
                                                             />
                                                             <button onClick={(e) => removeImageCaseUpdate(e)} className="remove-image-case">X</button>
                                                         </>
@@ -2131,7 +2156,7 @@ export default () => {
                                                                     cursor: 'pointer'
                                                                 }}
                                                                 onClick={() => document.getElementById('file-upload').click()}
-                                                                title="Click to change image"
+                                                                title={lang["Click to change image"]}
                                                             />
                                                             <button onClick={(e) => removeImageCase(e)} className="remove-image-case">X</button>
                                                         </>

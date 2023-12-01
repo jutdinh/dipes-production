@@ -24,7 +24,7 @@ import { Active_Helpdesk, Table_Key, Chart_HelpDesk } from "./page/step"
 import "../css/index.scss";
 import { SiteMap } from './site-map';
 import Layout_Detail from './page/layout/layout_detail'
-import { testUi } from './page/test-ui';
+import  FeedBack  from './page/layout_feedback/feedback';
 function App() {
 
   const dispatch = useDispatch()
@@ -189,7 +189,7 @@ function App() {
         <Route exac path="/page/:url" element={< Navigation Child={Fetch} />} />
         <Route exac path="/page/:url/import" element={< Navigation Child={ImportData} />} />
 
-        <Route exac path="/test" element={< Navigation Child={testUi} />} />
+        <Route exac path="/technical" element={< Navigation Child={FeedBack} />} />
 
         {/* <Route exac path="/diagram" element={ < Navigation Child={Diagram} /> } /> */}
         <Route path="*" element={<PageNotFound />} />

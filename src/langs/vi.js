@@ -375,9 +375,60 @@ export default {
     "days ago": "ngày trước",
     "months ago": "tháng trước",
     "years ago": "năm trước",
-    
+
     "success create": "Tạo thành công",
-    "faild create": "Tạo thất bại"
+    "faild create": "Tạo thất bại",
+
+
+
+    
+    "post your case": "THÊM TRƯỜNG HỢP CỦA BẠN",
+    "sorted by": "Sắp xếp theo",
+    "today": "Hôm nay",
+    "newest": "Mới nhất",
+    "oldest": "Cũ nhất",
+    "latest support on": "Hổ trợ mới nhất",
+    "Posted on": "Đã đăng vào",
+    "DISCUSSION": "THẢO LUẬN",
+    "SUPPORT QUALITY": "CHẤT LƯỢNG HỖ TRỢ",
+    "total": "Tổng số",
+    "case(s)": "trường hợp",
+    "ISSUE DESCRIPTION": "MÔ TẢ VẤN ĐỀ",
+    "SUGGESTED SOLUTION": "GIẢI PHÁP ĐỀ XUẤT",
+    "PRODUCT INFORMATION": "THÔNG TIN SẢN PHẨM",
+    "ADD PRODUCT INFORMATION": "Thêm thông tin sản phẩm",
+
+    "Type a message": "Nhập tin nhắn ...",
+    "You have not rated the quality of support": "Bạn chưa đánh giá chất lượng của dịch vụ hỗ trợ",
+    "rate now": "Đánh giá ngay",
+    "APPRICIATE THE SERVICE QUALITY": "ĐÁNH GIÁ CHẤT LƯỢNG DỊCH VỤ",
+    "Let us know how you feel": "Hãy cho chúng tôi biết cảm nhận của bạn",
+    "Last updated by": "Cập nhật lần cuối bởi",
+
+    "Excellent": "Xuất sắc",
+    "Good": "Tốt",
+    "Medium": "Trung bình",
+    "Poor": "Kém",
+    "Very bad": "Rất tệ",
+    "Submit Review": "Gửi đánh giá",
+    "Case title, case description, or anything": "Tiêu đề trường hợp, mô tả trường hợp, hoặc bất cứ thứ gì",
+    "Show more": "Xem thêm",
+    "send message": "Gửi tin nhắn",
+    "attachment": "Tập tin đính kèm",
+
+    "new case": "TRƯỜNG HỢP MỚI",
+    "case title": "Tiêu đề",
+    "case type": "Phân loại",
+    "product name": "Tên sản phẩm",
+    "CHOOSE FILE": "Chọn tệp",
+    "submit case": "Tạo case",
+    "Click to change image": "Nhấn để thay đổi hình ảnh",
+    "Case Update": "Cập nhật trường hợp"
+   
+
+
+    
+
 
 
 }
