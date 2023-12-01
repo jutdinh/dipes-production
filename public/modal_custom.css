@@ -42,7 +42,36 @@
     text-overflow: ellipsis;
     max-width: 100%
   }
+
+  .hidden-overflow-case {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+.no-change-textarea{
+    resize: none;
+    overflow-y: auto
+}
   
+
+
+.container-no-attachment {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    height: 120px; 
+    border: 1px solid #ccc; 
+
+  }
+  
+  /* Đặt cho thẻ span */
+  .span-no-attachment {
+    text-align: center;
+    /* Thêm thuộc tính khác tại đây nếu bạn muốn */
+  }
+  
+
+
 .modal-header-f18{
     font-size: 18px;
     color: #000;
@@ -172,7 +201,7 @@
 }
 
 .icon-rate {
-    width: 64px;
+    width: 48px;
     margin-left: 6px;
 }
 
@@ -461,6 +490,7 @@
 
 .lable_add {
     font-weight: 600;
+    font-size: 18px;
     color: #0971b8;
     text-transform: uppercase;
 }

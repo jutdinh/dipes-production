@@ -12,7 +12,7 @@ import $ from 'jquery'
 
 export default () => {
     const { lang, proxy, auth, functions } = useSelector(state => state);
-    console.log(lang)
+
     let langItemCheck = localStorage.getItem("lang");
 
     const _token = localStorage.getItem("_token");
@@ -54,7 +54,7 @@ export default () => {
     ])
     const [serverImage, setServerImage] = useState("");
     const [cases, setCases] = useState([]);
-    console.log(cases)
+    // console.log(cases)
     const [caseUpdate, setCaseUpdate] = useState({});
     const [filter, setFilter] = useState({ type: 'info' });
     const [showModal, setShowModal] = useState(false);
@@ -70,15 +70,15 @@ export default () => {
     const [dataMessageMerged, setDataMessageMerged] = useState([]);
     const [errorMessagesUpdate, setErrorMessagesUpdate] = useState({});
 
-    console.log("data message", dataMessage)
-    console.log("data media", dataMessageMedia)
-    console.log("data merged", dataMessageMerged)
+    // console.log("data message", dataMessage)
+    // console.log("data media", dataMessageMedia)
+    // console.log("data merged", dataMessageMerged)
     const qualityToImage = {
-        "Excellent": "i1.png",
-        "Good": "i2.png",
+        "Good": "i1.png",
+        "Pretty good": "i2.png",
         "Medium": "i3.png",
-        "Poor": "i4.png",
-        "Very Bad": "i5.png"
+        "Bad": "i4.png",
+        "No Reply": "i5.png"
     };
 
     // console.log(dataMessage)
@@ -277,9 +277,16 @@ export default () => {
         fetchData(caseid);
         // console.log(caseid)
         setTableDataProduct([]);
+
         setSelectedCaseDetail(caseid.id)
+
         setShowPageDetail(true)
         setShowPageAdd(false)
+        callApiCaseDetail(caseid)
+        // List Product informatio
+
+    }
+    const callApiCaseDetail = (caseid) => {
         const requestBody = {
             checkCustomer: {
                 username,
@@ -331,12 +338,6 @@ export default () => {
 
             })
 
-        // List Product information
-
-
-
-
-
     }
     const [showPageAdd, setShowPageAdd] = useState(false);
     const handlePageAdd = () => {
@@ -370,6 +371,17 @@ export default () => {
             setSupportQuanlity(0)
         }
     }, [dataCaseDetail]);
+
+////// Mặc định chọn trang đầu theo sắp xếp 
+    useEffect(() => {
+        if (sortedCases.length > 0) {
+            const idCase = sortedCases?.[0]
+            handlePageDetail(idCase)
+        }
+
+    }, [sortedCases]);
+
+
 
     // console.log("Chi tiết", showPageDetail)
     // console.log("Thêm", showPageAdd)
@@ -506,6 +518,7 @@ export default () => {
     const [errorMessage, setErrorMessage] = useState('');
     // console.log("ảnh chính", selectedImage)
     const handleImageChange = (e) => {
+        e.target.value = '';
         const file = e.target.files[0];
         if (file) {
             if (file.type.match('image.*') && file.size <= 20971520) { // 20MB limit (20*1024*1024)
@@ -513,6 +526,7 @@ export default () => {
                 reader.onload = (e) => {
                     setSelectedImage(e.target.result);
                     setErrorMessage('');
+                    e.target.value = '';
                 };
                 reader.readAsDataURL(file);
             } else {
@@ -609,7 +623,7 @@ export default () => {
     const openModalPreview = (media) => {
         setDataPreviewMedia(media)
     };
-    console.log(dataPreviewMedia)
+    // console.log(dataPreviewMedia)
     //Popup dấu 3 chấm
 
     const [openMenuCaseId, setOpenMenuCaseId] = useState(null);
@@ -716,6 +730,13 @@ export default () => {
                         showConfirmButton: false,
                         timer: 2000
                     })
+                    callApiListCase()
+                    setShowPageAdd(false)
+                    setShowPageDetail(false)
+                    setPostCase({ casetype: "Undefined" })
+                    setSelectedImage(null)
+                    setAttachMedia([])
+
                 } else {
                     Swal.fire({
                         title: lang["faild"],
@@ -787,6 +808,9 @@ export default () => {
                         showConfirmButton: false,
                         timer: 2000
                     })
+                    $('#closeModalUpdateCase').click();
+                    callApiListCase()
+                    callApiCaseDetail(caseUpdate)
                 } else {
                     Swal.fire({
                         title: lang["faild"],
@@ -1057,21 +1081,21 @@ export default () => {
                     mergedDataMessage();
                 });
         };
-    
+
         // Gọi fetchData ban đầu
         fetchData();
-    
+
         // Thiết lập interval để tự động gọi lại fetchData mỗi 10 giây
         const intervalId = setInterval(() => {
             fetchData();
         }, 20000); // 10 giây
-    
+
         // Xóa interval khi component unmount
         return () => {
             clearInterval(intervalId);
         };
     }, [selectedCaseDetail]);
-    
+
 
     //  Cập nhật tin nhắn 20s
 
@@ -1100,7 +1124,7 @@ export default () => {
                 .then((res) => res.json())
                 .then((resp) => {
                     const { Success, content, data, status } = resp;
-                    console.log(resp)
+                    // console.log(resp) 
                     if (Success) {
                         callApiMessage()
                         callApiMessageMedia()
@@ -1284,7 +1308,6 @@ export default () => {
                         {/* List Case */}
                         <div class="col-md-5" style={{ paddingLeft: "5px", paddingRight: "5px" }}>
                             <div class="search-container">
-
                                 <input
                                     type="search"
                                     className="search-input"
@@ -1294,23 +1317,20 @@ export default () => {
                                 />
                             </div>
 
-                            <div class="mt-3" >
+                            <div class="mt-2" >
                                 <span class="pointer" onClick={handlePageAdd}>
-                                    < FontAwesomeIcon icon={faCirclePlus} className="size-16  color_icon_plus" title={lang["post your case"]} /> <span class="lable_add">{lang["post your case"]}</span>
+                                    < FontAwesomeIcon icon={faCirclePlus} className="size-18 color_icon_plus" title={lang["post your case"]} /> <span class="lable_add">{lang["post your case"]}</span>
                                 </span>
-
                             </div>
 
                             <hr></hr>
                             <div class="sort-case">
                                 <div class="d-flex ">
-                                   
                                     <div className="dropdown">
                                         <span class="pointer" data-toggle="dropdown" aria-expanded="false">
                                             {lang["sorted by"]}: {sortBy === 'today' ? lang["today"] : sortBy === 'aToZ' ? 'A-Z' : sortBy === 'zToA' ? 'Z-A' : sortBy === 'newest' ? lang["newest"] : lang["oldest"]}
                                             <FontAwesomeIcon icon={faAngleDown} className="size-15 ml-1 pointer" title={lang["sorted by"]} />
                                         </span>
-
                                         <div className="dropdown-menu">
                                             <a className="dropdown-item " href="#" onClick={() => handleSortChange('today')}>
                                                 {lang["today"]}
@@ -1329,7 +1349,6 @@ export default () => {
                                             </a>
                                         </div>
                                     </div>
-
                                     <div class="ml-auto"> {lang["total"]}: <span class="font-weight-bold  ">{(searchValue === '' ? sortedCases.length : filteredCases.length) || 0}</span> {lang["case(s)"]}</div>
                                 </div>
                             </div>
@@ -1358,7 +1377,7 @@ export default () => {
                                             <p className="italic" style={{ marginBottom: 0 }}>{lang["latest support on"]} {langItemCheck === "Vi" ? functions.translateDateToVietnamese(functions.formatDateCase(item.date)) : functions.formatDateCase(item.date)} {lang["by"]}<span className="italic-non font-weight-bold-black">{item.customer}</span> </p>
                                             <div className="ml-auto">
                                                 {item.supportquanlity !== undefined &&
-                                                    <img width={32} src={`/images/icon/${qualityToImage[item.supportquanlity]}`} alt="ex" />
+                                                    <img width={24} src={`/images/icon/${qualityToImage[item.supportquanlity]}`} alt="ex" />
                                                 }
                                             </div>
                                         </div>
@@ -1389,13 +1408,25 @@ export default () => {
                                                             )}
                                                         </div>
 
-                                                        <input type="text" class="form-control" value={postCase.casetitle} onChange={
-                                                            (e) => { setPostCase({ ...postCase, casetitle: e.target.value }) }} placeholder="Enter case title" ></input>
+                                                        <input type="text" class="form-control" value={postCase.casetitle}
+                                                            // onChange={ (e) => { setPostCase({ ...postCase, casetitle: e.target.value }) }}
+
+                                                            onChange={(e) => {
+                                                                const value = e.target.value;
+                                                                setPostCase({ ...postCase, casetitle: value });
+                                                                if (value.trim() && errorMessagesadd.casetitle) {
+                                                                    setErrorMessagesadd({ ...errorMessagesadd, casetitle: '' });
+                                                                }
+                                                            }}
+
+                                                            placeholder={lang["Enter case title"]} ></input>
                                                     </div>
                                                     <div class="col-md-4">
                                                         <h5 class="mb-2">{lang["case type"]}</h5>
-                                                        <select className="form-control" name="role" value={postCase.casetype} onChange={
-                                                            (e) => { setPostCase({ ...postCase, casetype: e.target.value }) }}>
+                                                        <select className="form-control" name="role" value={postCase.casetype}
+                                                            onChange={
+                                                                (e) => { setPostCase({ ...postCase, casetype: e.target.value }) }}
+                                                        >
                                                             <option value={"Undefined"}>Undefined</option>
                                                             <option value={"Troublshooting"}>Troublshooting</option>
                                                             <option value={"Error"}>Error</option>
@@ -1409,24 +1440,38 @@ export default () => {
 
                                                     <div style={{ display: 'flex', alignItems: 'center' }}>
                                                         <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>{lang["product name"]}<span className='red_star'>*</span></h5>
-                                                        {errorMessagesadd.casetitle && (
+                                                        {errorMessagesadd.productname && (
                                                             <span class="error-message mb-1">{errorMessagesadd.productname}</span>
                                                         )}
                                                     </div>
-                                                    <input type="text" class="form-control" value={postCase.productname} onChange={
-                                                        (e) => { setPostCase({ ...postCase, productname: e.target.value }) }} placeholder="Enter Product Name" ></input>
+                                                    <input type="text" class="form-control" value={postCase.productname}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            setPostCase({ ...postCase, productname: value });
+
+                                                            if (value.trim() && errorMessagesadd.productname) {
+                                                                setErrorMessagesadd({ ...errorMessagesadd, productname: '' });
+                                                            }
+                                                        }}
+                                                        placeholder={lang["Enter product name"]} ></input>
                                                 </div>
 
                                                 <div class="col-md-12">
 
                                                     <div style={{ display: 'flex', alignItems: 'center' }}>
                                                         <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>{lang["ISSUE DESCRIPTION"]}<span className='red_star'>*</span></h5>
-                                                        {errorMessagesadd.casetitle && (
+                                                        {errorMessagesadd.issue && (
                                                             <span class="error-message mb-1">{errorMessagesadd.issue}</span>
                                                         )}
                                                     </div>
-                                                    <textarea class="form-control" rows={6} value={postCase.issue} onChange={
-                                                        (e) => { setPostCase({ ...postCase, issue: e.target.value }) }}></textarea>
+                                                    <textarea class="form-control" rows={6} value={postCase.issue} onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        setPostCase({ ...postCase, issue: value });
+
+                                                        if (value.trim() && errorMessagesadd.issue) {
+                                                            setErrorMessagesadd({ ...errorMessagesadd, issue: '' });
+                                                        }
+                                                    }} placeholder={lang["p.issue"]}></textarea>
                                                 </div>
                                                 <div class="row field-case">
                                                     <div className="col-md-4">
@@ -1434,7 +1479,7 @@ export default () => {
                                                         <div className="upload-container-case">
                                                             {!selectedImage && (
                                                                 <label style={{ margin: 0 }} htmlFor="file-upload" className="custom-file-upload">
-                                                                    {lang["CHOOSE FILE"]}
+                                                                    {lang["Choose Image"]}
                                                                 </label>
                                                             )}
                                                             <input
@@ -1480,29 +1525,36 @@ export default () => {
                                                                 accept="image/*,video/*"
                                                             />
                                                         </div>
+                                                        {attachMedia.length > 0 ?
+                                                            (
+                                                                <>
+                                                                    <div className="upload-container-case-add">
+                                                                        {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
 
-                                                        <div className="upload-container-case-add">
-                                                            {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
-                                                            {attachMedia && (
-                                                                <div className="selected-images-container-add">
-                                                                    {attachMedia.map((media, index) => (
-                                                                        <div key={index} className="selected-image-wrapper-add">
-                                                                            {media.type === 'image' && (
-                                                                                <img src={media.url} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
-                                                                            )}
-                                                                            {media.type === 'video' && (
-                                                                                <div>
-                                                                                    <img src={media.cover} alt={`Cover for ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
-                                                                                    {/* <div class="video-duration"> {media.name}</div> */}
-                                                                                    <div class="video-duration">Video</div>
+                                                                        <div className="selected-images-container-add">
+                                                                            {attachMedia.map((media, index) => (
+                                                                                <div key={index} className="selected-image-wrapper-add">
+                                                                                    {media.type === 'image' && (
+                                                                                        <img src={media.url} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
+                                                                                    )}
+                                                                                    {media.type === 'video' && (
+                                                                                        <div>
+                                                                                            <img src={media.cover} alt={`Cover for ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
+                                                                                            {/* <div class="video-duration"> {media.name}</div> */}
+                                                                                            <div class="video-duration">Video</div>
+                                                                                        </div>
+                                                                                    )}
+                                                                                    <button onClick={() => removeAttachMedia(media)} className="remove-image">X</button>
                                                                                 </div>
-                                                                            )}
-                                                                            <button onClick={() => removeAttachMedia(media)} className="remove-image">X</button>
+                                                                            ))}
                                                                         </div>
-                                                                    ))}
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                                                    </div>
+                                                                </>
+                                                            ) :
+                                                            <div className="container-no-attachment">
+                                                                <span className="span-no-attachment">{lang["No attachment"]}</span>
+                                                            </div>
+                                                        }
                                                     </div>
                                                 </div>
                                                 <TableInputAdd onDataUpdate={handleDataFromChild} stateAdd={true} stateUpdate={false} />
@@ -1587,7 +1639,7 @@ export default () => {
                                                                                     src={serverImage + dataCaseDetail.imgcase}
                                                                                     onClick={() => openModalPreview({ type: "imageDetail", url: dataCaseDetail.imgcase })}
                                                                                     data-toggle="modal" data-target="#previewMedia" /> :
-                                                                                <span>No Case Image</span>
+                                                                                <span>{lang["no image case"]}</span>
 
                                                                             }
 
@@ -1600,40 +1652,45 @@ export default () => {
                                                                     </div> */}
                                                                     <div class="col-md-8">
 
+                                                                        {dataCaseDetail?.attachMedia?.length > 0 ?
+                                                                            (
+                                                                                <>
+                                                                                    <div className="upload-container-case-add">
+                                                                                        {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
 
-                                                                        <div className="upload-container-case-add">
-                                                                            {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+                                                                                        <div className="selected-images-container-add">
+                                                                                            {dataCaseDetail?.attachMedia?.map((media, index) => (
+                                                                                                <div key={index} className="selected-image-wrapper-add">
+                                                                                                    {media["28T"] === 'image' && (
+                                                                                                        <img src={serverImage + media["6U"]} alt={`Selected ${index}`}
+                                                                                                            className="selected-image-add pointer" data-toggle="modal" data-target="#previewMedia"
+                                                                                                            onClick={() => openModalPreview({ type: "attachImageDetail", url: serverImage + media["6U"] })}
+                                                                                                            title="Click to preview" />
+                                                                                                    )}
+                                                                                                    {media["28T"] === 'video' && (
+                                                                                                        <div>
 
-                                                                            <div className="selected-images-container-add">
-                                                                                {dataCaseDetail?.attachMedia?.map((media, index) => (
-                                                                                    <div key={index} className="selected-image-wrapper-add">
-                                                                                        {media["28T"] === 'image' && (
-                                                                                            <img src={serverImage + media["6U"]} alt={`Selected ${index}`}
-                                                                                                className="selected-image-add pointer" data-toggle="modal" data-target="#previewMedia"
-                                                                                                onClick={() => openModalPreview({ type: "attachImageDetail", url: serverImage + media["6U"] })}
-                                                                                                title="Click to preview" />
-                                                                                        )}
-                                                                                        {media["28T"] === 'video' && (
-                                                                                            <div>
+                                                                                                            <video autoplay controls={false} src={serverImage + media["6U"]}
+                                                                                                                className="selected-image-add pointer"
+                                                                                                                data-toggle="modal" data-target="#previewMedia"
+                                                                                                                onClick={() => openModalPreview({ type: "attachVideoDetail", url: serverImage + media["6U"] })}
+                                                                                                                title="Click to preview"   >
 
-                                                                                                <video autoplay controls={false} src={serverImage + media["6U"]}
-                                                                                                    className="selected-image-add pointer"
-                                                                                                    data-toggle="modal" data-target="#previewMedia"
-                                                                                                    onClick={() => openModalPreview({ type: "attachVideoDetail", url: serverImage + media["6U"] })}
-                                                                                                    title="Click to preview"   >
-
-                                                                                                </video>
-                                                                                                {/* <div class="video-duration"> {media.name}</div> */}
-                                                                                                <div class="video-duration">Video</div>
-                                                                                            </div>
-                                                                                        )}
-
-
+                                                                                                            </video>
+                                                                                                            {/* <div class="video-duration"> {media.name}</div> */}
+                                                                                                            <div class="video-duration">Video</div>
+                                                                                                        </div>
+                                                                                                    )}
+                                                                                                </div>
+                                                                                            ))}
+                                                                                        </div>
                                                                                     </div>
-                                                                                ))}
+                                                                                </>
+                                                                            ) :
+                                                                            <div className="container-no-attachment">
+                                                                                <span className="span-no-attachment">{lang["No attachment"]}</span>
                                                                             </div>
-
-                                                                        </div>
+                                                                        }
                                                                     </div>
                                                                 </div>
                                                                 <div class="title-suggest">{lang["SUGGESTED SOLUTION"]}</div>
@@ -1858,12 +1915,12 @@ export default () => {
                                                              */}
                                                             <textarea
                                                                 ref={textareaRef}
-                                                                className="chat-input"
+                                                                className="chat-input no-change-textarea"
                                                                 value={dataMessageSent.message}
                                                                 onChange={handleInputChange}
                                                                 placeholder={lang["Type a message"]}
                                                                 rows={1}
-                                                                style={{ resize: 'none', overflowY: 'auto' }}
+
                                                             />
                                                             <input
                                                                 type="file"
@@ -1898,32 +1955,37 @@ export default () => {
                                                                 <div class="row">
                                                                     <div class="form-group col-lg-12 align-center">
                                                                         <div class="form-group col-lg-12 align-center">
-                                                                            <div className={`icon-rate ${rating === 'Excellent' ? 'icon-rate-selected' : ''}`} data-text="Excellent" onClick={() => handleRatingClick('Excellent')}>
-                                                                                <img className="icon-rate" style={{ filter: rating === 'Excellent' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i1.png" />
-                                                                                <span className="tooltip-text1">{lang["Excellent"]}</span>
+                                                                            <div className={`icon-rate ${rating === 'No Reply' ? 'icon-rate-selected' : ''}`} data-text="No Reply" onClick={() => handleRatingClick('No Reply')}>
+                                                                                <img class="icon-rate" style={{ filter: rating === 'No Reply' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i5.png" />
+                                                                                <span class="tooltip-text5">No Reply</span>
                                                                             </div>
-                                                                            <div className={`icon-rate ${rating === 'Good' ? 'icon-rate-selected' : ''}`} data-text="Good" onClick={() => handleRatingClick('Good')}>
-                                                                                <img class="icon-rate" style={{ filter: rating === 'Good' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i2.png" />
-                                                                                <span class="tooltip-text2">{lang["Good"]}</span>
+                                                                            <div className={`icon-rate ${rating === 'Bad' ? 'icon-rate-selected' : ''}`} data-text="Bad" onClick={() => handleRatingClick('Bad')}>
+                                                                                <img class="icon-rate" style={{ filter: rating === 'Bad' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i4.png" />
+                                                                                <span class="tooltip-text4">Bad</span>
                                                                             </div>
+
                                                                             <div className={`icon-rate ${rating === 'Medium' ? 'icon-rate-selected' : ''}`} data-text="Medium" onClick={() => handleRatingClick('Medium')}>
                                                                                 <img class="icon-rate" style={{ filter: rating === 'Medium' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i3.png" />
-                                                                                <span class="tooltip-text3">{lang["Medium"]}</span>
+                                                                                <span class="tooltip-text3">Medium</span>
                                                                             </div>
-                                                                            <div className={`icon-rate ${rating === 'Poor' ? 'icon-rate-selected' : ''}`} data-text="Poor" onClick={() => handleRatingClick('Poor')}>
-                                                                                <img class="icon-rate" style={{ filter: rating === 'Poor' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i4.png" />
-                                                                                <span class="tooltip-text4">{lang["Poor"]}</span>
+
+
+                                                                            <div className={`icon-rate ${rating === 'Pretty good' ? 'icon-rate-selected' : ''}`} data-text="Pretty good" onClick={() => handleRatingClick('Pretty good')}>
+                                                                                <img class="icon-rate" style={{ filter: rating === 'Pretty good' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i2.png" />
+                                                                                <span class="tooltip-text2">Pretty good</span>
                                                                             </div>
-                                                                            <div className={`icon-rate ${rating === 'Very Bad' ? 'icon-rate-selected' : ''}`} data-text="Very Bad" onClick={() => handleRatingClick('Very Bad')}>
-                                                                                <img class="icon-rate" style={{ filter: rating === 'Very Bad' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i5.png" />
-                                                                                <span class="tooltip-text5">{lang["Very Bad"]}</span>
+
+                                                                            <div className={`icon-rate ${rating === 'Good' ? 'icon-rate-selected' : ''}`} data-text="Good" onClick={() => handleRatingClick('Good')}>
+                                                                                <img className="icon-rate" style={{ filter: rating === 'Good' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i1.png" />
+                                                                                <span className="tooltip-text1">Good</span>
                                                                             </div>
+
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-group col-lg-12">
                                                                         <textarea class="form-control" value={postRating.content} onChange={
                                                                             (e) => { setPostRating({ ...postRating, content: e.target.value }) }}
-                                                                            rows={8}
+                                                                            rows={10}
                                                                             style={{ resize: 'none' }}
                                                                             placeholder={lang["Let us know how you feel"]}></textarea>
                                                                     </div>
@@ -1964,25 +2026,25 @@ export default () => {
                                             <img class="icon-rate" src={"/images/icon/i4.png"}></img>
                                             <img class="icon-rate" src={"/images/icon/i5.png"}></img> */}
                                                 <div class="form-group col-lg-12 align-center">
-                                                    <div class="icon-rate" data-text="Excellent">
-                                                        <img class="icon-rate" src="/images/icon/i1.png" />
-                                                        <span class="tooltip-text1">Excellent</span>
-                                                    </div>
                                                     <div class="icon-rate" data-text="Good">
+                                                        <img class="icon-rate" src="/images/icon/i1.png" />
+                                                        <span class="tooltip-text1">Good</span>
+                                                    </div>
+                                                    <div class="icon-rate" data-text="Pretty good">
                                                         <img class="icon-rate" src="/images/icon/i2.png" />
-                                                        <span class="tooltip-text2">Good</span>
+                                                        <span class="tooltip-text2">Pretty good</span>
                                                     </div>
                                                     <div class="icon-rate" data-text="Medium">
                                                         <img class="icon-rate" src="/images/icon/i3.png" />
                                                         <span class="tooltip-text3">Medium</span>
                                                     </div>
-                                                    <div class="icon-rate" data-text="Poor">
+                                                    <div class="icon-rate" data-text="Bad">
                                                         <img class="icon-rate" src="/images/icon/i4.png" />
-                                                        <span class="tooltip-text4">Poor</span>
+                                                        <span class="tooltip-text4">Bad</span>
                                                     </div>
-                                                    <div class="icon-rate" data-text="Very Bad">
+                                                    <div class="icon-rate" data-text="No Reply">
                                                         <img class="icon-rate" src="/images/icon/i5.png" />
-                                                        <span class="tooltip-text5">Very Bad</span>
+                                                        <span class="tooltip-text5">No Reply</span>
                                                     </div>
                                                 </div>
 
@@ -2102,7 +2164,7 @@ export default () => {
                                                     <span class="error-message mb-1">{errorMessagesUpdate.issue}</span>
                                                 )}
                                             </div>
-                                            <textarea class="form-control" rows={6}
+                                            <textarea class="form-control no-change-textarea" rows={8}
                                                 value={caseUpdate.issue} onChange={
                                                     (e) => { setCaseUpdate({ ...caseUpdate, issue: e.target.value }) }}></textarea>
                                         </div>
@@ -2112,7 +2174,7 @@ export default () => {
                                                 <div className="upload-container-case">
                                                     {((caseUpdate.caseimage === "" && selectedImage == null)) && (
                                                         <label style={{ margin: 0 }} htmlFor="file-upload" className="custom-file-upload">
-                                                            {lang["CHOOSE FILE"]}
+                                                            {lang["Choose Image"]}
                                                         </label>
                                                     )}
                                                     <input
@@ -2167,7 +2229,7 @@ export default () => {
                                                 <div class="d-flex">
                                                     <h5 className="mb-2"></h5>
                                                     <label style={{ marginBottom: 0 }} htmlFor="file-upload-media" class="ml-auto" >
-                                                        <FontAwesomeIcon icon={faPlusSquare} className={`size-24 mb-1 icon-add pointer `} title="Choose File" />
+                                                        <FontAwesomeIcon icon={faPlusSquare} className={`size-24 mb-1 icon-add pointer `} title="Choose Image" />
                                                     </label>
                                                     <input
                                                         id="file-upload-media"
@@ -2229,7 +2291,7 @@ export default () => {
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" onClick={submitUpdateCase} class="btn btn-primary modal-button-review">Update</button>
-                                    <button type="button" onClick={handleCloseModal} data-dismiss="modal" class="btn btn-danger modal-button-review">Close</button>
+                                    <button type="button" onClick={handleCloseModal} data-dismiss="modal" id="closeModalUpdateCase" class="btn btn-danger modal-button-review">Close</button>
                                 </div>
                             </div>
                         </div>

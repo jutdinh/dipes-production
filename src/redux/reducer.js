@@ -17,7 +17,7 @@ const initState = {
     tempFields: [],
     tempCounter: 0,
     proxy,
-    lang: Langs[localStorage.getItem("lang") ? localStorage.getItem("lang") : "Vi"],
+    lang: Langs[localStorage.getItem("lang") ? localStorage.getItem("lang") : "En"],/// Thay đổi ngôn ngữ mặc định
     database: { tables: [], fields: [], currentTable: {}, currentField: {}, offsets: [], tableOffsets: [], offsetPoints: [] },
     pages: []
 }

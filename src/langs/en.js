@@ -408,11 +408,10 @@ export default {
     "Let us know how you feel": "Let us know how you feel",
     "Last updated by": "Last updated by",
 
-    "Excellent": "Excellent",
-    "Good": "Good",
-    "Medium": "Medium",
-    "Poor": "Poor",
-    "Very bad": "Very bad",
+    
+
+
+
     "Submit Review": "Submit Review",
     "Case title, case description, or anything": "Case title, case description, or anything",
     "Show more": "Show more",
@@ -427,8 +426,14 @@ export default {
     "CHOOSE FILE": "CHOOSE FILE",
     "submit case": "Submit case",
     "Click to change image": "Click to change image",
-    "Case Update": "CASE UPDATE"
-
+    "Case Update": "CASE UPDATE",
+    "Enter case title": "Enter case title",
+    "Enter product name": "Enter product name",
+    "p.issue": "Enter issue description",
+    "No attachmen": "No attachment",
+    "Choose Image": "Choose Image",
+    "no image case": "No image case",
+    "No data avasilable": "No data avasilable"
 
 
 

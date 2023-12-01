@@ -35,7 +35,7 @@ function EditableTable(props) {
         "col5": item["10Q"],
 
     }));
-    console.log(data)
+    // console.log(data)
     useEffect(() => {
         if (dataStateUpdate) {
             setData(mappedArray)
@@ -68,7 +68,7 @@ function EditableTable(props) {
             .then(res => res.json())
             .then(resp => {
                 const { success, activated, status, content } = resp;
-                console.log("Tạo hàng", resp)
+                // console.log("Tạo hàng", resp)
                 const newRow = { detailId: resp.Detail["1ID"], col1: '', col2: '', col3: '', col4: '', col5: '', isEditing: false };
                 setData([...data, newRow]);
                 props.onDataUpdate([...data, newRow]);
@@ -81,8 +81,8 @@ function EditableTable(props) {
 
     const updateRow = (updatedRows) => {
         // const updatedRow = newData.find((row) => row.detailId === rowId);
-        console.log(updatedRows)
-        
+        // console.log(updatedRows)
+
         const requestBodyProduct = {
             checkCustomer: {
                 username,
@@ -95,9 +95,9 @@ function EditableTable(props) {
             "1HV": updatedRows.col3,
             "1FV": updatedRows.col4,
             "10Q": updatedRows.col5
-            
+
         }
-      console.log(requestBodyProduct)
+        // console.log(requestBodyProduct)
         fetch(`${proxy()}/api/988C23F3D58E4885A93EEE22D7FE4C6E`, {
             headers: {
                 Authorization: _token,
@@ -109,13 +109,23 @@ function EditableTable(props) {
             .then(res => res.json())
             .then(resp => {
                 const { success, activated, status, content } = resp;
-               
+
 
             })
     };
 
 
-
+    //Debouncing
+    const debounce = (func, delay) => {
+        let inDebounce;
+        return function () {
+            const context = this;
+            const args = arguments;
+            clearTimeout(inDebounce);
+            inDebounce = setTimeout(() => func.apply(context, args), delay);
+        };
+    };
+    const debouncedUpdateRow = debounce(updateRow, 1000); // Đặt thời gian trễ 1000ms
 
 
     const handleInputChange = (event, rowId, colName, value) => {
@@ -123,16 +133,16 @@ function EditableTable(props) {
         const newData = data.map((row) =>
             row.detailId === rowId ? { ...row, [colName]: value } : row
         );
-    
+
         // So sánh giá trị mới với giá trị trong prevData
         const hasValueChanged = JSON.stringify(newData) !== JSON.stringify(prevData);
-    
+
         if (hasValueChanged) {
             setData(newData);
             props.onDataUpdate(newData);
-    
+
             const updatedRows = newData.find((row) => row.detailId === rowId);
-            updateRow(updatedRows);
+            debouncedUpdateRow(updatedRows);
         }
     };
 
@@ -203,7 +213,7 @@ function EditableTable(props) {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                console.log(resp)
+                // console.log(resp)
 
             })
     };
@@ -231,126 +241,131 @@ function EditableTable(props) {
                             </tr>
                         </thead>
                         <tbody>
-                            {data.map((row, index) => (
-                                <tr key={row.detailId}>
-                                    <td class="align-center">{index + 1}</td>
-                                    <td class="table-td-product-pl-5"
-                                        onClick={() => handleRowClick(row.detailId)}
+                            {data.length > 0 ? (
 
-                                    >
-                                        {row.isEditing ? (
-                                            <input
-                                                type="text"
-                                                className={`form-control table-td-product-pl-5 ${row.detailId === focusedRowId ? 'focused' : ''}`}
-                                                value={row.col1}
-                                                onChange={(e) => handleInputChange(e, row.detailId, 'col1', e.target.value)}
-                                                onBlur={() => handleRowBlur(row.detailId)}
-                                                onFocus={() => handleFocus(row.detailId)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
-                                                        e.preventDefault();
-                                                        updateRow(row)
+                                data.map((row, index) => (
+                                    <tr key={row.detailId}>
+                                        <td class="align-center">{index + 1}</td>
+                                        <td class="table-td-product-pl-5"
+                                            onClick={() => handleRowClick(row.detailId)}
 
-                                                    }
-                                                }}
-                                            />
-                                        ) : (
-                                            <span class="table-td-product-pl-6">{row.col1}</span>
-                                        )}
-                                    </td>
-
-                                    <td class="table-td-product-pl-5"
-                                        onClick={() => handleRowClick(row.detailId)}
-
-                                    >
-                                        {row.isEditing ? (
-                                            <input
-                                                type="text"
-                                                className={`form-control table-td-product-pl-5 ${row.detailId === focusedRowId ? 'focused' : ''}`}
-                                                value={row.col2}
-                                                onChange={(e) => handleInputChange(e, row.detailId, 'col2', e.target.value)}
-                                                onBlur={() => handleRowBlur(row.detailId)}
-                                                onFocus={() => handleFocus(row.detailId)}
-                                            />
-                                        ) : (
-                                            <span class="table-td-product-pl-6">{row.col2}</span>
-                                        )}
-                                    </td>
-
-                                    <td class="table-td-product-pl-5"
-                                        onClick={() => handleRowClick(row.detailId)}
-                                    >
-                                        {row.isEditing ? (
-                                            <input
-                                                type="text"
-                                                className={`form-control table-td-product-pl-5 ${row.detailId === focusedRowId ? 'focused' : ''}`}
-                                                value={row.col3}
-                                                onChange={(e) => handleInputChange(e, row.detailId, 'col3', e.target.value)}
-                                                onBlur={() => handleRowBlur(row.detailId)}
-                                                onFocus={() => handleFocus(row.detailId)}
-                                            />
-                                        ) : (
-                                            <span class="table-td-product-pl-6">{row.col3}</span>
-                                        )}
-                                    </td>
-                                    <td class="table-td-product-pl-5"
-                                        onClick={() => handleRowClick(row.detailId)}
-
-                                    >
-
-                                        {row.isEditing ? (
-
-                                            <input
-                                                type="text"
-                                                className={`form-control table-td-product-pl-5 ${row.detailId === focusedRowId ? 'focused' : ''}`}
-                                                value={row.col4}
-                                                onChange={(e) => handleInputChange(e, row.detailId, 'col4', e.target.value)}
-                                                onBlur={() => handleRowBlur(row.detailId)}
-                                                onFocus={() => handleFocus(row.detailId)}
-                                            />
-
-                                        ) : (
-                                            <span class="table-td-product-pl-6">{row.col4}</span>
-                                        )}
-
-                                    </td>
-                                    <td class="table-td-product-pl-5"
-                                        onClick={() => handleRowClick(row.detailId)}
-
-                                    >
-
-                                        {row.isEditing ? (
-                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        >
+                                            {row.isEditing ? (
                                                 <input
                                                     type="text"
                                                     className={`form-control table-td-product-pl-5 ${row.detailId === focusedRowId ? 'focused' : ''}`}
-                                                    value={row.col5}
-                                                    onChange={(e) => {
-                                                        // Kiểm tra nếu giá trị nhập vào không phải là số từ 0 đến 9, thì không cho phép cập nhật giá trị
-                                                        if (/^[0-9]*$/.test(e.target.value)) {
-                                                            handleInputChange(e, row.detailId, 'col5', e.target.value);
-                                                        }
-                                                    }}
+                                                    value={row.col1}
+                                                    onChange={(e) => handleInputChange(e, row.detailId, 'col1', e.target.value)}
                                                     onBlur={() => handleRowBlur(row.detailId)}
                                                     onFocus={() => handleFocus(row.detailId)}
-                                                    pattern="[0-9]*" // Chỉ cho phép nhập số từ 0 đến 9
-                                                    inputMode="numeric" // Chế độ nhập số
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            updateRow(row)
+
+                                                        }
+                                                    }}
+                                                />
+                                            ) : (
+                                                <span class="table-td-product-pl-6">{row.col1}</span>
+                                            )}
+                                        </td>
+
+                                        <td class="table-td-product-pl-5"
+                                            onClick={() => handleRowClick(row.detailId)}
+
+                                        >
+                                            {row.isEditing ? (
+                                                <input
+                                                    type="text"
+                                                    className={`form-control table-td-product-pl-5 ${row.detailId === focusedRowId ? 'focused' : ''}`}
+                                                    value={row.col2}
+                                                    onChange={(e) => handleInputChange(e, row.detailId, 'col2', e.target.value)}
+                                                    onBlur={() => handleRowBlur(row.detailId)}
+                                                    onFocus={() => handleFocus(row.detailId)}
+                                                />
+                                            ) : (
+                                                <span class="table-td-product-pl-6">{row.col2}</span>
+                                            )}
+                                        </td>
+
+                                        <td class="table-td-product-pl-5"
+                                            onClick={() => handleRowClick(row.detailId)}
+                                        >
+                                            {row.isEditing ? (
+                                                <input
+                                                    type="text"
+                                                    className={`form-control table-td-product-pl-5 ${row.detailId === focusedRowId ? 'focused' : ''}`}
+                                                    value={row.col3}
+                                                    onChange={(e) => handleInputChange(e, row.detailId, 'col3', e.target.value)}
+                                                    onBlur={() => handleRowBlur(row.detailId)}
+                                                    onFocus={() => handleFocus(row.detailId)}
+                                                />
+                                            ) : (
+                                                <span class="table-td-product-pl-6">{row.col3}</span>
+                                            )}
+                                        </td>
+                                        <td class="table-td-product-pl-5"
+                                            onClick={() => handleRowClick(row.detailId)}
+
+                                        >
+
+                                            {row.isEditing ? (
+
+                                                <input
+                                                    type="text"
+                                                    className={`form-control table-td-product-pl-5 ${row.detailId === focusedRowId ? 'focused' : ''}`}
+                                                    value={row.col4}
+                                                    onChange={(e) => handleInputChange(e, row.detailId, 'col4', e.target.value)}
+                                                    onBlur={() => handleRowBlur(row.detailId)}
+                                                    onFocus={() => handleFocus(row.detailId)}
                                                 />
 
-                                                <FontAwesomeIcon icon={faTrashCan} onClick={() => handleDeleteRow(row)} className={`size-24 ml-2  icon-delete pointer `} />
-                                            </div>
-                                        ) : (
-                                            <span class="table-td-product-pl-6">{row.col5}</span>
-                                        )}
+                                            ) : (
+                                                <span class="table-td-product-pl-6">{row.col4}</span>
+                                            )}
 
-                                    </td>
+                                        </td>
+                                        <td class="table-td-product-pl-5"
+                                            onClick={() => handleRowClick(row.detailId)}
 
+                                        >
+
+                                            {row.isEditing ? (
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <input
+                                                        type="text"
+                                                        className={`form-control table-td-product-pl-5 ${row.detailId === focusedRowId ? 'focused' : ''}`}
+                                                        value={row.col5}
+                                                        onChange={(e) => {
+                                                            // Kiểm tra nếu giá trị nhập vào không phải là số từ 0 đến 9, thì không cho phép cập nhật giá trị
+                                                            if (/^[0-9]*$/.test(e.target.value)) {
+                                                                handleInputChange(e, row.detailId, 'col5', e.target.value);
+                                                            }
+                                                        }}
+                                                        onBlur={() => handleRowBlur(row.detailId)}
+                                                        onFocus={() => handleFocus(row.detailId)}
+                                                        pattern="[0-9]*" // Chỉ cho phép nhập số từ 0 đến 9
+                                                        inputMode="numeric" // Chế độ nhập số
+                                                    />
+
+                                                    <FontAwesomeIcon icon={faTrashCan} onClick={() => handleDeleteRow(row)} className={`size-24 ml-2  icon-delete pointer `} />
+                                                </div>
+                                            ) : (
+                                                <span class="table-td-product-pl-6">{row.col5}</span>
+                                            )}
+
+                                        </td>
+
+                                    </tr>
+                                ))
+                            ) :
+                                <tr>
+                                    <td colspan={6} style={{ textAlign: 'center' }}><div>{lang["No data avasilable"]}</div></td>
                                 </tr>
-                            ))}
-
+                            }
                         </tbody>
                     </table>
-
                 }
             </div>
 

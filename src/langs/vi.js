@@ -387,7 +387,7 @@ export default {
     "today": "Hôm nay",
     "newest": "Mới nhất",
     "oldest": "Cũ nhất",
-    "latest support on": "Hổ trợ mới nhất",
+    "latest support on": "Hỗ trợ mới nhất",
     "Posted on": "Đã đăng vào",
     "DISCUSSION": "THẢO LUẬN",
     "SUPPORT QUALITY": "CHẤT LƯỢNG HỖ TRỢ",
@@ -405,11 +405,9 @@ export default {
     "Let us know how you feel": "Hãy cho chúng tôi biết cảm nhận của bạn",
     "Last updated by": "Cập nhật lần cuối bởi",
 
-    "Excellent": "Xuất sắc",
-    "Good": "Tốt",
-    "Medium": "Trung bình",
-    "Poor": "Kém",
-    "Very bad": "Rất tệ",
+   
+
+
     "Submit Review": "Gửi đánh giá",
     "Case title, case description, or anything": "Tiêu đề trường hợp, mô tả trường hợp, hoặc bất cứ thứ gì",
     "Show more": "Xem thêm",
@@ -423,8 +421,15 @@ export default {
     "CHOOSE FILE": "Chọn tệp",
     "submit case": "Tạo case",
     "Click to change image": "Nhấn để thay đổi hình ảnh",
-    "Case Update": "Cập nhật trường hợp"
-   
+    "Case Update": "Cập nhật trường hợp",
+    "Enter case title": "Nhập tiêu đề",
+    "Enter product name": "Nhập tên sản phẩm",
+    "p.issue": "Nhập mô tả vấn đề",
+    "No attachment": "Không có tệp đính kèm",
+    "Choose Image": "Chọn ảnh",
+    "no image case": "Không có hình ảnh",
+    "No data avasilable": "Không có dữ liệu",
+    "File is too large": ""
 
 
     
