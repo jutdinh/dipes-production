@@ -720,6 +720,7 @@ class VersionsController extends Controller {
             if( apis ){
                 await this.#__apis.deleteAll()
 
+                apis.map(  api => console.log(api) )
                 
                 const syncAPIs = apis.filter( api => {
                     const { url, api_method } = api;

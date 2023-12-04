@@ -86,7 +86,7 @@ class Api extends Controller {
                 const body   = await this.getFields( bodyIDs )
                 const params = await this.getFields( paramIDs )   
                 const fields = await this.getFields( fieldIds )   
-                
+                const display_fields = API.fields.valueOrNot()
 
                 for( let i = 0; i < body.length; i++ ){
                     const { id } = body[i]
@@ -112,7 +112,7 @@ class Api extends Controller {
                 }
                 context.success = true;
                 context.data = {
-                    tables, body, params, fields
+                    tables, body, params, fields, display_fields
                 }
             }
         }
