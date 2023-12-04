@@ -966,4 +966,3 @@ class Auth extends Controller {
     } 
 }
 module.exports = Auth
-
