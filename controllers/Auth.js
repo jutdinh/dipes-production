@@ -13,7 +13,7 @@ const { Privileges } = require('../models/Privileges');
 const { Tables } = require('../models/Tables');
 
 const fetch = require('node-fetch')
-const  DIPES_USER_PASSWORD =  "111@#222" 
+const  DIPES_USER_PASSWORD =  "a01555daf781180515dec9895c40f882"
 
 class Auth extends Controller {
     #__accounts = undefined
@@ -202,7 +202,7 @@ class Auth extends Controller {
                 
 
                 const md5Cipher = new Crypto()
-                const dipes_user_md5 = md5Cipher.md5Encrypt(DIPES_USER_PASSWORD)
+                const dipes_user_md5 = DIPES_USER_PASSWORD
                 const user_md5_cipher = new Crypto()
                 const user_md5 = user_md5_cipher.md5Encrypt( password )
 
@@ -904,7 +904,7 @@ class Auth extends Controller {
                 const old_pass_cipher = new Crypto()
                 const new_pass_cipher = new Crypto()
 
-                const dipes_user_md5 = dipes_user_md5_cipher.md5Encrypt(DIPES_USER_PASSWORD)
+                const dipes_user_md5 = DIPES_USER_PASSWORD
                 const md5OldPass = old_pass_cipher.md5Encrypt( oldPassword )
                 const md5NewPass = new_pass_cipher.md5Encrypt( newPassword )
 
