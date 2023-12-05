@@ -282,8 +282,19 @@ function translateDateTimeToVietnamese(dateTimeString) {
     return `${day}/${month}/${year} ${time}`;
 }
 
+const isEmpty = (obj) => {
+    return Object.keys(obj).length === 0;
+}
 
+function isImageFormat(fileName) {
+    const imageFormats = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff', 'svg'];
+    return imageFormats.includes(fileName.split('.').pop().toLowerCase());
+}
 
+function isVideoFormat(fileName) {
+    const videoFormats = ['mp4', 'mov', 'wmv', 'flv', 'avi', 'mkv', 'webm'];
+    return videoFormats.includes(fileName.split('.').pop().toLowerCase());
+}
 
 
 
@@ -295,5 +306,6 @@ function translateDateTimeToVietnamese(dateTimeString) {
 export default {
     uid, removeDuplicate, titleCase, openTab, dateGenerator, renderDateTimeByFormat,
     showApiResponseMessage, formatNumberWithCommas, formatNumber, generateUniqueColors,
-    formatDate, formatDateCase, formatDateMessage, translateDateToVietnamese, translateDateTimeToVietnamese
+    formatDate, formatDateCase, formatDateMessage, translateDateToVietnamese, translateDateTimeToVietnamese, isEmpty,
+    isImageFormat, isVideoFormat
 }

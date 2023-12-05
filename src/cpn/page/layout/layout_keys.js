@@ -26,6 +26,7 @@ export default (props) => {
     // console.log(storedPwdString)
     const page = props.page
     const [apiDataName, setApiDataName] = useState([])
+    console.log(apiDataName)
     const [apiData, setApiData] = useState([])
     const [loading, setLoading] = useState(false);
     const [dataTable_id, setDataTableID] = useState(null);
@@ -100,7 +101,20 @@ export default (props) => {
             .then(res => {
                 const { success, content, data, count, fields } = res;
                 // console.log(res)
+                
+                const createDate = fields.find( f => f.fomular_alias == "6C" )
+                const reason = fields.find( f => f.fomular_alias =="1R" )
+
+                const index_1 = fields.indexOf( createDate )
+                const index_2 = fields.indexOf( reason )
+
+                fields[index_1] = reason
+                fields[index_2] = createDate 
+
                 setApiDataName(fields);
+
+
+
                 if (data && data.length > 0) {
                     setApiData(data.filter(record => record != undefined));
                 }
@@ -263,6 +277,14 @@ export default (props) => {
 
     const rawKey = "PRTA123B45PRTA123B45";
     const formattedKey = formatPrinterKey(rawKey);
+// Tạo đố
+
+
+var date = new Date(1697094897137);
+
+// In ra ngày và giờ theo định dạng mong muốn
+console.log(date.toString()); // sẽ hiển thị theo múi giờ mặc định của hệ thống
+console.log(date.toUTCString()); // hiển thị theo UTC
 
     return (
         <>
@@ -294,7 +316,7 @@ export default (props) => {
                                                             <tr class="color-tr sticky-header">
                                                                 <th class="font-weight-bold " style={{ width: "50px", minWidth: "50px" }} scope="col">{lang["log.no"]}</th>
                                                                 {apiDataName?.map((header, index) => (
-                                                                    <th key={index} class="font-weight-bold"style={{minWidth: "150px"}}>{header.display_name ? header.display_name : header.field_name}</th>
+                                                                    <th key={index} class="font-weight-bold"style={{minWidth: "180px"}}>{header.display_name ? header.display_name : header.field_name}</th>
                                                                 ))}
                                                                 <th class="font-weight-bold align-center" style={{ width: "100px" }}>{lang["log.action"]}</th>
                                                             </tr>

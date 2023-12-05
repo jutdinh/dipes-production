@@ -47,7 +47,9 @@ export default (props) => {
     const [dataKey, setDatKey] = useState({})
     const [apiDataName, setApiDataName] = useState([])
     const [data, setData] = useState({});
-
+    const [error, setError] = useState([]);
+    console.log(error)
+    console.log(data)
     const [dataFile, setDataFile] = useState({})
 
     const [reason, setReason] = useState("")
@@ -118,8 +120,8 @@ export default (props) => {
                         icon: "error",
                         showConfirmButton: true,
                         confirmButtonText: lang["back"],
-                        cancelButtonText: lang["btn.cancel"],
-                        showCancelButton: true,
+                        // cancelButtonText: lang["btn.cancel"],
+                        // showCancelButton: true,
                     }).then((result) => {
                         if (result.isConfirmed) {
                             goBack();
@@ -134,6 +136,54 @@ export default (props) => {
 
             });
     };
+    // Error
+
+    function checkErrors(data, errors) {
+        let errorMessages = {
+            'ERROR0': lang["ERROR0"],
+            'ERROR1':  lang["ERROR1"],
+            'ERROR2':  lang["ERROR2"],
+            'ERROR3':  lang["ERROR3"]
+        };
+    
+        let resultErrors = [];
+    
+        // Kiểm tra lỗi của controller
+        if (data?.controller !== null && errors[0] !== 'ERROR0') {
+            resultErrors.push(`Controller: ${errorMessages[errors[0]] || lang["Unknown error"]}`);
+        }
+    
+        // Kiểm tra lỗi của printhead
+        if (data?.printhead !== null) {
+            data?.printhead?.forEach((head, index) => {
+                let printheadErrorIndex = index + 1; // Chỉ số tương ứng trong mảng errors
+                if (printheadErrorIndex < errors.length && errors[printheadErrorIndex] !== 'ERROR0') {
+                    resultErrors.push(`Printhead ${index + 1}: ${errorMessages[errors[printheadErrorIndex]] || lang["Unknown error"]}`);
+                }
+            });
+        }
+    
+        // Kiểm tra lỗi của printer
+        if (data?.printer !== null && data?.controller === null && data?.printhead === null) {
+            errors.forEach((error, index) => {
+                if (error !== 'ERROR0') {
+                    resultErrors.push(`Printer: ${errorMessages[error] || lang["Unknown error"]}`);
+                }
+            });
+        }
+    
+        return resultErrors;
+    }
+    
+    
+    
+
+    let errorList = checkErrors(data, error);
+    console.log(errorList)
+    function isNoError(errorList) {
+        // Kiểm tra nếu mảng rỗng hoặc tất cả các lỗi là 'ERROR0'
+        return errorList.length === 0 || errorList.every(error => error === 'ERROR0');
+    }
 
     // Check input Seiral Number
     const [errorMessage, setErrorMessage] = useState('');
@@ -447,12 +497,12 @@ export default (props) => {
             .then(res => res.json())
             .then(res => {
 
-                const { data, success, content } = res;
-                // console.log(res)
+                const { data, success, error, content } = res;
+                console.log(res)
                 if (success) {
                     if (data && Object.keys(data).length > 0) {
                         setData(data)
-
+                        setError(error)
                         setCheckDataValidity(checkDataValidity(dataFile, data))
 
                         setCurrentStep(2);
@@ -642,7 +692,6 @@ export default (props) => {
         return true;
     }
 
-
     // Hàm kiểm tra xem tất cả giá trị trong đối tượng có phải là null không
     const isAllValuesNull = (obj) => Object.values(obj).every(value => value === null);
     // Hàm kiểm tra xem tất cả giá trị trong mảng có phải là null không
@@ -665,7 +714,6 @@ export default (props) => {
     }
 
     const checkPrinthead = checkAllPrintheadsNull(current);
-
 
     const shouldDisplayPrintHeads = printheadsData.some(printhead =>
         printhead.key !== "" || printhead.serialNumber !== ""
@@ -821,7 +869,7 @@ export default (props) => {
                                                         })()
                                                     }
                                                 </div>
-                                            ): null
+                                            ) : null
                                             }
 
                                         </div>
@@ -841,7 +889,6 @@ export default (props) => {
                                 <div className="container justify-content-center mt-3">
                                     <div className="step-indicator mlr-5">
                                         <ul className="step-list">
-
                                             <li className={`step-item ${currentStep === 1 ? "step-active" : ""} step-arrow-right`}>
                                                 <a className="step-link">{lang["step"]} 1: {lang["upload file"]}</a>
                                             </li>
@@ -853,15 +900,12 @@ export default (props) => {
                                             <li className={`step-item ${currentStep === 3 ? "step-active" : ""} step-arrow-left-flat-right`}>
                                                 <a className="step-link">{lang["step"]} 3: {lang["get result"]}</a>
                                             </li>
-
                                         </ul>
                                     </div>
                                     {currentStep === 1 && (
                                         <div class="row justify-content-center mt-3">
-
                                             <div class="col-md-12 p-20">
                                                 <div id="step1">
-
                                                     <div className="form-group mt-4">
                                                         <div className="upload-container">
                                                             <input
@@ -1031,13 +1075,27 @@ export default (props) => {
                                                     </div>
                                                 )
                                                 }
-                                                <div className="col-md-12 p-20">
-                                                    <div className="button-group">
+                                                <div className="col-md-12 p-20 d-flex" >
+                                                    <div className="error-group">
+                                                        {(errorList && errorList.length > 0) &&
+                                                            <>
+                                                                <h6 class="title-error">{lang["Please check the activation file"]}:</h6>
+                                                                {errorList?.map((err, index) => (
+                                                                    <p key={index} class="list-error ml-4"> {err}</p>
+                                                                ))}
+                                                            </>
+                                                        }
+                                                    </div>
+                                                    <div className="ml-auto">
                                                         <button onClick={handleReStep} style={{ minWidth: "100px" }} className="btn btn-info mr-2" title={lang["back"]}>{lang["back"]}</button>
-                                                        {(enable && checkDataValidityDataRespon) && (
+                                                        {/* {(enable && checkDataValidityDataRespon) && (
                                                             <button onClick={handleNextStep} style={{ minWidth: "100px" }} className="btn btn-primary" disabled={isEmptyObject(data.controller) && isEmptyObject(data.printer)} title={lang["create key"]}>{lang["create key"]}</button>
                                                         )
-                                                        }
+                                                        } */}
+
+                                                        {(enable && isNoError(errorList)) && (
+                                                            <button onClick={handleNextStep} style={{ minWidth: "100px" }} className="btn btn-primary" disabled={isEmptyObject(data.controller) && isEmptyObject(data.printer)} title={lang["create key"]}>{lang["create key"]}</button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
@@ -1047,7 +1105,6 @@ export default (props) => {
                                         <>
                                             <div class="row justify-content-center mt-4">
                                                 <div class="col-lg-8 col-md-10 col-sm-12 p-2">
-
                                                     {loadingCreateKey ?
                                                         <div class="text-center mb-4">
                                                             <img src="/images/icon/loading.gif" alt="Success" class="img-fluid size-img-success" />
@@ -1074,7 +1131,6 @@ export default (props) => {
                                                                 </div>
                                                             </div>
                                                         )}
-
                                                 </div>
                                             </div>
                                         </>

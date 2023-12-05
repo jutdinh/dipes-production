@@ -526,7 +526,21 @@
     justify-content: flex-end;
     margin-top: 10px;
 }
-
+.error-group{
+    margin-top: 10px;
+}
+.title-error{
+    color: #fe402b;
+    font-size: 14px;
+}
+.list-error{
+    color: #fe402b;
+    font-size: 14px;
+}
+.list-error::before{
+   content: "•";
+   font-size: 18px;
+}
 .header-cell,
 .cell {
     min-width: 250px;

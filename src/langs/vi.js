@@ -429,7 +429,20 @@ export default {
     "Choose Image": "Chọn ảnh",
     "no image case": "Không có hình ảnh",
     "No data avasilable": "Không có dữ liệu",
-    "File is too large": ""
+    "success.rate": "Gửi đánh giá thành công",
+    "File is too large": "Tổng dung lượng file vượt quá 20MB",
+    "controller error": "Lỗi Controller:",
+    "printhead error": "Lỗi Printhead ",
+    "printer error": "Lỗi Printer:",
+
+    "ERROR0": "Không có lỗi",
+    "ERROR1": "Không tìm thấy thông tin thiết bị",
+    "ERROR2": "UUID không hợp lệ",
+    "ERROR3": "Dữ liệu rỗng",
+    "Unknown error": "Lỗi không xác định",
+    "List of Errors": "Danh sách các lỗi",
+    "Please check the activation file": "Vui lòng kiểm tra tập tin kích hoạt",
+    "Click to preview": "Nhấn để xem trước"
 
 
     

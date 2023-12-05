@@ -377,7 +377,7 @@
     padding: 0px 0px 0px 0px;
     float: left;
     width: 100%;
-    min-height: 77.5vh
+    min-height: 79.5vh
 }
 
 .padding_infor_info_case_non {
@@ -418,6 +418,8 @@
 .graph_head_cus {
     padding: 5px 15px 5px;
     float: left;
+    min-height: 58px;
+
     width: 100%;
     border-bottom: solid #dee2e6 1px;
 }
@@ -557,7 +559,7 @@
 
 .container-case {
     margin-top: 10px;
-    height: 644px;
+    height: 750px;
     border-radius: 4px;
     padding: 0 5px 5px 5px;
     overflow-y: auto;

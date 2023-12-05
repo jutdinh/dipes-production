@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import TableInputUpdate from './table/table-input-update'
 import TableInputAdd from './table/table-input-add'
 import $ from 'jquery'
+import isEqual from 'lodash/isEqual';
 
 export default () => {
     const { lang, proxy, auth, functions } = useSelector(state => state);
@@ -54,7 +55,7 @@ export default () => {
     ])
     const [serverImage, setServerImage] = useState("");
     const [cases, setCases] = useState([]);
-    // console.log(cases)
+    console.log(cases)
     const [caseUpdate, setCaseUpdate] = useState({});
     const [filter, setFilter] = useState({ type: 'info' });
     const [showModal, setShowModal] = useState(false);
@@ -63,6 +64,7 @@ export default () => {
 
     const languages = langItem.toLowerCase();
     const [supportQuanlity, setSupportQuanlity] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
     const [dataMessageSent, setDataMessageSent] = useState({});
     const [dataMessage, setDataMessage] = useState([]);
     const [dataMessageMedia, setDataMessageMedia] = useState([]);
@@ -70,9 +72,9 @@ export default () => {
     const [dataMessageMerged, setDataMessageMerged] = useState([]);
     const [errorMessagesUpdate, setErrorMessagesUpdate] = useState({});
 
-    // console.log("data message", dataMessage)
-    // console.log("data media", dataMessageMedia)
-    // console.log("data merged", dataMessageMerged)
+    console.log("data message", dataMessage)
+    console.log("data media", dataMessageMedia)
+    console.log("data merged", dataMessageMerged)
     const qualityToImage = {
         "Good": "i1.png",
         "Pretty good": "i2.png",
@@ -149,6 +151,7 @@ export default () => {
     //sort
     const [sortBy, setSortBy] = useState('newest'); // Mặc định là 'newest'
     const [sortedCases, setSortedCases] = useState([]);
+    console.log(sortedCases)
     const handleSortChange = (sortType) => {
         setSortBy(sortType);
     };
@@ -227,10 +230,10 @@ export default () => {
         }
     };
     const [dataCaseDetail, setDataCaseDetail] = useState({});
-    // console.log(dataCaseDetail)
+    console.log(dataCaseDetail)
     const [selectedCaseDetail, setSelectedCaseDetail] = useState("");
     const [showPageDetail, setShowPageDetail] = useState(false);
-    // console.log(selectedCaseDetail)
+    console.log(selectedCaseDetail)
 
     const fetchData = async (caseid) => {
         try {
@@ -273,6 +276,7 @@ export default () => {
         // đặt lại giá trị support quality
         setRating(null)
         setPostRating({})
+        setDataCaseDetail({})
         // 
         fetchData(caseid);
         // console.log(caseid)
@@ -282,6 +286,8 @@ export default () => {
 
         setShowPageDetail(true)
         setShowPageAdd(false)
+
+
         callApiCaseDetail(caseid)
         // List Product informatio
 
@@ -359,22 +365,40 @@ export default () => {
         localStorage.setItem('activeTab', activeTab);
     }, [activeTab]);
 
+    // useEffect(() => {
+    //     if (dataCaseDetail.supportquanlity !== undefined) {
+    //         setSupportQuanlity(1)
+
+    //         setRating(dataCaseDetail.supportquanlity)
+
+    //         setPostRating({ content: dataCaseDetail.supportdescription });
+    //     }
+    //     else {
+    //         setSupportQuanlity(0)
+    //     }
+    // }, [dataCaseDetail, selectedCaseDetail]);
+
     useEffect(() => {
+        // Thiết lập thời gian trễ trước khi hiển thị nội dung
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 500); // Thời gian trễ 1 giây
+
         if (dataCaseDetail.supportquanlity !== undefined) {
-            setSupportQuanlity(1)
-
-            setRating(dataCaseDetail.supportquanlity)
-
+            setSupportQuanlity(1);
+            setRating(dataCaseDetail.supportquanlity);
             setPostRating({ content: dataCaseDetail.supportdescription });
+        } else {
+            setSupportQuanlity(0);
         }
-        else {
-            setSupportQuanlity(0)
-        }
-    }, [dataCaseDetail]);
+        setIsLoading(true);
 
-////// Mặc định chọn trang đầu theo sắp xếp 
+        // Dọn dẹp khi component unmount
+        return () => clearTimeout(timer);
+    }, [dataCaseDetail, selectedCaseDetail]);
+    ////// Mặc định chọn trang đầu theo sắp xếp 
     useEffect(() => {
-        if (sortedCases.length > 0) {
+        if (sortedCases.length > 0 && selectedThenRate === "") {
             const idCase = sortedCases?.[0]
             handlePageDetail(idCase)
         }
@@ -516,9 +540,9 @@ export default () => {
     const [selectedImage, setSelectedImage] = useState(null);
     // console.log(selectedImage)
     const [errorMessage, setErrorMessage] = useState('');
-    // console.log("ảnh chính", selectedImage)
+    console.log("ảnh chính", selectedImage)
     const handleImageChange = (e) => {
-        e.target.value = '';
+        // e.target.value = '';
         const file = e.target.files[0];
         if (file) {
             if (file.type.match('image.*') && file.size <= 20971520) { // 20MB limit (20*1024*1024)
@@ -542,7 +566,7 @@ export default () => {
     };
 
     const [attachMedia, setAttachMedia] = useState([]);
-    // console.log("anh phụ", attachMedia)
+    console.log("anh phụ", attachMedia)
 
     const handleAttachMedia = (e) => {
         const newFiles = Array.from(e.target.files);
@@ -580,7 +604,7 @@ export default () => {
             if (totalSize > 20971520) { // Check for the total size limit
                 Swal.fire({
                     title: lang["error"],
-                    text: "Total file size exceeds 35MB.",
+                    text: lang["File is too large"],
                     icon: "error",
                     showConfirmButton: true,
                     confirmButtonText: lang["confirm"],
@@ -589,6 +613,7 @@ export default () => {
             } else {
                 setAttachMedia(prevImages => [...prevImages, ...newMediaFiles]);
             }
+            e.target.value = null;
         });
     };
 
@@ -673,9 +698,6 @@ export default () => {
     };
 
 
-
-
-
     const submitPostCase = (e) => {
         e.preventDefault();
         const { casetitle, casetype, productname, issue } = postCase;
@@ -706,10 +728,13 @@ export default () => {
             "2PN": postCase.productname,
             "2CI": selectedImage,
             "1ID": postCase.issue,
-            "1CA": attachMedia.map(item => item.dataUrl),
+            "1CA": attachMedia.map(item => ({
+                "1FN": item.name,
+                "Base64": item.dataUrl.split('base64,').pop()
+            })),
             "11P": mappedArray
         }
-        // console.log(requestBody)
+        console.log(requestBody)
 
         fetch(`${proxy()}/api/EF381DD02A6A4FF8B087D5B6BCDE36C9`, {
             method: "POST",
@@ -873,10 +898,10 @@ export default () => {
             // console.log(totalSize / 1000000);
             // Kiểm tra nếu tổng kích thước file vượt quá 35MB (test 350000) 35 000 000
             if (totalSize > 20971520) {
-                // alert('Total file size exceeds 35MB.');
+
                 Swal.fire({
                     title: lang["error"],
-                    text: "Total file size exceeds 35MB.",
+                    text: lang["File is too large"],
                     icon: "error",
                     showConfirmButton: true,
                     confirmButtonText: lang["confirm"],
@@ -885,6 +910,7 @@ export default () => {
             } else {
                 setSelectedImagesSent(prevImages => [...prevImages, ...newMediaFiles]);
             }
+            e.target.value = null;
         });
     };
 
@@ -926,7 +952,7 @@ export default () => {
 
     const [postRating, setPostRating] = useState({});
     // console.log(postRating)
-
+    const [selectedThenRate, setSelectedThenRate] = useState("");
     const submitRate = (e) => {
         e.preventDefault();
         const requestBody = {
@@ -938,8 +964,8 @@ export default () => {
             "1SQ": rating,
             "1SQD": postRating.content
         }
+        const caseId = { id: selectedCaseDetail }
         // console.log(requestBody)
-
         fetch(`${proxy()}/api/188CD259D6E742A2B31334767298337D`, {
             method: "POST",
             headers: {
@@ -952,10 +978,31 @@ export default () => {
             .then((resp) => {
                 const { Success, content, data, status } = resp;
                 if (Success) {
-                    callApiListCase()
+                    console.log(resp)
+                    console.log(resp.Case["1CI"])
+                    setSelectedCaseDetail(selectedCaseDetail)
+                    setSelectedThenRate(selectedCaseDetail)
+                    // callApiListCase()
+                    callApiCaseDetail(caseId)
+                    // Đồng bộ trạng thái đánh giá 
+                    const updateSortedCases = (resp) => {
+                        const updatedCases = sortedCases.map(caseItem => {
+                            if (caseItem.id === resp.Case["1CI"]) {
+                                return { ...caseItem, supportquanlity: resp.Case["1SQ"] };
+                            }
+                            return caseItem;
+                        });
+                        console.log(updatedCases)
+                        // Cập nhật state cho trạng thái
+                        setSortedCases(updatedCases);
+                    };
+                    // Gọi hàm cập nhật khi nhận được phản hồi
+                    updateSortedCases(resp);
+
+
                     Swal.fire({
                         title: lang["success"],
-                        text: lang["success.update"],
+                        text: lang["success.rate"],
                         icon: "success",
                         showConfirmButton: false,
                         timer: 2000
@@ -972,60 +1019,8 @@ export default () => {
                     })
                 }
             });
-
     };
 
-    //Tin nhắn
-
-    const callApiMessage = () => {
-        const requestBody = {
-            checkCustomer: {
-                username,
-                password: storedPwdString
-            },
-            "4CI": selectedCaseDetail
-        }
-        fetch(`${proxy()}/api/35DAEDC33BF24327A03373D4D66B1D2B`, {
-            headers: {
-                Authorization: _token,
-                "content-type": "application/json"
-            },
-            method: "POST",
-            body: JSON.stringify(requestBody)
-        })
-            .then(res => res.json())
-            .then(resp => {
-                const { success, data, activated, status, content } = resp;
-                // console.log(resp)
-                setDataMessage(resp.Messages)
-                return resp;
-
-            })
-    }
-    const callApiMessageMedia = () => {
-        const requestBody = {
-            checkCustomer: {
-                username,
-                password: storedPwdString
-            },
-            "5CI": selectedCaseDetail
-        }
-        fetch(`${proxy()}/api/C859083907874976BA90AAA4D14D8E61`, {
-            headers: {
-                Authorization: _token,
-                "content-type": "application/json"
-            },
-            method: "POST",
-            body: JSON.stringify(requestBody)
-        })
-            .then(res => res.json())
-            .then(resp => {
-                const { success, data, activated, status, content } = resp;
-                // console.log(resp)
-                setDataMessageMedia(resp.Media)
-                return resp;
-            })
-    }
 
 
     const withDrawMessage = () => {
@@ -1071,33 +1066,7 @@ export default () => {
     //         });
 
     // }, [selectedCaseDetail])
-    // Goi api sau 10s
-    useEffect(() => {
-        const fetchData = () => {
-            callApiMessage();
-            callApiMessageMedia();
-            Promise.all([callApiMessage(), callApiMessageMedia()])
-                .then(() => {
-                    mergedDataMessage();
-                });
-        };
 
-        // Gọi fetchData ban đầu
-        fetchData();
-
-        // Thiết lập interval để tự động gọi lại fetchData mỗi 10 giây
-        const intervalId = setInterval(() => {
-            fetchData();
-        }, 20000); // 10 giây
-
-        // Xóa interval khi component unmount
-        return () => {
-            clearInterval(intervalId);
-        };
-    }, [selectedCaseDetail]);
-
-
-    //  Cập nhật tin nhắn 20s
 
 
     const submitMessage = (e) => {
@@ -1147,38 +1116,119 @@ export default () => {
 
     };
 
+    //Tin nhắn
+    // Goi api sau 10s
+    useEffect(() => {
+        const fetchData = async () => {
+            await Promise.all([callApiMessage(), callApiMessageMedia()]);
+            mergedDataMessage();
+        };
+
+        fetchData();
+
+        const intervalId = setInterval(fetchData, 10000); // 10 giây
+        return () => clearInterval(intervalId);
+    }, [selectedCaseDetail]); // Thêm các phụ thuộc nếu cần 
+    const [dataMessagePrev, setDataMessagePrev] = useState(null);
+    const [dataMessageMediaPrev, setDataMessageMediaPrev] = useState(null);
+    const callApiMessage = () => {
+        const requestBody = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            },
+            "4CI": selectedCaseDetail
+        }
+        return fetch(`${proxy()}/api/35DAEDC33BF24327A03373D4D66B1D2B`, {
+            headers: {
+                Authorization: _token,
+                "content-type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(requestBody)
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success, data, activated, status, content } = resp;
+                console.log(resp)
+
+                if (!isEqual(resp.Messages, dataMessagePrev)) {
+                    setDataMessage(resp.Messages);
+                    setDataMessagePrev(resp.Messages); // Lưu bản sao mới
+                }
+                return resp;
+
+            })
+    }
+    const callApiMessageMedia = () => {
+        const requestBody = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            },
+            "5CI": selectedCaseDetail
+        }
+        return fetch(`${proxy()}/api/C859083907874976BA90AAA4D14D8E61`, {
+            headers: {
+                Authorization: _token,
+                "content-type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(requestBody)
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success, data, activated, status, content } = resp;
+                // console.log(resp)
+                if (!isEqual(resp.Media, dataMessageMediaPrev)) {
+                    setDataMessageMedia(resp.Media);
+                    setDataMessageMediaPrev(resp.Media); // Lưu bản sao mới
+                }
+
+            })
+    }
+
+
+
+
+    const [dataMessageMergedPrev, setDataMessageMergedPrev] = useState(null);
     const mergedDataMessage = () => {
-        // Bước 1: Tạo một map với key là sự kết hợp của '2MI' và '5CI' và value là một mảng các media items
+        // Tạo một map với key là sự kết hợp của '2MI' và '5CI'
         const mediaMap = new Map();
         dataMessageMedia?.forEach(mediaItem => {
-            const key = mediaItem["2MI"] + "_" + mediaItem["5CI"];
+            const key = `${mediaItem["2MI"]}_${mediaItem["5CI"]}`;
             if (!mediaMap.has(key)) {
                 mediaMap.set(key, []);
             }
             mediaMap.get(key).push(mediaItem);
         });
 
-        // Bước 2: Duyệt qua mảng messages và gộp thông tin từ media
+        // Duyệt qua mảng messages và gộp thông tin từ media
         const mergedArray = dataMessage?.map(messageItem => {
-            const key = messageItem["1MI"] + "_" + messageItem["4CI"];
-            const mediaItems = mediaMap.get(key) || [];
+            const key = `${messageItem["1MI"]}_${messageItem["4CI"]}`;
             return {
-                ...messageItem, // Giữ nguyên thông tin tin nhắn
-                media: mediaItems, // Thêm thông tin media tương ứng
+                ...messageItem,
+                media: mediaMap.get(key) || [],
             };
         });
 
-        // Cập nhật state dataMessage với giá trị đã gộp
-        setDataMessageMerged(mergedArray);
+        // So sánh và cập nhật state nếu có sự thay đổi
+        if (!isEqual(mergedArray, dataMessageMergedPrev)) {
+            setDataMessageMerged(mergedArray);
+            setDataMessageMergedPrev(mergedArray);
+        }
     };
 
 
 
+
+    // useEffect(() => {
+    //     mergedDataMessage()
+    // }, [ dataMessage]); // Chỉ chạy effect này khi dataMessageMedia thay đổi
+
     useEffect(() => {
         mergedDataMessage()
-    }, [dataMessageMedia]); // Chỉ chạy effect này khi dataMessageMedia thay đổi
-
-
+    }, [dataMessage, dataMessageMedia]);
 
 
 
@@ -1188,14 +1238,21 @@ export default () => {
     const messagesEndRef = useRef(null);
 
     // Hàm cuộn đến cuối container
+    // const scrollToBottom = () => {
+    //     if (messagesEndRef.current) {
+    //         messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    //     }
+    // };
     const scrollToBottom = () => {
-        if (messagesEndRef.current) {
-            messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
-        }
+        setTimeout(() => {
+            if (messagesEndRef.current) {
+                messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+            }
+        }, 100); // Trì hoãn 100 ms hoặc thời gian phù hợp
     };
 
     // Cuộn đến cuối sau mỗi lần danh sách tin nhắn thay đổi
-    useEffect(scrollToBottom, [dataMessageMerged, activeTab]);
+    useEffect(scrollToBottom, [dataMessageMerged, dataMessage, dataMessageMedia, activeTab]);
 
 
     const [contextMenu, setContextMenu] = useState({ visible: false, position: { x: 0, y: 0 }, item: null });
@@ -1376,9 +1433,36 @@ export default () => {
                                         <div className="d-flex">
                                             <p className="italic" style={{ marginBottom: 0 }}>{lang["latest support on"]} {langItemCheck === "Vi" ? functions.translateDateToVietnamese(functions.formatDateCase(item.date)) : functions.formatDateCase(item.date)} {lang["by"]}<span className="italic-non font-weight-bold-black">{item.customer}</span> </p>
                                             <div className="ml-auto">
-                                                {item.supportquanlity !== undefined &&
-                                                    <img width={24} src={`/images/icon/${qualityToImage[item.supportquanlity]}`} alt="ex" />
-                                                }
+
+
+                                                <div>
+                                                    {(!functions.isEmpty(dataCaseDetail) && dataCaseDetail.id === item.id && dataCaseDetail.supportquanlity !== undefined) ? (
+                                                        <img
+                                                            width={24}
+                                                            src={`/images/icon/${qualityToImage[dataCaseDetail.supportquanlity]}`}
+                                                            alt="ex"
+                                                        />
+                                                    ) : (
+                                                        item.supportquanlity !== undefined && (
+                                                            <img
+                                                                width={24}
+                                                                src={`/images/icon/${qualityToImage[item.supportquanlity]}`}
+                                                                alt="ex"
+                                                            />
+                                                        )
+                                                    )}
+
+                                                    {/* {(
+                                                        item.supportquanlity !== undefined && (
+                                                            <img
+                                                                width={24}
+                                                                src={`/images/icon/${qualityToImage[item.supportquanlity]}`}
+                                                                alt="ex"
+                                                            />
+                                                        )
+                                                    )} */}
+                                                </div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -1638,7 +1722,9 @@ export default () => {
                                                                                     }}
                                                                                     src={serverImage + dataCaseDetail.imgcase}
                                                                                     onClick={() => openModalPreview({ type: "imageDetail", url: dataCaseDetail.imgcase })}
-                                                                                    data-toggle="modal" data-target="#previewMedia" /> :
+                                                                                    data-toggle="modal" data-target="#previewMedia"
+                                                                                    title={lang["Click to preview"]} />
+                                                                                :
                                                                                 <span>{lang["no image case"]}</span>
 
                                                                             }
@@ -1661,23 +1747,20 @@ export default () => {
                                                                                         <div className="selected-images-container-add">
                                                                                             {dataCaseDetail?.attachMedia?.map((media, index) => (
                                                                                                 <div key={index} className="selected-image-wrapper-add">
-                                                                                                    {media["28T"] === 'image' && (
+                                                                                                    {functions.isImageFormat(media["1FN"]) && (
                                                                                                         <img src={serverImage + media["6U"]} alt={`Selected ${index}`}
                                                                                                             className="selected-image-add pointer" data-toggle="modal" data-target="#previewMedia"
                                                                                                             onClick={() => openModalPreview({ type: "attachImageDetail", url: serverImage + media["6U"] })}
-                                                                                                            title="Click to preview" />
+                                                                                                            title={lang["Click to preview"]} />
                                                                                                     )}
-                                                                                                    {media["28T"] === 'video' && (
+                                                                                                    {functions.isVideoFormat(media["1FN"]) && (
                                                                                                         <div>
-
                                                                                                             <video autoplay controls={false} src={serverImage + media["6U"]}
                                                                                                                 className="selected-image-add pointer"
                                                                                                                 data-toggle="modal" data-target="#previewMedia"
                                                                                                                 onClick={() => openModalPreview({ type: "attachVideoDetail", url: serverImage + media["6U"] })}
-                                                                                                                title="Click to preview"   >
-
+                                                                                                                title={lang["Click to preview"]}   >
                                                                                                             </video>
-                                                                                                            {/* <div class="video-duration"> {media.name}</div> */}
                                                                                                             <div class="video-duration">Video</div>
                                                                                                         </div>
                                                                                                     )}
@@ -1836,10 +1919,9 @@ export default () => {
                                                                                         if (isSentByUser) {
                                                                                             handleContextMenu(event, item);
                                                                                         }
-                                                                                    }}
-                                                                                >
+                                                                                    }}>
                                                                                     <span className="message-image-user">{item["1PB"] || "Unknown"}</span>
-                                                                                    <p >
+                                                                                    <p style={{ margin: 0 }}>
                                                                                         {shouldTruncate ? (
                                                                                             <>
                                                                                                 {truncatedText}
@@ -1857,7 +1939,7 @@ export default () => {
                                                                                                         data-toggle="modal" data-target="#previewMedia"
                                                                                                         onClick={() => openModalPreview({ type: "imageMessageMedia", url: serverImage + media["5U"] })}
                                                                                                         alt="Media content"
-                                                                                                        title="Click to preview" />
+                                                                                                        title={lang["Click to preview"]} />
                                                                                                 ) : (
                                                                                                     <div className="video-container">
                                                                                                         <video className="message-image pointer" controls={false} src={serverImage + media["5U"]} type="video/mp4"
@@ -1867,7 +1949,7 @@ export default () => {
 
                                                                                                         <div className="video-overlay pointer" data-toggle="modal" data-target="#previewMedia"
                                                                                                             onClick={() => openModalPreview({ type: "videoMessageMedia", url: serverImage + media["5U"] })}
-                                                                                                            title="Click to preview"></div>
+                                                                                                            title={lang["Click to preview"]}></div>
                                                                                                         <div className="video-icon play-icon">
                                                                                                             < FontAwesomeIcon icon={faCirclePlay} className="size-16  color_icon_plus" />
                                                                                                         </div>
@@ -1941,64 +2023,86 @@ export default () => {
                                                 }
                                                 {activeTab === 'support' &&
                                                     <div class="card-block">
-                                                        {dataCaseDetail.supportquanlity === undefined && supportQuanlity === 0 &&
-                                                            <div class="col-md-12">
-                                                                <div class="info-case align-center-case mt-2">
-                                                                    <span>{lang["You have not rated the quality of support"]}</span>
-                                                                    <button class="btn btn-primary" onClick={() => { setSupportQuanlity(1) }}>{lang["rate now"]}</button>
+
+                                                        {isLoading ? (
+                                                            // Hiển thị hình ảnh loading
+                                                            <div class="row">
+                                                                <div class="mt-4 col-lg-12 align-center">
+                                                                    <img
+                                                                        width={32}
+                                                                        className="mb-1"
+                                                                        src="/images/icon/load.gif"
+                                                                        alt="Loading..."
+                                                                    />
                                                                 </div>
                                                             </div>
-                                                        }
-                                                        {(dataCaseDetail.supportquanlity !== undefined || supportQuanlity === 1) &&
-                                                            <>
-                                                                <h5 class="mt-1 mb-3">{lang["APPRICIATE THE SERVICE QUALITY"]}</h5>
-                                                                <div class="row">
-                                                                    <div class="form-group col-lg-12 align-center">
-                                                                        <div class="form-group col-lg-12 align-center">
-                                                                            <div className={`icon-rate ${rating === 'No Reply' ? 'icon-rate-selected' : ''}`} data-text="No Reply" onClick={() => handleRatingClick('No Reply')}>
-                                                                                <img class="icon-rate" style={{ filter: rating === 'No Reply' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i5.png" />
-                                                                                <span class="tooltip-text5">No Reply</span>
-                                                                            </div>
-                                                                            <div className={`icon-rate ${rating === 'Bad' ? 'icon-rate-selected' : ''}`} data-text="Bad" onClick={() => handleRatingClick('Bad')}>
-                                                                                <img class="icon-rate" style={{ filter: rating === 'Bad' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i4.png" />
-                                                                                <span class="tooltip-text4">Bad</span>
-                                                                            </div>
+                                                        ) : (
+                                                            // Nội dung chính
+                                                            <div>
+                                                                {dataCaseDetail.supportquanlity === undefined && supportQuanlity === 0 &&
+                                                                    <div class="col-md-12">
+                                                                        <div class="info-case align-center-case mt-2">
+                                                                            <span>{lang["You have not rated the quality of support"]}</span>
+                                                                            <button class="btn btn-primary" onClick={() => { setSupportQuanlity(1) }}>{lang["rate now"]}</button>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                                {(dataCaseDetail.supportquanlity !== undefined || supportQuanlity === 1) &&
+                                                                    <>
+                                                                        <h5 class="mt-1 mb-3">{lang["APPRICIATE THE SERVICE QUALITY"]}</h5>
+                                                                        <div class="row">
+                                                                            <div class="form-group col-lg-12 align-center">
+                                                                                <div class="form-group col-lg-12 align-center">
+                                                                                    <div className={`icon-rate ${rating === 'No Reply' ? 'icon-rate-selected' : ''}`} data-text="No Reply" onClick={() => handleRatingClick('No Reply')}>
+                                                                                        <img class="icon-rate" style={{ filter: rating === 'No Reply' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i5.png" />
+                                                                                        <span class="tooltip-text5">No Reply</span>
+                                                                                    </div>
+                                                                                    <div className={`icon-rate ${rating === 'Bad' ? 'icon-rate-selected' : ''}`} data-text="Bad" onClick={() => handleRatingClick('Bad')}>
+                                                                                        <img class="icon-rate" style={{ filter: rating === 'Bad' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i4.png" />
+                                                                                        <span class="tooltip-text4">Bad</span>
+                                                                                    </div>
 
-                                                                            <div className={`icon-rate ${rating === 'Medium' ? 'icon-rate-selected' : ''}`} data-text="Medium" onClick={() => handleRatingClick('Medium')}>
-                                                                                <img class="icon-rate" style={{ filter: rating === 'Medium' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i3.png" />
-                                                                                <span class="tooltip-text3">Medium</span>
+                                                                                    <div className={`icon-rate ${rating === 'Medium' ? 'icon-rate-selected' : ''}`} data-text="Medium" onClick={() => handleRatingClick('Medium')}>
+                                                                                        <img class="icon-rate" style={{ filter: rating === 'Medium' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i3.png" />
+                                                                                        <span class="tooltip-text3">Medium</span>
+                                                                                    </div>
+
+
+                                                                                    <div className={`icon-rate ${rating === 'Pretty good' ? 'icon-rate-selected' : ''}`} data-text="Pretty good" onClick={() => handleRatingClick('Pretty good')}>
+                                                                                        <img class="icon-rate" style={{ filter: rating === 'Pretty good' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i2.png" />
+                                                                                        <span class="tooltip-text2">Pretty good</span>
+                                                                                    </div>
+
+                                                                                    <div className={`icon-rate ${rating === 'Good' ? 'icon-rate-selected' : ''}`} data-text="Good" onClick={() => handleRatingClick('Good')}>
+                                                                                        <img className="icon-rate" style={{ filter: rating === 'Good' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i1.png" />
+                                                                                        <span className="tooltip-text1">Good</span>
+                                                                                    </div>
+
+                                                                                </div>
                                                                             </div>
-
-
-                                                                            <div className={`icon-rate ${rating === 'Pretty good' ? 'icon-rate-selected' : ''}`} data-text="Pretty good" onClick={() => handleRatingClick('Pretty good')}>
-                                                                                <img class="icon-rate" style={{ filter: rating === 'Pretty good' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i2.png" />
-                                                                                <span class="tooltip-text2">Pretty good</span>
-                                                                            </div>
-
-                                                                            <div className={`icon-rate ${rating === 'Good' ? 'icon-rate-selected' : ''}`} data-text="Good" onClick={() => handleRatingClick('Good')}>
-                                                                                <img className="icon-rate" style={{ filter: rating === 'Good' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i1.png" />
-                                                                                <span className="tooltip-text1">Good</span>
+                                                                            <div class="form-group col-lg-12">
+                                                                                <textarea class="form-control" value={postRating.content} onChange={
+                                                                                    (e) => { setPostRating({ ...postRating, content: e.target.value }) }}
+                                                                                    rows={10}
+                                                                                    style={{ resize: 'none' }}
+                                                                                    placeholder={lang["Let us know how you feel"]}></textarea>
                                                                             </div>
 
                                                                         </div>
-                                                                    </div>
-                                                                    <div class="form-group col-lg-12">
-                                                                        <textarea class="form-control" value={postRating.content} onChange={
-                                                                            (e) => { setPostRating({ ...postRating, content: e.target.value }) }}
-                                                                            rows={10}
-                                                                            style={{ resize: 'none' }}
-                                                                            placeholder={lang["Let us know how you feel"]}></textarea>
-                                                                    </div>
+                                                                        <div class="form-group col-md-12">
+                                                                            <div class="d-flex">
+                                                                                <p style={{ marginBottom: 0 }}> {lang["Last updated by"]} <span className="italic-non font-weight-bold-black">{dataCaseDetail.customer}</span> </p>
+                                                                                <button type="button" onClick={submitRate} data-dismiss="modal" class="btn mt-0 btn-primary ml-auto modal-button-review">{lang["Submit Review"]}</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </>
+                                                                }
+                                                            </div>
+                                                        )}
 
-                                                                </div>
-                                                                <div class="form-group col-md-12">
-                                                                    <div class="d-flex">
-                                                                        <p style={{ marginBottom: 0 }}> {lang["Last updated by"]} {lang["by"]}<span className="italic-non font-weight-bold-black">{dataCaseDetail.customer}</span> </p>
-                                                                        <button type="button" onClick={submitRate} data-dismiss="modal" class="btn mt-0 btn-primary ml-auto modal-button-review">{lang["Submit Review"]}</button>
-                                                                    </div>
-                                                                </div>
-                                                            </>
-                                                        }
+
+
+
                                                     </div>
                                                 }
                                             </div>

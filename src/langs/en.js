@@ -412,7 +412,7 @@ export default {
 
 
 
-    "Submit Review": "Submit Review",
+    "Submit Review": "Submit",
     "Case title, case description, or anything": "Case title, case description, or anything",
     "Show more": "Show more",
     "send message": "Send Message",
@@ -433,8 +433,22 @@ export default {
     "No attachmen": "No attachment",
     "Choose Image": "Choose Image",
     "no image case": "No image case",
-    "No data avasilable": "No data avasilable"
+    "No data avasilable": "No data available",
+    "success.rate": "Successfully submitted the review",
+    "File is too large": "Total file size exceeds 20MB",
 
+    "controller error": "Controller error:",
+    "printhead error": "Printhead error ",
+    "printer error": "Printer error:",
+
+    "ERROR0": "None Error",
+    "ERROR1": "Device info not found",
+    "ERROR2": "Invalid UUID",
+    "ERROR3": "Data empty",
+    "Unknown error": "Unknown error",
+    "List of Errors": "List of Errors",
+    "Please check the activation file": "Please check the activation file",
+    "Click to preview": "Click to preview"
 
 
 }
