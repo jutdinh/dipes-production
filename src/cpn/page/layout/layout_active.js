@@ -48,8 +48,8 @@ export default (props) => {
     const [apiDataName, setApiDataName] = useState([])
     const [data, setData] = useState({});
     const [error, setError] = useState([]);
-    console.log(error)
-    console.log(data)
+    // console.log(error)
+    // console.log(data)
     const [dataFile, setDataFile] = useState({})
 
     const [reason, setReason] = useState("")
@@ -179,7 +179,7 @@ export default (props) => {
     
 
     let errorList = checkErrors(data, error);
-    console.log(errorList)
+    // console.log(errorList)
     function isNoError(errorList) {
         // Kiểm tra nếu mảng rỗng hoặc tất cả các lỗi là 'ERROR0'
         return errorList.length === 0 || errorList.every(error => error === 'ERROR0');
@@ -498,7 +498,7 @@ export default (props) => {
             .then(res => {
 
                 const { data, success, error, content } = res;
-                console.log(res)
+                // console.log(res)
                 if (success) {
                     if (data && Object.keys(data).length > 0) {
                         setData(data)

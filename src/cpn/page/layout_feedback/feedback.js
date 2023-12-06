@@ -10,7 +10,8 @@ import TableInputUpdate from './table/table-input-update'
 import TableInputAdd from './table/table-input-add'
 import $ from 'jquery'
 import isEqual from 'lodash/isEqual';
-
+import ReactImageMagnify from 'react-image-magnify';
+import Zoom from "./table/image-zoom"
 export default () => {
     const { lang, proxy, auth, functions } = useSelector(state => state);
 
@@ -55,7 +56,7 @@ export default () => {
     ])
     const [serverImage, setServerImage] = useState("");
     const [cases, setCases] = useState([]);
-    console.log(cases)
+    // console.log(cases)
     const [caseUpdate, setCaseUpdate] = useState({});
     const [filter, setFilter] = useState({ type: 'info' });
     const [showModal, setShowModal] = useState(false);
@@ -75,6 +76,7 @@ export default () => {
     console.log("data message", dataMessage)
     console.log("data media", dataMessageMedia)
     console.log("data merged", dataMessageMerged)
+
     const qualityToImage = {
         "Good": "i1.png",
         "Pretty good": "i2.png",
@@ -102,7 +104,7 @@ export default () => {
         return item.col1 || item.col2 || item.col3 || item.col4 || item.col5;
     });
 
-
+    // console.log(caseUpdate)
 
     const mappedArray = filteredTableData.map(item => ({
         "2SN": item.col1,
@@ -151,7 +153,7 @@ export default () => {
     //sort
     const [sortBy, setSortBy] = useState('newest'); // Mặc định là 'newest'
     const [sortedCases, setSortedCases] = useState([]);
-    console.log(sortedCases)
+    // console.log(sortedCases)
     const handleSortChange = (sortType) => {
         setSortBy(sortType);
     };
@@ -230,10 +232,10 @@ export default () => {
         }
     };
     const [dataCaseDetail, setDataCaseDetail] = useState({});
-    console.log(dataCaseDetail)
+    // console.log(dataCaseDetail)
     const [selectedCaseDetail, setSelectedCaseDetail] = useState("");
     const [showPageDetail, setShowPageDetail] = useState(false);
-    console.log(selectedCaseDetail)
+    // console.log(selectedCaseDetail)
 
     const fetchData = async (caseid) => {
         try {
@@ -287,6 +289,8 @@ export default () => {
         setShowPageDetail(true)
         setShowPageAdd(false)
 
+        callApiMessage()
+        callApiMessageMedia()
 
         callApiCaseDetail(caseid)
         // List Product informatio
@@ -540,21 +544,59 @@ export default () => {
     const [selectedImage, setSelectedImage] = useState(null);
     // console.log(selectedImage)
     const [errorMessage, setErrorMessage] = useState('');
-    console.log("ảnh chính", selectedImage)
+    // console.log("ảnh chính", selectedImage)
+    // const handleImageChange = (e) => {
+    //     // e.target.value = '';
+    //     const file = e.target.files[0];
+    //     if (file) {
+    //         if (file.type.match('image.*') && file.size <= (5*1024*1024)) { // 20MB limit (20*1024*1024)
+    //             const reader = new FileReader();
+    //             reader.onload = (e) => {
+    //                 setSelectedImage(e.target.result);
+    //                 setErrorMessage('');
+    //                 e.target.value = '';
+    //             };
+    //             reader.readAsDataURL(file);
+    //         } else {
+    //             setErrorMessage('File is too large. Please upload an image less than 5MB.');
+    //             setSelectedImage(null);
+    //         }
+    //     }
+    // };
     const handleImageChange = (e) => {
-        // e.target.value = '';
         const file = e.target.files[0];
         if (file) {
-            if (file.type.match('image.*') && file.size <= 20971520) { // 20MB limit (20*1024*1024)
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    setSelectedImage(e.target.result);
-                    setErrorMessage('');
-                    e.target.value = '';
-                };
-                reader.readAsDataURL(file);
+            if (file.type.match('image.*')) {
+                // console.log("Kích thước ban đầu (bytes):", (file.size / 1024))
+                if (file.size <= 0.1 * 1024 * 1024) {
+                    // Nếu kích thước file nhỏ hơn 5MB, đọc file như bình thường
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        setSelectedImage(e.target.result);
+                        setErrorMessage('');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    // Sử dụng hàm
+
+                    // Resize nếu file lớn hơn 5MB
+                    functions.resizeImageToFit(file, 1024, 768, 2000, (resizedBlob, isResized) => {
+                        const reader = new FileReader();
+                        // console.log("Kích thước sau khi resize (bytes):", (resizedBlob.size/1024));
+                        // if (isResized) {
+                        //     console.log("Ảnh đã được resize");
+                        // } else {
+                        //     console.log("Ảnh giữ nguyên kích thước gốc");
+                        // }
+                        reader.onload = (e) => {
+                            setSelectedImage(e.target.result);
+                            setErrorMessage('');
+                        };
+                        reader.readAsDataURL(resizedBlob);
+                    });
+                }
             } else {
-                setErrorMessage('File is too large. Please upload an image less than 25MB.');
+                setErrorMessage('Please upload an image file.');
                 setSelectedImage(null);
             }
         }
@@ -566,7 +608,7 @@ export default () => {
     };
 
     const [attachMedia, setAttachMedia] = useState([]);
-    console.log("anh phụ", attachMedia)
+    // console.log("anh phụ", attachMedia)
 
     const handleAttachMedia = (e) => {
         const newFiles = Array.from(e.target.files);
@@ -574,11 +616,13 @@ export default () => {
         const newMediaPromises = newFiles.map(file => {
             return new Promise((resolve) => {
                 const reader = new FileReader();
+
                 reader.onload = (readerEvent) => {
                     const mediaObject = {
                         name: file.name,
                         size: file.size,
                         url: URL.createObjectURL(file),
+
                         type: file.type.startsWith('video/') ? 'video' : 'image',
                         dataUrl: readerEvent.target.result, // Base64 string
                     };
@@ -599,9 +643,10 @@ export default () => {
         });
 
         Promise.all(newMediaPromises).then(newMediaFiles => {
-            const totalSize = calculateTotalSize(newMediaFiles);
-
-            if (totalSize > 20971520) { // Check for the total size limit
+            // console.log(newMediaFiles)
+            const totalSize = calculateTotalSizeAttach(newMediaFiles);
+            // console.log("Dung lượng tổng", totalSize / 1024)
+            if (totalSize > 20 * 1024 * 1024) { // Check for the total size limit
                 Swal.fire({
                     title: lang["error"],
                     text: lang["File is too large"],
@@ -617,7 +662,9 @@ export default () => {
         });
     };
 
-    const removeAttachMedia = (media) => {
+    const removeAttachMedia = (e, media) => {
+        e.preventDefault();
+
         const updatedMediaList = attachMedia.filter(item => item.url !== media.url);
         setAttachMedia(updatedMediaList)
     };
@@ -632,17 +679,17 @@ export default () => {
 
     const removeAttachMediaUpdate = (e, media) => {
         e.preventDefault();
-        // console.log(media);
-
+        // console.log(media)
         // Tạo một bản sao của caseUpdate
         const updatedCaseUpdate = { ...caseUpdate };
 
         // Lọc ra các phần tử khỏi mảng attachMedia
-        updatedCaseUpdate.attachMedia = updatedCaseUpdate.attachMedia.filter(item => item["6U"] !== media["6U"]);
+        updatedCaseUpdate.attachMedia = updatedCaseUpdate.attachMedia.filter(item => item["1II"] !== media["1II"]);
 
         // Cập nhật caseUpdate
         setCaseUpdate(updatedCaseUpdate);
     };
+
 
     const [dataPreviewMedia, setDataPreviewMedia] = useState();
     const openModalPreview = (media) => {
@@ -703,13 +750,13 @@ export default () => {
         const { casetitle, casetype, productname, issue } = postCase;
         const errors = {};
         if (!casetitle) {
-            errors.casetitle = "Lỗi casetile";
+            errors.casetitle = lang["error.input"];
         }
         if (!productname) {
-            errors.productname = "Lỗi Productname";
+            errors.productname = lang["error.input"];
         }
         if (!issue) {
-            errors.issue = "Lỗi mô tả";
+            errors.issue = lang["error.input"];
         }
 
         if (Object.keys(errors).length > 0) {
@@ -734,7 +781,7 @@ export default () => {
             })),
             "11P": mappedArray
         }
-        console.log(requestBody)
+        // console.log(requestBody)
 
         fetch(`${proxy()}/api/EF381DD02A6A4FF8B087D5B6BCDE36C9`, {
             method: "POST",
@@ -783,13 +830,13 @@ export default () => {
         const { title, productname, issue } = caseUpdate;
         const errors = {};
         if (!title) {
-            errors.title = "Lỗi casetile";
+            errors.title = lang["error.input"];
         }
         if (!productname) {
-            errors.productname = "Lỗi Productname";
+            errors.productname = lang["error.input"];
         }
         if (!issue) {
-            errors.issue = "Lỗi mô tả";
+            errors.issue = lang["error.input"];
         }
 
 
@@ -797,8 +844,6 @@ export default () => {
             setErrorMessagesUpdate(errors);
             return;
         }
-
-
         const requestBody = {
             checkCustomer: {
                 username,
@@ -810,10 +855,18 @@ export default () => {
             "2PN": caseUpdate.productname,
             "2CI": selectedImage, //selectedImage caseUpdate.caseimage
             "1ID": caseUpdate.issue,
-            "1CA": attachMedia.map(item => ({ Base64: item.dataUrl })).concat(caseUpdate.attachMedia.map(item => item))
+            "1CA": attachMedia.map(item => ({
+                "1II": null,
+                "1FN": item.name,
+                "Base64": item.dataUrl.split('base64,').pop()
+            })).concat(caseUpdate.attachMedia.map(item => ({
+                "1II": item["1II"],
+                "1FN": item["1FN"],
+                "Base64": null
+            })
+            )),
         }
-        // console.log(requestBody)
-
+        // console.log("data body", requestBody)
         fetch(`${proxy()}/api/56ABDE49FFD24A09B89174526314F4B8`, {
             method: "POST",
             headers: {
@@ -836,6 +889,7 @@ export default () => {
                     $('#closeModalUpdateCase').click();
                     callApiListCase()
                     callApiCaseDetail(caseUpdate)
+                    setAttachMedia([])
                 } else {
                     Swal.fire({
                         title: lang["faild"],
@@ -857,6 +911,11 @@ export default () => {
     const calculateTotalSize = (additionalFiles) => {
         return selectedImagesSent.reduce((acc, file) => acc + file.size, 0) + additionalFiles.reduce((acc, file) => acc + file.size, 0);
     };
+
+    const calculateTotalSizeAttach = (additionalFiles) => {
+        return attachMedia.reduce((acc, file) => acc + file.size, 0) + additionalFiles.reduce((acc, file) => acc + file.size, 0);
+    };
+
     const toBase64 = file => new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -894,6 +953,7 @@ export default () => {
         });
 
         Promise.all(newMediaPromises).then(newMediaFiles => {
+            // console.log(newMediaFiles)
             const totalSize = calculateTotalSize(newMediaFiles);
             // console.log(totalSize / 1000000);
             // Kiểm tra nếu tổng kích thước file vượt quá 35MB (test 350000) 35 000 000
@@ -978,8 +1038,8 @@ export default () => {
             .then((resp) => {
                 const { Success, content, data, status } = resp;
                 if (Success) {
-                    console.log(resp)
-                    console.log(resp.Case["1CI"])
+                    // console.log(resp)
+                    // console.log(resp.Case["1CI"])
                     setSelectedCaseDetail(selectedCaseDetail)
                     setSelectedThenRate(selectedCaseDetail)
                     // callApiListCase()
@@ -992,13 +1052,12 @@ export default () => {
                             }
                             return caseItem;
                         });
-                        console.log(updatedCases)
+                        // console.log(updatedCases)
                         // Cập nhật state cho trạng thái
                         setSortedCases(updatedCases);
                     };
                     // Gọi hàm cập nhật khi nhận được phản hồi
                     updateSortedCases(resp);
-
 
                     Swal.fire({
                         title: lang["success"],
@@ -1020,8 +1079,6 @@ export default () => {
                 }
             });
     };
-
-
 
     const withDrawMessage = () => {
         const requestBody = {
@@ -1056,7 +1113,6 @@ export default () => {
             })
     }
 
-
     // useEffect(() => {
     //     callApiMessage()
     //     callApiMessageMedia()
@@ -1067,8 +1123,6 @@ export default () => {
 
     // }, [selectedCaseDetail])
 
-
-
     const submitMessage = (e) => {
         e.preventDefault();
         const requestBody = {
@@ -1078,7 +1132,10 @@ export default () => {
             },
             "4CI": selectedCaseDetail,
             "1MC": dataMessageSent.message,
-            "1MM": selectedImagesSent.map(item => ({ "9MT": item.type, "5U": item.base64 }))
+            "1MM": selectedImagesSent.map(item => ({
+                "2FN": item.name,
+                "5U": item.base64.split('base64,').pop()
+            }))
         }
         // console.log(requestBody)
         if (/\S/.test(dataMessageSent.message || dataMessageSent.length > 0)) {
@@ -1129,6 +1186,7 @@ export default () => {
         const intervalId = setInterval(fetchData, 10000); // 10 giây
         return () => clearInterval(intervalId);
     }, [selectedCaseDetail]); // Thêm các phụ thuộc nếu cần 
+
     const [dataMessagePrev, setDataMessagePrev] = useState(null);
     const [dataMessageMediaPrev, setDataMessageMediaPrev] = useState(null);
     const callApiMessage = () => {
@@ -1150,7 +1208,7 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                console.log(resp)
+                // console.log(resp)
 
                 if (!isEqual(resp.Messages, dataMessagePrev)) {
                     setDataMessage(resp.Messages);
@@ -1184,7 +1242,7 @@ export default () => {
                     setDataMessageMedia(resp.Media);
                     setDataMessageMediaPrev(resp.Media); // Lưu bản sao mới
                 }
-
+                return resp;
             })
     }
 
@@ -1193,27 +1251,38 @@ export default () => {
 
     const [dataMessageMergedPrev, setDataMessageMergedPrev] = useState(null);
     const mergedDataMessage = () => {
-        // Tạo một map với key là sự kết hợp của '2MI' và '5CI'
-        const mediaMap = new Map();
-        dataMessageMedia?.forEach(mediaItem => {
-            const key = `${mediaItem["2MI"]}_${mediaItem["5CI"]}`;
-            if (!mediaMap.has(key)) {
-                mediaMap.set(key, []);
-            }
-            mediaMap.get(key).push(mediaItem);
+        if (!dataMessage || !dataMessageMedia) {
+            // Xử lý trường hợp dữ liệu không tồn tại
+            return;
+        }
+
+        // Sử dụng Set để lưu trữ khóa duy nhất
+        const uniqueKeys = new Set();
+
+        // Tìm các khóa duy nhất từ dataMessage
+        dataMessage.forEach(messageItem => {
+            const key = `${messageItem["1MI"]}_${messageItem["4CI"]}`;
+            uniqueKeys.add(key);
         });
 
-        // Duyệt qua mảng messages và gộp thông tin từ media
-        const mergedArray = dataMessage?.map(messageItem => {
-            const key = `${messageItem["1MI"]}_${messageItem["4CI"]}`;
+        // Tạo mảng gộp
+        const mergedArray = Array.from(uniqueKeys).map(key => {
+            const [key1MI, key4CI] = key.split("_");
+
+            // Lọc dữ liệu từ dataMessage
+            const messageItem = dataMessage.find(item => item["1MI"] === key1MI && item["4CI"] === key4CI);
+
+            // Lọc dữ liệu từ dataMessageMedia
+            const mediaItems = dataMessageMedia.filter(mediaItem => mediaItem["2MI"] === key1MI && mediaItem["5CI"] === key4CI);
+
             return {
                 ...messageItem,
-                media: mediaMap.get(key) || [],
+                media: mediaItems || [],
             };
         });
 
         // So sánh và cập nhật state nếu có sự thay đổi
-        if (!isEqual(mergedArray, dataMessageMergedPrev)) {
+        if (mergedArray?.length !== dataMessageMergedPrev?.length) {
             setDataMessageMerged(mergedArray);
             setDataMessageMergedPrev(mergedArray);
         }
@@ -1252,7 +1321,7 @@ export default () => {
     };
 
     // Cuộn đến cuối sau mỗi lần danh sách tin nhắn thay đổi
-    useEffect(scrollToBottom, [dataMessageMerged, dataMessage, dataMessageMedia, activeTab]);
+    useEffect(scrollToBottom, [dataMessageMerged, activeTab]);
 
 
     const [contextMenu, setContextMenu] = useState({ visible: false, position: { x: 0, y: 0 }, item: null });
@@ -1361,7 +1430,6 @@ export default () => {
                     </div>
                     <div class="row">
                         <div id="portal-root"></div>
-
                         {/* List Case */}
                         <div class="col-md-5" style={{ paddingLeft: "5px", paddingRight: "5px" }}>
                             <div class="search-container">
@@ -1474,7 +1542,7 @@ export default () => {
                             (
                                 < div class="col-md-7" style={{ paddingLeft: "5px", paddingRight: "5px" }}>
                                     <div class="white_shd full margin_bottom_30">
-                                        <div class="full graph_head_cus">
+                                        <div class="full graph_head_cus min-h-58">
                                             <div class="heading1 margin_0 d-flex">
                                                 <h4 class="margin-bottom-0">{lang["new case"]} </h4>
                                                 <FontAwesomeIcon icon={faPaperPlane} onClick={submitPostCase} className={`size-24 ml-auto icon-add-production pointer `} title={lang["submit case"]} />
@@ -1488,7 +1556,7 @@ export default () => {
                                                         <div style={{ display: 'flex', alignItems: 'center' }}>
                                                             <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>{lang["case title"]}<span className='red_star'>*</span></h5>
                                                             {errorMessagesadd.casetitle && (
-                                                                <span class="error-message mb-1">{errorMessagesadd.casetitle}</span>
+                                                                <span class="error-message mb-2">{errorMessagesadd.casetitle}</span>
                                                             )}
                                                         </div>
 
@@ -1525,7 +1593,7 @@ export default () => {
                                                     <div style={{ display: 'flex', alignItems: 'center' }}>
                                                         <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>{lang["product name"]}<span className='red_star'>*</span></h5>
                                                         {errorMessagesadd.productname && (
-                                                            <span class="error-message mb-1">{errorMessagesadd.productname}</span>
+                                                            <span class="error-message mb-2">{errorMessagesadd.productname}</span>
                                                         )}
                                                     </div>
                                                     <input type="text" class="form-control" value={postCase.productname}
@@ -1545,7 +1613,7 @@ export default () => {
                                                     <div style={{ display: 'flex', alignItems: 'center' }}>
                                                         <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>{lang["ISSUE DESCRIPTION"]}<span className='red_star'>*</span></h5>
                                                         {errorMessagesadd.issue && (
-                                                            <span class="error-message mb-1">{errorMessagesadd.issue}</span>
+                                                            <span class="error-message mb-2">{errorMessagesadd.issue}</span>
                                                         )}
                                                     </div>
                                                     <textarea class="form-control" rows={6} value={postCase.issue} onChange={(e) => {
@@ -1590,7 +1658,7 @@ export default () => {
                                                                         onClick={() => document.getElementById('file-upload').click()}
                                                                         title={lang["Click to change image"]}
                                                                     />
-                                                                    <button onClick={() => removeImageCase()} className="remove-image-case">X</button>
+                                                                    <button onClick={(e) => removeImageCase(e)} className="remove-image-case">X</button>
                                                                 </>
                                                             )}
                                                         </div>
@@ -1628,7 +1696,7 @@ export default () => {
                                                                                             <div class="video-duration">Video</div>
                                                                                         </div>
                                                                                     )}
-                                                                                    <button onClick={() => removeAttachMedia(media)} className="remove-image">X</button>
+                                                                                    <button onClick={(e) => removeAttachMedia(e, media)} className="remove-image">X</button>
                                                                                 </div>
                                                                             ))}
                                                                         </div>
@@ -1666,7 +1734,7 @@ export default () => {
                             <div class="col-md-7" style={{ paddingLeft: "5px", paddingRight: "5px" }}>
 
                                 <div class="white_shd full margin_bottom_30">
-                                    <div class="full graph_head_cus">
+                                    <div class="full graph_head_cus min-h-58">
                                         <div class="heading1 margin_0 case-detail">
                                             <h4 class="ellipsis-header-case" title={dataCaseDetail.title}>{dataCaseDetail.title}</h4>
                                             <div class="d-flex ">
@@ -1698,7 +1766,6 @@ export default () => {
 
                                                 </div>
                                             </div>
-
                                             <div>
                                                 {activeTab === 'general' &&
                                                     <div>  <div class="card-block">
@@ -1706,10 +1773,8 @@ export default () => {
                                                             <div class="info-case">
                                                                 <h5 class="mt-1">{lang["ISSUE DESCRIPTION"]}</h5>
                                                                 <span>{dataCaseDetail.issue}</span>
-
                                                                 <div class="row field-case">
                                                                     <div className="col-md-4">
-
                                                                         <div className="upload-container-case">
                                                                             {dataCaseDetail.imgcase !== null ?
                                                                                 <img class=""
@@ -1724,11 +1789,10 @@ export default () => {
                                                                                     onClick={() => openModalPreview({ type: "imageDetail", url: dataCaseDetail.imgcase })}
                                                                                     data-toggle="modal" data-target="#previewMedia"
                                                                                     title={lang["Click to preview"]} />
+
                                                                                 :
                                                                                 <span>{lang["no image case"]}</span>
-
                                                                             }
-
                                                                         </div>
                                                                     </div>
                                                                     {/* <div class="col-md-8">
@@ -1737,7 +1801,6 @@ export default () => {
                                                                         </div>
                                                                     </div> */}
                                                                     <div class="col-md-8">
-
                                                                         {dataCaseDetail?.attachMedia?.length > 0 ?
                                                                             (
                                                                                 <>
@@ -1747,13 +1810,13 @@ export default () => {
                                                                                         <div className="selected-images-container-add">
                                                                                             {dataCaseDetail?.attachMedia?.map((media, index) => (
                                                                                                 <div key={index} className="selected-image-wrapper-add">
-                                                                                                    {functions.isImageFormat(media["1FN"]) && (
+                                                                                                    {functions.isImageFormat(media["6U"]) && (
                                                                                                         <img src={serverImage + media["6U"]} alt={`Selected ${index}`}
                                                                                                             className="selected-image-add pointer" data-toggle="modal" data-target="#previewMedia"
                                                                                                             onClick={() => openModalPreview({ type: "attachImageDetail", url: serverImage + media["6U"] })}
                                                                                                             title={lang["Click to preview"]} />
                                                                                                     )}
-                                                                                                    {functions.isVideoFormat(media["1FN"]) && (
+                                                                                                    {functions.isVideoFormat(media["6U"]) && (
                                                                                                         <div>
                                                                                                             <video autoplay controls={false} src={serverImage + media["6U"]}
                                                                                                                 className="selected-image-add pointer"
@@ -1934,28 +1997,33 @@ export default () => {
                                                                                     {item.media && (
                                                                                         <div className="media-container">
                                                                                             {item.media.map(media => (
-                                                                                                media["9MT"] === "image" ? (
-                                                                                                    <img className="message-image pointer" src={serverImage + media["5U"]}
-                                                                                                        data-toggle="modal" data-target="#previewMedia"
-                                                                                                        onClick={() => openModalPreview({ type: "imageMessageMedia", url: serverImage + media["5U"] })}
-                                                                                                        alt="Media content"
-                                                                                                        title={lang["Click to preview"]} />
-                                                                                                ) : (
-                                                                                                    <div className="video-container">
-                                                                                                        <video className="message-image pointer" controls={false} src={serverImage + media["5U"]} type="video/mp4"
+                                                                                                <>
+                                                                                                    {functions.isImageFormat(media["5U"]) && (
+                                                                                                        <img className="message-image pointer" src={serverImage + media["5U"]}
+                                                                                                            data-toggle="modal" data-target="#previewMedia"
+                                                                                                            onClick={() => openModalPreview({ type: "imageMessageMedia", url: serverImage + media["5U"] })}
+                                                                                                            alt="Media content"
+                                                                                                            title={lang["Click to preview"]} />
+                                                                                                    )}
+                                                                                                    {functions.isVideoFormat(media["5U"]) && (
+                                                                                                        <div className="video-container">
+                                                                                                            <video className="message-image pointer" controls={false} src={serverImage + media["5U"]} type="video/mp4"
 
-                                                                                                        >
-                                                                                                        </video>
+                                                                                                            >
+                                                                                                            </video>
 
-                                                                                                        <div className="video-overlay pointer" data-toggle="modal" data-target="#previewMedia"
-                                                                                                            onClick={() => openModalPreview({ type: "videoMessageMedia", url: serverImage + media["5U"] })}
-                                                                                                            title={lang["Click to preview"]}></div>
-                                                                                                        <div className="video-icon play-icon">
-                                                                                                            < FontAwesomeIcon icon={faCirclePlay} className="size-16  color_icon_plus" />
+                                                                                                            <div className="video-overlay pointer" data-toggle="modal" data-target="#previewMedia"
+                                                                                                                onClick={() => openModalPreview({ type: "videoMessageMedia", url: serverImage + media["5U"] })}
+                                                                                                                title={lang["Click to preview"]}></div>
+                                                                                                            <div className="video-icon play-icon">
+                                                                                                                < FontAwesomeIcon icon={faCirclePlay} className="size-16  color_icon_plus" />
+                                                                                                            </div>
+
                                                                                                         </div>
+                                                                                                    )}
 
-                                                                                                    </div>
-                                                                                                )
+                                                                                                </>
+
                                                                                             ))}
                                                                                         </div>
                                                                                     )}
@@ -2288,6 +2356,7 @@ export default () => {
                                                         onChange={handleImageChange}
                                                         accept="image/*"
                                                     />
+
                                                     {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
                                                     {!selectedImage && caseUpdate.caseimage !== "" && (
                                                         <>
@@ -2307,7 +2376,8 @@ export default () => {
                                                             />
                                                             <button onClick={(e) => removeImageCaseUpdate(e)} className="remove-image-case">X</button>
                                                         </>
-                                                    )}
+                                                    )
+                                                    }
                                                     {selectedImage && (
                                                         <>
                                                             <img
@@ -2344,53 +2414,54 @@ export default () => {
                                                     />
                                                 </div>
 
-                                                <div className="upload-container-case-add">
-                                                    {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
-
-                                                    <div className="selected-images-container-add">
-                                                        {/* Hình cũ */}
-                                                        {caseUpdate.attachMedia?.map((media, index) => (
-                                                            <div key={index} className="selected-image-wrapper-add">
-                                                                {media["28T"] === 'image' && (
-                                                                    <img src={serverImage + media["6U"]} alt={`Selected ${index}`} className="selected-image-add" />
-                                                                )}
-                                                                {media["28T"] === 'video' && (
-                                                                    <div>
-                                                                        <video autoplay controls={false} src={serverImage + media["6U"]} className="selected-image-add pointer" >
-                                                                        </video>
-                                                                        {/* <div class="video-duration"> {media.name}</div> */}
-                                                                        <div class="video-duration">Video</div>
-                                                                    </div>
-                                                                )}
-                                                                <button onClick={(e) => removeAttachMediaUpdate(e, media)} className="remove-image">X</button>
+                                                {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+                                                {caseUpdate?.attachMedia?.length < 0 && attachMedia?.length < 0 ?
+                                                    (
+                                                        <>
+                                                            <div className="upload-container-case-add">
+                                                                <div className="selected-images-container-add">
+                                                                    {/* Hình cũ */}
+                                                                    {caseUpdate.attachMedia?.map((media, index) => (
+                                                                        <div key={index} className="selected-image-wrapper-add">
+                                                                            {functions.isImageFormat(media["6U"]) && (
+                                                                                <img src={serverImage + media["6U"]} alt={`Selected ${index}`} className="selected-image-add" />
+                                                                            )}
+                                                                            {functions.isVideoFormat(media["6U"]) && (
+                                                                                <div>
+                                                                                    <video autoplay controls={false} src={serverImage + media["6U"]} className="selected-image-add pointer" >
+                                                                                    </video>
+                                                                                    {/* <div class="video-duration"> {media.name}</div> */}
+                                                                                    <div class="video-duration">Video</div>
+                                                                                </div>
+                                                                            )}
+                                                                            <button onClick={(e) => removeAttachMediaUpdate(e, media)} className="remove-image">X</button>
+                                                                        </div>
+                                                                    ))}
+                                                                    {attachMedia.map((media, index) => (
+                                                                        <div key={index} className="selected-image-wrapper-add">
+                                                                            {media.type === 'image' && (
+                                                                                <img src={media.url} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
+                                                                            )}
+                                                                            {media.type === 'video' && (
+                                                                                <div>
+                                                                                    <img src={media.cover} alt={`Cover for ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
+                                                                                    {/* <div class="video-duration"> {media.name}</div> */}
+                                                                                    <div class="video-duration">Video</div>
+                                                                                </div>
+                                                                            )}
+                                                                            <button onClick={(e) => removeAttachMedia(e, media)} className="remove-image">X</button>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
                                                             </div>
-                                                        ))}
-
-                                                        {attachMedia.map((media, index) => (
-                                                            <div key={index} className="selected-image-wrapper-add">
-                                                                {media.type === 'image' && (
-                                                                    <img src={media.url} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
-                                                                )}
-                                                                {media.type === 'video' && (
-                                                                    <div>
-                                                                        <img src={media.cover} alt={`Cover for ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
-                                                                        {/* <div class="video-duration"> {media.name}</div> */}
-                                                                        <div class="video-duration">Video</div>
-                                                                    </div>
-                                                                )}
-                                                                <button onClick={() => removeAttachMedia(media)} className="remove-image">X</button>
-                                                            </div>
-                                                        ))}
-
+                                                        </>
+                                                    ) :
+                                                    <div className="container-no-attachment">
+                                                        <span className="span-no-attachment">{lang["No attachment"]}</span>
                                                     </div>
-
-
-                                                </div>
+                                                }
                                             </div>
                                         </div>
-
-
-
                                     </form>
                                 </div>
                                 <div class="modal-footer">
@@ -2401,7 +2472,7 @@ export default () => {
                         </div>
                     </div>
                     {/* Preview Image*/}
-                    <div class={`modal no-select-modal ${showModal ? 'show' : ''}`} id="previewMedia">
+                    <div class={`modal no-select-modal modal-open-no-overflow-y ${showModal ? 'show' : ''}`} id="previewMedia">
                         <div class="modal-dialog modal-dialog-center ">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -2412,6 +2483,7 @@ export default () => {
                                     <form>
                                         <div class="row">
                                             <div class="form-group col-lg-12 align-center">
+
                                                 {/* <img width={500} src={dataPreviewMedia?.url}></img> */}
                                                 {dataPreviewMedia?.type === 'imageDetail' && (
                                                     <img src={serverImage + dataPreviewMedia?.url}
@@ -2429,7 +2501,6 @@ export default () => {
                                                 )}
                                                 {dataPreviewMedia?.type === 'attachVideoDetail' && (
                                                     <video autoplay controls style={{ width: '100%' }} src={dataPreviewMedia?.url} >
-
                                                     </video>
                                                 )}
                                                 {dataPreviewMedia?.type === 'image' && (
@@ -2442,7 +2513,13 @@ export default () => {
                                                 )}
                                                 {/* Chat */}
                                                 {dataPreviewMedia?.type === 'imageMessageMedia' && (
-                                                    <img src={dataPreviewMedia?.url} alt={dataPreviewMedia?.name} style={{ width: '70%' }} />
+                                                    <>
+                                                        {/* <Zoom
+                                                            width={"70%"}
+                                                            src={dataPreviewMedia?.url}
+                                                        /> */}
+                                                        <img src={dataPreviewMedia?.url} alt={dataPreviewMedia?.name} style={{ width: '70%' }} />
+                                                    </>
                                                 )}
                                                 {dataPreviewMedia?.type === 'videoMessageMedia' && (
                                                     <video autoplay controls style={{ width: '100%' }} src={dataPreviewMedia?.url} >
@@ -2450,7 +2527,6 @@ export default () => {
                                                     </video>
                                                 )}
                                             </div>
-
                                         </div>
                                     </form>
                                 </div>
@@ -2463,7 +2539,6 @@ export default () => {
                 </div >
             </div >
         </div >
-
     )
 }
 

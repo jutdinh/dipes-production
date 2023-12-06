@@ -287,11 +287,13 @@ const isEmpty = (obj) => {
 }
 
 function isImageFormat(fileName) {
+    if (!fileName) return false;
     const imageFormats = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff', 'svg'];
     return imageFormats.includes(fileName.split('.').pop().toLowerCase());
 }
 
 function isVideoFormat(fileName) {
+    if (!fileName) return false;
     const videoFormats = ['mp4', 'mov', 'wmv', 'flv', 'avi', 'mkv', 'webm'];
     return videoFormats.includes(fileName.split('.').pop().toLowerCase());
 }
@@ -299,6 +301,101 @@ function isVideoFormat(fileName) {
 
 
 
+function removeFileExtension(filename) {
+
+    if (typeof filename === 'string' && filename.includes('.')) {
+        return filename.substring(0, filename.lastIndexOf('.'));
+    }
+    return filename;
+}
+
+function resizeImage(file, maxWidth, maxHeight, callback) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+            let width = img.width;
+            let height = img.height;
+            let isResized = false;
+
+            // Tính toán tỷ lệ resize
+            if (width > maxWidth || height > maxHeight) {
+                isResized = true;
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height *= maxWidth / width;
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width *= maxHeight / height;
+                        height = maxHeight;
+                    }
+                }
+            }
+
+            // Vẽ ảnh lên canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Xuất ảnh dưới dạng base64
+            canvas.toBlob(blob => callback(blob, isResized), 'image/jpeg', 0.92);
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+function resizeImageToFit(file, maxWidth, maxHeight, maxSizeKB, callback) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+            let width = img.width;
+            let height = img.height;
+
+            // Tính toán tỷ lệ resize
+            if (width > height) {
+                if (width > maxWidth) {
+                    height *= maxWidth / width;
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width *= maxHeight / height;
+                    height = maxHeight;
+                }
+            }
+
+            // Vẽ ảnh lên canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Điều chỉnh chất lượng và kiểm tra kích thước file
+            const qualityStep = 0.1;
+            let quality = 1;
+            const checkSizeAndAdjustQuality = () => {
+                canvas.toBlob(blob => {
+                    if (blob.size / 1024 <= maxSizeKB || quality <= 0.1) {
+                        callback(blob);
+                    } else {
+                        quality -= qualityStep;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        checkSizeAndAdjustQuality();
+                    }
+                }, 'image/jpeg', quality);
+            };
+            checkSizeAndAdjustQuality();
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
 
 
 
@@ -307,5 +404,5 @@ export default {
     uid, removeDuplicate, titleCase, openTab, dateGenerator, renderDateTimeByFormat,
     showApiResponseMessage, formatNumberWithCommas, formatNumber, generateUniqueColors,
     formatDate, formatDateCase, formatDateMessage, translateDateToVietnamese, translateDateTimeToVietnamese, isEmpty,
-    isImageFormat, isVideoFormat
+    isImageFormat, isVideoFormat, removeFileExtension, resizeImage, resizeImageToFit
 }

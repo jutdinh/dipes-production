@@ -377,7 +377,7 @@
     padding: 0px 0px 0px 0px;
     float: left;
     width: 100%;
-    min-height: 79.5vh
+    min-height: 77.5vh
 }
 
 .padding_infor_info_case_non {
@@ -415,10 +415,16 @@
     width: 100%;
 }
 
+.min-h-58 {
+    
+   min-height: 58px;
+
+}
+
 .graph_head_cus {
     padding: 5px 15px 5px;
     float: left;
-    min-height: 58px;
+ 
 
     width: 100%;
     border-bottom: solid #dee2e6 1px;
@@ -559,7 +565,7 @@
 
 .container-case {
     margin-top: 10px;
-    height: 750px;
+    height: 644px;
     border-radius: 4px;
     padding: 0 5px 5px 5px;
     overflow-y: auto;
@@ -873,7 +879,7 @@ img[class="scaled-hover-target"] {
 }
 /* Điều chỉnh cho hình ảnh trong tin nhắn */
 .message-image-user {
- 
+ margin-bottom: 5px;
     font-weight: 600;
     color: #000;
    
@@ -883,8 +889,35 @@ img[class="scaled-hover-target"] {
     border-style: none;
 
 }
+.image-responsive-modal {
+    max-width: 'calc(100% - 40px)';
+    max-height: 'calc(100% - 10px)';
+    object-fit: 'contain';
+    border-radius: '8px';
+    cursor: 'pointer'
+}
 /* Chat */
-
+.img-zoom {
+    transition: transform 0.5s ease;
+  }
+  
+  .img-zoom:hover {
+    transform: scale(1.5);
+  }
+  .img-magnifier-container {
+    position: relative;
+  }
+  
+  .img-magnifier-lens {
+    position: absolute;
+    border: 3px solid #000;
+    borderRadius: 50%;
+    cursor: none;
+    /* Size of the lens: */
+    width: 100px;
+    height: 100px;
+  }
+  
 .chat-input-container {
     display: flex;
     align-items: center;
@@ -915,14 +948,14 @@ img[class="scaled-hover-target"] {
 
 .message-image {
     flex: 1; /* Các items sẽ chia sẻ không gian đều nhau */
-    max-width: 100px;  
+    /* max-width: 100px;   */
     height: auto; /* Duy trì tỷ lệ */
 }
 
 .video-container {
     position: relative;
     display: inline-block; 
-    max-width: 100px;
+    /* max-width: 100px; */
     padding-right: 5px; 
   
 }
@@ -1217,4 +1250,14 @@ img[class="scaled-hover-target"] {
 .custom-tab-active {
 
     background-color: #ffffff;
+}/* Thêm CSS để điều chỉnh kích thước hình ảnh trong modal */
+.modal-body img {
+    max-width: 100%;
+    max-height: 70vh; /* Giới hạn chiều cao tối đa của hình ảnh */
+    object-fit: contain; /* Đảm bảo hình ảnh không bị biến dạng */
+  }
+  
+  .modal-open-no-overflow-y {
+    overflow-y: hidden !important;
+    
 }

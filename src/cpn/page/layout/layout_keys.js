@@ -26,11 +26,11 @@ export default (props) => {
     // console.log(storedPwdString)
     const page = props.page
     const [apiDataName, setApiDataName] = useState([])
-    console.log(apiDataName)
+    // console.log(apiDataName)
     const [apiData, setApiData] = useState([])
     const [loading, setLoading] = useState(false);
     const [dataTable_id, setDataTableID] = useState(null);
-
+    // console.log(loading)
     const [inputValues, setInputValues] = useState({});
     const [searchValues, setSearchValues] = useState({});
     const [isActive, setIsActive] = useState(false);
@@ -87,9 +87,9 @@ export default (props) => {
                 password: storedPwdString
             }
         }
-        
+
         const apiGet = page.components?.[0]?.api_get;
-    
+
 
         fetch(`${proxy()}${apiGet}`, {
             headers: headerApi,
@@ -101,15 +101,15 @@ export default (props) => {
             .then(res => {
                 const { success, content, data, count, fields } = res;
                 // console.log(res)
-                
-                const createDate = fields.find( f => f.fomular_alias == "6C" )
-                const reason = fields.find( f => f.fomular_alias =="1R" )
 
-                const index_1 = fields.indexOf( createDate )
-                const index_2 = fields.indexOf( reason )
+                const createDate = fields.find(f => f.fomular_alias == "6C")
+                const reason = fields.find(f => f.fomular_alias == "1R")
+
+                const index_1 = fields.indexOf(createDate)
+                const index_2 = fields.indexOf(reason)
 
                 fields[index_1] = reason
-                fields[index_2] = createDate 
+                fields[index_2] = createDate
 
                 setApiDataName(fields);
 
@@ -119,7 +119,9 @@ export default (props) => {
                     setApiData(data.filter(record => record != undefined));
                 }
                 clearTimeout(loadingTimeout);
-                setLoading(false)
+                
+                    setLoading(false)
+               
             });
 
     }
@@ -151,9 +153,9 @@ export default (props) => {
                     })
             })
             const { success, data } = response;
-            
+
             if (success) {
-                
+
 
                 const stringifiedParams = data.body.map(param => {
                     const { fomular_alias } = param
@@ -277,14 +279,14 @@ export default (props) => {
 
     const rawKey = "PRTA123B45PRTA123B45";
     const formattedKey = formatPrinterKey(rawKey);
-// Tạo đố
+    // Tạo đố
 
 
-var date = new Date(1697094897137);
+    var date = new Date(1697094897137);
 
-// In ra ngày và giờ theo định dạng mong muốn
-console.log(date.toString()); // sẽ hiển thị theo múi giờ mặc định của hệ thống
-console.log(date.toUTCString()); // hiển thị theo UTC
+    // In ra ngày và giờ theo định dạng mong muốn
+    // console.log(date.toString()); // sẽ hiển thị theo múi giờ mặc định của hệ thống
+    // console.log(date.toUTCString()); // hiển thị theo UTC
 
     return (
         <>
@@ -306,130 +308,147 @@ console.log(date.toUTCString()); // hiển thị theo UTC
                     <div class="table_section padding_infor_info_layout2 " >
                         <div class="col-md-12">
                             <div class="tab-content">
-                           
-                                    <div class="col-md-12">
-                                        <div class="table-responsive">
-                                            <>
-                                                <div style={{ overflowX: 'auto', height: "74vh" }}>
-                                                    <table className={"table"} style={{ marginBottom: "0px", width: '100%', borderCollapse: 'collapse' }}>
-                                                        <thead class="">
-                                                            <tr class="color-tr sticky-header">
-                                                                <th class="font-weight-bold " style={{ width: "50px", minWidth: "50px" }} scope="col">{lang["log.no"]}</th>
-                                                                {apiDataName?.map((header, index) => (
-                                                                    <th key={index} class="font-weight-bold"style={{minWidth: "180px"}}>{header.display_name ? header.display_name : header.field_name}</th>
-                                                                ))}
-                                                                <th class="font-weight-bold align-center" style={{ width: "100px" }}>{lang["log.action"]}</th>
-                                                            </tr>
-                                                            <tr >
-                                                                <th></th>
-                                                                {apiDataName?.map((header, index) => (
-                                                                    <th key={index}>
-                                                                        <input
-                                                                            type="search"
-                                                                            className="form-control"
-                                                                            value={inputValues[header.fomular_alias] || ''}
-                                                                            onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
-                                                                            onKeyDown={handleKeyDown}
-                                                                        />
 
-                                                                    </th>
-                                                                ))}
-                                                                <th class="align-center" onClick={handleSearchClick} style={{ minWidth: "100px" }}>
-                                                                    <i class={`fa fa-search size-24 pointer mb-2 ${isActive ? 'icon-active' : ''}`} title={lang["search"]}></i>
+                                <div class="col-md-12">
+                                    <div class="table-responsive">
+                                        <>
+                                            <div style={{ overflowX: 'auto', height: "74vh" }}>
+                                                <table className={"table"} style={{ marginBottom: "0px", width: '100%', borderCollapse: 'collapse' }}>
+                                                    <thead class="">
+                                                        <tr class="color-tr sticky-header">
+                                                            <th class="font-weight-bold " style={{ width: "50px", minWidth: "50px" }} scope="col">{lang["log.no"]}</th>
+                                                            {apiDataName?.map((header, index) => (
+                                                                <th key={index} class="font-weight-bold" style={{ minWidth: "180px" }}>{header.display_name ? header.display_name : header.field_name}</th>
+                                                            ))}
+                                                            <th class="font-weight-bold align-center" style={{ width: "100px" }}>{lang["log.action"]}</th>
+                                                        </tr>
+                                                        <tr >
+                                                            <th></th>
+                                                            {apiDataName?.map((header, index) => (
+                                                                <th key={index}>
+                                                                    <input
+                                                                        type="search"
+                                                                        className="form-control"
+                                                                        value={inputValues[header.fomular_alias] || ''}
+                                                                        onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
+                                                                        onKeyDown={handleKeyDown}
+                                                                    />
+
                                                                 </th>
+                                                            ))}
+                                                            <th class="align-center" onClick={handleSearchClick} style={{ minWidth: "100px" }}>
+                                                                <i class={`fa fa-search size-24 pointer mb-2 ${isActive ? 'icon-active' : ''}`} title={lang["search"]}></i>
+                                                            </th>
+                                                        </tr>
+
+                                                    </thead>
+
+                                                    <tbody>
+                                                        {
+                                                        (loading && current && current.length > 0) ?
+
+                                                            <tr>
+                                                                <td class="" colspan={`${apiDataName?.length + 2}`} style={{ textAlign: 'center' }}><div>
+                                                                    <img
+                                                                        width={48}
+                                                                        className="mb-1"
+                                                                        src="/images/icon/load.gif"
+                                                                        alt="Loading..."
+                                                                    ></img>
+                                                                </div></td>
                                                             </tr>
+                                                            :
+                                                            <>
+                                                                {current && current.length > 0 ? (
 
-                                                        </thead>
-                                                        
-                                                        <tbody>
-                                                            {current && current.length > 0 ? (
+                                                                    current.map((row, index) => {
+                                                                        if (row) {
+                                                                            return (
+                                                                                <>
+                                                                                    <tr key={index}>
+                                                                                        <td scope="row" style={{ minWidth: "50px" }} className="cell">{indexOfFirst + index + 1}</td>
+                                                                                        {apiDataName?.map((header) => (
+                                                                                            <td key={header.fomular_alias} className="cell">{renderData(header, row)}</td>
+                                                                                        ))}
+                                                                                        <td class="align-center" style={{ width: "100px" }}>
+                                                                                            {checkDetail && <i className="fa fa-eye size-24 pointer icon-view" onClick={() => handleViewDetail(row)} title={lang["viewdetail"]}></i>}
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                </>
+                                                                            )
+                                                                        } else {
+                                                                            return null
+                                                                        }
+                                                                    })
 
-                                                                current.map((row, index) => {
-                                                                    if (row) {
-                                                                        return (
-                                                                            <>
-                                                                                <tr key={index}>
-                                                                                    <td scope="row" style={{ minWidth: "50px" }} className="cell">{indexOfFirst + index + 1}</td>
-                                                                                    {apiDataName?.map((header) => (
-                                                                                        <td key={header.fomular_alias} className="cell">{renderData(header, row)}</td>
-                                                                                    ))}
-                                                                                    <td class="align-center" style={{ width: "100px" }}>
-                                                                                        {checkDetail && <i className="fa fa-eye size-24 pointer icon-view" onClick={() => handleViewDetail(row)} title={lang["viewdetail"]}></i>}
-                                                                                    </td>
-                                                                                </tr>
-                                                                            </>
-                                                                        )
-                                                                    } else {
-                                                                        return null
-                                                                    }
-                                                                })
-
-                                                            ) : <tr>
-                                                                <td class="" colspan={`${apiDataName?.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
-                                                            </tr>
-                                                            }
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </>
-                                        </div>
-                                        <div className="d-flex justify-content-between align-items-center mt-1">
-                                            <p>
-                                                {
-                                                    apiData.length > 0 ? (
-                                                        `${lang["show"]} ${filteredData.length > 0 ? indexOfFirst + 1 : 0} - ${Math.min(indexOfLast, filteredData.length)} ${lang["of"]} ${Math.min(apiData.length, filteredData.length)} ${lang["results"]}`
-                                                    ) : (
-                                                        null
-                                                        // <p> K có data</p>
-                                                    )
-                                                }
-                                            </p>
-                                            <nav aria-label="Page navigation example">
-                                                <ul className="pagination mb-0">
-                                                    {/* Nút đến trang đầu */}
-                                                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                        <button className="page-link" onClick={() => paginate(1)}>
-                                                            &#8810; 
-                                                        </button>
-                                                    </li>
-                                                    {/* Nút đến trang trước */}
-                                                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                                        <button className="page-link" onClick={() => paginate(currentPage - 1)}>
-                                                            &laquo;
-                                                        </button>
-                                                    </li>
-                                                    {/* Hiển thị số trang */}
-                                                    {Array(totalPages).fill().map((_, index) => {
-                                                        if (
-                                                            index + 1 === currentPage ||
-                                                            (index + 1 >= currentPage - 1 && index + 1 <= currentPage + 1)
-                                                        ) {
-                                                            return (
-                                                                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
-                                                                    <button className="page-link" onClick={() => paginate(index + 1)}>
-                                                                        {index + 1}
-                                                                    </button>
-                                                                </li>
-                                                            )
+                                                                ) : <tr>
+                                                                    <td class="" colspan={`${apiDataName?.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
+                                                                </tr>
+                                                                }</>
                                                         }
-                                                    })}
-                                                    {/* Nút đến trang sau */}
-                                                    <li className={`page-item ${(currentPage === totalPages || filteredData.length === 0) ? 'disabled' : ''}`}>
-                                                        <button className="page-link" onClick={() => paginate(currentPage + 1)}>
-                                                            &raquo;
-                                                        </button>
-                                                    </li>
-                                                    {/* Nút đến trang cuối */}
-                                                    <li className={`page-item ${(currentPage === totalPages || filteredData.length === 0) ? 'disabled' : ''}`}>
-                                                        <button className="page-link" onClick={() => paginate(totalPages)}>
-                                                            &#8811;
-                                                        </button>
-                                                    </li>
-                                                </ul>
-                                            </nav>
-                                        </div>
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </>
                                     </div>
-                               
+                                    <div className="d-flex justify-content-between align-items-center mt-1">
+                                        <p>
+                                            {
+                                                apiData.length > 0 ? (
+                                                    `${lang["show"]} ${filteredData.length > 0 ? indexOfFirst + 1 : 0} - ${Math.min(indexOfLast, filteredData.length)} ${lang["of"]} ${Math.min(apiData.length, filteredData.length)} ${lang["results"]}`
+                                                ) : (
+                                                    null
+                                                    // <p> K có data</p>
+                                                )
+                                            }
+                                        </p>
+                                        <nav aria-label="Page navigation example">
+                                            <ul className="pagination mb-0">
+                                                {/* Nút đến trang đầu */}
+                                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                    <button className="page-link" onClick={() => paginate(1)}>
+                                                        &#8810;
+                                                    </button>
+                                                </li>
+                                                {/* Nút đến trang trước */}
+                                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                    <button className="page-link" onClick={() => paginate(currentPage - 1)}>
+                                                        &laquo;
+                                                    </button>
+                                                </li>
+                                                {/* Hiển thị số trang */}
+                                                {Array(totalPages).fill().map((_, index) => {
+                                                    if (
+                                                        index + 1 === currentPage ||
+                                                        (index + 1 >= currentPage - 1 && index + 1 <= currentPage + 1)
+                                                    ) {
+                                                        return (
+                                                            <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                                <button className="page-link" onClick={() => paginate(index + 1)}>
+                                                                    {index + 1}
+                                                                </button>
+                                                            </li>
+                                                        )
+                                                    }
+                                                })}
+                                                {/* Nút đến trang sau */}
+                                                <li className={`page-item ${(currentPage === totalPages || filteredData.length === 0) ? 'disabled' : ''}`}>
+                                                    <button className="page-link" onClick={() => paginate(currentPage + 1)}>
+                                                        &raquo;
+                                                    </button>
+                                                </li>
+                                                {/* Nút đến trang cuối */}
+                                                <li className={`page-item ${(currentPage === totalPages || filteredData.length === 0) ? 'disabled' : ''}`}>
+                                                    <button className="page-link" onClick={() => paginate(totalPages)}>
+                                                        &#8811;
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>

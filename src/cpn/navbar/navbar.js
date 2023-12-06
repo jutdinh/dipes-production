@@ -11,7 +11,7 @@ export default () => {
    const [activeLink, setActiveLink] = useState("/");
    const [uis, setUis] = useState([]);
    const [isOpen, setIsOpen] = useState(false);
-   console.log(pages)
+   // console.log(pages)
    const [isExpanded, setIsExpanded] = useState(true);
 
    useEffect(() => {
@@ -46,14 +46,14 @@ export default () => {
          <div class="sidebar_blog_1">
             <div class="sidebar-header">
                <div class="logo_section">
-                  <a href=""><img class="logo_icon img-responsive" src="/images/logo/logo_icon.png" alt="#" /></a>
+                  <a href="#"><img class="logo_icon img-responsive" src="/images/logo/logo_icon.png" alt="#" /></a>
                </div>
             </div>
             <div class="sidebar_user_info_custom">
                <div class="icon_setting"></div>
                <div class="user_profle_side">
                   <div class="logo_section">
-                     <a href=""><img class="img-responsive" src="/images/logo/logo.png" alt="#" /></a>
+                     <a href="#"><img class="img-responsive" src="/images/logo/logo.png" alt="#" /></a>
                   </div>
                </div>
             </div>
@@ -126,7 +126,11 @@ export default () => {
                   </li>
 
                ) : null}
-               {pages && pages.map((ui, index) => (
+               {/* Feedback */}
+               
+               {user.role === "pd" ? (
+                  <>
+                    {pages && pages.map((ui, index) => (
                   ui.status && ui.title === "HOME" ? (
                      <li key={index} className="navbar-item">
                         <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
@@ -145,7 +149,7 @@ export default () => {
                <li>
                   <a href="#dashboard" onClick={toggleMenu} aria-expanded="false" class="dropdown-toggle">
                      <i class="fa fa-dashboard yellow_color"></i>
-                     {/* <span>{lang["data management"]}</span> */}
+                    
                      <span>ONLINE ACTIVATION</span>
                      <i class="fa "></i>
                   </a>
@@ -164,7 +168,11 @@ export default () => {
                   </ul>
                </li>
 
+                  </>
 
+               ) : null}
+
+               {/* Active online */}
                {/* <div class={`scrollable_user ${user.role === "pd" ? 'no_shadow' : ''}`}>
                   {user.role === "pd" ? (
                      <li>
