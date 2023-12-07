@@ -22,7 +22,7 @@ export default () => {
 
     useEffect(() => {
         let langItem = localStorage.getItem("lang");
-        langItem = langItem ? langItem : "Vi";
+        langItem = langItem ? langItem : "En";
         const defaultLang = langs.filter(l => l.value == langItem)[0]
         setDefaultValue(defaultLang)
     }, [])

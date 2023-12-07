@@ -430,7 +430,7 @@ export default {
     "Enter case title": "Enter case title",
     "Enter product name": "Enter product name",
     "p.issue": "Enter issue description",
-    "No attachmen": "No attachment",
+    "No attachment": "No attachment",
     "Choose Image": "Choose Image",
     "no image case": "No image case",
     "No data avasilable": "No data available",

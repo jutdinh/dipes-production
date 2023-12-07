@@ -69,7 +69,7 @@ function EditableTable(props) {
             .then(resp => {
                 const { success, activated, status, content } = resp;
                 // console.log("Tạo hàng", resp)
-                const newRow = { detailId: resp.Detail["1ID"], col1: '', col2: '', col3: '', col4: '', col5: '', isEditing: false };
+                const newRow = { detailId: resp.Detail["1ID"], caseId: dataCaseId, col1: '', col2: '', col3: '', col4: '', col5: '0', isEditing: false };
                 setData([...data, newRow]);
                 props.onDataUpdate([...data, newRow]);
 
@@ -110,7 +110,7 @@ function EditableTable(props) {
             .then(resp => {
                 const { success, activated, status, content } = resp;
 
-
+                // console.log(resp)
             })
     };
 
@@ -130,10 +130,10 @@ function EditableTable(props) {
 
     const handleInputChange = (event, rowId, colName, value) => {
         event.preventDefault();
-        const newData = data.map((row) =>
+        const newData = data?.map((row) =>
             row.detailId === rowId ? { ...row, [colName]: value } : row
         );
-
+// console.log(newData)
         // So sánh giá trị mới với giá trị trong prevData
         const hasValueChanged = JSON.stringify(newData) !== JSON.stringify(prevData);
 
@@ -142,7 +142,9 @@ function EditableTable(props) {
             props.onDataUpdate(newData);
 
             const updatedRows = newData.find((row) => row.detailId === rowId);
+            // console.log(updatedRows)
             debouncedUpdateRow(updatedRows);
+
         }
     };
 

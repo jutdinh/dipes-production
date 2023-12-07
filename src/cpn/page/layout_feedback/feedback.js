@@ -73,9 +73,9 @@ export default () => {
     const [dataMessageMerged, setDataMessageMerged] = useState([]);
     const [errorMessagesUpdate, setErrorMessagesUpdate] = useState({});
 
-    console.log("data message", dataMessage)
-    console.log("data media", dataMessageMedia)
-    console.log("data merged", dataMessageMerged)
+    // console.log("data message", dataMessage)
+    // console.log("data media", dataMessageMedia)
+    // console.log("data merged", dataMessageMerged)
 
     const qualityToImage = {
         "Good": "i1.png",
@@ -237,7 +237,7 @@ export default () => {
     const [showPageDetail, setShowPageDetail] = useState(false);
     // console.log(selectedCaseDetail)
 
-    const fetchData = async (caseid) => {
+    const fetchDataProduct = async (caseid) => {
         try {
             const requestBodyProduct = {
                 checkCustomer: {
@@ -267,6 +267,8 @@ export default () => {
             console.error("Error fetching data:", error);
         }
     };
+
+
     const dataUpdateCase = (dataUpdate) => {
         // console.log(dataUpdate)
         setCaseUpdate(dataUpdate)
@@ -280,7 +282,7 @@ export default () => {
         setPostRating({})
         setDataCaseDetail({})
         // 
-        fetchData(caseid);
+        fetchDataProduct(caseid);
         // console.log(caseid)
         setTableDataProduct([]);
 
@@ -360,8 +362,13 @@ export default () => {
     const [activeTab, setActiveTab] = useState(initialActiveTab);
 
     // Hàm xử lý khi tab được chọn
-    const handleTabClick = (tab) => {
+    const handleTabClick = (tab, caseid) => {
+        // console.log(caseid)
         setActiveTab(tab);
+        
+            fetchDataProduct(caseid)
+        
+
     };
 
     // Sử dụng useEffect để lưu trạng thái activeTab vào localStorage khi có sự thay đổi
@@ -1752,16 +1759,16 @@ export default () => {
                                     <div class="table_section padding_infor_info_case_detail">
                                         <div>
                                             <div className="custom-tab-container">
-                                                <div className={`custom-tab ${activeTab === 'general' ? 'custom-tab-active' : ''}`} onClick={() => handleTabClick('general')}>
+                                                <div className={`custom-tab ${activeTab === 'general' ? 'custom-tab-active' : ''}`} onClick={() => handleTabClick('general', dataCaseDetail)}>
                                                     {lang["general"]}
                                                 </div>
                                                 {/* <div className={`custom-tab ${activeTab === 'products' ? 'custom-tab-active' : ''}`} onClick={() => handleTabClick('products')}>
                                                     Products
                                                 </div> */}
-                                                <div className={`custom-tab ${activeTab === 'discussion' ? 'custom-tab-active' : ''}`} onClick={() => handleTabClick('discussion')}>
+                                                <div className={`custom-tab ${activeTab === 'discussion' ? 'custom-tab-active' : ''}`} onClick={() => handleTabClick('discussion', dataCaseDetail)}>
                                                     {lang["DISCUSSION"]}
                                                 </div>
-                                                <div className={`custom-tab ${activeTab === 'support' ? 'custom-tab-active' : ''}`} onClick={() => handleTabClick('support')}>
+                                                <div className={`custom-tab ${activeTab === 'support' ? 'custom-tab-active' : ''}`} onClick={() => handleTabClick('support', dataCaseDetail)}>
                                                     {lang["SUPPORT QUALITY"]}
 
                                                 </div>
