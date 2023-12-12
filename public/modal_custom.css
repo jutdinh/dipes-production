@@ -1169,6 +1169,7 @@ img[class="scaled-hover-target"] {
     /* right: -54px; */
     width: 50px;
     font-size: 0.8rem;
+    user-select: none;
 }
 
 .icon-close-message {

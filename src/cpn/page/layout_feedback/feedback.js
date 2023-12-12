@@ -16,26 +16,17 @@ export default () => {
     const { lang, proxy, auth, functions } = useSelector(state => state);
 
     let langItemCheck = localStorage.getItem("lang");
-
+    let langItem = localStorage.getItem("lang") ? localStorage.getItem("lang") : "Vi";
     const _token = localStorage.getItem("_token");
     const [logs, setLogs] = useState([]);
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
     const username = _user.username === "nhan.to" ? "Mylan Digital Solution" : _user.username;
-    // const username = (_user.username === "administrator" || _user.username === "nhan.to") ? "Mylan Digital Solution" : _user.username;
-    // console.log(_user)
     const storedPwdString = localStorage.getItem("password_hash");
-
     const [serverImage, setServerImage] = useState("");
     const [cases, setCases] = useState([]);
-    // console.log(cases)
     const [caseUpdate, setCaseUpdate] = useState({});
-    const [filter, setFilter] = useState({ type: 'info' });
     const [showModal, setShowModal] = useState(false);
-    // console.log("Dữ liệu cập nhật", caseUpdate)
-    let langItem = localStorage.getItem("lang") ? localStorage.getItem("lang") : "Vi";
-
-    const languages = langItem.toLowerCase();
     const [supportQuanlity, setSupportQuanlity] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [dataMessageSent, setDataMessageSent] = useState({ message: "" });
@@ -44,12 +35,13 @@ export default () => {
     const [errorMessagesadd, setErrorMessagesadd] = useState({});
     const [dataMessageMerged, setDataMessageMerged] = useState([]);
     const [errorMessagesUpdate, setErrorMessagesUpdate] = useState({});
+    const [postCase, setPostCase] = useState({ casetype: "Undefined" });
+    const [dataCaseDetail, setDataCaseDetail] = useState({});
+    const [selectedCaseDetail, setSelectedCaseDetail] = useState("");
+    const [showPageDetail, setShowPageDetail] = useState(false);
+    const [searchValue, setSearchValue] = useState('');
+    const [filteredCases, setFilteredCases] = useState(cases);
 
-
-    // console.log("data message sent", dataMessageSent)
-    console.log("data message", dataMessage)
-    console.log("data media", dataMessageMedia)
-    console.log("data merged", dataMessageMerged)
 
     const qualityToImage = {
         "Good": "i1.png",
@@ -58,19 +50,10 @@ export default () => {
         "Bad": "i4.png",
         "No reply": "i5.png"
     };
-
-    // console.log(dataMessage)
-    //Post case 
-    const [postCase, setPostCase] = useState({ casetype: "Undefined" });
-    // console.log("data post case:", postCase)
-    // 
-    // console.log(view)
-
     // Data table 
-    const [tableData, setTableData] = useState([]);// Nhận từ Cpn
+    const [tableData, setTableData] = useState([]);// Nhận từ Cpn con
     const [tableDataProduct, setTableDataProduct] = useState([]);
-    // console.log("Data Table", tableData)
-    // console.log(tableDataProduct)
+
 
     const textareaRef = useRef(null);
     const filteredTableData = tableData.filter(item => {
@@ -78,7 +61,7 @@ export default () => {
         return item.col1 || item.col2 || item.col3 || item.col4 || item.col5;
     });
 
-    // console.log(caseUpdate)
+
 
     const mappedArray = filteredTableData.map(item => ({
         "2SN": item.col1,
@@ -88,27 +71,19 @@ export default () => {
         "10Q": item.col5
     }));
 
-    const resultObject = { "11P": mappedArray };
-
-    // console.log(resultObject)
-
     const handleDataFromChild = (newData) => {
-        // Cập nhật state ở đây
+
         setTableData(newData);
     };
-    // console.log(dataMessage)
+    // Hàm đóng modal
     const handleCloseModal = () => {
         setShowModal(false);
         setAttachMedia([])
     };
 
 
-
-
-
     // search
-    const [searchValue, setSearchValue] = useState('');
-    const [filteredCases, setFilteredCases] = useState(cases);
+
 
     // Hàm xử lý sự kiện khi giá trị của input thay đổi
     const handleInputChangeSearch = (event) => {
@@ -157,14 +132,16 @@ export default () => {
         if (!Array.isArray(cases)) {
             return [];
         }
-
         switch (sortBy) {
             case 'today':
                 return cases.filter((caseItem) => isToday(caseItem.date));
+
             case 'aToZ':
                 return [...cases].sort((a, b) => a.title.localeCompare(b.title));
+
             case 'zToA':
                 return [...cases].sort((a, b) => b.title.localeCompare(a.title));
+
             case 'newest':
                 return [...cases].sort((a, b) => {
                     const datePartsA = a.date.match(/\d+/g);
@@ -180,6 +157,7 @@ export default () => {
                     }
                     return 0;
                 });
+
             case 'oldest':
                 return [...cases].sort((a, b) => {
                     const datePartsA = a.date.match(/\d+/g);
@@ -250,12 +228,11 @@ export default () => {
     //     }
     // };
 
-
+    //  Hàm tính thời gian kể từ
     const getElapsedTime = (notifyAt) => {
         if (!notifyAt) {
             return "";
         }
-
         try {
             // Trích xuất phần số từ chuỗi ngày
             const match = notifyAt.match(/\/Date\((\d+)\+\d+\)\//);
@@ -263,7 +240,6 @@ export default () => {
                 throw new Error("Invalid date format");
             }
 
-            const currentTimestamp = Date.now();
             const notifyTimestamp = new Date(parseInt(match[1], 10));
             const elapsedMilliseconds = currentTimestamp - notifyTimestamp;
             const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
@@ -294,15 +270,6 @@ export default () => {
         }
     };
 
-
-
-
-    const [dataCaseDetail, setDataCaseDetail] = useState({});
-    // console.log(dataCaseDetail)
-    const [selectedCaseDetail, setSelectedCaseDetail] = useState("");
-    const [showPageDetail, setShowPageDetail] = useState(false);
-    // console.log(selectedCaseDetail)
-
     const fetchDataProduct = async (caseid) => {
         try {
             const requestBodyProduct = {
@@ -323,11 +290,7 @@ export default () => {
                 method: "POST",
                 body: JSON.stringify(requestBodyProduct)
             });
-
             const resp = await response.json();
-
-            const { success, data, activated, status, content } = resp;
-            // console.log("Product infor", resp)
             setTableDataProduct(resp.Details);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -336,7 +299,6 @@ export default () => {
 
 
     const dataUpdateCase = (dataUpdate) => {
-
         const requestBody = {
             checkCustomer: {
                 username,
@@ -366,7 +328,6 @@ export default () => {
                     newCase[newKey] = resp.Case[key];
                     return newCase;
                 }, {});
-
                 // console.log(427, mappedCase);
                 const caseDetail = {
                     id: mappedCase["CASE ID"],
@@ -390,26 +351,31 @@ export default () => {
 
     const handlePageDetail = (caseid) => {
         // đặt lại giá trị support quality
+
         setRating(null)
+
         setPostRating({})
+
         setDataCaseDetail({})
-        fetchDataProduct(caseid);
-        // console.log(caseid)
+
+        fetchDataProduct(caseid)
+
         setTableDataProduct([]);
 
         setSelectedCaseDetail(caseid.id)
         localStorage.setItem('selectedCaseDetail', caseid.id);
 
         setShowPageDetail(true)
+
         setShowPageAdd(false)
 
         callApiMessage()
+
         callApiMessageMedia()
 
         callApiCaseDetail(caseid)
-        // List Product informatio
-
     }
+
 
     useEffect(() => {
         const storedSelectedCaseDetail = localStorage.getItem('selectedCaseDetail');
@@ -439,12 +405,11 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { Success, data, activated, status, content } = resp;
-                // console.log(resp)
+
                 const fieldMappings = resp.fields.reduce((acc, field) => {
                     acc[field.fomular_alias] = field.field_name;
                     return acc;
                 }, {});
-
 
                 const mappedCase = Object.keys(resp.Case).reduce((newCase, key) => {
                     const newKey = fieldMappings[key] || key;
@@ -453,7 +418,6 @@ export default () => {
                 }, {});
 
                 // console.log(427, mappedCase);
-
                 const caseDetail = {
                     id: mappedCase["CASE ID"],
                     title: mappedCase["CASE TITLE"],
@@ -474,11 +438,12 @@ export default () => {
             })
 
     }
+
     const [showPageAdd, setShowPageAdd] = useState(false);
+
     const handlePageAdd = () => {
         setShowPageAdd(true)
         setShowPageDetail(false)
-
     }
 
     const initialActiveTab = localStorage.getItem('activeTab') || 'general';
@@ -486,7 +451,6 @@ export default () => {
 
     // Hàm xử lý khi tab được chọn
     const handleTabClick = (tab, caseid) => {
-        // console.log(caseid)
         setActiveTab(tab);
         fetchDataProduct(caseid)
     };
@@ -496,18 +460,7 @@ export default () => {
         localStorage.setItem('activeTab', activeTab);
     }, [activeTab]);
 
-    // useEffect(() => {
-    //     if (dataCaseDetail.supportquanlity !== undefined) {
-    //         setSupportQuanlity(1)
 
-    //         setRating(dataCaseDetail.supportquanlity)
-
-    //         setPostRating({ content: dataCaseDetail.supportdescription });
-    //     }
-    //     else {
-    //         setSupportQuanlity(0)
-    //     }
-    // }, [dataCaseDetail, selectedCaseDetail]);
 
     useEffect(() => {
         // Thiết lập thời gian trễ trước khi hiển thị nội dung
@@ -523,11 +476,12 @@ export default () => {
             setSupportQuanlity(0);
         }
         setIsLoading(true);
-
         // Dọn dẹp khi component unmount
         return () => clearTimeout(timer);
     }, [dataCaseDetail, selectedCaseDetail]);
-    ////// Mặc định chọn trang đầu theo sắp xếp 
+
+
+    // Mặc định chọn trang đầu theo sắp xếp (nếu localStorage chưa lưu id của Case)
     useEffect(() => {
         if (selectedCaseDetail === "" && sortedCases.length > 0 && selectedThenRate === "") {
             const idCase = sortedCases?.[0]
@@ -536,10 +490,6 @@ export default () => {
 
     }, [sortedCases]);
 
-
-
-    // console.log("Chi tiết", showPageDetail)
-    // console.log("Thêm", showPageAdd)
     const getInitialState = (key, defaultValue) => {
         const storedValue = localStorage.getItem(key);
         return storedValue !== null ? JSON.parse(storedValue) : defaultValue;
@@ -581,23 +531,6 @@ export default () => {
         setIsOpenSupport(!isOpenSupport);
     };
 
-    const eventType = [
-        { id: 0, label: lang["log.information"], value: 1, color: "#3029F7", icon: "fa fa-info-circle size-log " },
-        { id: 1, label: lang["log.warning"], value: 2, color: "#f3632e", icon: "fa fa-warning size" },
-        { id: 2, label: lang["log.error"], value: 3, color: "#FF0000", icon: "fa fa-times-circle fa-2x" },
-
-    ]
-    // useEffect(() => {
-    //     const stringifiedUser = localStorage.getItem("user");
-    //     const user = JSON.parse(stringifiedUser)
-    //     const { role } = user;
-    //     const validPrivileges = ["uad"]
-
-    //     if (validPrivileges.indexOf(role) == -1) {
-    //         window.location = "/404-notfound"
-    //     }
-
-    // }, [])
     // List case
     const callApiListCase = () => {
         const requestBody = {
@@ -650,7 +583,6 @@ export default () => {
                     lastpostedat: caseItem["1LPA"]
 
                 }));
-
                 // console.log(626, caseTitlesAndDates);
                 setCases(caseTitlesAndDates)
             })
@@ -660,35 +592,8 @@ export default () => {
         callApiListCase()
     }, [])
 
-
-
-
-
-
-    //////Ảnh chính
+    //Image Case
     const [selectedImage, setSelectedImage] = useState(null);
-    // console.log(selectedImage)
-    const [errorMessage, setErrorMessage] = useState('');
-    // console.log("ảnh chính", selectedImage)
-    // const handleImageChange = (e) => {
-    //     // e.target.value = '';
-    //     const file = e.target.files[0];
-    //     if (file) {
-    //         if (file.type.match('image.*') && file.size <= (5*1024*1024)) { // 20MB limit (20*1024*1024)
-    //             const reader = new FileReader();
-    //             reader.onload = (e) => {
-    //                 setSelectedImage(e.target.result);
-    //                 setErrorMessage('');
-    //                 e.target.value = '';
-    //             };
-    //             reader.readAsDataURL(file);
-    //         } else {
-    //             setErrorMessage('File is too large. Please upload an image less than 5MB.');
-    //             setSelectedImage(null);
-    //         }
-    //     }
-    // };
-
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -714,7 +619,7 @@ export default () => {
                     functions.resizeImageToFit(file, 1024, 768, 2000, (resizedBlob, isResized) => {
                         //  console.log("Kích thước sau khi resize (bytes):", (resizedBlob.size/1024));
                         // if (isResized) {
-                        console.log("Ảnh đã được r/esize");
+                        // console.log("Ảnh đã được r/esize");
                         // } else {
                         // console.log("Ảnh giữ nguyên kích thước gốc");
                         // }
@@ -728,26 +633,24 @@ export default () => {
                     icon: "error",
                     confirmButtonText: lang["confirm"]
                 });
-                e.target.value = ''; // Reset the input value
+                e.target.value = '';
             }
         }
     };
 
-    //Ảnh phụ
+    // Xóa ảnh Case
     const removeImageCase = (e) => {
         e.preventDefault();
         setSelectedImage(null)
     };
 
+    // Attach Media
     const [attachMedia, setAttachMedia] = useState([]);
-    // console.log("anh phụ", attachMedia)
-
     const handleAttachMedia = (e) => {
         const newFiles = Array.from(e.target.files).filter(file =>
             file.type.startsWith('image/') || file.type.startsWith('video/')
         );
 
-        // Notify user if some files were filtered out
         if (newFiles.length < e.target.files.length) {
             Swal.fire({
                 title: lang['error'],
@@ -757,8 +660,8 @@ export default () => {
                 confirmButtonText: lang['confirm'],
                 allowOutsideClick: false,
             });
-            e.target.value = null; // Reset the input value
-            return; // Exit the function if there are invalid files
+            e.target.value = null;
+            return;
         }
 
         const newMediaPromises = newFiles.map(file => {
@@ -774,7 +677,7 @@ export default () => {
                         type: file.type.startsWith('video/') ? 'video' : 'image',
                         dataUrl: readerEvent.target.result, // Base64 string
                     };
-                    // If it's a video, get additional info like thumbnail and duration
+
                     if (file.type.startsWith('video/')) {
                         getVideoThumbnail(file).then(({ thumbnailUrl, duration }) => {
                             mediaObject.cover = thumbnailUrl;
@@ -782,19 +685,17 @@ export default () => {
                             resolve(mediaObject);
                         });
                     } else {
-                        // For images, we already have everything we need
                         resolve(mediaObject);
                     }
                 };
-                reader.readAsDataURL(file); // This converts the file to a Base64 string
+                reader.readAsDataURL(file);
             });
         });
 
         Promise.all(newMediaPromises).then(newMediaFiles => {
-            // console.log(newMediaFiles)
             const totalSize = calculateTotalSizeAttach(newMediaFiles);
             // console.log("Dung lượng tổng", totalSize / 1024)
-            if (totalSize > 20 * 1024 * 1024) { // Check for the total size limit
+            if (totalSize > 20 * 1024 * 1024) {
                 Swal.fire({
                     title: lang["error"],
                     text: lang["File is too large"],
@@ -809,14 +710,13 @@ export default () => {
             e.target.value = null;
         });
     };
-
+    //  Xóa Attach Media
     const removeAttachMedia = (e, media) => {
         e.preventDefault();
-
         const updatedMediaList = attachMedia.filter(item => item.url !== media.url);
         setAttachMedia(updatedMediaList)
     };
-
+    // Xóa ảnh Case khi cập nhật
     const removeImageCaseUpdate = (e) => {
         e.preventDefault();
         setCaseUpdate(prevState => ({
@@ -824,7 +724,7 @@ export default () => {
             imgcase: '' // Cập nhật caseimage thành rỗng
         }));
     };
-
+    // Xóa attah Media Case khi cập nhật
     const removeAttachMediaUpdate = (e, media) => {
         e.preventDefault();
         // console.log(media)
@@ -838,14 +738,13 @@ export default () => {
         setCaseUpdate(updatedCaseUpdate);
     };
 
-
+    // Lấy dữ liệu preview media
     const [dataPreviewMedia, setDataPreviewMedia] = useState();
     const openModalPreview = (media) => {
         setDataPreviewMedia(media)
     };
-    // console.log(dataPreviewMedia)
-    //Popup dấu 3 chấm
 
+    //Popup dấu 3 chấm
     const [openMenuCaseId, setOpenMenuCaseId] = useState(null);
 
     // Hàm mở menu cho case cụ thể
@@ -881,10 +780,9 @@ export default () => {
             document.removeEventListener('click', handleClickOutside);
         };
     }, [openMenuCaseId]);
-    ////Message
+
+    // Thu gọn tin nhắn
     const [showFullMessage, setShowFullMessage] = useState(false);
-
-
     const toggleShowFullMessage = (id) => {
         setShowFullMessage(prevState => ({
             ...prevState,
@@ -892,17 +790,21 @@ export default () => {
         }));
     };
 
-
+    // Thêm Case mới
     const submitPostCase = (e) => {
         e.preventDefault();
+
         const { casetitle, casetype, productname, issue } = postCase;
         const errors = {};
+
         if (!casetitle) {
             errors.casetitle = lang["error.input"];
         }
+
         if (!productname) {
             errors.productname = lang["error.input"];
         }
+
         if (!issue) {
             errors.issue = lang["error.input"];
         }
@@ -912,7 +814,6 @@ export default () => {
             return;
         }
 
-        // console.log(_token);
         const requestBody = {
             checkCustomer: {
                 username,
@@ -931,10 +832,7 @@ export default () => {
             ),
             "11P": mappedArray
         };
-        
-
-        console.log(936,requestBody)
-
+        // console.log(936,requestBody)
         fetch(`${proxy()}/api/EF381DD02A6A4FF8B087D5B6BCDE36C9`, {
             method: "POST",
             headers: {
@@ -967,35 +865,36 @@ export default () => {
                         text: lang["faild create"],
                         icon: "error",
                         showConfirmButton: true,
-                        // confirmButtonText: lang["back"],
                         cancelButtonText: lang["btn.cancel"],
-                        // showCancelButton: true,
                     })
                 }
             });
 
     };
-
+    // Cập nhật Case
     const submitUpdateCase = (e) => {
         e.preventDefault();
 
         const { title, productname, issue } = caseUpdate;
         const errors = {};
+
         if (!title) {
             errors.title = lang["error.input"];
         }
+
         if (!productname) {
             errors.productname = lang["error.input"];
         }
+
         if (!issue) {
             errors.issue = lang["error.input"];
         }
-
 
         if (Object.keys(errors).length > 0) {
             setErrorMessagesUpdate(errors);
             return;
         }
+
         const requestBody = {
             checkCustomer: {
                 username,
@@ -1009,7 +908,6 @@ export default () => {
                 (caseUpdate.imgcase !== '' ? caseUpdate.imgcase : null),
             "1ID": caseUpdate.issue
         };
-
 
         // Kiểm tra selectedImage và thêm "2CI" nếu có giá trị
         if (selectedImage && selectedImage !== undefined) {
@@ -1037,7 +935,6 @@ export default () => {
             }
         }
 
-
         // console.log("data body", requestBody)
         fetch(`${proxy()}/api/56ABDE49FFD24A09B89174526314F4B8`, {
             method: "POST",
@@ -1050,6 +947,7 @@ export default () => {
             .then((res) => res.json())
             .then((resp) => {
                 const { Success, content, data, status } = resp;
+
                 if (Success) {
                     Swal.fire({
                         title: lang["success"],
@@ -1074,12 +972,11 @@ export default () => {
                     })
                 }
             });
-
     };
 
     const [selectedImagesSent, setSelectedImagesSent] = useState([]);
-    // console.log(selectedImagesSent)
-    // Hàm check totalSize
+
+    // Hàm kiểm tra dung lượng file tải lên
     const calculateTotalSize = (additionalFiles) => {
         return selectedImagesSent.reduce((acc, file) => acc + file.size, 0) + additionalFiles.reduce((acc, file) => acc + file.size, 0);
     };
@@ -1098,7 +995,7 @@ export default () => {
     const handleImageChangeSent = async (e) => {
         const newFiles = Array.from(e.target.files);
 
-        console.log(1076, newFiles);
+        // console.log(1076, newFiles);
         const imageAndVideoFiles = Array.from(newFiles).filter(file =>
             file.type.startsWith('image/') || file.type.startsWith('video/')
         );
@@ -1200,8 +1097,8 @@ export default () => {
     };
 
     const [postRating, setPostRating] = useState({});
-    // console.log(postRating)
     const [selectedThenRate, setSelectedThenRate] = useState("");
+
     const submitRate = (e) => {
         e.preventDefault();
         const requestBody = {
@@ -1268,6 +1165,7 @@ export default () => {
                 }
             });
     };
+    //  Thu hồi tin nhắn
 
     const withDrawMessage = () => {
         const requestBody = {
@@ -1278,7 +1176,7 @@ export default () => {
             "4CI": contextMenu.item["4CI"],
             "1MI": parseInt(contextMenu.item["1MI"])
         }
-        console.log(requestBody)
+        // console.log(requestBody)
         fetch(`${proxy()}/api/600303965B5F45299EDDBB47AFF407E1`, {
             headers: {
                 Authorization: _token,
@@ -1290,8 +1188,7 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { Success, data, activated, status, content } = resp;
-                console.log(resp)
-                // setDataMessageMedia(resp.Media)
+
                 if (Success) {
                     callApiMessage()
                     callApiMessageMedia()
@@ -1303,16 +1200,7 @@ export default () => {
             })
     }
 
-    // useEffect(() => {
-    //     callApiMessage()
-    //     callApiMessageMedia()
-    //     Promise.all([callApiMessage(), callApiMessageMedia()])
-    //         .then(() => {
-    //             mergedDataMessage();
-    //         });
-
-    // }, [selectedCaseDetail])
-    // console.log(functions.isVideoFormat("http://115.78.237.91:8300/MDSManagement/TSS_Ticket/Attach/2023-12/337_SampleVideo_1280x720_1mb.mp4"))
+    // Gửi tin nhắn 
     const submitMessage = (e) => {
         e.preventDefault();
 
@@ -1330,7 +1218,7 @@ export default () => {
                     "5U": item.base64.split('base64,').pop()
                 }))
             };
-            console.log("body", requestBody);
+            // console.log("body", requestBody);
 
             fetch(`${proxy()}/api/50DA7C504DF5439AA5FFE8D734D7CA79`, {
                 method: "POST",
@@ -1373,7 +1261,6 @@ export default () => {
         }
     };
 
-
     const [isDragging, setIsDragging] = useState(false);
 
     const handleDragEnter = (e) => {
@@ -1390,33 +1277,16 @@ export default () => {
         e.preventDefault();
     };
 
-    // const handleFileDrop = (e) => {
-    //     e.preventDefault();
-    //     setIsDragging(false);
-
-    //     const files = e.dataTransfer.files;
-    //     console.log(1349, files)
-    //     if (files && files.length > 0) {
-    //         // Xử lý các file được kéo vào
-    //         // Ví dụ: đọc và hiển thị ảnh hoặc video
-    //         const newMedia = Array.from(files).map(file => ({
-    //             url: URL.createObjectURL(file),
-    //             type: file.type.startsWith('image') ? 'image' : 'video'
-    //         }));
-    //         console.log(1357, newMedia)
-    //         setSelectedImagesSent(prevMedia => [...prevMedia, ...newMedia]);
-    //     }
-    // }
-
     const handleFileDrop = async (e) => {
         e.preventDefault();
         setIsDragging(false);
 
         const files = e.dataTransfer.files;
-        console.log(1349, files);
+        // console.log(1349, files);
         const imageAndVideoFiles = Array.from(files).filter(file =>
             file.type.startsWith('image/') || file.type.startsWith('video/')
         );
+
         const newMediaPromises = imageAndVideoFiles.map(async (file) => {
             const name = file.name;
             const base64 = await toBase64(file);
@@ -1441,6 +1311,7 @@ export default () => {
                 });
             }
         });
+
         if (imageAndVideoFiles.length < files.length) {
             // Có nghĩa là có một số files không phải hình ảnh hoặc video
             Swal.fire({
@@ -1455,11 +1326,12 @@ export default () => {
 
         Promise.all(newMediaPromises)
             .then((newMediaFiles) => {
-                // console.log(newMediaFiles)
+
                 const totalSize = calculateTotalSize(newMediaFiles);
-                // console.log(totalSize / 1000000);
-                // Kiểm tra nếu tổng kích thước file vượt quá 35MB (test 350000) 35 000 000
+
+                // Kiểm tra nếu tổng kích thước file vượt quá 20MB
                 if (totalSize > 20971520) {
+
                     Swal.fire({
                         title: lang['error'],
                         text: lang['File is too large'],
@@ -1473,8 +1345,8 @@ export default () => {
                 }
             })
             .catch((error) => {
-                // Xử lý lỗi nếu có
-                console.error('Error while processing files:', error);
+
+                // console.error('Error while processing files:', error);
             });
     };
 
@@ -1494,13 +1366,13 @@ export default () => {
         };
 
         fetchData();
-
         const intervalId = setInterval(fetchData, 10000); // 10 giây
         return () => clearInterval(intervalId);
     }, [selectedCaseDetail]); // Thêm các phụ thuộc nếu cần 
 
     const [dataMessagePrev, setDataMessagePrev] = useState(null);
     const [dataMessageMediaPrev, setDataMessageMediaPrev] = useState(null);
+    // Gọi dữ liệu tin nhắn
     const callApiMessage = () => {
         const requestBody = {
             checkCustomer: {
@@ -1520,17 +1392,18 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                console.log("datamessage", resp)
+                // console.log("datamessage", resp)
 
                 if (!functions.arraysAreEqual(resp.Messages, dataMessagePrev)) {
                     setDataMessage(resp.Messages);
                     setDataMessagePrev(resp.Messages); // Lưu bản sao mới
                 }
-                console.log(functions.arraysAreEqual(resp.Messages, dataMessagePrev))
+                // console.log(functions.arraysAreEqual(resp.Messages, dataMessagePrev))
                 return resp;
 
             })
     }
+    // Gọi dữ liệu Media 
     const callApiMessageMedia = () => {
         const requestBody = {
             checkCustomer: {
@@ -1550,7 +1423,7 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                console.log("data media", resp)
+                // console.log("data media", resp)
                 if (!functions.arraysAreEqual(resp.Media, dataMessageMediaPrev)) {
                     setDataMessageMedia(resp.Media);
                     setDataMessageMediaPrev(resp.Media); // Lưu bản sao mới
@@ -1558,7 +1431,7 @@ export default () => {
                 return resp;
             })
     }
-
+    // Merged tin nhắn và media
     const [dataMessageMergedPrev, setDataMessageMergedPrev] = useState(null);
     const mergedDataMessage = () => {
         if (!dataMessage || !dataMessageMedia) {
@@ -1585,7 +1458,6 @@ export default () => {
             // Lọc dữ liệu từ dataMessageMedia
             const mediaItems = dataMessageMedia.filter(mediaItem => mediaItem["2MI"].toString() === key1MI && mediaItem["5CI"] === key4CI);
 
-
             return {
                 ...messageItem,
                 media: mediaItems || [],
@@ -1593,17 +1465,12 @@ export default () => {
         });
         // setDataMessageMerged(mergedArray);
 
-
         if (!functions.arraysAreEqual(mergedArray, dataMessageMergedPrev)) {
             setDataMessageMerged(mergedArray);
             setDataMessageMergedPrev(mergedArray);
         }
     };
 
-
-    // useEffect(() => {
-    //     mergedDataMessage()
-    // }, [ dataMessage]); // Chỉ chạy effect này khi dataMessageMedia thay đổi
 
     useEffect(() => {
         mergedDataMessage()
@@ -1614,62 +1481,7 @@ export default () => {
             setDataMessageMerged([])
         }
     }, []);
-
-
-    const arr1 = [
-        {
-            "1MI": "92",
-            "1MC": "Tôi cần giúp đỡ",
-            "1PA": "/Date(1702277634197+0700)/",
-            "1PB": "Kevin Park - SOUTH KOREA",
-            "4CI": "CAS23-00268",
-            "media": []
-        },
-        {
-            "1MI": "113",
-            "1MC": "",
-            "1PA": "/Date(1702343648097+0700)/",
-            "1PB": "Kevin Park - SOUTH KOREA",
-            "4CI": "CAS23-00268",
-            "media": [
-                {
-                    "2MI": 113,
-                    "3MI": 12,
-                    "5U": "http://115.78.237.91:8300/MDSManagement/TSS_Ticket/AttachPost/2023-12/113_o.jpg",
-                    "5CI": "CAS23-00268",
-                    "2FN": "o.jpg"
-                }
-            ]
-        }
-    ]
-    const arr2 = [
-        {
-            "1MI": "92",
-            "1MC": "Tôi cần giúp đỡ",
-            "1PA": "/Date(1702277634197+0700)/",
-            "1PB": "Kevin Park - SOUTH KOREA",
-            "4CI": "CAS23-00268",
-            "media": []
-        },
-        {
-            "1MI": "113",
-            "1MC": "",
-            "1PA": "/Date(1702343648097+0700)/",
-            "1PB": "Kevin Park - SOUTH KOREA",
-            "4CI": "CAS23-00268",
-            "media": [
-                {
-                    "2MI": 113,
-                    "3MI": 12,
-                    "5U": "http://115.78.237.91:8300/MDSManagement/TSS_Ticket/AttachPost/2023-12/113_o.jpg",
-                    "5CI": "CAS23-00268",
-                    "2FN": "o.jpg"
-                }
-            ]
-        }
-    ]
-    console.log(functions.arraysAreEqual(arr1, arr2))
-
+    //  Auto scroll Bottom
     const messagesEndRef = useRef(null);
     const scrollToBottom = () => {
         setTimeout(() => {
@@ -1679,21 +1491,9 @@ export default () => {
         }, 10); // Trì hoãn 100 ms hoặc thời gian phù hợp
     };
 
-
     useEffect(scrollToBottom, [dataMessageMerged, activeTab]);
-    // const [isFirstLoad, setIsFirstLoad] = useState(true);
-
-    // useEffect(() => {
-    //     if (dataMessageMerged.length > 0 && messagesEndRef.current) {
-    //         messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
-    //         setIsFirstLoad(false);
-    //     }
-    // }, [dataMessageMerged]); // Theo dõi sự thay đổi của dataMessageMerged
-
-
-
+    
     const [contextMenu, setContextMenu] = useState({ visible: false, position: { x: 0, y: 0 }, item: null });
-
     // Hàm xử lý chuột phải
     const handleContextMenu = (event, item) => {
         event.preventDefault();
@@ -1731,9 +1531,6 @@ export default () => {
     }, [contextMenu.visible]);
 
 
-
-
-
     // Textarea Chat
     const [heightChat, setHeightChat] = useState(40);
 
@@ -1750,8 +1547,6 @@ export default () => {
         setDataMessageSent({ ...dataMessageSent, message: e.target.value });
     };
 
-
-
     const calculateHeight = () => {
         let baseHeight = 625;
         const imageAdjustment = selectedImagesSent.length > 0 ? 70 : 0; // Điều chỉnh nếu có hình ảnh
@@ -1762,32 +1557,11 @@ export default () => {
             baseHeight -= heightReduction;
         }
         // Trừ đi imageAdjustment trước khi áp dụng giới hạn tối thiểu 588
-
-
         // Đảm bảo baseHeight không thấp hơn 588
         baseHeight = Math.max(baseHeight, 585);
         baseHeight -= imageAdjustment;
-        // console.log('heightChat:', heightChat);
-        // console.log('selectedImagesSent:', selectedImagesSent.length);
-        // console.log('imageAdjustment:', imageAdjustment);
-        // console.log('baseHeight:', baseHeight);
         return `${baseHeight}px`;
     };
-
-
-    // const [isIconDisabled, setIsIconDisabled] = useState(true);
-    // useEffect(() => {
-    //     // Kiểm tra điều kiện và cập nhật trạng thái của biến isIconDisabled
-    //     if (dataMessageSent.message !== '' || selectedImagesSent.length > 0) {
-    //         setIsIconDisabled(false);
-    //     } else {
-    //         setIsIconDisabled(true);
-    //     }
-    // }, [dataMessageSent.message, selectedImagesSent]);
-
-
-
-
 
 
     return (

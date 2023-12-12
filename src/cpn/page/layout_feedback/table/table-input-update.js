@@ -1,6 +1,4 @@
-
 import React, { useState, useEffect } from 'react';
-
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMaximize, faMinimize, faDownload, faCompress, faChartBar, faPlusCircle, faCirclePlus, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft, faTrashCan, faShareSquare } from '@fortawesome/free-solid-svg-icons';
@@ -16,16 +14,13 @@ function EditableTable(props) {
         // { id: 1, col1: '', col2: '', col3: '', col4: '', col5: '', isEditing: false },
     ]);
 
-    // lưu giá trị cũ
-   // Assuming data is an array or another iterable value, you can provide an empty array as the default value.
 const [prevData, setPrevData] = useState(data ? [...data] : []);
-
-
 
     const dataProduct = props.data
     const dataStateUpdate = props.stateUpdate
     const dataCaseId = props.caseId
     // console.log(dataCaseId)
+
     const mappedArray = dataProduct?.map(item => ({
         "detailId": item["1DI"],
         "caseId": item["3CI"],
@@ -36,6 +31,7 @@ const [prevData, setPrevData] = useState(data ? [...data] : []);
         "col5": item["10Q"],
 
     }));
+
     // console.log(data)
     useEffect(() => {
         if (dataStateUpdate) {
@@ -47,9 +43,6 @@ const [prevData, setPrevData] = useState(data ? [...data] : []);
     const [selectedRowId, setSelectedRowId] = useState(null);
 
     const addRow = () => {
-
-
-
         const requestBodyProduct = {
             checkCustomer: {
                 username,
@@ -76,9 +69,6 @@ const [prevData, setPrevData] = useState(data ? [...data] : []);
 
             })
     };
-
-
-
 
     const updateRow = (updatedRows) => {
         // const updatedRow = newData.find((row) => row.detailId === rowId);
@@ -197,7 +187,6 @@ const [prevData, setPrevData] = useState(data ? [...data] : []);
 
         // Gọi hàm callback để thông báo cho component cha
         props.onDataUpdate(newData);
-
         const requestBody = {
             checkCustomer: {
                 username,
@@ -217,16 +206,11 @@ const [prevData, setPrevData] = useState(data ? [...data] : []);
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                // console.log(resp)
-
             })
     };
 
-
-
     return (
         <>
-
             <div class="d-flex mb-1 mt-1">
                 <h5>{lang["PRODUCT INFORMATION"]}</h5>
                 <FontAwesomeIcon icon={faPlusSquare} onClick={() => addRow()} className={`size-24 ml-auto  icon-add pointer `} title='Add Product Information' />
@@ -372,9 +356,7 @@ const [prevData, setPrevData] = useState(data ? [...data] : []);
                     </table>
                 }
             </div>
-
         </>
-
     );
 }
 

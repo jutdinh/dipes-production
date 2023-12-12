@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
-
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMaximize, faMinimize, faDownload, faCompress, faChartBar, faPlusCircle, faCirclePlus, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft, faTrashCan, faShareSquare } from '@fortawesome/free-solid-svg-icons';
+
+
 function EditableTable(props) {
     // console.log(props)
     const { lang, proxy, auth } = useSelector(state => state);
@@ -12,12 +12,14 @@ function EditableTable(props) {
     const _user = JSON.parse(stringifiedUser) || {}
     const username = _user.username === "administrator" ? "Mylan Digital Solution" : _user.username;
     const storedPwdString = localStorage.getItem("password_hash");
+
     const [data, setData] = useState([
         { id: 1, col1: '', col2: '', col3: '', col4: '', col5: '', isEditing: false },
     ]);
+
     const dataProduct = props.data
     const dataStateUpdate = props.stateUpdate
-    // console.log(dataProduct)
+
     const mappedArray = dataProduct?.map(item => ({
         "col1": item["2SN"],
         "col2": item["1SV"],
@@ -41,15 +43,6 @@ function EditableTable(props) {
 
         props.onDataUpdate([...data, newRow]);
     };
-
-
-
-
-
-
-
-
-
 
     const handleInputChange = (rowId, colName, value) => {
         // Cập nhật dữ liệu như trước
@@ -83,7 +76,7 @@ function EditableTable(props) {
                 );
             }
             props.onDataUpdate(data);
-        }, 100); // Thời gian chờ có thể điều chỉnh
+        }, 100);
     };
 
     const handleDeleteRow = (rowId) => {
@@ -105,14 +98,12 @@ function EditableTable(props) {
 
     return (
         <>
-
             <div class="d-flex mb-1 mt-1">
                 <h5>{lang["PRODUCT INFORMATION"]}</h5>
                 <FontAwesomeIcon icon={faPlusSquare} onClick={() => addRow()} className={`size-24 ml-auto  icon-add pointer `} title={lang["ADD PRODUCT INFORMATION"]} />
             </div>
             <div class="table-responsive">
                 {
-
                     <table className="table">
                         <thead>
                             <tr className="color-tr font-weight-bold-black">
@@ -205,7 +196,6 @@ function EditableTable(props) {
                                         onClick={() => handleRowClick(row.id)}
 
                                     >
-
                                         {row.isEditing ? (
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
                                                 <input
@@ -213,15 +203,14 @@ function EditableTable(props) {
                                                     className="form-control table-td-product-pl-5"
                                                     value={row.col5}
                                                     onChange={(e) => {
-                                                        // Kiểm tra nếu giá trị nhập vào không phải là số từ 0 đến 9, thì không cho phép cập nhật giá trị
                                                         if (/^[0-9]*$/.test(e.target.value)) {
                                                             handleInputChange(row.id, 'col5', e.target.value);
                                                         }
                                                     }}
                                                     onBlur={() => handleRowBlur(row.id)}
                                                     onFocus={() => handleFocus(row.id)}
-                                                    pattern="[0-9]*" // Chỉ cho phép nhập số từ 0 đến 9
-                                                    inputMode="numeric" // Chế độ nhập số
+                                                    pattern="[0-9]*"
+                                                    inputMode="numeric"
                                                 />
 
                                                 <FontAwesomeIcon icon={faTrashCan} onClick={() => handleDeleteRow(row.id)} className={`size-24 ml-2  icon-delete pointer `} />
@@ -229,21 +218,14 @@ function EditableTable(props) {
                                         ) : (
                                             <span class="table-td-product-pl-6">{row.col5}</span>
                                         )}
-
                                     </td>
-
                                 </tr>
                             ))}
-
                         </tbody>
                     </table>
-
                 }
             </div>
-
         </>
-
     );
 }
-
 export default EditableTable;

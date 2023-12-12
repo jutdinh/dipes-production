@@ -46,7 +46,7 @@ function App() {
     const stringifiedUser = localStorage.getItem("user");
     const user = stringifiedUser ? JSON.parse(stringifiedUser) : defaultValue;
     
-    console.log(user)
+    // console.log(user)
     if (specialURLs.indexOf(url) === -1) {
       if (!_token) {
         window.location = '/login'
