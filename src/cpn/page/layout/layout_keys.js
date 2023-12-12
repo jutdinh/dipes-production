@@ -282,9 +282,9 @@ export default (props) => {
     // Tạo đố
 
 
-    var date = new Date(1697094897137);
+    // var date = new Date(1697094897137);
 
-    // In ra ngày và giờ theo định dạng mong muốn
+    // // In ra ngày và giờ theo định dạng mong muốn
     // console.log(date.toString()); // sẽ hiển thị theo múi giờ mặc định của hệ thống
     // console.log(date.toUTCString()); // hiển thị theo UTC
 

@@ -86,14 +86,14 @@ export default () => {
                         }
                         if (activated) {
                             socket.emit("/dipe-production-user-login", { username: auth.username })
-                            if (credential.data.role === "ad" || credential.data.role === "uad") {
+                            if (credential.data?.role === "ad" || credential.data?.role === "uad") {
                                 if (credential.imported) {
                                     window.location = "/users";
                                 }
                                 else {
                                     window.location = "/";
                                 }
-                            } else if (credential.data.role === "pd") {
+                            } else if (credential.data?.role === "pd") {
                                 if (check !== "") {
                                     window.location = `/page${check}`;
                                 } else {
@@ -101,7 +101,7 @@ export default () => {
                                 }
                             }
                         } else {
-                            if (credential.data.role === "pd" || credential.data.role === "ad" || credential.data.role === "uad") {
+                            if (credential.data?.role === "pd" || credential.data?.role === "ad" || credential.data?.role === "uad") {
                                 window.location = "/active";
                             }
                             else {

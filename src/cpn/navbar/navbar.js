@@ -2,7 +2,8 @@ import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import $ from 'jquery'
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMaximize, faMinimize, faDownload, faCompress, faChartBar,faUsersGear, faHouse, faLockOpen, faPlusCircle, faCirclePlus, faCirclePlay, faRectangleXmark, faCircle, faCircleXmark, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft, faClose, faNewspaper } from '@fortawesome/free-solid-svg-icons';
 export default () => {
    const { proxy, lang, pages, functions } = useSelector(state => state)
    const { openTab } = functions
@@ -134,7 +135,8 @@ export default () => {
                   ui.status && ui.title === "HOME" ? (
                      <li key={index} className="navbar-item">
                         <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
-                           <i class="fa fa-home"></i>
+                           {/* <i class="fa fa-home"></i> */}
+                           <FontAwesomeIcon icon={faHouse} className={`size-20 mr-3`} />
                            <span>{ui.title}</span>
                         </NavLink>
                      </li>
@@ -142,14 +144,15 @@ export default () => {
                ))}
                <li className="navbar-item">
                   <NavLink to="/technical" activeClassName="nav-active">
-                     <i class=" fa fa-gears icon-technical"></i>
+                     {/* <i class=" fa fa-gears icon-technical"></i> */}
+                     <FontAwesomeIcon icon={faUsersGear} className={ `icon-technical size-20 mr-3`} />
                      <span>TECHNICAL SERVICE</span>
                   </NavLink>
                </li>
                <li>
                   <a href="#dashboard" onClick={toggleMenu} aria-expanded="false" class="dropdown-toggle">
-                     <i class="fa fa-dashboard yellow_color"></i>
-                    
+                     {/* <i class="fa fa-dashboard yellow_color"></i> */}
+                     <FontAwesomeIcon icon={faLockOpen} className={`yellow_color size-20 mr-3`} />
                      <span>ONLINE ACTIVATION</span>
                      <i class="fa "></i>
                   </a>
@@ -159,7 +162,8 @@ export default () => {
                         ui.status && ui.title !== "HOME" ? (
                            <li key={index} className="navbar-item">
                               <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
-                                 <i class="fa fa-newspaper-o"></i>
+                                 {/* <i class="fa fa-newspaper-o"></i> */}
+                                 <FontAwesomeIcon icon={faNewspaper} className={`size-20 mr-3`} />
                                  <span>{ui.title}</span>
                               </NavLink>
                            </li>

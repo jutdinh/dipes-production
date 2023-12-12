@@ -175,26 +175,92 @@ function formatDate(isoString) {
         return "";  // or maybe return a default date or another string to indicate the error
     }
 }
-function formatDateCase(isoString) {
-    if (!isoString) return "";
+
+// Day ISO
+
+// function formatDateCase(isoString) {
+//     if (!isoString) return "";
+
+//     try {
+//         const date = new Date(isoString);
+//         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+//     } catch (error) {
+//         console.error(error);
+//         return "";  // or maybe return a default date or another string to indicate the error
+//     }
+// }
+
+//
+function formatDateCase(dateString) {
+    if (!dateString) return "";
 
     try {
-        const date = new Date(isoString);
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        // Trích xuất phần số mili giây từ chuỗi
+        const match = dateString.match(/\/Date\((\d+)\+\d+\)\//);
+        if (!match) throw new Error("Invalid date format");
+
+        const milliseconds = parseInt(match[1]);
+
+        // Tạo đối tượng Date từ số mili giây và chuyển nó sang múi giờ UTC+7
+        const date = new Date(milliseconds + 7 * 60 * 60 * 1000); // Thêm 7 giờ để chuyển sang UTC+7
+
+        // Chuyển đổi thành định dạng ngày tháng
+        return date.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' });
     } catch (error) {
         console.error(error);
-        return "";  // or maybe return a default date or another string to indicate the error
+        return "";
     }
 }
 
-function formatDateMessage(isoString) {
-    if (!isoString) return "";
+//Day ISO
+// function formatDateMessage(isoString) {
+//     if (!isoString) return "";
+
+//     try {
+//         const date = new Date(isoString);
+
+//         // Định dạng ngày
+//         const day = date.getDate();
+//         let daySuffix;
+//         switch (day) {
+//             case 1: case 21: case 31: daySuffix = 'st'; break;
+//             case 2: case 22: daySuffix = 'nd'; break;
+//             case 3: case 23: daySuffix = 'rd'; break;
+//             default: daySuffix = 'th';
+//         }
+
+//         // Định dạng tháng và năm
+//         const month = date.toLocaleString('en-US', { month: 'short' });
+//         const year = date.getFullYear();
+
+//         // Định dạng thời gian
+//         const hours = date.getHours();
+//         const minutes = date.getMinutes();
+//         const formattedTime = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
+
+//         // Sử dụng dấu phẩy chỉ một lần để tách ngày tháng và năm với thời gian
+//         return `${month} ${day}${daySuffix}, ${year} ${formattedTime}`;
+//     } catch (error) {
+//         console.error(error);
+//         return "";
+//     }
+// }
+
+function formatDateMessage(dateString) {
+    if (!dateString) return "";
 
     try {
-        const date = new Date(isoString);
+        // Trích xuất số mili giây từ chuỗi
+        const match = dateString.match(/\/Date\((\d+)\+\d+\)\//);
+        if (!match) throw new Error("Invalid date format");
+
+        const milliseconds = parseInt(match[1]);
+
+        // Tạo đối tượng Date từ số mili giây và chuyển nó sang múi giờ UTC+7
+        const date = new Date(milliseconds + 7 * 60 * 60 * 1000); // Thêm 7 giờ để chuyển sang UTC+7
 
         // Định dạng ngày
-        const day = date.getDate();
+        const day = date.getUTCDate(); // Sử dụng getUTCDate() để lấy ngày theo UTC
         let daySuffix;
         switch (day) {
             case 1: case 21: case 31: daySuffix = 'st'; break;
@@ -204,12 +270,12 @@ function formatDateMessage(isoString) {
         }
 
         // Định dạng tháng và năm
-        const month = date.toLocaleString('en-US', { month: 'short' });
-        const year = date.getFullYear();
+        const month = date.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
+        const year = date.getUTCFullYear(); // Sử dụng getUTCFullYear() để lấy năm theo UTC
 
-        // Định dạng thời gian
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
+        // Định dạng thời gian theo định dạng 24 giờ
+        const hours = date.getUTCHours(); // Sử dụng getUTCHours() để lấy giờ theo UTC
+        const minutes = date.getUTCMinutes(); // Sử dụng getUTCMinutes() để lấy phút theo UTC
         const formattedTime = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0');
 
         // Sử dụng dấu phẩy chỉ một lần để tách ngày tháng và năm với thời gian
@@ -220,20 +286,47 @@ function formatDateMessage(isoString) {
     }
 }
 
+
+// function translateDateToVietnamese(dateString) {
+//     const monthNames = {
+//         "Jan": "tháng 1",
+//         "Feb": "tháng 2",
+//         "Mar": "tháng 3",
+//         "Apr": "tháng 4",
+//         "May": "tháng 5",
+//         "Jun": "tháng 6",
+//         "Jul": "tháng 7",
+//         "Aug": "tháng 8",
+//         "Sep": "tháng 9",
+//         "Oct": "tháng 10",
+//         "Nov": "tháng 11",
+//         "Dec": "tháng 12"
+//     };
+//     if (!dateString) {
+//         return "Ngày không xác định";
+//     }
+//     const parts = dateString.split(' ');
+//     const month = monthNames[parts[0]];
+//     const day = parts[1].replace(',', '');
+//     const year = parts[2];
+
+//     return `${day} ${month}, ${year}`;
+// }
+
 function translateDateToVietnamese(dateString) {
     const monthNames = {
-        "Jan": "tháng 1",
-        "Feb": "tháng 2",
-        "Mar": "tháng 3",
-        "Apr": "tháng 4",
-        "May": "tháng 5",
-        "Jun": "tháng 6",
-        "Jul": "tháng 7",
-        "Aug": "tháng 8",
-        "Sep": "tháng 9",
-        "Oct": "tháng 10",
-        "Nov": "tháng 11",
-        "Dec": "tháng 12"
+        "Jan": "1",
+        "Feb": "2",
+        "Mar": "3",
+        "Apr": "4",
+        "May": "5",
+        "Jun": "6",
+        "Jul": "7",
+        "Aug": "8",
+        "Sep": "9",
+        "Oct": "10",
+        "Nov": "11",
+        "Dec": "12"
     };
     if (!dateString) {
         return "Ngày không xác định";
@@ -243,8 +336,9 @@ function translateDateToVietnamese(dateString) {
     const day = parts[1].replace(',', '');
     const year = parts[2];
 
-    return `${day} ${month}, ${year}`;
+    return `ngày ${day} tháng ${month} năm ${year}`;
 }
+
 
 function translateDateTimeToVietnamese(dateTimeString) {
     const monthNames = {
@@ -279,7 +373,7 @@ function translateDateTimeToVietnamese(dateTimeString) {
     const time = parts[3]; // Thời gian nằm ở phần tử thứ 4 của mảng
 
     // Định dạng lại ngày giờ theo yêu cầu
-    return `${day}/${month}/${year} ${time}`;
+    return `${day}/${month}/${year}, ${time}`;
 }
 
 const isEmpty = (obj) => {
@@ -397,12 +491,70 @@ function resizeImageToFit(file, maxWidth, maxHeight, maxSizeKB, callback) {
     reader.readAsDataURL(file);
 }
 
+function renameDuplicateFiles(data) {
+    const fileNames = {};
 
+    data.forEach(item => {
+        let fileName = item["1FN"];
+        if (!fileName) {
+            // Nếu fileName là null hoặc undefined, bỏ qua lần lặp này
+            return;
+        }
+
+        if (fileNames[fileName]) {
+            // Tìm ra một tên file trùng lặp, thêm chỉ số vào cuối tên file
+            let lastDotIndex = fileName.lastIndexOf('.');
+            let baseName = lastDotIndex >= 0 ? fileName.substring(0, lastDotIndex) : fileName;
+            let extension = lastDotIndex >= 0 ? fileName.substring(lastDotIndex) : '';
+            let count = fileNames[fileName];
+            item["1FN"] = `${baseName}(${count})${extension}`;
+            fileNames[fileName]++;
+        } else {
+            // Không trùng lặp, đánh dấu tên file này
+            fileNames[fileName] = 1;
+        }
+    });
+
+    return data;
+      
+}
+
+function arraysAreEqual(arr1, arr2) {
+    if (arr1?.length !== arr2?.length) {
+        return false;
+    }
+    for (let i = 0; i < arr1?.length; i++) {
+        if (!objectsAreEqual(arr1[i], arr2[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function objectsAreEqual(obj1, obj2) {
+    for (let key in obj1) {
+        if (obj1.hasOwnProperty(key)) {
+            if (obj1[key] instanceof Array && obj2[key] instanceof Array) {
+                if (!arraysAreEqual(obj1[key], obj2[key])) {
+                    return false;
+                }
+            } else if (typeof obj1[key] === 'object' && typeof obj2[key] === 'object') {
+                if (!objectsAreEqual(obj1[key], obj2[key])) {
+                    return false;
+                }
+            } else if (obj1[key] !== obj2[key]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
 
 
 export default {
-    uid, removeDuplicate, titleCase, openTab, dateGenerator, renderDateTimeByFormat,
-    showApiResponseMessage, formatNumberWithCommas, formatNumber, generateUniqueColors,
-    formatDate, formatDateCase, formatDateMessage, translateDateToVietnamese, translateDateTimeToVietnamese, isEmpty,
-    isImageFormat, isVideoFormat, removeFileExtension, resizeImage, resizeImageToFit
+    uid, removeDuplicate, titleCase, openTab, dateGenerator,
+    renderDateTimeByFormat, showApiResponseMessage, formatNumberWithCommas, formatNumber, generateUniqueColors,
+    formatDate, formatDateCase, formatDateMessage, translateDateToVietnamese, translateDateTimeToVietnamese,
+    isEmpty, isImageFormat, isVideoFormat, removeFileExtension, resizeImage,
+    resizeImageToFit, renameDuplicateFiles, arraysAreEqual
 }

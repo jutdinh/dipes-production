@@ -17,7 +17,8 @@ function EditableTable(props) {
     ]);
 
     // lưu giá trị cũ
-    const [prevData, setPrevData] = useState([...data]);
+   // Assuming data is an array or another iterable value, you can provide an empty array as the default value.
+const [prevData, setPrevData] = useState(data ? [...data] : []);
 
 
 
@@ -68,8 +69,8 @@ function EditableTable(props) {
             .then(res => res.json())
             .then(resp => {
                 const { success, activated, status, content } = resp;
-                // console.log("Tạo hàng", resp)
-                const newRow = { detailId: resp.Detail["1ID"], caseId: dataCaseId, col1: '', col2: '', col3: '', col4: '', col5: '0', isEditing: false };
+                console.log("Tạo hàng", resp)
+                const newRow = { detailId: resp.Detail["1DI"], caseId: dataCaseId, col1: '', col2: '', col3: '', col4: '', col5: '0', isEditing: false };
                 setData([...data, newRow]);
                 props.onDataUpdate([...data, newRow]);
 
@@ -84,6 +85,7 @@ function EditableTable(props) {
         // console.log(updatedRows)
 
         const requestBodyProduct = {
+
             checkCustomer: {
                 username,
                 password: storedPwdString
@@ -97,7 +99,7 @@ function EditableTable(props) {
             "10Q": updatedRows.col5
 
         }
-        // console.log(requestBodyProduct)
+        console.log("data update product info", requestBodyProduct)
         fetch(`${proxy()}/api/988C23F3D58E4885A93EEE22D7FE4C6E`, {
             headers: {
                 Authorization: _token,
@@ -110,7 +112,7 @@ function EditableTable(props) {
             .then(resp => {
                 const { success, activated, status, content } = resp;
 
-                // console.log(resp)
+                console.log("data respon",resp)
             })
     };
 
@@ -125,7 +127,7 @@ function EditableTable(props) {
             inDebounce = setTimeout(() => func.apply(context, args), delay);
         };
     };
-    const debouncedUpdateRow = debounce(updateRow, 1000); // Đặt thời gian trễ 1000ms
+    const debouncedUpdateRow = debounce(updateRow, 1000); 
 
 
     const handleInputChange = (event, rowId, colName, value) => {
@@ -243,7 +245,7 @@ function EditableTable(props) {
                             </tr>
                         </thead>
                         <tbody>
-                            {data.length > 0 ? (
+                            {data?.length > 0 ? (
 
                                 data.map((row, index) => (
                                     <tr key={row.detailId}>

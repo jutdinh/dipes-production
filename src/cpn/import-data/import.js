@@ -18,16 +18,15 @@ export default () => {
     const [loadingImport, setLoadingImport] = useState(false);
 
     const [file, setFile] = useState({});
+
     const dispatch = useDispatch();
 
     const [uploadedJson, setUploadedJson] = useState(null);
 
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
-
         if (file) {
             const reader = new FileReader();
-
             reader.onload = (e) => {
                 try {
                     const json = JSON.parse(e.target.result);
@@ -42,27 +41,29 @@ export default () => {
                         customClass: {
                             confirmButton: 'swal2-confirm my-confirm-button-class'
                         }
-
                     })
-
                 }
             };
-
             reader.readAsText(file);
         }
     };
 
     useEffect(() => {
         const stringifiedUser = localStorage.getItem("user");
-        const user = JSON.parse(stringifiedUser)
-        const { role } = user;
-        const validPrivileges = ["uad", "ad"]
+        if (stringifiedUser) {
+            const user = JSON.parse(stringifiedUser);
+            const { role } = user;
+            const validPrivileges = ["uad", "ad"];
+    
+            if (validPrivileges.indexOf(role) === -1) {
+                window.location = "/404-notfound";
+            }
+        } else {
 
-        if( validPrivileges.indexOf( role ) == -1 ){
-            window.location = "/404-notfound"
+            window.location = "/login";
         }
-    }, [])
-
+    }, []);
+    
     const importData = async () => {
         if (!uploadedJson) {
             return;
@@ -120,10 +121,6 @@ export default () => {
             });
         }
     };
-    
-    
-    
-  
 
     const importAPI = async () => {
         // console.log("aa")
@@ -133,7 +130,6 @@ export default () => {
         }
         let isLoaded = false;
         const minimumLoadingTime = 500;
-    
         
         const loadingTimeout = setTimeout(() => {
             if (!isLoaded) {

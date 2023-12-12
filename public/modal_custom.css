@@ -36,71 +36,76 @@
 .container-fluid .row .col-md-7 .col-md-12 .white_shd .messages-wrapper {
     /* height: % */
 }
+
 .ellipsis-header-case {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%
-  }
+}
 
-  .hidden-overflow-case {
+.hidden-overflow-case {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-.no-change-textarea{
+}
+
+.no-change-textarea {
     resize: none;
     overflow-y: auto
 }
-  
+
 
 
 .container-no-attachment {
     display: flex;
     justify-content: center;
-    align-items: center; 
-    height: 120px; 
-    border: 1px solid #ccc; 
+    align-items: center;
+    height: 120px;
+    border: 1px solid #ccc;
 
-  }
-  
-  /* Đặt cho thẻ span */
-  .span-no-attachment {
+}
+
+/* Đặt cho thẻ span */
+.span-no-attachment {
     text-align: center;
-    /* Thêm thuộc tính khác tại đây nếu bạn muốn */
-  }
-  
+
+}
 
 
-.modal-header-f18{
+
+.modal-header-f18 {
     font-size: 18px;
     color: #000;
     line-height: normal;
     font-weight: 700 !important;
     text-transform: uppercase;
 }
+
 .show-more {
     font-weight: 600;
     cursor: pointer;
 }
 
-.font-weight-bold-black{
+.font-weight-bold-black {
     color: #000;
     font-weight: 700 !important;
 }
 
 
 .table-td-product-pl-5 {
-   padding-left: 5px;
-   padding-top: 0px !important;
-   padding-bottom: 0px !important;
+    padding-left: 5px;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
 }
+
 .table-td-product-pl-6 {
     padding-left: 6px;
- }
- .table-td-product-height {
+}
+
+.table-td-product-height {
     height: 49px;
- }
+}
 
 
 
@@ -129,7 +134,7 @@
 
 .modal-button-review {
     width: 120px;
-    
+
 }
 
 .align-center-case {
@@ -209,11 +214,32 @@
 .icon-rate {
     position: relative;
     display: inline-block;
-    margin: 0 10px;
+    margin: 0 15px;
+    cursor: pointer;
     /* filter: grayscale(100%); */
+}
+.send-message-button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.send-message-button:focus {
+    outline: none;
 }
 
 
+.icon-button {
+    background: none;
+    border: none;
+    padding: 0 10px 0 10px; /* Điều chỉnh giá trị padding để phù hợp */
+    cursor: pointer;
+}
+
+.icon-button:focus {
+    outline: none;
+}
 
 .icon-rate:hover {
     filter: grayscale(1%);
@@ -224,7 +250,7 @@
     position: absolute;
     z-index: 1;
     bottom: -30px;
-    left: 65%;
+    left: 85%;
     transform: translateX(-50%);
     white-space: nowrap;
     font-weight: 700;
@@ -240,7 +266,7 @@
     position: absolute;
     z-index: 1;
     bottom: -30px;
-    left: 65%;
+    left: 85%;
     transform: translateX(-50%);
     white-space: nowrap;
     font-weight: 700;
@@ -256,7 +282,7 @@
     position: absolute;
     z-index: 1;
     bottom: -30px;
-    left: 65%;
+    left: 85%;
     transform: translateX(-50%);
     white-space: nowrap;
     font-weight: 700;
@@ -272,7 +298,7 @@
     position: absolute;
     z-index: 1;
     bottom: -30px;
-    left: 65%;
+    left: 85%;
     transform: translateX(-50%);
     white-space: nowrap;
     font-weight: 700;
@@ -288,7 +314,7 @@
     position: absolute;
     z-index: 1;
     bottom: -30px;
-    left: 65%;
+    left: 85%;
     transform: translateX(-50%);
     white-space: nowrap;
     font-weight: 700;
@@ -322,15 +348,19 @@
 .icon-rate-selected .tooltip-text1 {
     display: block;
 }
+
 .icon-rate-selected .tooltip-text2 {
     display: block;
 }
+
 .icon-rate-selected .tooltip-text3 {
     display: block;
 }
+
 .icon-rate-selected .tooltip-text4 {
     display: block;
 }
+
 .icon-rate-selected .tooltip-text5 {
     display: block;
 }
@@ -370,7 +400,7 @@
     padding: 0px 0px 5px 0px;
     float: left;
     width: 100%;
-    min-height: 79.6vh
+    min-height: 77.5vh
 }
 
 .padding_infor_info_case_detail {
@@ -416,15 +446,15 @@
 }
 
 .min-h-58 {
-    
-   min-height: 58px;
+
+    min-height: 58px;
 
 }
 
 .graph_head_cus {
     padding: 5px 15px 5px;
     float: left;
- 
+
 
     width: 100%;
     border-bottom: solid #dee2e6 1px;
@@ -565,7 +595,7 @@
 
 .container-case {
     margin-top: 10px;
-    height: 644px;
+    height: 646px;
     border-radius: 4px;
     padding: 0 5px 5px 5px;
     overflow-y: auto;
@@ -636,6 +666,7 @@ img[class="scaled-hover-target"] {
     /* color: #4dd591; */
     color: #000;
 }
+
 .card-block h5 {
     font-size: 14px;
     font-weight: 700;
@@ -790,11 +821,14 @@ img[class="scaled-hover-target"] {
     margin: 10px;
     position: relative;
 }
+
 .message-container p {
-    word-wrap: break-word; /* Đảm bảo từ có thể gãy xuống hàng */
-    overflow-wrap: break-word; /* Có thể thay thế cho word-wrap */
-    max-width: 100%; /* Hoặc chiều rộng cụ thể nếu bạn muốn */
-  }
+    word-wrap: break-word;
+    /* Đảm bảo từ có thể gãy xuống hàng */
+    overflow-wrap: break-word;
+    /* Có thể thay thế cho word-wrap */
+    max-width: 100%;
+}
 
 /* Đặc biệt cho tin nhắn gửi đi */
 .sent {
@@ -864,31 +898,36 @@ img[class="scaled-hover-target"] {
     top: 50%;
     transform: translate(0, -50%);
 }
+
 .fa-disabled {
     opacity: 0.6;
     cursor: not-allowed;
-  }
+}
+
 /* Điều chỉnh cho hình ảnh trong tin nhắn */
 .message-image {
     width: 100px;
     /* height: 100px; */
     border-radius: 10px;
     margin-bottom: 5px;
-    
+
     margin-right: 5px;
 }
+
 /* Điều chỉnh cho hình ảnh trong tin nhắn */
 .message-image-user {
- margin-bottom: 5px;
+    margin-bottom: 5px;
     font-weight: 600;
     color: #000;
-   
+
 }
-.message-image img{
+
+.message-image img {
     vertical-align: middle;
     border-style: none;
 
 }
+
 .image-responsive-modal {
     max-width: 'calc(100% - 40px)';
     max-height: 'calc(100% - 10px)';
@@ -896,19 +935,21 @@ img[class="scaled-hover-target"] {
     border-radius: '8px';
     cursor: 'pointer'
 }
+
 /* Chat */
 .img-zoom {
     transition: transform 0.5s ease;
-  }
-  
-  .img-zoom:hover {
+}
+
+.img-zoom:hover {
     transform: scale(1.5);
-  }
-  .img-magnifier-container {
+}
+
+.img-magnifier-container {
     position: relative;
-  }
-  
-  .img-magnifier-lens {
+}
+
+.img-magnifier-lens {
     position: absolute;
     border: 3px solid #000;
     borderRadius: 50%;
@@ -916,8 +957,8 @@ img[class="scaled-hover-target"] {
     /* Size of the lens: */
     width: 100px;
     height: 100px;
-  }
-  
+}
+
 .chat-input-container {
     display: flex;
     align-items: center;
@@ -943,25 +984,31 @@ img[class="scaled-hover-target"] {
 .media-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 0px; /* Khoảng cách giữa các items */
+    gap: 0px;
+    /* Khoảng cách giữa các items */
 }
 
 .message-image {
-    flex: 1; /* Các items sẽ chia sẻ không gian đều nhau */
+    flex: 1;
+    /* Các items sẽ chia sẻ không gian đều nhau */
     /* max-width: 100px;   */
-    height: auto; /* Duy trì tỷ lệ */
+    height: auto;
+    /* Duy trì tỷ lệ */
 }
 
 .video-container {
     position: relative;
-    display: inline-block; 
+    display: inline-block;
     /* max-width: 100px; */
-    padding-right: 5px; 
-  
+    padding-right: 5px;
+
 }
+
 .video-container video {
-    width: 100%; /* Điều chỉnh video để vừa với container */
-    display: block; /* Loại bỏ khoảng trống dưới video */
+    width: 100%;
+    /* Điều chỉnh video để vừa với container */
+    display: block;
+    /* Loại bỏ khoảng trống dưới video */
 }
 
 .video-overlay {
@@ -970,31 +1017,61 @@ img[class="scaled-hover-target"] {
     left: 0;
     right: 5px;
     bottom: 5px;
-    background: rgba(0, 0, 0, 0.5); /* Màu nền mờ đen */
+    background: rgba(0, 0, 0, 0.5);
+    /* Màu nền mờ đen */
     z-index: 1;
-    border-radius: 10px; /* Bo tròn góc nếu video của bạn cũng có góc bo tròn */
+    border-radius: 10px;
 }
-.icon-technical{
-    color:#38ef93
+
+.icon-technical {
+    color: #38ef93
 }
+
 .video-icon {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 2; /* Icon sẽ nằm trên lớp phủ */
+    z-index: 2;
+    /* Icon sẽ nằm trên lớp phủ */
 }
+.size-20 {
+    font-size: 20px;
+}
+.chat-input-container {
+    position: relative;
+}
+.custom-placeholder-bg{
+    background-color: #d0d0d0;
+}
+.custom-placeholder {
+    
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    color: grey;
+    pointer-events: none;
+    z-index: 6;
+}
+
 .chat-input {
-  flex-grow: 1;
-  border: none;
-  padding: 10px;
-  margin-right: 10px;
-  border-radius: 15px;
-  outline: none;
-  overflow-y: auto;
-  resize: none;
-  min-height: 40px; /* Thay đổi này tùy thuộc vào cỡ chữ và padding của bạn */
-  max-height: 80px; /* Để hiển thị hai hàng */
+    position: relative;
+    z-index: 2;
+    /* Các kiểu khác cho textarea */
+}
+
+.chat-input {
+    flex-grow: 1;
+    border: none;
+    padding: 10px;
+    margin-right: 10px;
+    border-radius: 15px;
+    outline: none;
+    overflow-y: auto;
+    resize: none;
+    min-height: 40px;
+    max-height: 80px;
+    /* Để hiển thị hai hàng */
 }
 
 .chat-send-button {
@@ -1012,11 +1089,11 @@ img[class="scaled-hover-target"] {
 
 .message-image-preview {
     width: 100%;
- 
+
     max-width: 150px;
 
     border-radius: 15px;
-  
+
     margin-bottom: 10px;
 
 }
@@ -1031,7 +1108,7 @@ img[class="scaled-hover-target"] {
     justify-content: start;
     height: 60px;
     overflow-x: auto;
-   
+
 
     /* Or 'space-around' for even spacing */
 }
@@ -1040,7 +1117,8 @@ img[class="scaled-hover-target"] {
     position: relative;
     margin: 5px;
 }
-.selected-image-wrapper-add{
+
+.selected-image-wrapper-add {
     position: relative;
     margin: 5px;
 }
@@ -1067,13 +1145,20 @@ img[class="scaled-hover-target"] {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: normal; 
-    font-size: 12px; 
+    font-weight: normal;
+    font-size: 12px;
     line-height: 16px;
 }
-.size-15{
+.remove-image:hover {
+    
+    background: #3670bb;
+    
+}
+
+.size-15 {
     font-size: 15px
 }
+
 .video-duration {
     background-color: rgba(0, 0, 0, 0.7);
     color: white;
@@ -1085,9 +1170,11 @@ img[class="scaled-hover-target"] {
     width: 50px;
     font-size: 0.8rem;
 }
-.icon-close-message{
+
+.icon-close-message {
     color: red;
 }
+
 .video-duration-chat {
     background-color: rgba(0, 0, 0, 0.7);
     color: white;
@@ -1099,42 +1186,68 @@ img[class="scaled-hover-target"] {
     width: 50px;
     font-size: 0.8rem;
 }
+
 .upload-container-case-add {
     width: 100%;
-    height: 120px; /* Chiều cao cố định để chứa khoảng 2 dòng, tùy chỉnh giá trị này để phù hợp với kích thước thực tế của các hình ảnh */
+    height: 120px;
+    /* Chiều cao cố định để chứa khoảng 2 dòng, tùy chỉnh giá trị này để phù hợp với kích thước thực tế của các hình ảnh */
     display: flex;
-    flex-direction: row; /* Đặt hướng của các item là hàng ngang */
-    flex-wrap: wrap; /* Cho phép các items chuyển xuống hàng mới */
-    align-items: flex-start; /* Căn các items ở đầu container */
-    justify-content: flex-start; /* Căn các items từ bên trái */
+    flex-direction: row;
+    /* Đặt hướng của các item là hàng ngang */
+    flex-wrap: wrap;
+    /* Cho phép các items chuyển xuống hàng mới */
+    align-items: flex-start;
+    /* Căn các items ở đầu container */
+    justify-content: flex-start;
+    /* Căn các items từ bên trái */
     border: 1px solid #ced4da;
     border-radius: 4px;
     position: relative;
     padding: 5px;
-    overflow-x: hidden; /* Ẩn thanh cuộn ngang */
-    overflow-y: auto; /* Cho phép cuộn dọc nếu các items vượt quá chiều cao của container */
+    overflow-x: hidden;
+    /* Ẩn thanh cuộn ngang */
+    overflow-y: auto;
+    /* Cho phép cuộn dọc nếu các items vượt quá chiều cao của container */
 }
 
 .selected-image-wrapper-add {
     position: relative;
     margin: 5px;
-    flex: 0 0 auto; /* Đảm bảo rằng các items không co giãn */
+    flex: 0 0 auto;
+    /* Đảm bảo rằng các items không co giãn */
 }
 
 .selected-images-container-add {
     display: flex;
-    flex-direction: row; /* Các item sắp xếp theo hàng ngang */
-    flex-wrap: wrap; /* Cho phép các items chuyển xuống hàng mới */
-    width: 100%; /* Đảm bảo container chiếm toàn bộ chiều rộng của phần tử cha */
-     /* padding-bottom: 5px; */
+    flex-direction: row;
+    /* Các item sắp xếp theo hàng ngang */
+    flex-wrap: wrap;
+    /* Cho phép các items chuyển xuống hàng mới */
+    width: 100%;
+    /* Đảm bảo container chiếm toàn bộ chiều rộng của phần tử cha */
+    /* padding-bottom: 5px; */
 }
 
 .selected-image-add {
-    width: 50px; /* Chiều rộng của hình ảnh */
-    height: 50px; /* Chiều cao của hình ảnh */
-    object-fit: cover; /* Đảm bảo hình ảnh phủ đầy không gian mà không mất tỉ lệ */
-    border-radius: 10px; /* Bo góc cho hình ảnh */
+    width: 50px;
+    /* Chiều rộng của hình ảnh */
+    height: 50px;
+    /* Chiều cao của hình ảnh */
+    object-fit: cover;
+    /* Đảm bảo hình ảnh phủ đầy không gian mà không mất tỉ lệ */
+    border-radius: 10px;
+    /* Bo góc cho hình ảnh */
 }
+.dragging {
+    border: 1px dashed blue; 
+    background-color: #f9f9f9; 
+    opacity: 0.5; /* Làm mờ textarea */
+
+    overflow-y: hidden;
+}
+
+
+
 
 .remove-image-case {
     position: absolute;
@@ -1155,67 +1268,61 @@ img[class="scaled-hover-target"] {
     line-height: 16px;
 }
 
+.remove-image-case:hover {
+    background: #3670bb;
+}
 
 
 .custom-context-menu {
-    background-color: #ffffff; 
-    border: 1px solid #ddd; 
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); 
-    border-radius: 4px; 
-    padding: 8px 0; 
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    padding: 8px 0;
     /* width: 200px;  */
     width: 150px;
-    z-index: 1000; 
-  }
-  
-  .custom-context-menu ul {
-    list-style: none; /* Loại bỏ bullet points */
-    margin: 0; /* Loại bỏ margin mặc định */
-    padding: 0; /* Loại bỏ padding mặc định */
-  }
-  
-  .custom-context-menu li {
-    padding: 8px 16px; /* Padding cho mỗi mục */
-    cursor: pointer; /* Cursor dạng pointer để chỉ ra có thể click */
-    display: flex; /* Sử dụng flexbox để căn chỉnh icon và text */
-    align-items: center; /* Căn giữa các mục theo chiều dọc */
-  }
-  
-  .custom-context-menu li:hover {
-    background-color: #f7f7f7; /* Màu nền khi hover */
-  }
-  
-  .custom-context-menu li:active {
-    background-color: #efefef; /* Màu nền khi active */
-  }
-  
-  .custom-context-menu li:not(:last-child) {
-    border-bottom: 1px solid #ddd; /* Viền dưới cho mỗi mục trừ mục cuối cùng */
-  }
-  
-  .custom-context-menu li span {
-    margin-left: 8px; /* Khoảng cách giữa icon và text */
-  }
-  
-  /* Đối với icon, bạn có thể cần thêm các class cụ thể tùy thuộc vào bộ icon bạn sử dụng. */
-  
+    z-index: 1000;
+}
 
+.custom-context-menu ul {
+    list-style: none;
+    /* Loại bỏ bullet points */
+    margin: 0;
+    /* Loại bỏ margin mặc định */
+    padding: 0;
+    /* Loại bỏ padding mặc định */
+}
 
+.custom-context-menu li {
+    padding: 8px 16px;
+    /* Padding cho mỗi mục */
+    cursor: pointer;
+    /* Cursor dạng pointer để chỉ ra có thể click */
+    display: flex;
+    /* Sử dụng flexbox để căn chỉnh icon và text */
+    align-items: center;
+    /* Căn giữa các mục theo chiều dọc */
+}
 
+.custom-context-menu li:hover {
+    background-color: #f7f7f7;
+    /* Màu nền khi hover */
+}
 
+.custom-context-menu li:active {
+    background-color: #efefef;
+    /* Màu nền khi active */
+}
 
+.custom-context-menu li:not(:last-child) {
+    border-bottom: 1px solid #ddd;
+    /* Viền dưới cho mỗi mục trừ mục cuối cùng */
+}
 
-
-
-
-
-
-
-
-
-
-
-
+.custom-context-menu li span {
+    margin-left: 8px;
+    /* Khoảng cách giữa icon và text */
+}
 
 
 
@@ -1250,14 +1357,20 @@ img[class="scaled-hover-target"] {
 .custom-tab-active {
 
     background-color: #ffffff;
-}/* Thêm CSS để điều chỉnh kích thước hình ảnh trong modal */
-.modal-body img {
+}
+
+/* Thêm CSS để điều chỉnh kích thước hình ảnh trong modal */
+
+
+.modal-body .image-responsive {
     max-width: 100%;
-    max-height: 70vh; /* Giới hạn chiều cao tối đa của hình ảnh */
-    object-fit: contain; /* Đảm bảo hình ảnh không bị biến dạng */
-  }
-  
-  .modal-open-no-overflow-y {
+    max-height: 70vh;
+    /* Giới hạn chiều cao tối đa của hình ảnh */
+    object-fit: contain;
+    /* Đảm bảo hình ảnh không bị biến dạng */
+}
+
+.modal-open-no-overflow-y {
     overflow-y: hidden !important;
-    
+
 }

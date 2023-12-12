@@ -316,10 +316,10 @@
     display: inline-block;
     padding: 6px 12px;
     cursor: pointer;
-    background-color: #1a73e8; /* Màu nền của bạn */
-    color: white; /* Màu chữ của bạn */
+    background-color: #1a73e8; 
+    color: white; 
     border-radius: 4px; /* Độ cong của các góc, tùy chỉnh theo ý thích */
-    font-family: sans-serif; /* Phông chữ của bạn */
+    font-family: sans-serif;
     font-size: 14px; /* Kích thước phông chữ */
     text-align: center; /* Căn chỉnh chữ nằm giữa */
 }
@@ -828,7 +828,7 @@
 .select-container {
     position: absolute;
     top: 5px;
-    right: 18px;
+    right: 20px;
     z-index: 1;
 }
 

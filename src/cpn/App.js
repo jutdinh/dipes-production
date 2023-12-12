@@ -44,13 +44,15 @@ function App() {
     const url = window.location.pathname;
     const _token = localStorage.getItem("_token");
     const stringifiedUser = localStorage.getItem("user");
-    const user = JSON.parse(stringifiedUser) ? JSON.parse(stringifiedUser) : defaultValue
-    // console.log(user)
+    const user = stringifiedUser ? JSON.parse(stringifiedUser) : defaultValue;
+    
+    console.log(user)
     if (specialURLs.indexOf(url) === -1) {
       if (!_token) {
         window.location = '/login'
       }
       if (user) {
+        
         dispatch({
           branch: "default",
           type: "setAuthInfor",
@@ -78,7 +80,6 @@ function App() {
       // } catch (error) {
       //   console.error('Error fetching data:', error);
       // }    
-
     };
 
     dispatch({
@@ -90,7 +91,7 @@ function App() {
     let socketNotificationReceived = false;
 
     socket.on("/dipe-production-user-login", ({ username }) => {
-      if (user.username == username) {
+      if (user?.username == username) {
         Swal.fire({
           title: lang["notification"],
           text: lang["signout account"],

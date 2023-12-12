@@ -387,7 +387,7 @@ export default {
     "today": "Hôm nay",
     "newest": "Mới nhất",
     "oldest": "Cũ nhất",
-    "latest support on": "Hỗ trợ mới nhất",
+    "latest support on": "Hỗ trợ mới nhất ",
     "Posted on": "Đã đăng vào",
     "DISCUSSION": "THẢO LUẬN",
     "SUPPORT QUALITY": "CHẤT LƯỢNG HỖ TRỢ",
@@ -442,7 +442,11 @@ export default {
     "Unknown error": "Lỗi không xác định",
     "List of Errors": "Danh sách các lỗi",
     "Please check the activation file": "Vui lòng kiểm tra tập tin kích hoạt",
-    "Click to preview": "Nhấn để xem trước"
+    "Click to preview": "Nhấn để xem trước",
+    "delete image": "Xóa ảnh",
+    "Drag and drop images here": "Kéo và thả hình ảnh vào đây",
+    "Only image and video files are accepted": "Chỉ chấp nhận các tệp hình ảnh và video",
+    "Please upload an image file.": "Vui lòng tải lên một tệp hình ảnh."
 
 
     

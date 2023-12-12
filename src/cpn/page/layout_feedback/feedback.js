@@ -23,66 +23,40 @@ export default () => {
     const _user = JSON.parse(stringifiedUser) || {}
     const username = _user.username === "nhan.to" ? "Mylan Digital Solution" : _user.username;
     // const username = (_user.username === "administrator" || _user.username === "nhan.to") ? "Mylan Digital Solution" : _user.username;
-
+    // console.log(_user)
     const storedPwdString = localStorage.getItem("password_hash");
-    const [view, setView] = useState([
-        {
-            "serial_Number": "C3412J1K011N055",
-            "hardware": "1.3",
-            "frimware": "",
-            "software": "",
 
-        }, {
-            "serial_Number": "C1291J1P030N050",
-            "hardware": "1.3",
-            "frimware": "1.8.5.L.4",
-            "software": "1.0.6.1",
-
-        },
-        {
-            "serial_Number": "",
-            "hardware": "",
-            "frimware": "",
-            "software": "",
-
-        },
-        {
-            "serial_Number": "",
-            "hardware": "",
-            "frimware": "",
-            "software": "",
-
-        }
-    ])
     const [serverImage, setServerImage] = useState("");
     const [cases, setCases] = useState([]);
     // console.log(cases)
     const [caseUpdate, setCaseUpdate] = useState({});
     const [filter, setFilter] = useState({ type: 'info' });
     const [showModal, setShowModal] = useState(false);
-
+    // console.log("Dữ liệu cập nhật", caseUpdate)
     let langItem = localStorage.getItem("lang") ? localStorage.getItem("lang") : "Vi";
 
     const languages = langItem.toLowerCase();
     const [supportQuanlity, setSupportQuanlity] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
-    const [dataMessageSent, setDataMessageSent] = useState({});
+    const [dataMessageSent, setDataMessageSent] = useState({ message: "" });
     const [dataMessage, setDataMessage] = useState([]);
     const [dataMessageMedia, setDataMessageMedia] = useState([]);
     const [errorMessagesadd, setErrorMessagesadd] = useState({});
     const [dataMessageMerged, setDataMessageMerged] = useState([]);
     const [errorMessagesUpdate, setErrorMessagesUpdate] = useState({});
 
-    // console.log("data message", dataMessage)
-    // console.log("data media", dataMessageMedia)
-    // console.log("data merged", dataMessageMerged)
+
+    // console.log("data message sent", dataMessageSent)
+    console.log("data message", dataMessage)
+    console.log("data media", dataMessageMedia)
+    console.log("data merged", dataMessageMerged)
 
     const qualityToImage = {
         "Good": "i1.png",
         "Pretty good": "i2.png",
         "Medium": "i3.png",
         "Bad": "i4.png",
-        "No Reply": "i5.png"
+        "No reply": "i5.png"
     };
 
     // console.log(dataMessage)
@@ -125,6 +99,7 @@ export default () => {
     // console.log(dataMessage)
     const handleCloseModal = () => {
         setShowModal(false);
+        setAttachMedia([])
     };
 
 
@@ -154,33 +129,79 @@ export default () => {
     const [sortBy, setSortBy] = useState('newest'); // Mặc định là 'newest'
     const [sortedCases, setSortedCases] = useState([]);
     // console.log(sortedCases)
+
     const handleSortChange = (sortType) => {
         setSortBy(sortType);
     };
+
     const isToday = (date) => {
         const today = new Date();
-        const d = new Date(date);
-        return d.getDate() === today.getDate() &&
-            d.getMonth() === today.getMonth() &&
-            d.getFullYear() === today.getFullYear();
-    };
-    const sortCases = (cases, sortBy) => {
-        switch (sortBy) {
+        const dateParts = date.match(/\d+/g); // Trích xuất các phần số từ chuỗi ngày
+        if (dateParts && dateParts.length >= 2) {
+            const timestamp = parseInt(dateParts[0], 10); // Lấy timestamp
+            const timezoneOffset = parseInt(dateParts[1], 10) / 100; // Lấy offset múi giờ
 
+            // Tạo đối tượng Date từ timestamp và offset múi giờ
+            const d = new Date(timestamp + timezoneOffset * 3600000);
+
+            return (
+                d.getDate() === today.getDate() &&
+                d.getMonth() === today.getMonth() &&
+                d.getFullYear() === today.getFullYear()
+            );
+        }
+        return false; // Trả về false nếu không xử lý được định dạng ngày
+    };
+
+    const sortCases = (cases, sortBy) => {
+        if (!Array.isArray(cases)) {
+            return [];
+        }
+
+        switch (sortBy) {
             case 'today':
-                return cases.filter(caseItem => isToday(caseItem.date));
+                return cases.filter((caseItem) => isToday(caseItem.date));
             case 'aToZ':
                 return [...cases].sort((a, b) => a.title.localeCompare(b.title));
             case 'zToA':
                 return [...cases].sort((a, b) => b.title.localeCompare(a.title));
             case 'newest':
-                return [...cases].sort((a, b) => new Date(b.date) - new Date(a.date));
+                return [...cases].sort((a, b) => {
+                    const datePartsA = a.date.match(/\d+/g);
+                    const datePartsB = b.date.match(/\d+/g);
+                    if (datePartsA && datePartsA.length >= 2 && datePartsB && datePartsB.length >= 2) {
+                        const timestampA = parseInt(datePartsA[0], 10);
+                        const timestampB = parseInt(datePartsB[0], 10);
+                        const timezoneOffsetA = parseInt(datePartsA[1], 10) / 100;
+                        const timezoneOffsetB = parseInt(datePartsB[1], 10) / 100;
+                        const dateA = new Date(timestampA + timezoneOffsetA * 3600000);
+                        const dateB = new Date(timestampB + timezoneOffsetB * 3600000);
+                        return dateB - dateA;
+                    }
+                    return 0;
+                });
             case 'oldest':
-                return [...cases].sort((a, b) => new Date(a.date) - new Date(b.date));
+                return [...cases].sort((a, b) => {
+                    const datePartsA = a.date.match(/\d+/g);
+                    const datePartsB = b.date.match(/\d+/g);
+                    if (datePartsA && datePartsA.length >= 2 && datePartsB && datePartsB.length >= 2) {
+                        const timestampA = parseInt(datePartsA[0], 10);
+                        const timestampB = parseInt(datePartsB[0], 10);
+                        const timezoneOffsetA = parseInt(datePartsA[1], 10) / 100;
+                        const timezoneOffsetB = parseInt(datePartsB[1], 10) / 100;
+
+                        const dateA = new Date(timestampA + timezoneOffsetA * 3600000);
+                        const dateB = new Date(timestampB + timezoneOffsetB * 3600000);
+
+                        return dateA - dateB;
+                    }
+                    return 0;
+                });
             default:
                 return cases;
         }
     };
+
 
     useEffect(() => {
         // Cập nhật danh sách cases khi sortBy thay đổi
@@ -188,8 +209,6 @@ export default () => {
         setSortedCases(sortedCases)
         // Cập nhật UI hoặc state với danh sách đã sắp xếp
     }, [sortBy, cases]);
-
-
 
     const [currentTimestamp, setCurrentTimestamp] = useState(new Date());
 
@@ -204,33 +223,80 @@ export default () => {
         };
     }, []);
 
+    //  Day ISO
+    // const getElapsedTime = (notifyAt) => {
+    //     const notifyTimestamp = new Date(notifyAt);
+    //     const elapsedMilliseconds = currentTimestamp - notifyTimestamp;
+    //     const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
+    //     const elapsedMinutes = Math.floor(elapsedSeconds / 60);
+    //     const elapsedHours = Math.floor(elapsedMinutes / 60);
+    //     const elapsedDays = Math.floor(elapsedHours / 24);
+    //     const elapsedMonths = Math.floor(elapsedDays / 30);
+    //     const elapsedYears = Math.floor(elapsedMonths / 12);
+    //     if (elapsedYears > 0) {
+    //         return `${elapsedYears} ${lang["years ago"]}`;
+    //     } else if (elapsedMonths > 0) {
+    //         return `${elapsedMonths} ${lang["months ago"]}`;
+    //     } else if (elapsedDays > 0) {
+    //         return `${elapsedDays} ${lang["days ago"]}`;
+    //     } else if (elapsedHours > 0) {
+    //         return `${elapsedHours} ${lang["hours ago"]}`;
+    //     } else if (elapsedMinutes > 0) {
+    //         return `${elapsedMinutes} ${lang["mins ago"]}`;
+    //     } else if (elapsedMilliseconds > 0) {
+    //         return `${elapsedSeconds} ${lang["secs ago"]}`;
+    //     } else {
+    //         return lang["just now"];
+    //     }
+    // };
+
 
     const getElapsedTime = (notifyAt) => {
-        const notifyTimestamp = new Date(notifyAt);
-        const elapsedMilliseconds = currentTimestamp - notifyTimestamp;
-        const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
-        const elapsedMinutes = Math.floor(elapsedSeconds / 60);
-        const elapsedHours = Math.floor(elapsedMinutes / 60);
-        const elapsedDays = Math.floor(elapsedHours / 24);
-        const elapsedMonths = Math.floor(elapsedDays / 30);
-        const elapsedYears = Math.floor(elapsedMonths / 12);
+        if (!notifyAt) {
+            return "";
+        }
 
-        if (elapsedYears > 0) {
-            return `${elapsedYears} ${lang["years ago"]}`;
-        } else if (elapsedMonths > 0) {
-            return `${elapsedMonths} ${lang["months ago"]}`;
-        } else if (elapsedDays > 0) {
-            return `${elapsedDays} ${lang["days ago"]}`;
-        } else if (elapsedHours > 0) {
-            return `${elapsedHours} ${lang["hours ago"]}`;
-        } else if (elapsedMinutes > 0) {
-            return `${elapsedMinutes} ${lang["mins ago"]}`;
-        } else if (elapsedMilliseconds > 0) {
-            return `${elapsedSeconds} ${lang["secs ago"]}`;
-        } else {
-            return lang["just now"];
+        try {
+            // Trích xuất phần số từ chuỗi ngày
+            const match = notifyAt.match(/\/Date\((\d+)\+\d+\)\//);
+            if (!match) {
+                throw new Error("Invalid date format");
+            }
+
+            const currentTimestamp = Date.now();
+            const notifyTimestamp = new Date(parseInt(match[1], 10));
+            const elapsedMilliseconds = currentTimestamp - notifyTimestamp;
+            const elapsedSeconds = Math.floor(elapsedMilliseconds / 1000);
+            const elapsedMinutes = Math.floor(elapsedSeconds / 60);
+            const elapsedHours = Math.floor(elapsedMinutes / 60);
+            const elapsedDays = Math.floor(elapsedHours / 24);
+            const elapsedMonths = Math.floor(elapsedDays / 30);
+            const elapsedYears = Math.floor(elapsedMonths / 12);
+
+            if (elapsedYears > 0) {
+                return `${elapsedYears} ${lang["years ago"]}`;
+            } else if (elapsedMonths > 0) {
+                return `${elapsedMonths} ${lang["months ago"]}`;
+            } else if (elapsedDays > 0) {
+                return `${elapsedDays} ${lang["days ago"]}`;
+            } else if (elapsedHours > 0) {
+                return `${elapsedHours} ${lang["hours ago"]}`;
+            } else if (elapsedMinutes > 0) {
+                return `${elapsedMinutes} ${lang["mins ago"]}`;
+            } else if (elapsedMilliseconds > 0) {
+                return `${elapsedSeconds} ${lang["secs ago"]}`;
+            } else {
+                return lang["just now"];
+            }
+        } catch (error) {
+            console.error(error);
+            return "";
         }
     };
+
+
+
+
     const [dataCaseDetail, setDataCaseDetail] = useState({});
     // console.log(dataCaseDetail)
     const [selectedCaseDetail, setSelectedCaseDetail] = useState("");
@@ -262,7 +328,7 @@ export default () => {
 
             const { success, data, activated, status, content } = resp;
             // console.log("Product infor", resp)
-            setTableDataProduct(resp.Products);
+            setTableDataProduct(resp.Details);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -270,23 +336,69 @@ export default () => {
 
 
     const dataUpdateCase = (dataUpdate) => {
-        // console.log(dataUpdate)
-        setCaseUpdate(dataUpdate)
+
+        const requestBody = {
+            checkCustomer: {
+                username,
+                password: storedPwdString
+            },
+            "1CI": dataUpdate.id
+        }
+        fetch(`${proxy()}/api/1281201C63B6454BB5629E2DFE1186BD`, {
+            headers: {
+                Authorization: _token,
+                "content-type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(requestBody)
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { Success, data, activated, status, content } = resp;
+                // console.log(resp)
+                const fieldMappings = resp.fields.reduce((acc, field) => {
+                    acc[field.fomular_alias] = field.field_name;
+                    return acc;
+                }, {});
+
+                const mappedCase = Object.keys(resp.Case).reduce((newCase, key) => {
+                    const newKey = fieldMappings[key] || key;
+                    newCase[newKey] = resp.Case[key];
+                    return newCase;
+                }, {});
+
+                // console.log(427, mappedCase);
+                const caseDetail = {
+                    id: mappedCase["CASE ID"],
+                    title: mappedCase["CASE TITLE"],
+                    casetype: mappedCase["CASE TYPE"],
+                    productname: mappedCase["2PN"],
+                    date: mappedCase["CREATED DATE"],
+                    issue: mappedCase["ISSUE DESCRIPTION"],
+                    customer: mappedCase["CUSTOMER"],
+                    status: mappedCase["STATUS"],
+                    imgcase: mappedCase["CASE IMAGE"],
+                    solution: mappedCase["SOLUTION DESCRIPTION"],
+                    attachMedia: mappedCase["1CA"],
+                    supportquanlity: mappedCase["SUPPORT QUALITY"],
+                    supportdescription: mappedCase["SUPPORT QUALITY DESCRIPTION"]
+                };
+                // console.log(442, caseDetail);
+                setCaseUpdate(caseDetail)
+            })
     }
-
-
 
     const handlePageDetail = (caseid) => {
         // đặt lại giá trị support quality
         setRating(null)
         setPostRating({})
         setDataCaseDetail({})
-        // 
         fetchDataProduct(caseid);
         // console.log(caseid)
         setTableDataProduct([]);
 
         setSelectedCaseDetail(caseid.id)
+        localStorage.setItem('selectedCaseDetail', caseid.id);
 
         setShowPageDetail(true)
         setShowPageAdd(false)
@@ -298,6 +410,16 @@ export default () => {
         // List Product informatio
 
     }
+
+    useEffect(() => {
+        const storedSelectedCaseDetail = localStorage.getItem('selectedCaseDetail');
+        if (storedSelectedCaseDetail) {
+            setSelectedCaseDetail(storedSelectedCaseDetail);
+            const caseid = { id: storedSelectedCaseDetail }
+            handlePageDetail(caseid)
+        }
+    }, [selectedCaseDetail]);
+
     const callApiCaseDetail = (caseid) => {
         const requestBody = {
             checkCustomer: {
@@ -330,7 +452,7 @@ export default () => {
                     return newCase;
                 }, {});
 
-                // console.log(mappedCase);
+                // console.log(427, mappedCase);
 
                 const caseDetail = {
                     id: mappedCase["CASE ID"],
@@ -343,9 +465,10 @@ export default () => {
                     solution: mappedCase["SOLUTION DESCRIPTION"],
                     attachMedia: mappedCase["1CA"],
                     supportquanlity: mappedCase["SUPPORT QUALITY"],
-                    supportdescription: mappedCase["SUPPORT QUALITY DESCRIPTION"]
+                    supportdescription: mappedCase["SUPPORT QUALITY DESCRIPTION"],
+                    lastedsupport: mappedCase["16A"]
                 };
-                // console.log(caseDetail);
+                // console.log(442, caseDetail);
                 setDataCaseDetail(caseDetail);
 
             })
@@ -365,10 +488,7 @@ export default () => {
     const handleTabClick = (tab, caseid) => {
         // console.log(caseid)
         setActiveTab(tab);
-        
-            fetchDataProduct(caseid)
-        
-
+        fetchDataProduct(caseid)
     };
 
     // Sử dụng useEffect để lưu trạng thái activeTab vào localStorage khi có sự thay đổi
@@ -409,7 +529,7 @@ export default () => {
     }, [dataCaseDetail, selectedCaseDetail]);
     ////// Mặc định chọn trang đầu theo sắp xếp 
     useEffect(() => {
-        if (sortedCases.length > 0 && selectedThenRate === "") {
+        if (selectedCaseDetail === "" && sortedCases.length > 0 && selectedThenRate === "") {
             const idCase = sortedCases?.[0]
             handlePageDetail(idCase)
         }
@@ -505,7 +625,7 @@ export default () => {
                 }, {});
 
                 // Bước 2: Map dữ liệu Cases sang tên trường mới
-                const mappedCases = resp.Cases.map((caseItem) => {
+                const mappedCases = resp.Cases?.map((caseItem) => {
                     return Object.keys(caseItem).reduce((newCase, key) => {
                         const newKey = fieldMappings[key] || key; // Sử dụng field_name mới nếu tồn tại, nếu không giữ nguyên key
                         newCase[newKey] = caseItem[key];
@@ -513,8 +633,8 @@ export default () => {
                     }, {});
                 });
 
-                // console.log(mappedCases);
-                const caseTitlesAndDates = mappedCases.map((caseItem) => ({
+                // console.log(610, mappedCases);
+                const caseTitlesAndDates = mappedCases?.map((caseItem) => ({
                     id: caseItem["CASE ID"],
                     title: caseItem["CASE TITLE"],
                     date: caseItem["CREATED DATE"],
@@ -525,11 +645,13 @@ export default () => {
                     caseimage: caseItem["CASE IMAGE"],
                     attachMedia: caseItem["1CA"],
                     supportquanlity: caseItem["SUPPORT QUALITY"],
-                    supportdescription: caseItem["SUPPORT QUALITY DESCRIPTION"]
+                    supportdescription: caseItem["SUPPORT QUALITY DESCRIPTION"],
+                    lastpostedby: caseItem["1LPB"],
+                    lastpostedat: caseItem["1LPA"]
 
                 }));
 
-                // console.log(caseTitlesAndDates);
+                // console.log(626, caseTitlesAndDates);
                 setCases(caseTitlesAndDates)
             })
     }
@@ -541,11 +663,7 @@ export default () => {
 
 
 
-    useEffect(() => {
-        $('#messages-wrapper').css({
-            height: 0
-        })
-    }, [view])
+
 
     //////Ảnh chính
     const [selectedImage, setSelectedImage] = useState(null);
@@ -570,44 +688,51 @@ export default () => {
     //         }
     //     }
     // };
+
+
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             if (file.type.match('image.*')) {
-                // console.log("Kích thước ban đầu (bytes):", (file.size / 1024))
-                if (file.size <= 0.1 * 1024 * 1024) {
-                    // Nếu kích thước file nhỏ hơn 5MB, đọc file như bình thường
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        setSelectedImage(e.target.result);
-                        setErrorMessage('');
-                    };
+                //    console.log("Kích thước ban đầu (bytes):", (file.size / 1024))
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    setSelectedImage(event.target.result);
+                };
+                reader.onerror = (error) => {
+                    // console.error('Error reading file:', error);
+                    Swal.fire({
+                        title: lang["error"],
+                        text: lang["An error occurred while reading the file."],
+                        icon: "error",
+                        confirmButtonText: lang["confirm"]
+                    });
+                };
+                if (file.size <= 0.4 * 1024 * 1024) {
                     reader.readAsDataURL(file);
                 } else {
-                    // Sử dụng hàm
-
-                    // Resize nếu file lớn hơn 5MB
                     functions.resizeImageToFit(file, 1024, 768, 2000, (resizedBlob, isResized) => {
-                        const reader = new FileReader();
-                        // console.log("Kích thước sau khi resize (bytes):", (resizedBlob.size/1024));
+                        //  console.log("Kích thước sau khi resize (bytes):", (resizedBlob.size/1024));
                         // if (isResized) {
-                        //     console.log("Ảnh đã được resize");
+                        console.log("Ảnh đã được r/esize");
                         // } else {
-                        //     console.log("Ảnh giữ nguyên kích thước gốc");
+                        // console.log("Ảnh giữ nguyên kích thước gốc");
                         // }
-                        reader.onload = (e) => {
-                            setSelectedImage(e.target.result);
-                            setErrorMessage('');
-                        };
                         reader.readAsDataURL(resizedBlob);
                     });
                 }
             } else {
-                setErrorMessage('Please upload an image file.');
-                setSelectedImage(null);
+                Swal.fire({
+                    title: lang["error"],
+                    text: lang["Please upload an image file."],
+                    icon: "error",
+                    confirmButtonText: lang["confirm"]
+                });
+                e.target.value = ''; // Reset the input value
             }
         }
     };
+
     //Ảnh phụ
     const removeImageCase = (e) => {
         e.preventDefault();
@@ -618,7 +743,23 @@ export default () => {
     // console.log("anh phụ", attachMedia)
 
     const handleAttachMedia = (e) => {
-        const newFiles = Array.from(e.target.files);
+        const newFiles = Array.from(e.target.files).filter(file =>
+            file.type.startsWith('image/') || file.type.startsWith('video/')
+        );
+
+        // Notify user if some files were filtered out
+        if (newFiles.length < e.target.files.length) {
+            Swal.fire({
+                title: lang['error'],
+                text: lang['Only image and video files are accepted'],
+                icon: 'error',
+                showConfirmButton: true,
+                confirmButtonText: lang['confirm'],
+                allowOutsideClick: false,
+            });
+            e.target.value = null; // Reset the input value
+            return; // Exit the function if there are invalid files
+        }
 
         const newMediaPromises = newFiles.map(file => {
             return new Promise((resolve) => {
@@ -680,7 +821,7 @@ export default () => {
         e.preventDefault();
         setCaseUpdate(prevState => ({
             ...prevState,
-            caseimage: '' // Cập nhật caseimage thành rỗng
+            imgcase: '' // Cập nhật caseimage thành rỗng
         }));
     };
 
@@ -780,15 +921,19 @@ export default () => {
             "1CT": postCase.casetitle,
             "2CT": postCase.casetype,
             "2PN": postCase.productname,
-            "2CI": selectedImage,
+            "2CI": selectedImage ? selectedImage.split('base64,').pop() : null, // Kiểm tra nếu selectedImage có giá trị
             "1ID": postCase.issue,
-            "1CA": attachMedia.map(item => ({
-                "1FN": item.name,
-                "Base64": item.dataUrl.split('base64,').pop()
-            })),
+            "1CA": functions.renameDuplicateFiles(
+                attachMedia.map(item => ({
+                    "1FN": item.name,
+                    "Base64": item.dataUrl ? item.dataUrl.split('base64,').pop() : null // Kiểm tra nếu item.dataUrl có giá trị
+                }))
+            ),
             "11P": mappedArray
-        }
-        // console.log(requestBody)
+        };
+        
+
+        console.log(936,requestBody)
 
         fetch(`${proxy()}/api/EF381DD02A6A4FF8B087D5B6BCDE36C9`, {
             method: "POST",
@@ -860,19 +1005,39 @@ export default () => {
             "1CT": caseUpdate.title,
             "2CT": caseUpdate.casetype,
             "2PN": caseUpdate.productname,
-            "2CI": selectedImage, //selectedImage caseUpdate.caseimage
-            "1ID": caseUpdate.issue,
-            "1CA": attachMedia.map(item => ({
+            "2CI": (selectedImage && selectedImage !== null) ? selectedImage?.split('base64,').pop() :
+                (caseUpdate.imgcase !== '' ? caseUpdate.imgcase : null),
+            "1ID": caseUpdate.issue
+        };
+
+
+        // Kiểm tra selectedImage và thêm "2CI" nếu có giá trị
+        if (selectedImage && selectedImage !== undefined) {
+            requestBody["2CI"] = selectedImage?.split('base64,').pop();
+        }
+
+        // Kiểm tra attachMedia và thêm "1CA" nếu có giá trị
+        if (attachMedia) {
+            const mediaItems = attachMedia.map(item => ({
                 "1II": null,
                 "1FN": item.name,
                 "Base64": item.dataUrl.split('base64,').pop()
-            })).concat(caseUpdate.attachMedia.map(item => ({
-                "1II": item["1II"],
-                "1FN": item["1FN"],
-                "Base64": null
-            })
-            )),
+            }));
+
+            if (caseUpdate?.attachMedia) {
+                const existingMediaItems = caseUpdate.attachMedia.map(item => ({
+                    "1II": `${item["1II"]}`,
+                    "1FN": item["1FN"],
+                    "Base64": null
+                }));
+
+                requestBody["1CA"] = functions.renameDuplicateFiles(mediaItems.concat(existingMediaItems))
+            } else {
+                requestBody["1CA"] = functions.renameDuplicateFiles(mediaItems);
+            }
         }
+
+
         // console.log("data body", requestBody)
         fetch(`${proxy()}/api/56ABDE49FFD24A09B89174526314F4B8`, {
             method: "POST",
@@ -932,9 +1097,12 @@ export default () => {
 
     const handleImageChangeSent = async (e) => {
         const newFiles = Array.from(e.target.files);
-        // console.log(newFiles);
 
-        const newMediaPromises = newFiles.map(async file => {
+        console.log(1076, newFiles);
+        const imageAndVideoFiles = Array.from(newFiles).filter(file =>
+            file.type.startsWith('image/') || file.type.startsWith('video/')
+        );
+        const newMediaPromises = imageAndVideoFiles.map(async (file) => {
             const name = file.name;
             const base64 = await toBase64(file);
             if (file.type.startsWith('video/')) {
@@ -958,7 +1126,17 @@ export default () => {
                 });
             }
         });
-
+        if (imageAndVideoFiles.length < newFiles.length) {
+            // Có nghĩa là có một số files không phải hình ảnh hoặc video
+            Swal.fire({
+                title: lang['error'],
+                text: lang['Only image and video files are accepted'],
+                icon: 'error',
+                showConfirmButton: true,
+                confirmButtonText: lang['confirm'],
+                allowOutsideClick: false,
+            });
+        }
         Promise.all(newMediaPromises).then(newMediaFiles => {
             // console.log(newMediaFiles)
             const totalSize = calculateTotalSize(newMediaFiles);
@@ -979,6 +1157,10 @@ export default () => {
             }
             e.target.value = null;
         });
+
+        if (textareaRef.current) {
+            textareaRef.current.focus();
+        }
     };
 
 
@@ -1094,8 +1276,9 @@ export default () => {
                 password: storedPwdString
             },
             "4CI": contextMenu.item["4CI"],
-            "1MI": contextMenu.item["1MI"]
+            "1MI": parseInt(contextMenu.item["1MI"])
         }
+        console.log(requestBody)
         fetch(`${proxy()}/api/600303965B5F45299EDDBB47AFF407E1`, {
             headers: {
                 Authorization: _token,
@@ -1107,7 +1290,7 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { Success, data, activated, status, content } = resp;
-                // console.log(resp)
+                console.log(resp)
                 // setDataMessageMedia(resp.Media)
                 if (Success) {
                     callApiMessage()
@@ -1129,23 +1312,26 @@ export default () => {
     //         });
 
     // }, [selectedCaseDetail])
-
+    // console.log(functions.isVideoFormat("http://115.78.237.91:8300/MDSManagement/TSS_Ticket/Attach/2023-12/337_SampleVideo_1280x720_1mb.mp4"))
     const submitMessage = (e) => {
         e.preventDefault();
-        const requestBody = {
-            checkCustomer: {
-                username,
-                password: storedPwdString
-            },
-            "4CI": selectedCaseDetail,
-            "1MC": dataMessageSent.message,
-            "1MM": selectedImagesSent.map(item => ({
-                "2FN": item.name,
-                "5U": item.base64.split('base64,').pop()
-            }))
-        }
-        // console.log(requestBody)
-        if (/\S/.test(dataMessageSent.message || dataMessageSent.length > 0)) {
+
+        // Kiểm tra nếu có tin nhắn hoặc hình ảnh thực sự
+        if (dataMessageSent.message.trim() !== '' || selectedImagesSent.length > 0) {
+            const requestBody = {
+                checkCustomer: {
+                    username,
+                    password: storedPwdString
+                },
+                "4CI": selectedCaseDetail,
+                "1MC": dataMessageSent.message,
+                "1MM": selectedImagesSent.map(item => ({
+                    "2FN": item.name,
+                    "5U": item.base64.split('base64,').pop()
+                }))
+            };
+            console.log("body", requestBody);
+
             fetch(`${proxy()}/api/50DA7C504DF5439AA5FFE8D734D7CA79`, {
                 method: "POST",
                 headers: {
@@ -1157,29 +1343,148 @@ export default () => {
                 .then((res) => res.json())
                 .then((resp) => {
                     const { Success, content, data, status } = resp;
-                    // console.log(resp) 
+                    // Xử lý phản hồi từ máy chủ
                     if (Success) {
-                        callApiMessage()
-                        callApiMessageMedia()
+                        // Gửi lại yêu cầu và xử lý phản hồi
                         Promise.all([callApiMessage(), callApiMessageMedia()])
                             .then(() => {
                                 mergedDataMessage();
                             });
-                        setDataMessageSent({ message: '' });
 
+                        // Xóa tin nhắn và cài đặt lại chiều cao
+                        setDataMessageSent({ message: "" });
                         if (textareaRef.current) {
                             textareaRef.current.style.height = '40px';
                         }
-                        setHeightChat(40)
+                        setHeightChat(40);
+
                         // Cập nhật các states khác
                         setSelectedImagesSent([]);
+                    } else {
+                        // Xử lý trường hợp lỗi nếu cần
+                        console.error("Error:", content);
+                        // Hiển thị thông báo lỗi cho người dùng nếu cần
                     }
+                })
+                .catch((error) => {
+                    // Xử lý lỗi nếu có lỗi trong quá trình gửi yêu cầu
+                    console.error('Error while sending request:', error);
                 });
         }
-
-
     };
 
+
+    const [isDragging, setIsDragging] = useState(false);
+
+    const handleDragEnter = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+    };
+
+    // const handleFileDrop = (e) => {
+    //     e.preventDefault();
+    //     setIsDragging(false);
+
+    //     const files = e.dataTransfer.files;
+    //     console.log(1349, files)
+    //     if (files && files.length > 0) {
+    //         // Xử lý các file được kéo vào
+    //         // Ví dụ: đọc và hiển thị ảnh hoặc video
+    //         const newMedia = Array.from(files).map(file => ({
+    //             url: URL.createObjectURL(file),
+    //             type: file.type.startsWith('image') ? 'image' : 'video'
+    //         }));
+    //         console.log(1357, newMedia)
+    //         setSelectedImagesSent(prevMedia => [...prevMedia, ...newMedia]);
+    //     }
+    // }
+
+    const handleFileDrop = async (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+
+        const files = e.dataTransfer.files;
+        console.log(1349, files);
+        const imageAndVideoFiles = Array.from(files).filter(file =>
+            file.type.startsWith('image/') || file.type.startsWith('video/')
+        );
+        const newMediaPromises = imageAndVideoFiles.map(async (file) => {
+            const name = file.name;
+            const base64 = await toBase64(file);
+            if (file.type.startsWith('video/')) {
+                // Sử dụng hàm getVideoThumbnail để lấy thông tin thumbnail và duration
+                return getVideoThumbnail(file).then(({ thumbnailUrl, duration }) => ({
+                    name: name,
+                    size: file.size,
+                    url: URL.createObjectURL(file),
+                    type: 'video',
+                    base64: base64,
+                    cover: thumbnailUrl, // Sử dụng URL của ảnh bìa từ hàm getVideoThumbnail
+                    duration, // Sử dụng thời lượng từ hàm getVideoThumbnail
+                }));
+            } else {
+                return Promise.resolve({
+                    name: name,
+                    size: file.size,
+                    base64: base64,
+                    url: URL.createObjectURL(file),
+                    type: 'image',
+                });
+            }
+        });
+        if (imageAndVideoFiles.length < files.length) {
+            // Có nghĩa là có một số files không phải hình ảnh hoặc video
+            Swal.fire({
+                title: lang['error'],
+                text: lang['Only image and video files are accepted'],
+                icon: 'error',
+                showConfirmButton: true,
+                confirmButtonText: lang['confirm'],
+                allowOutsideClick: false,
+            });
+        }
+
+        Promise.all(newMediaPromises)
+            .then((newMediaFiles) => {
+                // console.log(newMediaFiles)
+                const totalSize = calculateTotalSize(newMediaFiles);
+                // console.log(totalSize / 1000000);
+                // Kiểm tra nếu tổng kích thước file vượt quá 35MB (test 350000) 35 000 000
+                if (totalSize > 20971520) {
+                    Swal.fire({
+                        title: lang['error'],
+                        text: lang['File is too large'],
+                        icon: 'error',
+                        showConfirmButton: true,
+                        confirmButtonText: lang['confirm'],
+                        allowOutsideClick: false,
+                    });
+                } else {
+                    setSelectedImagesSent((prevMedia) => [...prevMedia, ...newMediaFiles]);
+                }
+            })
+            .catch((error) => {
+                // Xử lý lỗi nếu có
+                console.error('Error while processing files:', error);
+            });
+    };
+
+    const getPlaceholder = () => {
+        if (isDragging) {
+            return <span className="custom-placeholder ">{lang["Drag and drop images here"]}</span>;
+        } else {
+            return dataMessageSent.message ? '' : <span className="custom-placeholder">{lang["Type a message"]}</span>;
+        }
+    };
     //Tin nhắn
     // Goi api sau 10s
     useEffect(() => {
@@ -1215,12 +1520,13 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                // console.log(resp)
+                console.log("datamessage", resp)
 
-                if (!isEqual(resp.Messages, dataMessagePrev)) {
+                if (!functions.arraysAreEqual(resp.Messages, dataMessagePrev)) {
                     setDataMessage(resp.Messages);
                     setDataMessagePrev(resp.Messages); // Lưu bản sao mới
                 }
+                console.log(functions.arraysAreEqual(resp.Messages, dataMessagePrev))
                 return resp;
 
             })
@@ -1244,17 +1550,14 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                // console.log(resp)
-                if (!isEqual(resp.Media, dataMessageMediaPrev)) {
+                console.log("data media", resp)
+                if (!functions.arraysAreEqual(resp.Media, dataMessageMediaPrev)) {
                     setDataMessageMedia(resp.Media);
                     setDataMessageMediaPrev(resp.Media); // Lưu bản sao mới
                 }
                 return resp;
             })
     }
-
-
-
 
     const [dataMessageMergedPrev, setDataMessageMergedPrev] = useState(null);
     const mergedDataMessage = () => {
@@ -1280,22 +1583,22 @@ export default () => {
             const messageItem = dataMessage.find(item => item["1MI"] === key1MI && item["4CI"] === key4CI);
 
             // Lọc dữ liệu từ dataMessageMedia
-            const mediaItems = dataMessageMedia.filter(mediaItem => mediaItem["2MI"] === key1MI && mediaItem["5CI"] === key4CI);
+            const mediaItems = dataMessageMedia.filter(mediaItem => mediaItem["2MI"].toString() === key1MI && mediaItem["5CI"] === key4CI);
+
 
             return {
                 ...messageItem,
                 media: mediaItems || [],
             };
         });
+        // setDataMessageMerged(mergedArray);
 
-        // So sánh và cập nhật state nếu có sự thay đổi
-        if (mergedArray?.length !== dataMessageMergedPrev?.length) {
+
+        if (!functions.arraysAreEqual(mergedArray, dataMessageMergedPrev)) {
             setDataMessageMerged(mergedArray);
             setDataMessageMergedPrev(mergedArray);
         }
     };
-
-
 
 
     // useEffect(() => {
@@ -1306,29 +1609,87 @@ export default () => {
         mergedDataMessage()
     }, [dataMessage, dataMessageMedia]);
 
+    useEffect(() => {
+        if (dataMessage.length === 0 && dataMessageMedia.length === 0) {
+            setDataMessageMerged([])
+        }
+    }, []);
 
 
-
-
+    const arr1 = [
+        {
+            "1MI": "92",
+            "1MC": "Tôi cần giúp đỡ",
+            "1PA": "/Date(1702277634197+0700)/",
+            "1PB": "Kevin Park - SOUTH KOREA",
+            "4CI": "CAS23-00268",
+            "media": []
+        },
+        {
+            "1MI": "113",
+            "1MC": "",
+            "1PA": "/Date(1702343648097+0700)/",
+            "1PB": "Kevin Park - SOUTH KOREA",
+            "4CI": "CAS23-00268",
+            "media": [
+                {
+                    "2MI": 113,
+                    "3MI": 12,
+                    "5U": "http://115.78.237.91:8300/MDSManagement/TSS_Ticket/AttachPost/2023-12/113_o.jpg",
+                    "5CI": "CAS23-00268",
+                    "2FN": "o.jpg"
+                }
+            ]
+        }
+    ]
+    const arr2 = [
+        {
+            "1MI": "92",
+            "1MC": "Tôi cần giúp đỡ",
+            "1PA": "/Date(1702277634197+0700)/",
+            "1PB": "Kevin Park - SOUTH KOREA",
+            "4CI": "CAS23-00268",
+            "media": []
+        },
+        {
+            "1MI": "113",
+            "1MC": "",
+            "1PA": "/Date(1702343648097+0700)/",
+            "1PB": "Kevin Park - SOUTH KOREA",
+            "4CI": "CAS23-00268",
+            "media": [
+                {
+                    "2MI": 113,
+                    "3MI": 12,
+                    "5U": "http://115.78.237.91:8300/MDSManagement/TSS_Ticket/AttachPost/2023-12/113_o.jpg",
+                    "5CI": "CAS23-00268",
+                    "2FN": "o.jpg"
+                }
+            ]
+        }
+    ]
+    console.log(functions.arraysAreEqual(arr1, arr2))
 
     const messagesEndRef = useRef(null);
-
-    // Hàm cuộn đến cuối container
-    // const scrollToBottom = () => {
-    //     if (messagesEndRef.current) {
-    //         messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
-    //     }
-    // };
     const scrollToBottom = () => {
         setTimeout(() => {
             if (messagesEndRef.current) {
                 messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
             }
-        }, 100); // Trì hoãn 100 ms hoặc thời gian phù hợp
+        }, 10); // Trì hoãn 100 ms hoặc thời gian phù hợp
     };
 
-    // Cuộn đến cuối sau mỗi lần danh sách tin nhắn thay đổi
+
     useEffect(scrollToBottom, [dataMessageMerged, activeTab]);
+    // const [isFirstLoad, setIsFirstLoad] = useState(true);
+
+    // useEffect(() => {
+    //     if (dataMessageMerged.length > 0 && messagesEndRef.current) {
+    //         messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    //         setIsFirstLoad(false);
+    //     }
+    // }, [dataMessageMerged]); // Theo dõi sự thay đổi của dataMessageMerged
+
 
 
     const [contextMenu, setContextMenu] = useState({ visible: false, position: { x: 0, y: 0 }, item: null });
@@ -1424,6 +1785,11 @@ export default () => {
     //     }
     // }, [dataMessageSent.message, selectedImagesSent]);
 
+
+
+
+
+
     return (
         <div class="container-case-main">
             <div class="midde_cont">
@@ -1493,32 +1859,72 @@ export default () => {
                                             <h4 class="ellipsis-header-case" title={item.title}>{item.title}</h4>
                                             <div className="ml-auto">
                                                 <div className="dropdown-custom">
-                                                    <FontAwesomeIcon icon={faEllipsisVertical} className="size-24 ml-auto pointer" onClick={(e) => toggleMenu(e, item.id)} title={lang["update"]} />
+                                                    <button className="icon-button" onClick={(e) => toggleMenu(e, item.id)} title={lang["update"]}>
+                                                        <FontAwesomeIcon icon={faEllipsisVertical} className="size-24" />
+                                                    </button>
                                                     {openMenuCaseId === item.id && (
                                                         <div className="popup-menu-custom show" ref={menuRef}>
                                                             <span className="menu-item-custom pointer" data-toggle="modal" onClick={() => dataUpdateCase(item)} data-target="#updateCase">{lang["update"]}</span>
-                                                            {/* <span className="menu-item-custom">Delete Case</span>
-                                                            <span className="menu-item-custom">Cancel Case</span> */}
+
                                                         </div>
                                                     )}
                                                 </div>
                                             </div>
+
                                         </div>
                                         <p class="ellipsis-header-case">{item.issue}</p>
                                         <div className="d-flex">
-                                            <p className="italic" style={{ marginBottom: 0 }}>{lang["latest support on"]} {langItemCheck === "Vi" ? functions.translateDateToVietnamese(functions.formatDateCase(item.date)) : functions.formatDateCase(item.date)} {lang["by"]}<span className="italic-non font-weight-bold-black">{item.customer}</span> </p>
+                                            <p className="italic" style={{ marginBottom: 0 }}>
+                                                {
+                                                    (item.lastpostedat !== null ? (
+                                                        <>
+                                                            {lang["latest support on"]}
+                                                            {langItemCheck === "Vi"
+                                                                ? functions.translateDateToVietnamese(functions.formatDateCase(item.lastpostedat))
+                                                                : functions.formatDateCase(item.lastpostedat)}
+                                                            {lang["by"]} <span className="italic-non font-weight-bold-black">{item.lastpostedby}</span>
+                                                        </>
+                                                    ) :
+                                                        <div style={{ height: "25.3px", width: "24px" }}>
+
+                                                        </div>)
+                                                }
+                                                {/* {(() => {
+                                                    const relatedMessages = dataMessageMerged.filter(message => message["4CI"] === item.id);
+                                                    if (relatedMessages.length > 0) {
+                                                        const latestMessage = relatedMessages[relatedMessages.length - 1];
+                                                        return (
+                                                            <p>
+                                                                {lang["latest support on"]}
+                                                                {langItemCheck === "Vi"
+                                                                    ? functions.translateDateToVietnamese(functions.formatDateCase(latestMessage["1PA"]))
+                                                                    : functions.formatDateCase(latestMessage["1PA"])}
+                                                                {lang["by"]}
+                                                                <span className="italic-non font-weight-bold-black">
+                                                                    {latestMessage["1PB"].split(' - ')[0]}
+                                                                </span>
+                                                            </p>
+                                                        );
+                                                    } else {
+                                                        return (
+                                                            <p>
+                                                                {lang["no latest support info available"]}
+                                                            </p>
+                                                        );
+                                                    }
+                                                })()} */}
+                                            </p>
+
                                             <div className="ml-auto">
-
-
                                                 <div>
-                                                    {(!functions.isEmpty(dataCaseDetail) && dataCaseDetail.id === item.id && dataCaseDetail.supportquanlity !== undefined) ? (
+                                                    {(!functions.isEmpty(dataCaseDetail) && dataCaseDetail.id === item.id && dataCaseDetail.supportquanlity !== "") ? (
                                                         <img
                                                             width={24}
                                                             src={`/images/icon/${qualityToImage[dataCaseDetail.supportquanlity]}`}
-                                                            alt="ex"
+                                                            alt="ex1"
                                                         />
                                                     ) : (
-                                                        item.supportquanlity !== undefined && (
+                                                        item.supportquanlity !== "" && (
                                                             <img
                                                                 width={24}
                                                                 src={`/images/icon/${qualityToImage[item.supportquanlity]}`}
@@ -1526,7 +1932,6 @@ export default () => {
                                                             />
                                                         )
                                                     )}
-
                                                     {/* {(
                                                         item.supportquanlity !== undefined && (
                                                             <img
@@ -1587,7 +1992,7 @@ export default () => {
                                                                 (e) => { setPostCase({ ...postCase, casetype: e.target.value }) }}
                                                         >
                                                             <option value={"Undefined"}>Undefined</option>
-                                                            <option value={"Troublshooting"}>Troublshooting</option>
+                                                            <option value={"Troubleshooting"}>Troubleshooting</option>
                                                             <option value={"Error"}>Error</option>
                                                             <option value={"Question"}>Question</option>
                                                             <option value={"Feature"}>Feature</option>
@@ -1623,14 +2028,15 @@ export default () => {
                                                             <span class="error-message mb-2">{errorMessagesadd.issue}</span>
                                                         )}
                                                     </div>
-                                                    <textarea class="form-control" rows={6} value={postCase.issue} onChange={(e) => {
-                                                        const value = e.target.value;
-                                                        setPostCase({ ...postCase, issue: value });
+                                                    <textarea class="form-control" rows={6}
+                                                        style={{ resize: 'none' }} value={postCase.issue} onChange={(e) => {
+                                                            const value = e.target.value;
+                                                            setPostCase({ ...postCase, issue: value });
 
-                                                        if (value.trim() && errorMessagesadd.issue) {
-                                                            setErrorMessagesadd({ ...errorMessagesadd, issue: '' });
-                                                        }
-                                                    }} placeholder={lang["p.issue"]}></textarea>
+                                                            if (value.trim() && errorMessagesadd.issue) {
+                                                                setErrorMessagesadd({ ...errorMessagesadd, issue: '' });
+                                                            }
+                                                        }} placeholder={lang["p.issue"]}></textarea>
                                                 </div>
                                                 <div class="row field-case">
                                                     <div className="col-md-4">
@@ -1648,7 +2054,7 @@ export default () => {
                                                                 onChange={handleImageChange}
                                                                 accept="image/*"
                                                             />
-                                                            {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+
                                                             {selectedImage && (
                                                                 <>
                                                                     <img
@@ -1688,7 +2094,7 @@ export default () => {
                                                             (
                                                                 <>
                                                                     <div className="upload-container-case-add">
-                                                                        {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+
 
                                                                         <div className="selected-images-container-add">
                                                                             {attachMedia.map((media, index) => (
@@ -1703,7 +2109,7 @@ export default () => {
                                                                                             <div class="video-duration">Video</div>
                                                                                         </div>
                                                                                     )}
-                                                                                    <button onClick={(e) => removeAttachMedia(e, media)} className="remove-image">X</button>
+                                                                                    <button onClick={(e) => removeAttachMedia(e, media)} className="remove-image" title={lang["delete image"]}>X</button>
                                                                                 </div>
                                                                             ))}
                                                                         </div>
@@ -1783,7 +2189,7 @@ export default () => {
                                                                 <div class="row field-case">
                                                                     <div className="col-md-4">
                                                                         <div className="upload-container-case">
-                                                                            {dataCaseDetail.imgcase !== null ?
+                                                                            {dataCaseDetail.imgcase !== "" ?
                                                                                 <img class=""
                                                                                     style={{
                                                                                         maxWidth: 'calc(100% - 40px)',
@@ -1792,7 +2198,7 @@ export default () => {
                                                                                         borderRadius: '8px',
                                                                                         cursor: 'pointer'
                                                                                     }}
-                                                                                    src={serverImage + dataCaseDetail.imgcase}
+                                                                                    src={dataCaseDetail.imgcase}
                                                                                     onClick={() => openModalPreview({ type: "imageDetail", url: dataCaseDetail.imgcase })}
                                                                                     data-toggle="modal" data-target="#previewMedia"
                                                                                     title={lang["Click to preview"]} />
@@ -1812,23 +2218,23 @@ export default () => {
                                                                             (
                                                                                 <>
                                                                                     <div className="upload-container-case-add">
-                                                                                        {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+
 
                                                                                         <div className="selected-images-container-add">
                                                                                             {dataCaseDetail?.attachMedia?.map((media, index) => (
                                                                                                 <div key={index} className="selected-image-wrapper-add">
                                                                                                     {functions.isImageFormat(media["6U"]) && (
-                                                                                                        <img src={serverImage + media["6U"]} alt={`Selected ${index}`}
+                                                                                                        <img src={media["6U"]} alt={`Selected ${index}`}
                                                                                                             className="selected-image-add pointer" data-toggle="modal" data-target="#previewMedia"
-                                                                                                            onClick={() => openModalPreview({ type: "attachImageDetail", url: serverImage + media["6U"] })}
+                                                                                                            onClick={() => openModalPreview({ type: "attachImageDetail", url: media["6U"] })}
                                                                                                             title={lang["Click to preview"]} />
                                                                                                     )}
                                                                                                     {functions.isVideoFormat(media["6U"]) && (
                                                                                                         <div>
-                                                                                                            <video autoplay controls={false} src={serverImage + media["6U"]}
+                                                                                                            <video autoplay controls={false} src={media["6U"]}
                                                                                                                 className="selected-image-add pointer"
                                                                                                                 data-toggle="modal" data-target="#previewMedia"
-                                                                                                                onClick={() => openModalPreview({ type: "attachVideoDetail", url: serverImage + media["6U"] })}
+                                                                                                                onClick={() => openModalPreview({ type: "attachVideoDetail", url: media["6U"] })}
                                                                                                                 title={lang["Click to preview"]}   >
                                                                                                             </video>
                                                                                                             <div class="video-duration">Video</div>
@@ -1950,7 +2356,8 @@ export default () => {
                                                 } */}
                                                 {activeTab === 'discussion' &&
                                                     <>
-                                                        <div class="card-block-message  bg-message">
+                                                        <div class="card-block-message  bg-message"
+                                                        >
                                                             <div class="col-md-12">
                                                                 <div class="info-case">
                                                                     <div className="messages-wrapper" style={{ height: calculateHeight() }} ref={messagesEndRef} id="messages-wrapper">
@@ -1979,7 +2386,7 @@ export default () => {
                                                                             const words = (item["1MC"] || "").split(' ');
                                                                             const shouldTruncate = words.length > 50 && !showFullMessage[item["1MI"]];
                                                                             const truncatedText = words.slice(0, 50).join(' ');
-                                                                            const isSentByUser = item["1PB"] === username;
+                                                                            const isSentByUser = item["1PB"] === _user.fullname;
 
                                                                             return (
                                                                                 <div
@@ -2006,31 +2413,26 @@ export default () => {
                                                                                             {item.media.map(media => (
                                                                                                 <>
                                                                                                     {functions.isImageFormat(media["5U"]) && (
-                                                                                                        <img className="message-image pointer" src={serverImage + media["5U"]}
+                                                                                                        <img className="message-image pointer" src={media["5U"]}
                                                                                                             data-toggle="modal" data-target="#previewMedia"
-                                                                                                            onClick={() => openModalPreview({ type: "imageMessageMedia", url: serverImage + media["5U"] })}
+                                                                                                            onClick={() => openModalPreview({ type: "imageMessageMedia", url: media["5U"] })}
                                                                                                             alt="Media content"
                                                                                                             title={lang["Click to preview"]} />
                                                                                                     )}
                                                                                                     {functions.isVideoFormat(media["5U"]) && (
                                                                                                         <div className="video-container">
-                                                                                                            <video className="message-image pointer" controls={false} src={serverImage + media["5U"]} type="video/mp4"
-
+                                                                                                            <video className="message-image pointer" controls={false} src={media["5U"]} type="video/mp4"
                                                                                                             >
                                                                                                             </video>
-
                                                                                                             <div className="video-overlay pointer" data-toggle="modal" data-target="#previewMedia"
-                                                                                                                onClick={() => openModalPreview({ type: "videoMessageMedia", url: serverImage + media["5U"] })}
+                                                                                                                onClick={() => openModalPreview({ type: "videoMessageMedia", url: media["5U"] })}
                                                                                                                 title={lang["Click to preview"]}></div>
                                                                                                             <div className="video-icon play-icon">
                                                                                                                 < FontAwesomeIcon icon={faCirclePlay} className="size-16  color_icon_plus" />
                                                                                                             </div>
-
                                                                                                         </div>
                                                                                                     )}
-
                                                                                                 </>
-
                                                                                             ))}
                                                                                         </div>
                                                                                     )}
@@ -2058,27 +2460,40 @@ export default () => {
                                                                                 <div class="video-duration">Video</div>
                                                                             </div>
                                                                         )}
-                                                                        <button onClick={() => removeMedia(media)} className="remove-image">X</button>
+                                                                        <button onClick={() => removeMedia(media)} className="remove-image" title={lang["delete image"]}>X</button>
                                                                     </div>
                                                                 ))}
                                                             </div>
                                                         )}
 
-                                                        <div class="chat-input-container">
+                                                        <div
+                                                            className="chat-input-container"
 
-                                                            {/* <input type="text" class="chat-input" value={dataMessageSent.message} onChange={
-                                                                (e) => { setDataMessageSent({ ...dataMessageSent, message: e.target.value }) }
-                                                            } placeholder="Type a message..." />
-                                                             */}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === 'Enter' && !e.shiftKey) {
+                                                                    e.preventDefault();
+                                                                    if (dataMessageSent.message.trim() !== '' || selectedImagesSent.length > 0) {
+                                                                        submitMessage(e);
+                                                                    }
+                                                                }
+                                                            }}
+                                                            tabIndex={0}
+                                                        >
+                                                            {getPlaceholder()}
                                                             <textarea
                                                                 ref={textareaRef}
-                                                                className="chat-input no-change-textarea"
+                                                                onDragEnter={handleDragEnter}
+                                                                onDragLeave={handleDragLeave}
+                                                                onDragOver={handleDragOver}
+                                                                onDrop={handleFileDrop}
+                                                                className={`chat-input no-change-textarea ${isDragging ? 'dragging custom-placeholder-bg' : ''}`}
                                                                 value={dataMessageSent.message}
                                                                 onChange={handleInputChange}
-                                                                placeholder={lang["Type a message"]}
+                                                                // placeholder={getPlaceholderText()}
                                                                 rows={1}
 
                                                             />
+
                                                             <input
                                                                 type="file"
                                                                 id="imageInput"
@@ -2086,21 +2501,21 @@ export default () => {
                                                                 onChange={handleImageChangeSent}
                                                                 accept="image/*,video/*"
                                                             />
+
                                                             <FontAwesomeIcon
                                                                 icon={faPaperclip}
                                                                 className="size-24 mr-2 pointer"
                                                                 onClick={() => document.getElementById('imageInput').click()}
                                                                 title={lang["attachment"]}
                                                             />
+
                                                             <FontAwesomeIcon onClick={submitMessage} icon={faPaperPlane} className={`size-24 ml-auto mr-2 icon-add-production pointer`} title={lang["send message"]} />
                                                         </div>
                                                     </>
                                                 }
                                                 {activeTab === 'support' &&
                                                     <div class="card-block">
-
                                                         {isLoading ? (
-                                                            // Hiển thị hình ảnh loading
                                                             <div class="row">
                                                                 <div class="mt-4 col-lg-12 align-center">
                                                                     <img
@@ -2112,7 +2527,6 @@ export default () => {
                                                                 </div>
                                                             </div>
                                                         ) : (
-                                                            // Nội dung chính
                                                             <div>
                                                                 {dataCaseDetail.supportquanlity === undefined && supportQuanlity === 0 &&
                                                                     <div class="col-md-12">
@@ -2128,8 +2542,8 @@ export default () => {
                                                                         <div class="row">
                                                                             <div class="form-group col-lg-12 align-center">
                                                                                 <div class="form-group col-lg-12 align-center">
-                                                                                    <div className={`icon-rate ${rating === 'No Reply' ? 'icon-rate-selected' : ''}`} data-text="No Reply" onClick={() => handleRatingClick('No Reply')}>
-                                                                                        <img class="icon-rate" style={{ filter: rating === 'No Reply' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i5.png" />
+                                                                                    <div className={`icon-rate ${rating === 'No reply' ? 'icon-rate-selected' : ''}`} data-text="No reply" onClick={() => handleRatingClick('No reply')}>
+                                                                                        <img class="icon-rate" style={{ filter: rating === 'No reply' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i5.png" />
                                                                                         <span class="tooltip-text5">No Reply</span>
                                                                                     </div>
                                                                                     <div className={`icon-rate ${rating === 'Bad' ? 'icon-rate-selected' : ''}`} data-text="Bad" onClick={() => handleRatingClick('Bad')}>
@@ -2166,7 +2580,13 @@ export default () => {
                                                                         </div>
                                                                         <div class="form-group col-md-12">
                                                                             <div class="d-flex">
-                                                                                <p style={{ marginBottom: 0 }}> {lang["Last updated by"]} <span className="italic-non font-weight-bold-black">{dataCaseDetail.customer}</span> </p>
+
+                                                                                <p style={{ marginBottom: 0 }}>{dataCaseDetail.lastedsupport !== "" && (
+                                                                                    <>
+                                                                                        {lang["by"]} <span className="italic-non font-weight-bold-black">{dataCaseDetail.lastedsupport}</span>
+                                                                                    </>
+                                                                                )}
+                                                                                </p>
                                                                                 <button type="button" onClick={submitRate} data-dismiss="modal" class="btn mt-0 btn-primary ml-auto modal-button-review">{lang["Submit Review"]}</button>
                                                                             </div>
                                                                         </div>
@@ -2221,7 +2641,7 @@ export default () => {
                                                         <img class="icon-rate" src="/images/icon/i4.png" />
                                                         <span class="tooltip-text4">Bad</span>
                                                     </div>
-                                                    <div class="icon-rate" data-text="No Reply">
+                                                    <div class="icon-rate" data-text="No reply">
                                                         <img class="icon-rate" src="/images/icon/i5.png" />
                                                         <span class="tooltip-text5">No Reply</span>
                                                     </div>
@@ -2285,7 +2705,7 @@ export default () => {
                             <div class="modal-content">
                                 <div class="modal-header ">
                                     <h4 class="modal-title modal-header-f18">{lang["Case Update"]}</h4>
-                                    <button type="button" class="close" onClick={handleCloseModal} data-dismiss="modal">&times;</button>
+                                    <button type="button" class="close" onClick={handleCloseModal} data-dismiss="modal" title={lang["btn.close"]}>&times;</button>
                                 </div>
                                 <div class="modal-body">
                                     <form>
@@ -2310,7 +2730,7 @@ export default () => {
                                                 <select className="form-control" name="role" value={caseUpdate.casetype} onChange={
                                                     (e) => { setCaseUpdate({ ...caseUpdate, casetype: e.target.value }) }}>
                                                     <option value={"Undefined"}>Undefined</option>
-                                                    <option value={"Troublshooting"}>Troublshooting</option>
+                                                    <option value={"Troubleshooting"}>Troubleshooting</option>
                                                     <option value={"Error"}>Error</option>
                                                     <option value={"Question"}>Question</option>
                                                     <option value={"Feature"}>Feature</option>
@@ -2351,7 +2771,7 @@ export default () => {
                                             <div className="col-md-4">
                                                 <h5 className="mb-2">{lang["attachment"]}</h5>
                                                 <div className="upload-container-case">
-                                                    {((caseUpdate.caseimage === "" && selectedImage == null)) && (
+                                                    {((caseUpdate.imgcase === "" && selectedImage == null)) && (
                                                         <label style={{ margin: 0 }} htmlFor="file-upload" className="custom-file-upload">
                                                             {lang["Choose Image"]}
                                                         </label>
@@ -2364,12 +2784,12 @@ export default () => {
                                                         accept="image/*"
                                                     />
 
-                                                    {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
-                                                    {!selectedImage && caseUpdate.caseimage !== "" && (
+
+                                                    {!selectedImage && caseUpdate.imgcase !== "" && (
                                                         <>
                                                             <img
                                                                 id="image-preview"
-                                                                src={serverImage + caseUpdate.caseimage}
+                                                                src={caseUpdate.imgcase}
                                                                 alt="Image Preview"
                                                                 style={{
                                                                     maxWidth: 'calc(100% - 40px)',
@@ -2421,33 +2841,40 @@ export default () => {
                                                     />
                                                 </div>
 
-                                                {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
-                                                {caseUpdate?.attachMedia?.length < 0 && attachMedia?.length < 0 ?
+
+
+
+
+                                                {(caseUpdate?.attachMedia?.length > 0 || attachMedia.length > 0) ?
                                                     (
                                                         <>
                                                             <div className="upload-container-case-add">
+
+
                                                                 <div className="selected-images-container-add">
+
                                                                     {/* Hình cũ */}
-                                                                    {caseUpdate.attachMedia?.map((media, index) => (
+                                                                    {caseUpdate.attachMedia?.length > 0 && (caseUpdate.attachMedia?.map((media, index) => (
                                                                         <div key={index} className="selected-image-wrapper-add">
                                                                             {functions.isImageFormat(media["6U"]) && (
-                                                                                <img src={serverImage + media["6U"]} alt={`Selected ${index}`} className="selected-image-add" />
+                                                                                <img src={media["6U"]} alt={`Selected ${index}`} className="selected-image-add" />
                                                                             )}
                                                                             {functions.isVideoFormat(media["6U"]) && (
                                                                                 <div>
-                                                                                    <video autoplay controls={false} src={serverImage + media["6U"]} className="selected-image-add pointer" >
+                                                                                    <video autoplay controls={false} src={media["6U"]} className="selected-image-add pointer" >
                                                                                     </video>
                                                                                     {/* <div class="video-duration"> {media.name}</div> */}
                                                                                     <div class="video-duration">Video</div>
                                                                                 </div>
                                                                             )}
-                                                                            <button onClick={(e) => removeAttachMediaUpdate(e, media)} className="remove-image">X</button>
+                                                                            <button onClick={(e) => removeAttachMediaUpdate(e, media)} className="remove-image" title={lang["delete image"]} >X</button>
                                                                         </div>
-                                                                    ))}
-                                                                    {attachMedia.map((media, index) => (
+                                                                    )))}
+
+                                                                    {attachMedia.length > 0 && (attachMedia.map((media, index) => (
                                                                         <div key={index} className="selected-image-wrapper-add">
                                                                             {media.type === 'image' && (
-                                                                                <img src={media.url} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
+                                                                                <img src={media.dataUrl} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
                                                                             )}
                                                                             {media.type === 'video' && (
                                                                                 <div>
@@ -2456,9 +2883,10 @@ export default () => {
                                                                                     <div class="video-duration">Video</div>
                                                                                 </div>
                                                                             )}
-                                                                            <button onClick={(e) => removeAttachMedia(e, media)} className="remove-image">X</button>
+                                                                            <button onClick={(e) => removeAttachMedia(e, media)} className="remove-image" title={lang["delete image"]}>X</button>
                                                                         </div>
-                                                                    ))}
+                                                                    )))}
+
                                                                 </div>
                                                             </div>
                                                         </>
@@ -2472,8 +2900,8 @@ export default () => {
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" onClick={submitUpdateCase} class="btn btn-primary modal-button-review">Update</button>
-                                    <button type="button" onClick={handleCloseModal} data-dismiss="modal" id="closeModalUpdateCase" class="btn btn-danger modal-button-review">Close</button>
+                                    <button type="button" onClick={submitUpdateCase} class="btn btn-primary modal-button-review">{lang["update"]}</button>
+                                    <button type="button" onClick={handleCloseModal} data-dismiss="modal" id="closeModalUpdateCase" class="btn btn-danger modal-button-review">{lang["btn.close"]}</button>
                                 </div>
                             </div>
                         </div>
@@ -2484,7 +2912,7 @@ export default () => {
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h4 class="modal-title">PreView Media</h4>
-                                    <button type="button" class="close" onClick={handleCloseModal} data-dismiss="modal">&times;</button>
+                                    <button type="button" class="close" onClick={handleCloseModal} data-dismiss="modal" title={lang["btn.close"]}>&times;</button>
                                 </div>
                                 <div class="modal-body">
                                     <form>
@@ -2493,25 +2921,19 @@ export default () => {
 
                                                 {/* <img width={500} src={dataPreviewMedia?.url}></img> */}
                                                 {dataPreviewMedia?.type === 'imageDetail' && (
-                                                    <img src={serverImage + dataPreviewMedia?.url}
-                                                        style={{
-                                                            maxWidth: 'calc(100% - 40px)',
-                                                            maxHeight: 'calc(100% - 10px)',
-                                                            objectFit: 'contain',
-                                                            borderRadius: '8px',
-                                                            cursor: 'pointer'
-                                                        }}
+                                                    <img class="image-responsive" src={dataPreviewMedia?.url}
+                                                        style={{ width: '70%' }}
                                                         alt={dataPreviewMedia?.name} />
                                                 )}
                                                 {dataPreviewMedia?.type === 'attachImageDetail' && (
-                                                    <img src={dataPreviewMedia?.url} alt={dataPreviewMedia?.name} style={{ width: '70%' }} />
+                                                    <img class="image-responsive" src={dataPreviewMedia?.url} alt={dataPreviewMedia?.name} style={{ width: '70%' }} />
                                                 )}
                                                 {dataPreviewMedia?.type === 'attachVideoDetail' && (
                                                     <video autoplay controls style={{ width: '100%' }} src={dataPreviewMedia?.url} >
                                                     </video>
                                                 )}
                                                 {dataPreviewMedia?.type === 'image' && (
-                                                    <img src={dataPreviewMedia?.url} alt={dataPreviewMedia?.name} style={{ width: '100%' }} />
+                                                    <img class="image-responsive" src={dataPreviewMedia?.url} alt={dataPreviewMedia?.name} style={{ width: '100%' }} />
                                                 )}
                                                 {dataPreviewMedia?.type === 'video' && (
                                                     <video autoplay controls style={{ width: '100%' }} src={dataPreviewMedia?.dataUrl} >
@@ -2525,7 +2947,7 @@ export default () => {
                                                             width={"70%"}
                                                             src={dataPreviewMedia?.url}
                                                         /> */}
-                                                        <img src={dataPreviewMedia?.url} alt={dataPreviewMedia?.name} style={{ width: '70%' }} />
+                                                        <img class="image-responsive" src={dataPreviewMedia?.url} alt={dataPreviewMedia?.name} style={{ width: '70%' }} />
                                                     </>
                                                 )}
                                                 {dataPreviewMedia?.type === 'videoMessageMedia' && (
@@ -2538,7 +2960,7 @@ export default () => {
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" onClick={handleCloseModal} data-dismiss="modal" class="btn btn-danger modal-button-review">Close</button>
+                                    <button type="button" onClick={handleCloseModal} data-dismiss="modal" class="btn btn-danger modal-button-review">{lang["btn.close"]}</button>
                                 </div>
                             </div>
                         </div>

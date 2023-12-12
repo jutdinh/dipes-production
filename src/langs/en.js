@@ -391,7 +391,7 @@ export default {
     "today": "Today",
     "newest": "Newest",
     "oldest": "Oldest",
-    "latest support on": "Latest support on",
+    "latest support on": "Latest support on ",
     "Posted on": "Posted on",
     "DISCUSSION": "DISCUSSION",
     "SUPPORT QUALITY": "SUPPORT QUALITY",
@@ -448,7 +448,12 @@ export default {
     "Unknown error": "Unknown error",
     "List of Errors": "List of Errors",
     "Please check the activation file": "Please check the activation file",
-    "Click to preview": "Click to preview"
+    "Click to preview": "Click to preview",
+    "delete image": "Delete Image",
+    "Drag and drop images here": "Kéo và thả hình ảnh vào đây",
+    "Only image and video files are accepted": "Only image and video files are accepted",
+    "Please upload an image file.": "Please upload an image file."
+
 
 
 }
