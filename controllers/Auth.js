@@ -964,5 +964,26 @@ class Auth extends Controller {
         }
 
     } 
+
+
+    refreshToken = async (req, res) => {
+        const verified = await this.verifyToken( req )
+        
+        const  success = verified;
+        console.log(verified)
+        const context = {
+            success,
+            content: "Invalid token"
+        }
+        if( success ){
+            const decodedToken = this.decodeToken( req.header('Authorization') )
+            delete decodedToken.exp 
+            delete decodedToken.iat
+            const newToken = this.makeToken(decodedToken)
+            context.token = newToken
+            context.content = "Successfully extended token lifetime by 12 hours long"
+        }
+        res.status(200).send(context)
+    }
 }
 module.exports = Auth
