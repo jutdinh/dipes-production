@@ -361,8 +361,8 @@ export default (props) => {
 
         return (
             <>
-                <div class="row column1 mb-4">
-                    <div class="col-lg-9 mt-1">
+                <div class="row column1 mb-2">
+                    <div class="col-lg-9 ">
                         <div class="white_shd full">
                             <div class="tab_style2 layout2">
                                 <div class="tabbar">
@@ -397,7 +397,7 @@ export default (props) => {
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3 mt-1">
+                    <div class="col-lg-3 ">
                         <div class="white_shd full">
                             <div class="tab_style2 layout2">
                                 <div class="tabbar">
@@ -594,7 +594,7 @@ export default (props) => {
                 </div> */}
 
                 <div class="row column1 social_media_section">
-                    <div class="col-md-4 col-lg-4">
+                    <div class="col-md-4 col-lg-4 ">
                         <div class="full socile_icons controller margin_bottom_30">
                             <div class="social_icon color-whiteh5">
 

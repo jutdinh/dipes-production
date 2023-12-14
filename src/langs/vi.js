@@ -393,9 +393,10 @@ export default {
     "SUPPORT QUALITY": "CHẤT LƯỢNG HỖ TRỢ",
     "total": "Tổng số",
     "case(s)": "trường hợp",
-    "ISSUE DESCRIPTION": "MÔ TẢ VẤN ĐỀ",
+    // "ISSUE DESCRIPTION": "MÔ TẢ VẤN ĐỀ",
+    "ISSUE DESCRIPTION": "Mô tả vấn đề",
     "SUGGESTED SOLUTION": "GIẢI PHÁP ĐỀ XUẤT",
-    "PRODUCT INFORMATION": "THÔNG TIN SẢN PHẨM",
+    "PRODUCT INFORMATION": "Thông tin sản phẩm",
     "ADD PRODUCT INFORMATION": "Thêm thông tin sản phẩm",
 
     "Type a message": "Nhập tin nhắn ...",
@@ -448,7 +449,8 @@ export default {
     "Only image and video files are accepted": "Chỉ chấp nhận các tệp hình ảnh và video",
     "Please upload an image file.": "Vui lòng tải lên một tệp hình ảnh.",
     "Notification": "Thông báo",
-    "expired": "Phiên hết hạn. Vui lòng đăng nhập lại để tiếp tục."
+    "expired": "Phiên hết hạn. Vui lòng đăng nhập lại để tiếp tục.",
+    "withdraw": "Thông tin chỉ có thể được cập nhật trong vòng 24 giờ kể từ khi gửi."
 
 
     

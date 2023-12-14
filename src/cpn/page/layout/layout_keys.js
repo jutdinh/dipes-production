@@ -322,13 +322,13 @@ export default (props) => {
                                                             ))}
                                                             <th class="font-weight-bold align-center" style={{ width: "100px" }}>{lang["log.action"]}</th>
                                                         </tr>
-                                                        <tr >
+                                                        <tr class="input-search-cus">
                                                             <th></th>
                                                             {apiDataName?.map((header, index) => (
                                                                 <th key={index}>
                                                                     <input
                                                                         type="search"
-                                                                        className="form-control"
+                                                                        className="form-control "
                                                                         value={inputValues[header.fomular_alias] || ''}
                                                                         onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
                                                                         onKeyDown={handleKeyDown}

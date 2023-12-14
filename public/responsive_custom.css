@@ -73,6 +73,8 @@
         font-size: 14px;
     }
 }
+
+
 @media (min-width: 768px) {
     .size-img-success {
         width: 180px; 

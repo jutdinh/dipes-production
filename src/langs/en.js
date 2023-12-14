@@ -397,9 +397,9 @@ export default {
     "SUPPORT QUALITY": "SUPPORT QUALITY",
     "total": "Total",
     "case(s)": "case(s)",
-    "ISSUE DESCRIPTION": "ISSUE DESCRIPTION",
+    "ISSUE DESCRIPTION": "Issue description",
     "SUGGESTED SOLUTION": "SUGGESTED SOLUTION",
-    "PRODUCT INFORMATION": "PRODUCT INFORMATION",
+    "PRODUCT INFORMATION": "Product information",
     "ADD PRODUCT INFORMATION": "Add product information",
     "Type a message": "Type a message ...",
     "You have not rated the quality of support": "You have not rated the quality of support",
@@ -454,7 +454,8 @@ export default {
     "Only image and video files are accepted": "Only image and video files are accepted",
     "Please upload an image file.": "Please upload an image file.",
     "Notification": "Notification",
-    "expired": "Session expired. Please log back in to continue."
+    "expired": "Session expired. Please log back in to continue.",
+    "withdraw": "Information can only be updated within 24 hours of submission."
 
 
 

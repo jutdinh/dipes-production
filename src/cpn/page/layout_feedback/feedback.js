@@ -605,7 +605,7 @@ export default () => {
 
     //Image Case
     const [selectedImage, setSelectedImage] = useState(null);
-
+    console.log(selectedImage)
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -644,8 +644,9 @@ export default () => {
                     icon: "error",
                     confirmButtonText: lang["confirm"]
                 });
-                e.target.value = '';
+                e.target.value = null;
             }
+            e.target.value = null;
         }
     };
 
@@ -653,6 +654,9 @@ export default () => {
     const removeImageCase = (e) => {
         e.preventDefault();
         setSelectedImage(null)
+
+
+
     };
 
     // Attach Media
@@ -1207,6 +1211,15 @@ export default () => {
                         .then(() => {
                             mergedDataMessage();
                         });
+                } else {
+                    Swal.fire({
+                        title: lang['notification'],
+                        text: lang['withdraw'],
+                        icon: 'warning',
+                        showConfirmButton: true,
+                        confirmButtonText: lang['confirm'],
+                        allowOutsideClick: false,
+                    });
                 }
             })
     }
@@ -1571,69 +1584,82 @@ export default () => {
         setDataMessageSent({ ...dataMessageSent, message: e.target.value });
     };
 
-    // const calculateHeight = () => {
-    //     let baseHeight = 625;
-    //     const imageAdjustment = selectedImagesSent.length > 0 ? 70 : 0; // Điều chỉnh nếu có hình ảnh
-    //     const maxHeightReduction = 96 - 40; // Giới hạn giảm chiều cao tối đa
-
-    //     if (heightChat > 40) {
-    //         const heightReduction = Math.min(heightChat - 40, maxHeightReduction);
-    //         baseHeight -= heightReduction;
-    //     }
-    //     // Trừ đi imageAdjustment trước khi áp dụng giới hạn tối thiểu 588
-    //     // Đảm bảo baseHeight không thấp hơn 588
-    //     baseHeight = Math.max(baseHeight, 585);
-    //     baseHeight -= imageAdjustment;
-    //     return `${baseHeight}px`;
-    // };
-
-
-
-
-
-
-    const calculateHeight = (baseHeightPx = 610) => {
-        const windowHeight = window.innerHeight; // Lấy chiều cao của cửa sổ trình duyệt
-        const imageAdjustmentPx = selectedImagesSent.length > 0 ? 70 : 0;
-        const maxHeightReductionPx = 96 - 40;
+    const calculateHeight = () => {
+        let baseHeight = windowHeightRespon;
+        const imageAdjustment = selectedImagesSent.length > 0 ? 70 : 0; // Điều chỉnh nếu có hình ảnh
+        const maxHeightReduction = 96 - 40; // Giới hạn giảm chiều cao tối đa
 
         if (heightChat > 40) {
-            const heightReduction = Math.min(heightChat - 40, maxHeightReductionPx);
-            baseHeightPx -= heightReduction;
+            const heightReduction = Math.min(heightChat - 40, maxHeightReduction);
+            baseHeight -= heightReduction;
         }
-        baseHeightPx = Math.max(baseHeightPx, 585);
-        baseHeightPx -= imageAdjustmentPx;
-
-        // Chuyển đổi chiều cao từ px sang vh
-        const baseHeightVH = (baseHeightPx / windowHeight) * 100 + 3;
-        return `${baseHeightVH}vh`;
+        // Trừ đi imageAdjustment trước khi áp dụng giới hạn tối thiểu 588
+        // Đảm bảo baseHeight không thấp hơn 588
+        baseHeight = Math.max(baseHeight, 585);
+        baseHeight -= imageAdjustment;
+        return `${baseHeight}`;
     };
 
-    const browser = functions.getBrowser();
-    // console.log(browser)
-    let setHeight;
 
-    if (browser === "edge-chromium") {
-        setHeight = 599;
-    } else if (browser === "chrome") {
-        setHeight = 612;
-    }
-    else if (browser === "firefox") {
-        setHeight = 598;
-    }
-    else if (browser === "opera") {
-        setHeight = 615;
-    } else {
-        setHeight = 615; // Giá trị mặc định cho các trình duyệt khác
-    }
 
-    const heightStyle = calculateHeight(setHeight);
+    const windowHeightRespon = window.innerHeight;
+
+
+    // const calculateHeight = (baseHeightPx = 610) => {
+    //     const windowHeight = window.innerHeight; // Lấy chiều cao của cửa sổ trình duyệt
+    //     console.log(windowHeight)
+    //     const imageAdjustmentPx = selectedImagesSent.length > 0 ? 70 : 0;
+    //     const maxHeightReductionPx = 96 - 40;
+
+    //     if (heightChat > 40) {
+    //         const heightReduction = Math.min(heightChat - 40, maxHeightReductionPx);
+    //         baseHeightPx -= heightReduction;
+    //     }
+    //     baseHeightPx = Math.max(baseHeightPx, 585);
+    //     baseHeightPx -= imageAdjustmentPx;
+    //     let baseHeightVH = 60
+    //     // Chuyển đổi chiều cao từ px sang vh
+    //     // if (browser === "chrome") {
+    //     //     baseHeightVH = (baseHeightPx / windowHeight) * 100 + (windowHeight > 919 ? 2 : -1.1);
+    //     // } else if (browser === "edge-chromium") {
+    //     //     baseHeightVH = (baseHeightPx / windowHeight) * 100 + (windowHeight > 932 ? 3 : 0);
+    //     // }
+    //     return `${baseHeightVH}vh`;
+    // };
+
+    // const browser = functions.getBrowser();
+    // // console.log(browser)
+    // let setHeight;
+
+    // if (browser === "edge-chromium") {
+    //     setHeight = 626;
+    // } else if (browser === "chrome") {
+    //     setHeight = 624;
+    // }
+    // else if (browser === "firefox") {
+    //     setHeight = 598;
+    // }
+    // else if (browser === "opera") {
+    //     setHeight = 615;
+    // } else {
+    //     setHeight = 615; // Giá trị mặc định cho các trình duyệt khác
+    // }
+
+    // const heightStyle = calculateHeight(setHeight);
+    console.log(calculateHeight())
+
+
 
     const [name, setName] = useState("");
-
+    const [heightListCase, setHeightListCase] = useState(0);
     useEffect(() => {
-        setName(platform.name);
-    }, []);
+        // setName(platform.name);
+
+        const messageContainerHeight = $('#heightMessage').height()
+        const containerListCaseHeight = $('#listCaseHeight').height()
+        setHeightListCase(messageContainerHeight - containerListCaseHeight)
+
+    }, [$('#heightMessage')]);
 
     // console.log("name:", name)
 
@@ -1649,57 +1675,60 @@ export default () => {
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="row" id="heightMessage">
                         <div id="portal-root"></div>
                         {/* List Case */}
                         <div class="col-md-5 col-sm-12" style={{ paddingLeft: "5px", paddingRight: "5px" }}>
-                            <div class="search-container">
-                                <input
-                                    type="search"
-                                    className="search-input"
-                                    placeholder={lang["Case title, case description, or anything"]}
-                                    value={searchValue}
-                                    onChange={handleInputChangeSearch}
-                                    spellCheck="false"
-                                />
-                            </div>
-                            <div class="mt-2" >
-                                <span class="pointer" onClick={handlePageAdd} style={{ display: "flex", alignItems: "center" }}>
-                                    <FontAwesomeIcon icon={faSquarePlus} className="size-24 color_icon_plus" title={lang["post your case"]} />
-                                    <span class="lable_add ml-2" >{lang["post your case"]}</span>
-                                </span>
+                            <div id="listCaseHeight">
+                                <div class="search-container">
+                                    <input
+                                        type="search"
+                                        className="search-input"
+                                        placeholder={lang["Case title, case description, or anything"]}
+                                        value={searchValue}
+                                        onChange={handleInputChangeSearch}
+                                        spellCheck="false"
+                                    />
+                                </div>
+                                <div class="mt-2" >
+                                    <span class="pointer" onClick={handlePageAdd} style={{ display: "flex", alignItems: "center" }}>
+                                        <FontAwesomeIcon icon={faSquarePlus} className="size-24 color_icon_plus" title={lang["post your case"]} />
+                                        <span class="lable_add ml-2" >{lang["post your case"]}</span>
+                                    </span>
 
-                            </div>
-                            <hr class="hr-case"></hr>
-                            <div class="sort-case">
-                                <div class="d-flex ">
-                                    <div className="dropdown">
-                                        <span class="pointer" data-toggle="dropdown" aria-expanded="false">
-                                            {lang["sorted by"]}: {sortBy === 'today' ? lang["today"] : sortBy === 'aToZ' ? 'A-Z' : sortBy === 'zToA' ? 'Z-A' : sortBy === 'newest' ? lang["newest"] : lang["oldest"]}
-                                            <FontAwesomeIcon icon={faAngleDown} className="size-15 ml-1 pointer" title={lang["sorted by"]} />
-                                        </span>
-                                        <div className="dropdown-menu">
-                                            <a className="dropdown-item " href="#" onClick={() => handleSortChange('today')}>
-                                                {lang["today"]}
-                                            </a>
-                                            <a className="dropdown-item" href="#" onClick={() => handleSortChange('aToZ')}>
-                                                A-Z
-                                            </a>
-                                            <a className="dropdown-item" href="#" onClick={() => handleSortChange('zToA')}>
-                                                Z-A
-                                            </a>
-                                            <a className="dropdown-item" href="#" onClick={() => handleSortChange('newest')}>
-                                                {lang["newest"]}
-                                            </a>
-                                            <a className="dropdown-item" href="#" onClick={() => handleSortChange('oldest')}>
-                                                {lang["oldest"]}
-                                            </a>
+                                </div>
+                                <hr class="hr-case"></hr>
+                                <div class="sort-case">
+                                    <div class="d-flex ">
+                                        <div className="dropdown">
+                                            <span class="pointer" data-toggle="dropdown" aria-expanded="false">
+                                                {lang["sorted by"]}: {sortBy === 'today' ? lang["today"] : sortBy === 'aToZ' ? 'A-Z' : sortBy === 'zToA' ? 'Z-A' : sortBy === 'newest' ? lang["newest"] : lang["oldest"]}
+                                                <FontAwesomeIcon icon={faAngleDown} className="size-15 ml-1 pointer" title={lang["sorted by"]} />
+                                            </span>
+                                            <div className="dropdown-menu">
+                                                <a className="dropdown-item " href="#" onClick={() => handleSortChange('today')}>
+                                                    {lang["today"]}
+                                                </a>
+                                                <a className="dropdown-item" href="#" onClick={() => handleSortChange('aToZ')}>
+                                                    A-Z
+                                                </a>
+                                                <a className="dropdown-item" href="#" onClick={() => handleSortChange('zToA')}>
+                                                    Z-A
+                                                </a>
+                                                <a className="dropdown-item" href="#" onClick={() => handleSortChange('newest')}>
+                                                    {lang["newest"]}
+                                                </a>
+                                                <a className="dropdown-item" href="#" onClick={() => handleSortChange('oldest')}>
+                                                    {lang["oldest"]}
+                                                </a>
+                                            </div>
                                         </div>
+                                        <div class="ml-auto"> {lang["total"]}: <span class="font-weight-bold  ">{(searchValue === '' ? sortedCases.length : filteredCases.length) || 0}</span> {lang["case(s)"]}</div>
                                     </div>
-                                    <div class="ml-auto"> {lang["total"]}: <span class="font-weight-bold  ">{(searchValue === '' ? sortedCases.length : filteredCases.length) || 0}</span> {lang["case(s)"]}</div>
                                 </div>
                             </div>
-                            <div class="container-case">
+
+                            <div class="container-case" style={{ height: heightListCase - 10 }}>
                                 {(searchValue === '' ? sortedCases : filteredCases).map((item, index) => (
                                     <div key={index} className={`box-case ${selectedCaseDetail === item.id ? "selected" : ""}`} onClick={() => handlePageDetail(item)}>
                                         <div className="d-flex">
@@ -1798,8 +1827,8 @@ export default () => {
                                     <div class="white_shd full margin_bottom_30">
                                         <div class="full graph_head_cus min-h-58">
                                             <div class="heading1 margin_0 d-flex">
-                                                <h4 class="margin-bottom-0">{lang["new case"]} </h4>
-                                                <FontAwesomeIcon icon={faPaperPlane} onClick={submitPostCase} className={`size-24 ml-auto icon-add-production pointer `} title={lang["submit case"]} />
+                                                <h5 class="margin-bottom-0">{lang["new case"]}</h5>
+                                                <FontAwesomeIcon icon={faPaperPlane} onClick={submitPostCase} className={`size-24 mt-2 ml-auto icon-add-production pointer `} title={lang["submit case"]} />
                                             </div>
                                         </div>
                                         <div class="table_section padding_infor_info_case_add">
@@ -1978,7 +2007,7 @@ export default () => {
                         {/* Detail Case */}
                         {showPageDetail && (
                             <div class="col-md-7" style={{ paddingLeft: "5px", paddingRight: "5px" }}>
-                                <div class="white_shd full margin_bottom_30">
+                                <div class="white_shd full margin_bottom_30" style={{ height: "99%" }}>
                                     <div class="full graph_head_cus min-h-58">
                                         <div class="heading1 margin_0 case-detail">
                                             <h4 class="ellipsis-header-case" title={dataCaseDetail.title}>{dataCaseDetail.title}</h4>
@@ -2190,7 +2219,8 @@ export default () => {
                                                         >
                                                             <div class="col-md-12">
                                                                 <div class="info-case">
-                                                                    <div className="messages-wrapper" style={{ height: heightStyle }} ref={messagesEndRef} id="messages-wrapper">
+                                                                    <div className="messages-wrapper" style={{ height: calculateHeight() - 270 - 45 }} ref={messagesEndRef} id="messages-wrapper">
+                                                                        {/* <div className="messages-wrapper" ref={messagesEndRef} id="messages-wrapper"> */}
 
 
                                                                         {contextMenu.visible && ReactDOM.createPortal(
@@ -2301,7 +2331,7 @@ export default () => {
 
                                                         <div
                                                             className="chat-input-container"
-
+                                                            style={{ bottom: "-11px "}}
                                                             onKeyDown={(e) => {
                                                                 if (e.key === 'Enter' && !e.shiftKey) {
                                                                     e.preventDefault();

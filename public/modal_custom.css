@@ -409,7 +409,7 @@
     padding: 0px 0px 0px 0px;
     float: left;
     width: 100%;
-    min-height: 77.8vh
+    /* min-height: 77.6vh */
 }
 .hr-case {
         margin-top: 0.5rem;
@@ -441,7 +441,11 @@
     border: 1px solid rgba(0, 0, 0, .125);
     border-radius: 0;
 }
-
+.input-search-cus table td, .table th {
+    padding: 0.2rem;
+    vertical-align: middle;
+    border-top: 1px solid #dee2e6;
+}
 .full-test {
     display: flex;
     justify-content: space-between;
@@ -562,6 +566,17 @@
     cursor: pointer;
 }
 
+
+element.style {
+}
+.padding_infor_info_case_add  h5 {
+    font-size: 14px;
+    color: #000;
+    line-height: 21px;
+    font-weight: 600;
+    text-transform: none;
+    margin-bottom: 5px;
+}
 
 .box-case h4 {
     font-size: 14px;
