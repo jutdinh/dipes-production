@@ -24,12 +24,14 @@ import { Active_Helpdesk, Table_Key, Chart_HelpDesk } from "./page/step"
 import "../css/index.scss";
 import { SiteMap } from './site-map';
 import Layout_Detail from './page/layout/layout_detail'
-import  FeedBack  from './page/layout_feedback/feedback';
+import FeedBack from './page/layout_feedback/feedback';
 function App() {
 
   const dispatch = useDispatch()
-  const _token = localStorage.getItem("_token");
-  const { lang, proxy, auth, pages, socket } = useSelector(state => state);
+  const __token = localStorage.getItem("_token");
+  const [ _token, setToken ] = useState( __token )
+
+  const { lang, proxy, auth, pages, socket, functions } = useSelector(state => state);
 
   const defaultValue = {
     username: "",
@@ -39,20 +41,60 @@ function App() {
     phone: "",
     avatar: ""
   }
+  async function updateToken() {
+    try {
+      // console.log(46, _token)
+        const newToken = await functions.refreshToken(proxy(), _token);
+        if (newToken) {
+            // Lưu trữ token mới
+            // localStorage.removeItem('_token')
+            setToken(newToken)
+            localStorage.setItem('_token', JSON.stringify(newToken));
+          
+            // console.log(50, newToken);
+            // Cập nhật state hoặc context nếu cần
+            // updateTokenState(newToken);
+
+            // Optional: Kiểm tra ngày hết hạn của token mới
+            const expirationDate = functions.getTokenExpirationDate(newToken);
+            // console.log('Ngày hết hạn của token mới:', expirationDate);
+        } else {
+            // console.error("Không nhận được token mới");
+        }
+    } catch (error) {
+        // console.error("Error refreshing token:", error);
+    }
+}
+useEffect(() => {
+  // Kiểm tra và làm mới token mỗi 30 phút
+  const intervalId = setInterval(updateToken, 1800000); // 1800000 ms = 30 phút
+
+  return () => clearInterval(intervalId);
+}, [_token]);
+
+
+// useEffect(() => {
+//   const token = localStorage.getItem("_token") ? localStorage.getItem("_token") : ""
+//   console.log("TOKEN CHANGE: ", token.slice(token.length - 20, token.length))
+// }, [_token])
+  
+const expirationDate = functions.getTokenExpirationDate(_token);
+// console.log('Ngày hết hạn của token (hiện tại):', expirationDate);
+
   useEffect(() => {
     const specialURLs = ["/login", "/signup", "/signout"]
     const url = window.location.pathname;
     const _token = localStorage.getItem("_token");
     const stringifiedUser = localStorage.getItem("user");
     const user = stringifiedUser ? JSON.parse(stringifiedUser) : defaultValue;
-    
+
     // console.log(user)
     if (specialURLs.indexOf(url) === -1) {
       if (!_token) {
         window.location = '/login'
       }
       if (user) {
-        
+
         dispatch({
           branch: "default",
           type: "setAuthInfor",
@@ -110,7 +152,7 @@ function App() {
         socketNotificationReceived = true;
       }
     });
-    
+
     window.addEventListener('beforeunload', function (event) {
       if (socketNotificationReceived) {
         localStorage.removeItem('_token')
@@ -119,7 +161,6 @@ function App() {
         localStorage.setItem("user", JSON.stringify({}));
       }
     });
-    
 
     socket.on("/dipe-production-import-ui", () => {
       fetchData()
@@ -128,10 +169,25 @@ function App() {
 
   }, [])
 
+
+
+
   useEffect(() => {
-
-    if (_token != undefined) {
-
+    if (window.location.pathname === '/login') {
+      
+      return;
+    }
+  
+    let isTokenValid = true; 
+    const checkTokenExpiration = () => {
+      const _token = localStorage.getItem("_token");
+      // console.log(_token);
+  
+      if (!_token || !isTokenValid) {
+        window.location = '/login';
+        return; 
+      }
+  
       fetch(`${proxy()}/auth/token/check`, {
         headers: {
           Authorization: _token
@@ -140,46 +196,55 @@ function App() {
         .then(res => res.json())
         .then(resp => {
           const { success } = resp;
-          // console.log(resp)
-          if (success) {
-
-          } else {
-            window.location = "/signout"
+          if (!success) {
+            isTokenValid = false; 
+            localStorage.removeItem("_token");
+  
+             Swal.fire({
+                title: lang["Notification"],
+                text: lang["expired"],
+                icon: "warning",
+                showConfirmButton: true,
+                confirmButtonText: lang["confirm"],
+                allowOutsideClick: false,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location = '/signout';
+                }
+            });
           }
-        })
-    } else {
-      // console.log("a")
-    }
-  }, [_token])
+        });
+    };
+  
+    const tokenCheckInterval = setInterval(checkTokenExpiration, 1800000);
+  
+    return () => {
+      clearInterval(tokenCheckInterval);
+    };
+  }, []);
+  
 
   return (
-
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signout" element={<SignOut />} />
         <Route path="/changepassword" element={<Navigation Child={ChangePassword} />} />
-
-        {/* <Route path="/" element={<Navigation Child={Home} />} /> */}
         <Route path="/" element={<Navigation Child={Import} />} />
-
         <Route path="/diagram_db" element={<Navigation Child={Tables} />} />
-
-
-
         {/* <Route path="/logs" element={<Navigation Child={Logs} />} /> */}
         <Route path="/users" element={<Navigation Child={ListUser} />} />
         <Route path="/users/profile" element={<Navigation Child={Profile} />} />
         <Route path="/privileges" element={<Navigation Child={Permission} />} />
         <Route path="/privileges/detail" element={<Navigation Child={PermissionDetail} />} />
         <Route path="/settings" element={<Navigation Child={Settings} />} />
+
         <Route path="/active" element={<Navigation Child={Active_Key} />} />
         <Route path="/step" element={<Navigation Child={Active_Helpdesk} />} />
         <Route path="/table_key" element={<Navigation Child={Table_Key} />} />
         <Route path="/page/:url/detail-key/:id_str/*" element={<Navigation Child={Layout_Detail} />} />
         <Route path="/chart" element={<Navigation Child={Chart_HelpDesk} />} />
-
 
         <Route path="/sitemap" element={<Navigation Child={SiteMap} />} />
         <Route path="/logs" element={<Navigation Child={Logs} />} />
@@ -194,13 +259,11 @@ function App() {
 
         {/* <Route exac path="/diagram" element={ < Navigation Child={Diagram} /> } /> */}
         <Route path="*" element={<PageNotFound />} />
-
         {/* <Route path="/:url" element={ < Navigation Child={Fetch} /> } />        
         <Route exac path="/page/not/found" element={<PageNotFound />} /> */}
 
       </Routes>
     </Router>
-
   );
 }
 

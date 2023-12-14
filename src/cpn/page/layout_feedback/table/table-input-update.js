@@ -14,7 +14,7 @@ function EditableTable(props) {
         // { id: 1, col1: '', col2: '', col3: '', col4: '', col5: '', isEditing: false },
     ]);
 
-const [prevData, setPrevData] = useState(data ? [...data] : []);
+    const [prevData, setPrevData] = useState(data ? [...data] : []);
 
     const dataProduct = props.data
     const dataStateUpdate = props.stateUpdate
@@ -102,10 +102,9 @@ const [prevData, setPrevData] = useState(data ? [...data] : []);
             .then(resp => {
                 const { success, activated, status, content } = resp;
 
-                console.log("data respon",resp)
+                console.log("data respon", resp)
             })
     };
-
 
     //Debouncing
     const debounce = (func, delay) => {
@@ -117,15 +116,14 @@ const [prevData, setPrevData] = useState(data ? [...data] : []);
             inDebounce = setTimeout(() => func.apply(context, args), delay);
         };
     };
-    const debouncedUpdateRow = debounce(updateRow, 1000); 
 
-
+    const debouncedUpdateRow = debounce(updateRow, 1000);
     const handleInputChange = (event, rowId, colName, value) => {
         event.preventDefault();
         const newData = data?.map((row) =>
             row.detailId === rowId ? { ...row, [colName]: value } : row
         );
-// console.log(newData)
+
         // So sánh giá trị mới với giá trị trong prevData
         const hasValueChanged = JSON.stringify(newData) !== JSON.stringify(prevData);
 
@@ -136,7 +134,6 @@ const [prevData, setPrevData] = useState(data ? [...data] : []);
             const updatedRows = newData.find((row) => row.detailId === rowId);
             // console.log(updatedRows)
             debouncedUpdateRow(updatedRows);
-
         }
     };
 
@@ -163,7 +160,6 @@ const [prevData, setPrevData] = useState(data ? [...data] : []);
             )
         );
     };
-
 
     const handleRowBlur = (rowId) => {
         // Chờ một khoảng thời gian ngắn để xem liệu người dùng có chuyển sang một input khác cùng hàng hay không
@@ -209,6 +205,7 @@ const [prevData, setPrevData] = useState(data ? [...data] : []);
             })
     };
 
+
     return (
         <>
             <div class="d-flex mb-1 mt-1">
@@ -253,6 +250,7 @@ const [prevData, setPrevData] = useState(data ? [...data] : []);
 
                                                         }
                                                     }}
+                                                    spellCheck="false"
                                                 />
                                             ) : (
                                                 <span class="table-td-product-pl-6">{row.col1}</span>
@@ -271,6 +269,7 @@ const [prevData, setPrevData] = useState(data ? [...data] : []);
                                                     onChange={(e) => handleInputChange(e, row.detailId, 'col2', e.target.value)}
                                                     onBlur={() => handleRowBlur(row.detailId)}
                                                     onFocus={() => handleFocus(row.detailId)}
+                                                    spellCheck="false"
                                                 />
                                             ) : (
                                                 <span class="table-td-product-pl-6">{row.col2}</span>
@@ -288,6 +287,7 @@ const [prevData, setPrevData] = useState(data ? [...data] : []);
                                                     onChange={(e) => handleInputChange(e, row.detailId, 'col3', e.target.value)}
                                                     onBlur={() => handleRowBlur(row.detailId)}
                                                     onFocus={() => handleFocus(row.detailId)}
+                                                    spellCheck="false"
                                                 />
                                             ) : (
                                                 <span class="table-td-product-pl-6">{row.col3}</span>
@@ -307,6 +307,7 @@ const [prevData, setPrevData] = useState(data ? [...data] : []);
                                                     onChange={(e) => handleInputChange(e, row.detailId, 'col4', e.target.value)}
                                                     onBlur={() => handleRowBlur(row.detailId)}
                                                     onFocus={() => handleFocus(row.detailId)}
+                                                    spellCheck="false"
                                                 />
 
                                             ) : (

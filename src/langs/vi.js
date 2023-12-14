@@ -446,7 +446,9 @@ export default {
     "delete image": "Xóa ảnh",
     "Drag and drop images here": "Kéo và thả hình ảnh vào đây",
     "Only image and video files are accepted": "Chỉ chấp nhận các tệp hình ảnh và video",
-    "Please upload an image file.": "Vui lòng tải lên một tệp hình ảnh."
+    "Please upload an image file.": "Vui lòng tải lên một tệp hình ảnh.",
+    "Notification": "Thông báo",
+    "expired": "Phiên hết hạn. Vui lòng đăng nhập lại để tiếp tục."
 
 
     

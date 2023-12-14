@@ -452,7 +452,9 @@ export default {
     "delete image": "Delete Image",
     "Drag and drop images here": "Kéo và thả hình ảnh vào đây",
     "Only image and video files are accepted": "Only image and video files are accepted",
-    "Please upload an image file.": "Please upload an image file."
+    "Please upload an image file.": "Please upload an image file.",
+    "Notification": "Notification",
+    "expired": "Session expired. Please log back in to continue."
 
 
 

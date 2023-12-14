@@ -121,7 +121,6 @@ function EditableTable(props) {
                                     <td class="align-center">{index + 1}</td>
                                     <td class="table-td-product-pl-5"
                                         onClick={() => handleRowClick(row.id)}
-
                                     >
                                         {row.isEditing ? (
                                             <input
@@ -131,6 +130,7 @@ function EditableTable(props) {
                                                 onChange={(e) => handleInputChange(row.id, 'col1', e.target.value)}
                                                 onBlur={() => handleRowBlur(row.id)}
                                                 onFocus={() => handleFocus(row.id)}
+                                                spellCheck="false"
                                             />
                                         ) : (
                                             <span class="table-td-product-pl-6">{row.col1}</span>
@@ -149,6 +149,7 @@ function EditableTable(props) {
                                                 onChange={(e) => handleInputChange(row.id, 'col2', e.target.value)}
                                                 onBlur={() => handleRowBlur(row.id)}
                                                 onFocus={() => handleFocus(row.id)}
+                                                spellCheck="false"
                                             />
                                         ) : (
                                             <span class="table-td-product-pl-6">{row.col2}</span>
@@ -166,6 +167,7 @@ function EditableTable(props) {
                                                 onChange={(e) => handleInputChange(row.id, 'col3', e.target.value)}
                                                 onBlur={() => handleRowBlur(row.id)}
                                                 onFocus={() => handleFocus(row.id)}
+                                                spellCheck="false"
                                             />
                                         ) : (
                                             <span class="table-td-product-pl-6">{row.col3}</span>
@@ -185,6 +187,7 @@ function EditableTable(props) {
                                                 onChange={(e) => handleInputChange(row.id, 'col4', e.target.value)}
                                                 onBlur={() => handleRowBlur(row.id)}
                                                 onFocus={() => handleFocus(row.id)}
+                                                spellCheck="false"
                                             />
 
                                         ) : (

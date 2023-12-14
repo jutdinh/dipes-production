@@ -2,11 +2,107 @@ import { v4 as uuidv4 } from 'uuid';
 import responseMessages from "../../cpn/enum/response-code"
 import Swal from 'sweetalert2';
 import { format, parseISO } from 'date-fns';
+import { jwtDecode } from 'jwt-decode';
+import { detect } from 'detect-browser';
+
+function getBrowser() {
+    const browserInfo = detect();
+    if (browserInfo) {
+        return browserInfo.name;
+    }
+    return "Unknown";
+}
+
+
+function detectBrowser(userAgent) {
+    const isFirefox = typeof userAgent.InstallTrigger !== 'undefined';
+    const isChrome = !!userAgent.chrome && (!!userAgent.chrome.webstore || !!userAgent.chrome.runtime);
+
+    const isSafari = /constructor/i.test(userAgent.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!userAgent['safari'] || (typeof userAgent.safari !== 'undefined' && userAgent.safari.pushNotification));
+
+    const isOpera = (!!userAgent.opr && !!userAgent.opr.addons) || !!userAgent.opera || (userAgent.userAgent && userAgent.userAgent.indexOf(' OPR/') >= 0); // Kiểm tra userAgent tồn tại trước khi thực hiện indexOf
+
+    const isIE = /*@cc_on!@*/false || !!userAgent.documentMode;
+    const isEdge = !isIE && !!userAgent.StyleMedia;
+    const isEdgeChromium = isChrome && (userAgent.userAgent && userAgent.userAgent.indexOf("Edg") !== -1); // Kiểm tra userAgent tồn tại trước khi thực hiện indexOf
+
+    const isBlink = (isChrome || isOpera) && !!userAgent.CSS;
+
+    const browserInfo = {
+        isFirefox,
+        isChrome,
+        isSafari,
+        isOpera,
+        isIE,
+        isEdge,
+        isEdgeChromium,
+        isBlink
+    };
+
+    return browserInfo;
+}
+
+
 
 const dateGenerator = (dateString) => {
     const date = new Date(dateString);
     return `${formatDateNumber(date.getDate())}/${formatDateNumber(date.getMonth() + 1)}/${date.getFullYear()} lúc ${formatDateNumber(date.getHours())}:${formatDateNumber(date.getMinutes())}`
 }
+
+
+function getTokenExpirationDate(token) {
+    if (typeof token !== 'string' || !token.trim()) {
+        // console.error('Token phải là một chuỗi hợp lệ.');
+        return null;
+    }
+
+    try {
+        const decoded = jwtDecode(token);
+        if (!decoded.exp) {
+            return null;
+        }
+
+        const date = new Date(0);
+        date.setUTCSeconds(decoded.exp);
+        return date;
+    } catch (error) {
+        // console.error('Lỗi khi giải mã token:', error);
+        return null;
+    }
+}
+
+
+function isTokenExpired(token) {
+    const expirationDate = getTokenExpirationDate(token);
+    // console.log(expirationDate)
+    return expirationDate < new Date();
+}
+
+function refreshToken(proxy, token) {
+
+    // console.log(token)
+    if (token) {
+        return fetch(`${proxy}/auth/refreshtoken`, { // Trả về Promise từ fetch
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `${token}`,
+            },
+            body: JSON.stringify({}),
+        })
+            .then((res) => res.json())
+            .then((resp) => {
+                const { success, content, token, status } = resp;
+                if (success) {
+                    return token; // Trả về token mới nếu thành công
+                } else {
+                    throw new Error(content || 'Unable to refresh token');
+                }
+            });
+
+    }
+}
+
 
 const formatDateNumber = (int) => {
     if (int < 10) {
@@ -207,7 +303,7 @@ function formatDateCase(dateString) {
         // Chuyển đổi thành định dạng ngày tháng
         return date.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric' });
     } catch (error) {
-        console.error(error);
+        // console.error(error);
         return "";
     }
 }
@@ -516,7 +612,7 @@ function renameDuplicateFiles(data) {
     });
 
     return data;
-      
+
 }
 
 function arraysAreEqual(arr1, arr2) {
@@ -551,10 +647,14 @@ function objectsAreEqual(obj1, obj2) {
 }
 
 
+
+
+
+
 export default {
-    uid, removeDuplicate, titleCase, openTab, dateGenerator,
+    uid, isTokenExpired, refreshToken, getTokenExpirationDate, removeDuplicate, titleCase, openTab, dateGenerator,
     renderDateTimeByFormat, showApiResponseMessage, formatNumberWithCommas, formatNumber, generateUniqueColors,
     formatDate, formatDateCase, formatDateMessage, translateDateToVietnamese, translateDateTimeToVietnamese,
     isEmpty, isImageFormat, isVideoFormat, removeFileExtension, resizeImage,
-    resizeImageToFit, renameDuplicateFiles, arraysAreEqual
+    resizeImageToFit, renameDuplicateFiles, arraysAreEqual, getBrowser, detectBrowser
 }

@@ -105,18 +105,19 @@ export default () => {
                     setStatusActive(true)
                 }
                 else {
-                    Swal.fire({
-                        title: lang["faild"],
-                        text: lang["fail.active"],
-                        icon: "error",
-                        showConfirmButton: true,
-                        customClass: {
-                            confirmButton: 'swal2-confirm my-confirm-button-class'
-                        }
 
-                    }).then(function () {
-                        // window.location.reload();
-                    });
+                    // Swal.fire({
+                    //     title: lang["faild"],
+                    //     text: lang["fail.active"],
+                    //     icon: "error",
+                    //     showConfirmButton: true,
+                    //     customClass: {
+                    //         confirmButton: 'swal2-confirm my-confirm-button-class'
+                    //     }
+                    // }).then(function () {
+                    //     // window.location.reload();
+                    // });
+
                     setStatusActive(false)
                 }
                 setEffectOneCompleted(true);
@@ -124,6 +125,7 @@ export default () => {
             })
 
     }, [])
+
     useEffect(() => {
         if (pages && pages.length > 0) {
 
@@ -140,7 +142,6 @@ export default () => {
             }
         }
     }, [pages, url]);
-
 
     useEffect(() => {
         setCurrentPage(1)
@@ -181,6 +182,7 @@ export default () => {
                     setErrorSelect(lang["check file"]);
                 }
             }
+            
         };
 
         function extractValueInBrackets(value) {

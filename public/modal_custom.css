@@ -218,6 +218,7 @@
     cursor: pointer;
     /* filter: grayscale(100%); */
 }
+
 .send-message-button {
     background: none;
     border: none;
@@ -233,7 +234,8 @@
 .icon-button {
     background: none;
     border: none;
-    padding: 0 10px 0 10px; /* Điều chỉnh giá trị padding để phù hợp */
+    padding: 0 10px 0 10px;
+    /* Điều chỉnh giá trị padding để phù hợp */
     cursor: pointer;
 }
 
@@ -407,9 +409,15 @@
     padding: 0px 0px 0px 0px;
     float: left;
     width: 100%;
-    min-height: 77.5vh
+    min-height: 77.8vh
 }
-
+.hr-case {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        border: 0;
+        border-top: 1px solid rgba(0,0,0,.1);
+    
+}
 .padding_infor_info_case_non {
     padding: 0px 0px 5px 0px;
     float: left;
@@ -526,9 +534,14 @@
     color: rgba(0, 0, 0, 0.05)
 }
 
+.size-14 {
+
+    font-size: 14px;
+}
+
 .lable_add {
     font-weight: 600;
-    font-size: 18px;
+    font-size: 14px;
     color: #0971b8;
     text-transform: uppercase;
 }
@@ -595,7 +608,9 @@
 
 .container-case {
     margin-top: 10px;
-    height: 646px;
+    /* height: 646px; */
+
+    max-height: 71.5vh;
     border-radius: 4px;
     padding: 0 5px 5px 5px;
     overflow-y: auto;
@@ -816,6 +831,7 @@ img[class="scaled-hover-target"] {
 
 .message-container {
     max-width: 335px;
+    min-width: 225px;
     border-radius: 15px;
     padding: 10px;
     margin: 10px;
@@ -828,6 +844,7 @@ img[class="scaled-hover-target"] {
     overflow-wrap: break-word;
     /* Có thể thay thế cho word-wrap */
     max-width: 100%;
+    color: #081c36;
 }
 
 /* Đặc biệt cho tin nhắn gửi đi */
@@ -869,7 +886,7 @@ img[class="scaled-hover-target"] {
 /* Thời gian gửi/nhận */
 .message-timestamp {
     font-size: 12px;
-    color: #666;
+    color: #476285;
     text-align: right;
 }
 
@@ -918,7 +935,7 @@ img[class="scaled-hover-target"] {
 .message-image-user {
     margin-bottom: 5px;
     font-weight: 600;
-    color: #000;
+    color: #7589a3;
 
 }
 
@@ -1035,17 +1052,21 @@ img[class="scaled-hover-target"] {
     z-index: 2;
     /* Icon sẽ nằm trên lớp phủ */
 }
+
 .size-20 {
     font-size: 20px;
 }
+
 .chat-input-container {
     position: relative;
 }
-.custom-placeholder-bg{
+
+.custom-placeholder-bg {
     background-color: #d0d0d0;
 }
+
 .custom-placeholder {
-    
+
     position: absolute;
     top: 15px;
     left: 15px;
@@ -1149,10 +1170,11 @@ img[class="scaled-hover-target"] {
     font-size: 12px;
     line-height: 16px;
 }
+
 .remove-image:hover {
-    
+
     background: #3670bb;
-    
+
 }
 
 .size-15 {
@@ -1239,10 +1261,12 @@ img[class="scaled-hover-target"] {
     border-radius: 10px;
     /* Bo góc cho hình ảnh */
 }
+
 .dragging {
-    border: 1px dashed blue; 
-    background-color: #f9f9f9; 
-    opacity: 0.5; /* Làm mờ textarea */
+    border: 1px dashed blue;
+    background-color: #f9f9f9;
+    opacity: 0.5;
+    /* Làm mờ textarea */
 
     overflow-y: hidden;
 }

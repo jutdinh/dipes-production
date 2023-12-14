@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMaximize, faMinimize, faDownload, faCompress, faChartBar, faPlusCircle, faCirclePlus, faCirclePlay, faRectangleXmark, faCircle, faCircleXmark, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft, faClose, faSquare, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
+import { faMaximize, faMinimize, faDownload, faCompress, faChartBar, faPlusCircle, faCirclePlus, faCirclePlay, faRectangleXmark, faCircle, faCircleXmark, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft, faClose } from '@fortawesome/free-solid-svg-icons';
 import Swal from 'sweetalert2';
 import TableInputUpdate from './table/table-input-update'
 import TableInputAdd from './table/table-input-add'
@@ -12,7 +12,6 @@ import $ from 'jquery'
 import isEqual from 'lodash/isEqual';
 import ReactImageMagnify from 'react-image-magnify';
 import Zoom from "./table/image-zoom"
-import platform from "platform";
 export default () => {
     const { lang, proxy, auth, functions } = useSelector(state => state);
 
@@ -83,9 +82,9 @@ export default () => {
         setAttachMedia([])
     };
 
-
-
-
+    
+    
+   
     // Gọi hàm để cập nhật token
 
     // search
@@ -1214,7 +1213,7 @@ export default () => {
     // Gửi tin nhắn 
     const submitMessage = (e) => {
         e.preventDefault();
-
+     
         // Kiểm tra nếu có tin nhắn hoặc hình ảnh thực sự
         if (dataMessageSent.message.trim() !== '' || selectedImagesSent.length > 0) {
             const requestBody = {
@@ -1530,29 +1529,29 @@ export default () => {
         }
     };
 
-    // Hàm xử lý sự kiện cuộn
-    const handleScroll = () => {
-        if (contextMenu.visible) {
-            closeContextMenu();
-        }
+   // Hàm xử lý sự kiện cuộn
+const handleScroll = () => {
+    if (contextMenu.visible) {
+        closeContextMenu();
+    }
+};
+
+// Đăng ký và hủy đăng ký sự kiện cuộn và click
+useEffect(() => {
+    // Đăng ký sự kiện cuộn
+    document.addEventListener('scroll', handleScroll, true); // `true` để capture sự kiện trong phase capturing
+
+    // Đăng ký sự kiện click
+    document.addEventListener('click', handleOutsideClick);
+
+    return () => {
+        // Hủy đăng ký sự kiện cuộn
+        document.removeEventListener('scroll', handleScroll, true);
+
+        // Hủy đăng ký sự kiện click
+        document.removeEventListener('click', handleOutsideClick);
     };
-
-    // Đăng ký và hủy đăng ký sự kiện cuộn và click
-    useEffect(() => {
-        // Đăng ký sự kiện cuộn
-        document.addEventListener('scroll', handleScroll, true); // `true` để capture sự kiện trong phase capturing
-
-        // Đăng ký sự kiện click
-        document.addEventListener('click', handleOutsideClick);
-
-        return () => {
-            // Hủy đăng ký sự kiện cuộn
-            document.removeEventListener('scroll', handleScroll, true);
-
-            // Hủy đăng ký sự kiện click
-            document.removeEventListener('click', handleOutsideClick);
-        };
-    }, [contextMenu.visible]);
+}, [contextMenu.visible]);
 
 
 
@@ -1571,71 +1570,21 @@ export default () => {
         setDataMessageSent({ ...dataMessageSent, message: e.target.value });
     };
 
-    // const calculateHeight = () => {
-    //     let baseHeight = 625;
-    //     const imageAdjustment = selectedImagesSent.length > 0 ? 70 : 0; // Điều chỉnh nếu có hình ảnh
-    //     const maxHeightReduction = 96 - 40; // Giới hạn giảm chiều cao tối đa
-
-    //     if (heightChat > 40) {
-    //         const heightReduction = Math.min(heightChat - 40, maxHeightReduction);
-    //         baseHeight -= heightReduction;
-    //     }
-    //     // Trừ đi imageAdjustment trước khi áp dụng giới hạn tối thiểu 588
-    //     // Đảm bảo baseHeight không thấp hơn 588
-    //     baseHeight = Math.max(baseHeight, 585);
-    //     baseHeight -= imageAdjustment;
-    //     return `${baseHeight}px`;
-    // };
-
-
-
-
-
-
-    const calculateHeight = (baseHeightPx = 610) => {
-        const windowHeight = window.innerHeight; // Lấy chiều cao của cửa sổ trình duyệt
-        const imageAdjustmentPx = selectedImagesSent.length > 0 ? 70 : 0;
-        const maxHeightReductionPx = 96 - 40;
+    const calculateHeight = () => {
+        let baseHeight = 625;
+        const imageAdjustment = selectedImagesSent.length > 0 ? 70 : 0; // Điều chỉnh nếu có hình ảnh
+        const maxHeightReduction = 96 - 40; // Giới hạn giảm chiều cao tối đa
 
         if (heightChat > 40) {
-            const heightReduction = Math.min(heightChat - 40, maxHeightReductionPx);
-            baseHeightPx -= heightReduction;
+            const heightReduction = Math.min(heightChat - 40, maxHeightReduction);
+            baseHeight -= heightReduction;
         }
-        baseHeightPx = Math.max(baseHeightPx, 585);
-        baseHeightPx -= imageAdjustmentPx;
-
-        // Chuyển đổi chiều cao từ px sang vh
-        const baseHeightVH = (baseHeightPx / windowHeight) * 100 + 3;
-        return `${baseHeightVH}vh`;
+        // Trừ đi imageAdjustment trước khi áp dụng giới hạn tối thiểu 588
+        // Đảm bảo baseHeight không thấp hơn 588
+        baseHeight = Math.max(baseHeight, 585);
+        baseHeight -= imageAdjustment;
+        return `${baseHeight}px`;
     };
-
-    const browser = functions.getBrowser();
-    // console.log(browser)
-    let setHeight;
-
-    if (browser === "edge-chromium") {
-        setHeight = 599;
-    } else if (browser === "chrome") {
-        setHeight = 612;
-    }
-    else if (browser === "firefox") {
-        setHeight = 598;
-    }
-    else if (browser === "opera") {
-        setHeight = 615;
-    } else {
-        setHeight = 615; // Giá trị mặc định cho các trình duyệt khác
-    }
-
-    const heightStyle = calculateHeight(setHeight);
-
-    const [name, setName] = useState("");
-
-    useEffect(() => {
-        setName(platform.name);
-    }, []);
-
-    // console.log("name:", name)
 
     return (
         <div class="container-case-main">
@@ -1648,7 +1597,6 @@ export default () => {
                             </div>
                         </div>
                     </div>
-
                     <div class="row">
                         <div id="portal-root"></div>
                         {/* List Case */}
@@ -1664,13 +1612,11 @@ export default () => {
                                 />
                             </div>
                             <div class="mt-2" >
-                                <span class="pointer" onClick={handlePageAdd} style={{ display: "flex", alignItems: "center" }}>
-                                    <FontAwesomeIcon icon={faSquarePlus} className="size-24 color_icon_plus" title={lang["post your case"]} />
-                                    <span class="lable_add ml-2" >{lang["post your case"]}</span>
+                                <span class="pointer" onClick={handlePageAdd}>
+                                    < FontAwesomeIcon icon={faCirclePlus} className="size-14 color_icon_plus" title={lang["post your case"]} /> <span class="lable_add">{lang["post your case"]}</span>
                                 </span>
-
                             </div>
-                            <hr class="hr-case"></hr>
+                            <hr></hr>
                             <div class="sort-case">
                                 <div class="d-flex ">
                                     <div className="dropdown">
@@ -1872,7 +1818,7 @@ export default () => {
                                                             if (value.trim() && errorMessagesadd.issue) {
                                                                 setErrorMessagesadd({ ...errorMessagesadd, issue: '' });
                                                             }
-                                                        }} placeholder={lang["p.issue"]} spellCheck="false"></textarea>
+                                                        }} placeholder={lang["p.issue"]}  spellCheck="false"></textarea>
                                                 </div>
                                                 <div class="row field-case">
                                                     <div className="col-md-4">
@@ -2190,7 +2136,7 @@ export default () => {
                                                         >
                                                             <div class="col-md-12">
                                                                 <div class="info-case">
-                                                                    <div className="messages-wrapper" style={{ height: heightStyle }} ref={messagesEndRef} id="messages-wrapper">
+                                                                    <div className="messages-wrapper" style={{ height: calculateHeight() }} ref={messagesEndRef} id="messages-wrapper">
 
 
                                                                         {contextMenu.visible && ReactDOM.createPortal(

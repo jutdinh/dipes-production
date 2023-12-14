@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import $ from 'jquery'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMaximize, faMinimize, faDownload, faCompress, faChartBar,faUsersGear, faHouse, faLockOpen, faPlusCircle, faCirclePlus, faCirclePlay, faRectangleXmark, faCircle, faCircleXmark, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft, faClose, faNewspaper } from '@fortawesome/free-solid-svg-icons';
+import { faMaximize, faMinimize, faDownload, faCompress, faChartBar, faUsersGear, faHouse, faLockOpen, faCaretRight, faCaretLeft, faChevronUp, faChevronDown, faPlusCircle, faCirclePlus, faCirclePlay, faRectangleXmark, faCircle, faCircleXmark, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft, faClose, faNewspaper, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 export default () => {
    const { proxy, lang, pages, functions } = useSelector(state => state)
    const { openTab } = functions
@@ -128,54 +128,57 @@ export default () => {
 
                ) : null}
                {/* Feedback */}
-               
+
                {user.role === "pd" ? (
                   <>
-                    {pages && pages.map((ui, index) => (
-                  ui.status && ui.title === "HOME" ? (
-                     <li key={index} className="navbar-item">
-                        <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
-                           {/* <i class="fa fa-home"></i> */}
-                           <FontAwesomeIcon icon={faHouse} className={`size-20 mr-3`} />
-                           <span>{ui.title}</span>
-                        </NavLink>
-                     </li>
-                  ) : null
-               ))}
-               <li className="navbar-item">
-                  <NavLink to="/technical" activeClassName="nav-active">
-                     {/* <i class=" fa fa-gears icon-technical"></i> */}
-                     <FontAwesomeIcon icon={faUsersGear} className={ `icon-technical size-20 mr-3`} />
-                     <span>TECHNICAL SERVICE</span>
-                  </NavLink>
-               </li>
-               <li>
-                  <a href="#dashboard" onClick={toggleMenu} aria-expanded="false" class="dropdown-toggle">
-                     {/* <i class="fa fa-dashboard yellow_color"></i> */}
-                     <FontAwesomeIcon icon={faLockOpen} className={`yellow_color size-20 mr-3`} />
-                     <span>ONLINE ACTIVATION</span>
-                     <i class="fa "></i>
-                  </a>
-                  <ul className={`collapse list-unstyled ${isExpanded ? 'show' : ''} scrollable`} id="dashboard">
                      {pages && pages.map((ui, index) => (
-                        
-                        ui.status && ui.title !== "HOME" ? (
+                        ui.status && ui.title === "HOME" ? (
                            <li key={index} className="navbar-item">
                               <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
-                                 {/* <i class="fa fa-newspaper-o"></i> */}
-                                 <FontAwesomeIcon icon={faNewspaper} className={`size-20 mr-3`} />
+                                 {/* <i class="fa fa-home"></i> */}
+                                 <FontAwesomeIcon icon={faHouse} className={`size-20 mr-3`} />
                                  <span>{ui.title}</span>
                               </NavLink>
                            </li>
                         ) : null
                      ))}
-                  </ul>
-               </li>
+
+                     <li className="navbar-item">
+                        <NavLink to="/technical" activeClassName="nav-active">
+                           {/* <i class=" fa fa-gears icon-technical"></i> */}
+                           <FontAwesomeIcon icon={faUsersGear} className={`icon-technical size-20 mr-3`} />
+                           <span>TECHNICAL SERVICE</span>
+                        </NavLink>
+                     </li>
+
+                     <li>
+                        <a href="#dashboard" onClick={toggleMenu} aria-expanded="false" >
+                           {/* <i class="fa fa-dashboard yellow_color"></i> */}
+                           <FontAwesomeIcon icon={faLockOpen} className={`yellow_color size-20 mr-3`} />
+                           <span>ONLINE ACTIVATION</span>
+                           {isExpanded
+                              ? <FontAwesomeIcon icon={faCaretDown} className="size-18 ml-2" />
+                              : <FontAwesomeIcon icon={faCaretRight} className="size-18 ml-2" />
+                           }
+                        </a>
+                        <ul className={`collapse list-unstyled ${isExpanded ? 'show' : ''} scrollable`} id="dashboard">
+                           {pages && pages.map((ui, index) => (
+
+                              ui.status && ui.title !== "HOME" ? (
+                                 <li key={index} className="navbar-item">
+                                    <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
+                                       {/* <i class="fa fa-newspaper-o"></i> */}
+                                       <FontAwesomeIcon icon={faNewspaper} className={`size-20 mr-3`} />
+                                       <span>{ui.title}</span>
+                                    </NavLink>
+                                 </li>
+                              ) : null
+                           ))}
+                        </ul>
+                     </li>
 
                   </>
-
                ) : null}
-
                {/* Active online */}
                {/* <div class={`scrollable_user ${user.role === "pd" ? 'no_shadow' : ''}`}>
                   {user.role === "pd" ? (
@@ -193,8 +196,6 @@ export default () => {
                      </li>
                   ) : null}
                </div> */}
-
-
 
                {user.role === "uad" ? (
                   <>
