@@ -333,20 +333,16 @@ export default (props) => {
                                                                         onChange={(e) => handleInputChange(header.fomular_alias, e.target.value)}
                                                                         onKeyDown={handleKeyDown}
                                                                     />
-
                                                                 </th>
                                                             ))}
                                                             <th class="align-center" onClick={handleSearchClick} style={{ minWidth: "100px" }}>
                                                                 <i class={`fa fa-search size-24 pointer mb-2 ${isActive ? 'icon-active' : ''}`} title={lang["search"]}></i>
                                                             </th>
                                                         </tr>
-
                                                     </thead>
-
                                                     <tbody>
                                                         {
                                                         (loading && current && current.length > 0) ?
-
                                                             <tr>
                                                                 <td class="" colspan={`${apiDataName?.length + 2}`} style={{ textAlign: 'center' }}><div>
                                                                     <img
@@ -360,7 +356,6 @@ export default (props) => {
                                                             :
                                                             <>
                                                                 {current && current.length > 0 ? (
-
                                                                     current.map((row, index) => {
                                                                         if (row) {
                                                                             return (
@@ -386,7 +381,6 @@ export default (props) => {
                                                                 </tr>
                                                                 }</>
                                                         }
-
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -448,7 +442,6 @@ export default (props) => {
                                         </nav>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>

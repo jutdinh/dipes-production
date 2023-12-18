@@ -166,8 +166,6 @@ export default {
     "error.vaildphone": "Số điện thoại không hợp lệ",
     "error.permission": "Vui lòng chọn quyền",
     "error.address": "Vui lòng nhập địa chỉ",
-
-
     // button modal edit user
     "btn.update": "Lưu lại",
     "edituser.title": "Chỉnh sửa người dùng",
@@ -196,24 +194,16 @@ export default {
     "log.create_at": "Ngày tạo",
 
     //page
-
     "show": "Hiển thị",
     "of": "của",
     "results": "kết quả",
-
-
     "supervisor": "Giám sát",
     "deployers": "Triển khai",
-
-
-
     "btn.cancel": "Hủy",
     "btn.addfield": "Thêm mới trường",
     "export": "Xuất",
     "export-to-excel": "Xuất sang Excel",
-
     "activation": "Kích hoạt bản quyền",
-
     "success": "Thành công",
     "success.content": "Import dữ liệu thành công",
     "faild": "Thất bại",
@@ -233,12 +223,10 @@ export default {
     "select statistic fields ": "Chọn trường thống kê",
     "preview data": "Bản xem trước dữ liệu Excel",
     "export.content.error": "Vui lòng chọn ít nhất một trường trước khi xuất.",
-
     "success.add": "Thêm thành công",
     "fail.add": "Thêm thất bại",
     "success.update": "Cập nhật thành công",
     "fail.update": "Cập nhật thất bại",
-
     // "confirm": "Xác nhận xóa",
     "confirm.content": "Bạn có chắc chắn muốn xóa trường này?",
     "btn.delete": "Xóa",
@@ -247,7 +235,6 @@ export default {
     "fail.delete": "Xoá thất bại",
     "fail.null": "Có một số trường không được bỏ trống",
     "fail.active": "Sản phẩm chưa được kích hoạt",
-
     "preview.content": "Vui lòng chọn ít nhất một trường để xem dữ liệu mẫu",
     "site map": "Sơ đồ website",
     "not found user": "Chưa có người dùng",
@@ -329,7 +316,6 @@ export default {
     "no data": "Không có dữ liệu",
     "next": "Tiếp tục",
     "error.file": "Vui lòng chọn một tệp .txt!",
-
     "correct format": "Nội dung tệp không đúng định dạng!",
     "back": "Quay về",
     "create key": "Tạo khóa",
@@ -367,7 +353,6 @@ export default {
     "wrong info": "Vui lòng nhập cả tên người dùng và mật khẩu.",
     "failed.password": "Thay đổi mật khẩu thất bại",
     "wrong password": "Mật khẩu cũ không chính xác",
-
     "just now": "Vừa xong",
     "mins ago": "phút trước",
     "secs ago": "giây trước",
@@ -375,13 +360,8 @@ export default {
     "days ago": "ngày trước",
     "months ago": "tháng trước",
     "years ago": "năm trước",
-
     "success create": "Tạo thành công",
     "faild create": "Tạo thất bại",
-
-
-
-    
     "post your case": "THÊM TRƯỜNG HỢP CỦA BẠN",
     "sorted by": "Sắp xếp theo",
     "today": "Hôm nay",
@@ -395,7 +375,8 @@ export default {
     "case(s)": "trường hợp",
     // "ISSUE DESCRIPTION": "MÔ TẢ VẤN ĐỀ",
     "ISSUE DESCRIPTION": "Mô tả vấn đề",
-    "SUGGESTED SOLUTION": "GIẢI PHÁP ĐỀ XUẤT",
+    // "SUGGESTED SOLUTION": "GIẢI PHÁP ĐỀ XUẤT",
+    "SUGGESTED SOLUTION": "Giải pháp đề xuất",
     "PRODUCT INFORMATION": "Thông tin sản phẩm",
     "ADD PRODUCT INFORMATION": "Thêm thông tin sản phẩm",
 
@@ -405,16 +386,11 @@ export default {
     "APPRICIATE THE SERVICE QUALITY": "ĐÁNH GIÁ CHẤT LƯỢNG DỊCH VỤ",
     "Let us know how you feel": "Hãy cho chúng tôi biết cảm nhận của bạn",
     "Last updated by": "Cập nhật lần cuối bởi",
-
-   
-
-
     "Submit Review": "Gửi đánh giá",
-    "Case title, case description, or anything": "Tiêu đề trường hợp, mô tả trường hợp, hoặc bất cứ thứ gì",
+    "Case title, case description, or anything": "Tiêu đề trường hợp, mô tả trường hợp",
     "Show more": "Xem thêm",
     "send message": "Gửi tin nhắn",
     "attachment": "Tập tin đính kèm",
-
     "new case": "TRƯỜNG HỢP MỚI",
     "case title": "Tiêu đề",
     "case type": "Phân loại",
@@ -435,7 +411,6 @@ export default {
     "controller error": "Lỗi Controller:",
     "printhead error": "Lỗi Printhead ",
     "printer error": "Lỗi Printer:",
-
     "ERROR0": "Không có lỗi",
     "ERROR1": "Không tìm thấy thông tin thiết bị",
     "ERROR2": "UUID không hợp lệ",
@@ -450,11 +425,7 @@ export default {
     "Please upload an image file.": "Vui lòng tải lên một tệp hình ảnh.",
     "Notification": "Thông báo",
     "expired": "Phiên hết hạn. Vui lòng đăng nhập lại để tiếp tục.",
-    "withdraw": "Thông tin chỉ có thể được cập nhật trong vòng 24 giờ kể từ khi gửi."
-
-
-    
-
-
-
+    "withdraw": "Thông tin chỉ có thể được cập nhật trong vòng 24 giờ kể từ khi gửi.",
+    "Drag and drop images here and click": "Kéo thả ảnh vào đây hoặc bấm để chọn ảnh",
+    "case image": "Hình ảnh"
 }

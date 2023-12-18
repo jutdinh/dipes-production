@@ -12,6 +12,7 @@ export default () => {
         localStorage.removeItem("password_hash");
         localStorage.removeItem("user");
         localStorage.setItem("user", JSON.stringify({}));
+        localStorage.removeItem("selectedCaseDetail")
         // console.log( localStorage.getItem("_token") )
         window.location = "/login"
     }, [])

@@ -34,7 +34,6 @@ export default {
     "min ago": "min ago",
     "statistic": "Statistic",
     "workflow": "Workflow",
-
     "about us": "About Us",
     "contacts": "Contacts",
     "404": "PAGE NOT FOUND",
@@ -82,7 +81,6 @@ export default {
     "projectdescripton": "Project description",
     "p.projectdescripton": "Enter project description",
     // "projectmember": "Project members",
-
     //update project 
     "updateproject": "Project update",
     //Task  
@@ -100,12 +98,8 @@ export default {
     "delete": "Delete",
     "edit": "Edit",
     "edittask": "Edit task",
-
     "duty": "Duty",
     "confirm": "Confirm",
-
-
-
 
     //Managers
     "editmanager": "Edit a project manager",
@@ -122,9 +116,7 @@ export default {
     "versionupdate": "Version update",
     "versionname": "Version name",
     "p.versionname": "Enter an version name",
-
     "p.versiondescription": "Enter a description",
-
 
 
     //User
@@ -202,15 +194,10 @@ export default {
     "log.create_user": "Executor",
     "log.create_at": "Creation date",
 
-
     //page
-
     "show": "Showing",
     "of": "of",
     "results": "results",
-
-
-    //
     "supervisor": "Supervisor",
     "deployers": "Deployers",
     "btn.cancel": "Cancel",
@@ -218,9 +205,7 @@ export default {
     "export": "Export",
     "export-to-excel": "Export to Excel",
 
-
     "activation": "Activation",
-
     "success": "Success",
     "success.content": "Successful data import",
     "faild": "Failed",
@@ -237,7 +222,6 @@ export default {
     "MAC": "This server MAC address",
     "active now": "Active now",
     "select fields": "Select fields",
-
     "select statistic fields ": "Select statistic fields",
     "preview data": "Excel data preview",
     "export.content.error": "Please select at least one field before exporting.",
@@ -382,10 +366,6 @@ export default {
     "years ago": "years ago",
     "success create": "Created successfully",
     "faild create": "Create failed",
-
-
-
-
     "post your case": "POST YOUR CASE",
     "sorted by": "Sorted by",
     "today": "Today",
@@ -398,7 +378,7 @@ export default {
     "total": "Total",
     "case(s)": "case(s)",
     "ISSUE DESCRIPTION": "Issue description",
-    "SUGGESTED SOLUTION": "SUGGESTED SOLUTION",
+    "SUGGESTED SOLUTION": "Suggested Solution",
     "PRODUCT INFORMATION": "Product information",
     "ADD PRODUCT INFORMATION": "Add product information",
     "Type a message": "Type a message ...",
@@ -407,18 +387,11 @@ export default {
     "APPRICIATE THE SERVICE QUALITY": "APPRICIATE THE SERVICE QUALITY",
     "Let us know how you feel": "Let us know how you feel",
     "Last updated by": "Last updated by",
-
-    
-
-
-
     "Submit Review": "Submit",
-    "Case title, case description, or anything": "Case title, case description, or anything",
+    "Case title, case description, or anything": "Case title, case description",
     "Show more": "Show more",
     "send message": "Send Message",
     "attachment": "Attachment",
-
-
     "new case": "New Case",
     "case title": "Case title",
     "case type": "Case type",
@@ -431,16 +404,14 @@ export default {
     "Enter product name": "Enter product name",
     "p.issue": "Enter issue description",
     "No attachment": "No attachment",
-    "Choose Image": "Choose Image",
+    "Choose Image": "Select Image",
     "no image case": "No image case",
     "No data avasilable": "No data available",
     "success.rate": "Successfully submitted the review",
     "File is too large": "Total file size exceeds 20MB",
-
     "controller error": "Controller error:",
     "printhead error": "Printhead error ",
     "printer error": "Printer error:",
-
     "ERROR0": "None Error",
     "ERROR1": "Device info not found",
     "ERROR2": "Invalid UUID",
@@ -455,10 +426,9 @@ export default {
     "Please upload an image file.": "Please upload an image file.",
     "Notification": "Notification",
     "expired": "Session expired. Please log back in to continue.",
-    "withdraw": "Information can only be updated within 24 hours of submission."
-
-
-
+    "withdraw": "Information can only be updated within 24 hours of submission.",
+    "Drag and drop images here and click": "Drag and drop here or click to select images",
+    "case image": "Case image"
 }
 
 
