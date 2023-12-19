@@ -401,7 +401,7 @@ export default {
     "Case Update": "Cập nhật trường hợp",
     "Enter case title": "Nhập tiêu đề",
     "Enter product name": "Nhập tên sản phẩm",
-    "p.issue": "Nhập mô tả vấn đề",
+    "p.issue": "Nhập mô tả vấn đề (Tối đa 2000 kí tự)",
     "No attachment": "Không có tệp đính kèm",
     "Choose Image": "Chọn ảnh",
     "no image case": "Không có hình ảnh",

@@ -5,16 +5,16 @@ import $ from 'jquery'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMaximize, faMinimize, faDownload, faCompress, faChartBar, faUsersGear, faHouse, faLockOpen, faCaretRight, faCaretLeft, faChevronUp, faChevronDown, faPlusCircle, faCirclePlus, faCirclePlay, faRectangleXmark, faCircle, faCircleXmark, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft, faClose, faNewspaper, faCaretDown } from '@fortawesome/free-solid-svg-icons';
 export default () => {
-   const { proxy, lang, pages, functions } = useSelector(state => state)
+   const { proxy, lang, pages, functions, sidebar } = useSelector(state => state)
    const { openTab } = functions
    const stringifiedUser = localStorage.getItem("user");
    const user = JSON.parse(stringifiedUser) || {}
    const [activeLink, setActiveLink] = useState("/");
    const [uis, setUis] = useState([]);
    const [isOpen, setIsOpen] = useState(false);
-   // console.log(pages)
+   const sideBar = sidebar ? sidebar.sidebar : null;
    const [isExpanded, setIsExpanded] = useState(true);
-
+   // console.log(isExpanded)
    useEffect(() => {
       const savedState = localStorage.getItem('menuExpanded');
       if (savedState !== null) {
@@ -137,7 +137,7 @@ export default () => {
                               <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
                                  {/* <i class="fa fa-home"></i> */}
                                  <FontAwesomeIcon icon={faHouse} className={`size-20 mr-3`} />
-                                 <span>{ui.title}</span>
+                                 <span class={`${sideBar ? "" : "hidden-title"}`}>{ui.title}</span>
                               </NavLink>
                            </li>
                         ) : null
@@ -147,7 +147,7 @@ export default () => {
                         <NavLink to="/technical" activeClassName="nav-active">
                            {/* <i class=" fa fa-gears icon-technical"></i> */}
                            <FontAwesomeIcon icon={faUsersGear} className={`icon-technical size-20 mr-3`} />
-                           <span>TECHNICAL SERVICE</span>
+                           <span class={`${sideBar ? "" : "hidden-title"}`}>TECHNICAL SERVICE</span>
                         </NavLink>
                      </li>
 
@@ -155,10 +155,10 @@ export default () => {
                         <a href="#dashboard" onClick={toggleMenu} aria-expanded="false" >
                            {/* <i class="fa fa-dashboard yellow_color"></i> */}
                            <FontAwesomeIcon icon={faLockOpen} className={`yellow_color size-20 mr-3`} />
-                           <span>ONLINE ACTIVATION</span>
+                           <span class={`${sideBar ? "" : "hidden-title"}`}>ONLINE ACTIVATION</span>
                            {isExpanded
-                              ? <FontAwesomeIcon icon={faCaretDown} className="size-18 ml-2" />
-                              : <FontAwesomeIcon icon={faCaretRight} className="size-18 ml-2" />
+                              ? <FontAwesomeIcon icon={faCaretDown} className={`size-18 ml-2 ${sideBar ? "" : "hidden-title"}`} />
+                              : <FontAwesomeIcon icon={faCaretRight} className={`size-18 ml-2 ${sideBar ? "" : "hidden-title"}`} />
                            }
                         </a>
                         <ul className={`collapse list-unstyled ${isExpanded ? 'show' : ''} scrollable`} id="dashboard">
@@ -168,13 +168,15 @@ export default () => {
                                  <li key={index} className="navbar-item">
                                     <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
                                        {/* <i class="fa fa-newspaper-o"></i> */}
-                                       <FontAwesomeIcon icon={faNewspaper} className={`size-20 mr-3`} />
+                                       <FontAwesomeIcon icon={faNewspaper} className={`size-20 mr-3 `} />
                                        <span>{ui.title}</span>
                                     </NavLink>
                                  </li>
                               ) : null
                            ))}
+                          
                         </ul>
+                        
                      </li>
 
                   </>
@@ -221,9 +223,6 @@ export default () => {
                   </>
 
                ) : null}
-
-
-
                {/* {user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/logs" activeClassName="nav-active">

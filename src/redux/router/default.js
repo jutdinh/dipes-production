@@ -14,6 +14,9 @@ export default (state, action) => {
         case "changeSocketURL":
             return changeSocketURL(state, action)
             break;
+        case "setSidebar":
+            return setSidebar(state, action)
+            break;
     }
 }
 
@@ -31,16 +34,23 @@ const setProjects = (state, action) => {
 
 const setUIPages = (state, action) => {
     const { pages } = action.payload;
-    const stringifiedUI = JSON.stringify( pages )
-    localStorage.setItem( "ui", stringifiedUI )
+    const stringifiedUI = JSON.stringify(pages)
+    localStorage.setItem("ui", stringifiedUI)
     return { ...state, pages }
-} 
+}
 
 
-const changeSocketURL = ( state, action ) => {
-    const { socket } = state 
+const changeSocketURL = (state, action) => {
+    const { socket } = state
     socket.io.uri = action.payload
     socket.disconnect().connect();
     state.socket = socket
-    return {...state}
+    return { ...state }
+}
+
+const setSidebar = (state, action) => {
+ 
+    const sidebar = action.payload;
+    // console.log(sidebar.sidebar)
+    return { ...state, sidebar }
 }

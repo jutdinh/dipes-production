@@ -1,8 +1,9 @@
-import { useSelector } from "react-redux";
+
 import { Dropdown } from "../common";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from 'react-responsive'
 import $ from 'jquery';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default () => {
     const { proxy, lang, auth, profiles, pages } = useSelector(state => state);
@@ -13,7 +14,8 @@ export default () => {
     const stringifiedUser = localStorage.getItem("user");
     const user = JSON.parse(stringifiedUser)
     // console.log(pages)
-
+    const [isExpanded, setIsExpanded] = useState(true);
+    const dispatch = useDispatch();
     const langs = [
         { id: 0, label: lang["vi"], flag: "vietnam.png", value: "Vi" },
         { id: 1, label: lang["en"], flag: "united-kingdom.png", value: "En" },
@@ -85,9 +87,21 @@ export default () => {
 
 
     const sidebarToggle = (e) => {
+        e.preventDefault();
         $('#sidebar').toggleClass('active');
+        setIsExpanded(prevState => !prevState);
+        dispatch({
+            type: "setSidebar",
+            payload: { sidebar: isExpanded}
+        })
     }
-
+   
+    useEffect(() => {
+        dispatch({
+            type: "setSidebar",
+            payload: { sidebar: isExpanded}
+        })
+    }, [isExpanded])
     return (
         <div class="topbar">
             <nav class="bg-cus navbar navbar-expand-lg navbar-light">

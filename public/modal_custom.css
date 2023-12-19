@@ -737,7 +737,9 @@ img[class="scaled-hover-target"] {
     /* color: #4dd591; */
     color: #000;
 }
-
+.hidden-title{
+    display: none;
+}
 .card-header {
     padding: 10px 15px;
     margin-bottom: 0;
@@ -747,6 +749,7 @@ img[class="scaled-hover-target"] {
 
 .info-case {
     padding-left: 5px;
+    padding-right: 5px;
     overflow-y: auto;
     overflow-x: hidden;
     /* height: 500px; */

@@ -44,23 +44,23 @@ export default () => {
     const [searchValue, setSearchValue] = useState('');
     const [filteredCases, setFilteredCases] = useState(cases);
 
-    console.log(47, dataCaseDetail)
-    console.log("data update", caseUpdate)
 
-
-
-    console.log(_token)
-    console.log(dataMessage)
-    console.log(dataMessageMedia)
-    console.log(dataMessageMerged)
+    // console.log(47, dataCaseDetail)
+    // console.log("data update", caseUpdate)
+    // console.log(_token)
+    // console.log(dataMessage)
+    // console.log(dataMessageMedia)
+    // console.log(dataMessageMerged)
 
     const listError = [
-        { id: 0, label: "Undefined", value: 1, color: "#1ed085" }, // Màu xanh lá cây
-        { id: 1, label: "Troubleshooting", value: 2, color: "#8884d8" }, // Màu xanh dương
-        { id: 2, label: "Error", value: 3, color: "#ffc658" }, // Màu vàng
-        { id: 3, label: "Question", value: 4, color: "#ff8042" }, // Màu cam
-        { id: 4, label: "Project", value: 5, color: "#FF0000" } // Màu đỏ
-    ]
+        { id: 0, label: "Undefined", value: 1, color: "#808080" }, // Màu xám
+        { id: 1, label: "Troubleshooting", value: 2, color: "#007BFF" }, // Màu xanh dương
+        { id: 2, label: "Error", value: 3, color: "#FF0000" }, // Màu đỏ
+        { id: 3, label: "Question", value: 4, color: "#15bd4c" }, // Màu xanh lá cây nhạt
+        { id: 4, label: "Feature", value: 5, color: "#800080" }, // Màu tím
+        { id: 5, label: "Project", value: 6, color: "#0f46bb" }, // Màu xanh lam nhạt
+      ];
+      
 
     const qualityToImage = {
         "Good": "i1.png",
@@ -323,7 +323,7 @@ export default () => {
 
 
     const dataUpdateCase = (dataUpdate) => {
-        console.log(dataUpdate)
+        // console.log(dataUpdate)
         setShowPageUpdate(true)
         const requestBody = {
             checkCustomer: {
@@ -342,7 +342,12 @@ export default () => {
         })
             .then(res => res.json())
             .then(resp => {
-                const { Success, data, activated, status, content } = resp;
+                const { Success, data, activated, status, content, Case, fields } = resp;
+                // console.log(429, resp)
+                if (!Case || !fields) {
+
+                    return;
+                }
                 // console.log(resp)
                 const fieldMappings = resp.fields.reduce((acc, field) => {
                     acc[field.fomular_alias] = field.field_name;
@@ -439,7 +444,7 @@ export default () => {
                 .then(res => res.json())
                 .then(resp => {
                     const { Success, data, activated, status, content, Case, fields } = resp;
-                    console.log(429, resp)
+                    // console.log(429, resp)
                     if (!Case || !fields) {
 
                         return;
@@ -455,7 +460,7 @@ export default () => {
                         return newCase;
                     }, {});
 
-                    console.log(427, mappedCase);
+                    // console.log(427, mappedCase);
                     const caseDetail = {
                         id: mappedCase["CASE ID"],
                         title: mappedCase["CASE TITLE"],
@@ -645,7 +650,7 @@ export default () => {
     //     }
     // }, [selectedImage]);
 
-    console.log(selectedImage)
+    // console.log(selectedImage)
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -702,7 +707,7 @@ export default () => {
 
     // Attach Media
     const [attachMedia, setAttachMedia] = useState([]);
-    console.log(attachMedia)
+    // console.log(attachMedia)
     const handleAttachMedia = (e) => {
         const newFiles = Array.from(e.target.files).filter(file =>
             file.type.startsWith('image/') || file.type.startsWith('video/')
@@ -908,7 +913,7 @@ export default () => {
             .then((res) => res.json())
             .then((resp) => {
                 const { Success, content, data, status } = resp;
-                console.log(881, resp)
+                // console.log(881, resp)
                 if (Success) {
                     Swal.fire({
                         title: lang["success"],
@@ -1340,7 +1345,7 @@ export default () => {
     };
 
     const [isDragging, setIsDragging] = useState(false);
-    console.log(isDragging)
+    // console.log(isDragging)
     const dragCounter = useRef(0);
 
     const handleDragEnter = (e) => {
@@ -1487,7 +1492,7 @@ export default () => {
 
                 const totalSize = calculateTotalSizeAttach(newMediaFiles);
 
-                console.log(1460, totalSize / 1000000)
+                // console.log(1460, totalSize / 1000000)
 
                 // Kiểm tra nếu tổng kích thước file vượt quá 20MB
                 if (totalSize > 20971520) {
@@ -1570,7 +1575,7 @@ export default () => {
 
                 const totalSize = calculateTotalSizeAttach(newMediaFiles);
 
-                console.log(1460, totalSize / 1000000)
+                // console.log(1460, totalSize / 1000000)
 
                 // Kiểm tra nếu tổng kích thước file vượt quá 20MB
                 if (totalSize > 20971520) {
@@ -1867,7 +1872,7 @@ export default () => {
     // const heightStyle = calculateHeight(setHeight);
     // console.log(calculateHeight())
 
-    console.log(calculateHeight())
+    // console.log(calculateHeight())
 
     const [name, setName] = useState("");
     const [heightListCase, setHeightListCase] = useState(0);
@@ -2114,7 +2119,7 @@ export default () => {
 
                                                         )}
                                                     </div>
-                                                    <textarea class="form-control" rows={6}
+                                                    <textarea class="form-control" rows={6} maxLength={2000}
                                                         style={{ resize: 'none' }} value={postCase.issue} onChange={(e) => {
                                                             const value = e.target.value;
                                                             setPostCase({ ...postCase, issue: value });
@@ -2225,204 +2230,8 @@ export default () => {
                                 </div>
                             )
                         }
-                        {/* Update Case */}
-                        {showPageUpdate &&
-                            (
-                                < div class="col-md-7" style={{ paddingLeft: "5px", paddingRight: "5px" }}>
-                                    <div class="white_shd full margin_bottom_30">
-                                        <div class="full graph_head_cus min-h-58">
-                                            <div class="heading1 margin_0 d-flex">
-                                                <h5 class="margin-bottom-0">{lang["Case Update"]}</h5>
-                                                <FontAwesomeIcon icon={faPaperPlane} onClick={submitPostCase} className={`size-24 mt-2 ml-auto icon-add-production pointer `} title={lang["submit case"]} />
-                                            </div>
-                                        </div>
-                                        <div class="table_section padding_infor_info_case_add">
-                                            <div class="add-case">
-                                                <div class="row field-case">
-                                                    <div class="col-md-8">
 
-                                                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                            <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>{lang["case title"]}<span className='red_star'>*</span></h5>
-                                                            {errorMessagesUpdate.title && (
-                                                                <span class="error-message mb-1">{errorMessagesUpdate.title}</span>
-                                                            )}
-                                                        </div>
 
-                                                        <input type="text" class="form-control"
-                                                            value={caseUpdate.title} onChange={
-                                                                (e) => { setCaseUpdate({ ...caseUpdate, title: e.target.value }) }}
-                                                            placeholder="Enter case title" spellCheck="false"></input>
-
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <h5 class="mb-2">{lang["case type"]}</h5>
-                                                        <select className="form-control" name="role" value={caseUpdate.casetype} onChange={
-                                                            (e) => { setCaseUpdate({ ...caseUpdate, casetype: e.target.value }) }}>
-                                                            <option value={"Undefined"}>Undefined</option>
-                                                            <option value={"Troubleshooting"}>Troubleshooting</option>
-                                                            <option value={"Error"}>Error</option>
-                                                            <option value={"Question"}>Question</option>
-                                                            <option value={"Feature"}>Feature</option>
-                                                            <option value={"Project"}>Project</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div style={{ paddingLeft: "0px", paddingRight: "0px" }} class="col-md-12 field-case">
-
-                                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                        <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>{lang["product name"]}<span className='red_star'>*</span></h5>
-                                                        {errorMessagesUpdate.productname && (
-                                                            <span class="error-message mb-1">{errorMessagesUpdate.productname}</span>
-                                                        )}
-                                                    </div>
-
-                                                    <input type="text" class="form-control"
-                                                        value={caseUpdate.productname} onChange={
-                                                            (e) => { setCaseUpdate({ ...caseUpdate, productname: e.target.value }) }}
-                                                        placeholder="Enter Product Name" spellCheck="false" ></input>
-                                                </div>
-
-                                                <div style={{ paddingLeft: "0px", paddingRight: "0px" }} class="col-md-12">
-
-                                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-
-                                                        <h5 class="mb-2" style={{ margin: '0', marginRight: '10px' }}>{lang["ISSUE DESCRIPTION"]}<span className='red_star'>*</span></h5>
-                                                        {errorMessagesUpdate.issue && (
-                                                            <span class="error-message mb-1">{errorMessagesUpdate.issue}</span>
-                                                        )}
-                                                    </div>
-                                                    <textarea class="form-control no-change-textarea" rows={8}
-                                                        value={caseUpdate.issue} onChange={
-                                                            (e) => { setCaseUpdate({ ...caseUpdate, issue: e.target.value }) }} spellCheck="false"></textarea>
-                                                </div>
-                                                <div class="row field-case">
-                                                    <div className="col-md-4">
-                                                        <h5 className="mb-2">{lang["attachment"]}</h5>
-                                                        <div className="upload-container-case">
-                                                            {((caseUpdate.imgcase === "" && selectedImage == null)) && (
-                                                                <label style={{ margin: 0 }} htmlFor="file-upload" className="custom-file-upload">
-                                                                    {lang["Choose Image"]}
-                                                                </label>
-                                                            )}
-                                                            <input
-                                                                id="file-upload"
-                                                                type="file"
-                                                                style={{ display: "none" }}
-                                                                onChange={handleImageChange}
-                                                                accept=".png, .jpg, .jpeg"
-                                                            />
-                                                            {!selectedImage && caseUpdate.imgcase !== "" && (
-                                                                <>
-                                                                    <img
-                                                                        id="image-preview"
-                                                                        src={caseUpdate.imgcase + '?ver=' + new Date().getTime()}
-
-                                                                        alt="Image Preview"
-                                                                        style={{
-                                                                            maxWidth: 'calc(100% - 40px)',
-                                                                            maxHeight: 'calc(100% - 10px)',
-                                                                            objectFit: 'contain',
-                                                                            borderRadius: '8px',
-                                                                            cursor: 'pointer'
-                                                                        }}
-                                                                        onClick={() => document.getElementById('file-upload').click()}
-                                                                        title={lang["Click to change image"]}
-                                                                    />
-                                                                    <button onClick={(e) => removeImageCaseUpdate(e)} className="remove-image-case">X</button>
-                                                                </>
-                                                            )
-                                                            }
-                                                            {selectedImage && (
-                                                                <>
-                                                                    <img
-                                                                        id="image-preview"
-                                                                        src={selectedImage}
-                                                                        alt="Image Preview"
-                                                                        style={{
-                                                                            maxWidth: 'calc(100% - 40px)',
-                                                                            maxHeight: 'calc(100% - 10px)',
-                                                                            objectFit: 'contain',
-                                                                            borderRadius: '8px',
-                                                                            cursor: 'pointer'
-                                                                        }}
-                                                                        onClick={() => document.getElementById('file-upload').click()}
-                                                                        title={lang["Click to change image"]}
-                                                                    />
-                                                                    <button onClick={(e) => removeImageCase(e)} className="remove-image-case">X</button>
-                                                                </>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-8">
-                                                        <div class="d-flex">
-                                                            <h5 className="mb-2"></h5>
-                                                            <label style={{ marginBottom: 0 }} htmlFor="file-upload-media" class="ml-auto" >
-                                                                <FontAwesomeIcon icon={faPlusSquare} className={`size-24 mb-1 icon-add pointer `} title="Choose Image" />
-                                                            </label>
-                                                            <input
-                                                                id="file-upload-media"
-                                                                type="file"
-                                                                style={{ display: "none" }}
-                                                                onChange={handleAttachMedia}
-                                                                accept="image/*,video/*"
-                                                            />
-                                                        </div>
-                                                        {(caseUpdate?.attachMedia?.length > 0 || attachMedia.length > 0) ?
-                                                            (
-                                                                <>
-                                                                    <div className="upload-container-case-add">
-                                                                        <div className="selected-images-container-add">
-                                                                            {/* Hình cũ */}
-                                                                            {caseUpdate.attachMedia?.length > 0 && (caseUpdate.attachMedia?.map((media, index) => (
-                                                                                <div key={index} className="selected-image-wrapper-add">
-                                                                                    {functions.isImageFormat(media["6U"]) && (
-                                                                                        <img src={media["6U"]} alt={`Selected ${index}`} className="selected-image-add" />
-                                                                                    )}
-                                                                                    {functions.isVideoFormat(media["6U"]) && (
-                                                                                        <div>
-                                                                                            <video autoplay controls={false} src={media["6U"]} className="selected-image-add pointer" >
-                                                                                            </video>
-                                                                                            {/* <div class="video-duration"> {media.name}</div> */}
-                                                                                            <div class="video-duration">Video</div>
-                                                                                        </div>
-                                                                                    )}
-                                                                                    <button onClick={(e) => removeAttachMediaUpdate(e, media)} className="remove-image" title={lang["delete image"]} >X</button>
-                                                                                </div>
-                                                                            )))}
-
-                                                                            {attachMedia.length > 0 && (attachMedia.map((media, index) => (
-                                                                                <div key={index} className="selected-image-wrapper-add">
-                                                                                    {media.type === 'image' && (
-                                                                                        <img src={media.dataUrl} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
-                                                                                    )}
-                                                                                    {media.type === 'video' && (
-                                                                                        <div>
-                                                                                            <img src={media.cover} alt={`Cover for ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" onClick={() => openModalPreview(media)} />
-                                                                                            {/* <div class="video-duration"> {media.name}</div> */}
-                                                                                            <div class="video-duration">Video</div>
-                                                                                        </div>
-                                                                                    )}
-                                                                                    <button onClick={(e) => removeAttachMedia(e, media)} className="remove-image" title={lang["delete image"]}>X</button>
-                                                                                </div>
-                                                                            )))}
-
-                                                                        </div>
-                                                                    </div>
-                                                                </>
-                                                            ) :
-                                                            <div className="container-no-attachment">
-                                                                <span className="span-no-attachment">{lang["No attachment"]}</span>
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        }
                         {/* Non Case */}
                         {(!showPageDetail && !showPageAdd) && (
                             <div class="col-md-7" style={{ paddingLeft: "5px", paddingRight: "5px" }}>
@@ -2443,18 +2252,13 @@ export default () => {
                                         <div class="heading1 margin_0 case-detail">
                                             <div class="d-flex ">
                                                 <h4 class="ellipsis-header-case" title={dataCaseDetail.title}>{dataCaseDetail.title}</h4>
-
                                                 <span
                                                     class="ml-auto font-weight-bold-black"
                                                     style={{
                                                         color: (listError.find((s) => s.label === dataCaseDetail.casetype) || {}).color || '#000000'
-                                                    }}
-                                                >
+                                                    }}>
                                                     {(listError.find((s) => s.label === dataCaseDetail.casetype) || {}).label || ''}
                                                 </span>
-
-
-
                                             </div>
                                             <div class="d-flex ">
                                                 <p class="italic" style={{ marginBottom: 0 }}>{lang["Posted on"]} {dataCaseDetail && langItemCheck === "Vi" ? functions.translateDateToVietnamese(functions.formatDateCase(dataCaseDetail.date)) : functions.formatDateCase(dataCaseDetail.date)} ({getElapsedTime(dataCaseDetail.date)}). <b class="status_label">{dataCaseDetail.status}</b></p>
@@ -2490,9 +2294,8 @@ export default () => {
                                                     <div class="container-general" >
                                                         <div class="card-block">
                                                             <div class="col-md-12">
-                                                                <div class="info-case" style={{ height: calculateHeight() - 270 }}>
+                                                                <div class="info-case" style={{ height: calculateHeight() - 270 - 9 }}>
                                                                     <h5 class="mt-1 mb-1">{lang["ISSUE DESCRIPTION"]}</h5>
-
                                                                     {/* <textarea
                                                                             readOnly
                                                                             class=" form-control"
@@ -2503,9 +2306,10 @@ export default () => {
                                                                     {
                                                                         dataCaseDetail.issue && dataCaseDetail.issue.split('\n').map(s => <span style={{ display: "block" }}>{s}</span>)
                                                                     }
-
                                                                     <div class="row field-case">
+                                                                 
                                                                         <div className="col-md-4">
+                                                                        <h5 className="mb-2">{lang["case image"]}</h5>
                                                                             <div className="upload-container-case">
                                                                                 {dataCaseDetail.imgcase !== "" ?
                                                                                     <img class=""
@@ -2520,7 +2324,6 @@ export default () => {
                                                                                         onClick={() => openModalPreview({ type: "imageDetail", url: dataCaseDetail.imgcase })}
                                                                                         data-toggle="modal" data-target="#previewMedia"
                                                                                         title={lang["Click to preview"]} />
-
                                                                                     :
                                                                                     <span>{lang["no image case"]}</span>
                                                                                 }
@@ -2532,6 +2335,7 @@ export default () => {
                                                                         </div>
                                                                     </div> */}
                                                                         <div class="col-md-8">
+                                                                        <h5 className="mb-2">{lang["attachment"]}</h5>
                                                                             {dataCaseDetail?.attachMedia?.length > 0 ?
                                                                                 (
                                                                                     <>
@@ -2569,7 +2373,7 @@ export default () => {
                                                                         </div>
                                                                     </div>
                                                                     <div class="title-suggest mb-1">{lang["SUGGESTED SOLUTION"]}</div>
-                                                                    <span class="content-suggest">{dataCaseDetail.solution}</span>
+                                                                    <span class="content-suggest">{dataCaseDetail.solution} </span>
                                                                     <TableInputUpdate onDataUpdate={handleDataFromChild} data={tableDataProduct} stateAdd={false} caseId={dataCaseDetail.id} stateUpdate={true} />
                                                                 </div>
                                                             </div>
@@ -2678,8 +2482,6 @@ export default () => {
                                                                 <div class="info-case">
                                                                     <div className="messages-wrapper" style={{ height: calculateHeight() - 270 - 45 }} ref={messagesEndRef} id="messages-wrapper">
                                                                         {/* <div className="messages-wrapper" ref={messagesEndRef} id="messages-wrapper"> */}
-
-
                                                                         {contextMenu.visible && ReactDOM.createPortal(
                                                                             <div
                                                                                 className="custom-context-menu"
@@ -2788,7 +2590,7 @@ export default () => {
 
                                                         <div
                                                             className="chat-input-container"
-                                                            style={{ bottom: "-11px " }}
+                                                            style={{ bottom: "-10px " }}
                                                             onKeyDown={(e) => {
                                                                 if (e.key === 'Enter' && !e.shiftKey) {
                                                                     e.preventDefault();
@@ -2894,6 +2696,7 @@ export default () => {
                                                                                 <textarea class="form-control" value={postRating.content} onChange={
                                                                                     (e) => { setPostRating({ ...postRating, content: e.target.value }) }}
                                                                                     rows={10}
+                                                                                    maxLength={2000}
                                                                                     style={{ resize: 'none' }}
                                                                                     placeholder={lang["Let us know how you feel"]} spellCheck="false"></textarea>
                                                                             </div>
@@ -3080,7 +2883,7 @@ export default () => {
                                                 <span class="error-message mb-1">{errorMessagesUpdate.issue}</span>
                                             )}
                                         </div>
-                                        <textarea class="form-control no-change-textarea" rows={8}
+                                        <textarea class="form-control no-change-textarea" rows={8} maxLength={2000}
                                             value={caseUpdate.issue} onChange={
                                                 (e) => { setCaseUpdate({ ...caseUpdate, issue: e.target.value }) }} spellCheck="false"></textarea>
                                     </div>
