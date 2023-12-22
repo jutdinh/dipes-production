@@ -15,7 +15,7 @@ function EditableTable(props) {
     ]);
 
     const [prevData, setPrevData] = useState(data ? [...data] : []);
-
+    const dataDetail = props.dataDetail
     const dataProduct = props.data
     const dataStateUpdate = props.stateUpdate
     const dataCaseId = props.caseId
@@ -62,7 +62,7 @@ function EditableTable(props) {
             .then(res => res.json())
             .then(resp => {
                 const { success, activated, status, content } = resp;
-                console.log("Tạo hàng", resp)
+                // console.log("Tạo hàng", resp)
                 const newRow = { detailId: resp.Detail["1DI"], caseId: dataCaseId, col1: '', col2: '', col3: '', col4: '', col5: '0', isEditing: false };
                 setData([...data, newRow]);
                 props.onDataUpdate([...data, newRow]);
@@ -89,7 +89,7 @@ function EditableTable(props) {
             "10Q": updatedRows.col5
 
         }
-        console.log("data update product info", requestBodyProduct)
+        // console.log("data update product info", requestBodyProduct)
         fetch(`${proxy()}/api/988C23F3D58E4885A93EEE22D7FE4C6E`, {
             headers: {
                 Authorization: _token,
@@ -102,7 +102,7 @@ function EditableTable(props) {
             .then(resp => {
                 const { success, activated, status, content } = resp;
 
-                console.log("data respon", resp)
+                // console.log("data respon", resp)
             })
     };
 
@@ -208,10 +208,13 @@ function EditableTable(props) {
 
     return (
         <>
-            <div class="d-flex mb-1 mt-1">
-                <h5>{lang["PRODUCT INFORMATION"]}</h5>
-                <FontAwesomeIcon icon={faPlusSquare} onClick={() => addRow()} className={`size-24 ml-auto  icon-add pointer `} title='Add Product Information' />
-            </div>
+            {dataDetail.status === "Active" &&
+                < div class="d-flex mb-1 mt-1">
+                    <h5>{lang["PRODUCT INFORMATION"]}</h5>
+                    <FontAwesomeIcon icon={faPlusSquare} onClick={() => addRow()} className={`size-24 ml-auto  icon-add pointer `} title='Add Product Information' />
+                </div >
+            }
+
             <div class="table-responsive">
                 {
                     <table className="table">
@@ -222,7 +225,7 @@ function EditableTable(props) {
                                 <th style={{ width: "150px" }}>HARDWARE</th>
                                 <th style={{ width: "150px" }}>FIRMWARE</th>
                                 <th style={{ width: "150px" }}>SOFTWARE</th>
-                                <th style={{ width: "150px" }}>QUALITY</th>
+                                <th style={{ width: "150px" }}>QUANTITY</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -231,9 +234,9 @@ function EditableTable(props) {
                                 data.map((row, index) => (
                                     <tr key={row.detailId}>
                                         <td class="align-center">{index + 1}</td>
-                                        <td class="table-td-product-pl-5"
-                                            onClick={() => handleRowClick(row.detailId)}
-
+                                        <td
+                                            className="table-td-product-pl-5"
+                                            onClick={() => dataDetail.status === "Active" ? handleRowClick(row.detailId) : null}
                                         >
                                             {row.isEditing ? (
                                                 <input
@@ -257,9 +260,9 @@ function EditableTable(props) {
                                             )}
                                         </td>
 
-                                        <td class="table-td-product-pl-5"
-                                            onClick={() => handleRowClick(row.detailId)}
-
+                                        <td
+                                            className="table-td-product-pl-5"
+                                            onClick={() => dataDetail.status === "Active" ? handleRowClick(row.detailId) : null}
                                         >
                                             {row.isEditing ? (
                                                 <input
@@ -276,8 +279,9 @@ function EditableTable(props) {
                                             )}
                                         </td>
 
-                                        <td class="table-td-product-pl-5"
-                                            onClick={() => handleRowClick(row.detailId)}
+                                        <td
+                                            className="table-td-product-pl-5"
+                                            onClick={() => dataDetail.status === "Active" ? handleRowClick(row.detailId) : null}
                                         >
                                             {row.isEditing ? (
                                                 <input
@@ -293,9 +297,9 @@ function EditableTable(props) {
                                                 <span class="table-td-product-pl-6">{row.col3}</span>
                                             )}
                                         </td>
-                                        <td class="table-td-product-pl-5"
-                                            onClick={() => handleRowClick(row.detailId)}
-
+                                        <td
+                                            className="table-td-product-pl-5"
+                                            onClick={() => dataDetail.status === "Active" ? handleRowClick(row.detailId) : null}
                                         >
 
                                             {row.isEditing ? (
@@ -315,9 +319,9 @@ function EditableTable(props) {
                                             )}
 
                                         </td>
-                                        <td class="table-td-product-pl-5"
-                                            onClick={() => handleRowClick(row.detailId)}
-
+                                        <td
+                                            className="table-td-product-pl-5"
+                                            onClick={() => dataDetail.status === "Active" ? handleRowClick(row.detailId) : null}
                                         >
 
                                             {row.isEditing ? (

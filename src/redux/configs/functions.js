@@ -79,22 +79,22 @@ function isTokenExpired(token) {
 }
 
 function refreshToken(proxy, token) {
-
     // console.log(token)
     if (token) {
-        return fetch(`${proxy}/auth/refreshtoken`, { // Trả về Promise từ fetch
+        return fetch(`${proxy}/auth/refreshtoken`, { 
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                Authorization: `${token}`,
+                "Content-Type": "application/json",                
             },
-            body: JSON.stringify({}),
+            body: JSON.stringify({
+                token
+            }),
         })
             .then((res) => res.json())
             .then((resp) => {
                 const { success, content, token, status } = resp;
                 if (success) {
-                    return token; // Trả về token mới nếu thành công
+                    return token; 
                 } else {
                     throw new Error(content || 'Unable to refresh token');
                 }

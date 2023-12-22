@@ -41,6 +41,7 @@ function App() {
     phone: "",
     avatar: ""
   }
+// console.log(_token)
   async function updateToken() {
     try {
       // console.log(46, _token)
@@ -67,9 +68,9 @@ function App() {
 }
 useEffect(() => {
   // Kiểm tra và làm mới token mỗi 30 phút
-  const intervalId = setInterval(updateToken, 1800000); // 1800000 ms = 30 phút
+  const intervalId = setInterval(updateToken, 5000); // 1800000 ms = 30 phút
+  // return () => clearInterval(intervalId);
 
-  return () => clearInterval(intervalId);
 }, [_token]);
 
 
@@ -181,7 +182,7 @@ const expirationDate = functions.getTokenExpirationDate(_token);
     let isTokenValid = true; 
     const checkTokenExpiration = () => {
       const _token = localStorage.getItem("_token");
-      // console.log(_token);
+      // console.log(185, _token);
   
       if (!_token || !isTokenValid) {
         window.location = '/login';
@@ -216,7 +217,7 @@ const expirationDate = functions.getTokenExpirationDate(_token);
         });
     };
   
-    const tokenCheckInterval = setInterval(checkTokenExpiration, 1800000);
+    const tokenCheckInterval = setInterval(checkTokenExpiration, 86400000);
   
     return () => {
       clearInterval(tokenCheckInterval);

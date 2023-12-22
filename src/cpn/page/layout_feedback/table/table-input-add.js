@@ -112,7 +112,7 @@ function EditableTable(props) {
                                 <th style={{ width: "150px" }}>HARDWARE</th>
                                 <th style={{ width: "150px" }}>FIRMWARE</th>
                                 <th style={{ width: "150px" }}>SOFTWARE</th>
-                                <th style={{ width: "150px" }}>QUALITY</th>
+                                <th style={{ width: "150px" }}>QUANTITY</th>
                             </tr>
                         </thead>
                         <tbody>

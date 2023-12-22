@@ -59,8 +59,8 @@ export default () => {
         { id: 3, label: "Question", value: 4, color: "#15bd4c" }, // Màu xanh lá cây nhạt
         { id: 4, label: "Feature", value: 5, color: "#800080" }, // Màu tím
         { id: 5, label: "Project", value: 6, color: "#0f46bb" }, // Màu xanh lam nhạt
-      ];
-      
+    ];
+
 
     const qualityToImage = {
         "Good": "i1.png",
@@ -381,7 +381,6 @@ export default () => {
     }
 
     const handlePageDetail = (caseid) => {
-        // đặt lại giá trị support quality
 
         setRating(null)
 
@@ -397,6 +396,11 @@ export default () => {
         localStorage.setItem('selectedCaseDetail', caseid.id);
 
         setShowPageDetail(true)
+        
+        setPostCase({ casetype: "Undefined" })
+        setSelectedImage(null)
+        setAttachMedia([])
+
 
         setShowPageAdd(false)
 
@@ -407,6 +411,7 @@ export default () => {
         callApiMessageMedia()
 
         callApiCaseDetail(caseid)
+
     }
 
 
@@ -423,6 +428,7 @@ export default () => {
         setSelectedImage(null)
         setAttachMedia([])
     }, [selectedCaseDetail]);
+
 
     const callApiCaseDetail = (caseid) => {
         if (caseid.id !== "") {
@@ -462,12 +468,14 @@ export default () => {
 
                     // console.log(427, mappedCase);
                     const caseDetail = {
+
                         id: mappedCase["CASE ID"],
                         title: mappedCase["CASE TITLE"],
                         date: mappedCase["CREATED DATE"],
                         casetype: mappedCase["CASE TYPE"],
                         issue: mappedCase["ISSUE DESCRIPTION"],
                         customer: mappedCase["CUSTOMER"],
+
                         status: mappedCase["STATUS"],
                         imgcase: mappedCase["CASE IMAGE"],
                         solution: mappedCase["SOLUTION DESCRIPTION"],
@@ -617,11 +625,13 @@ export default () => {
 
                 // console.log(610, mappedCases);
                 const caseTitlesAndDates = mappedCases?.map((caseItem) => ({
+
                     id: caseItem["CASE ID"],
                     title: caseItem["CASE TITLE"],
                     date: caseItem["CREATED DATE"],
                     issue: caseItem["ISSUE DESCRIPTION"],
                     customer: caseItem["CUSTOMER"],
+                    status: caseItem["STATUS"],
                     casetype: caseItem["CASE TYPE"],
                     productname: caseItem["2PN"],
                     caseimage: caseItem["CASE IMAGE"],
@@ -769,8 +779,9 @@ export default () => {
             } else {
                 setAttachMedia(prevImages => [...prevImages, ...newMediaFiles]);
             }
-            e.target.value = null;
+
         });
+        e.target.value = null;
     };
 
     const handleFileContainerClick = (e) => {
@@ -1915,9 +1926,9 @@ export default () => {
                                     />
                                 </div>
                                 <div class="mt-2" >
-                                    <span class="pointer" onClick={handlePageAdd} style={{ display: "flex", alignItems: "center" }}>
-                                        <FontAwesomeIcon icon={faSquarePlus} className="size-24 color_icon_plus" title={lang["post your case"]} />
-                                        <span class="lable_add ml-2" >{lang["post your case"]}</span>
+                                    <span style={{ display: "flex", alignItems: "center" }}>
+                                        <FontAwesomeIcon icon={faSquarePlus} onClick={handlePageAdd} className="size-24 color_icon_plus pointer" title={lang["post your case"]} />
+                                        <span class="lable_add ml-2 pointer" onClick={handlePageAdd}>{lang["post your case"]}</span>
                                     </span>
 
                                 </div>
@@ -1959,9 +1970,12 @@ export default () => {
                                             <h4 class="ellipsis-header-case" title={item.title}>{item.title}</h4>
                                             <div className="ml-auto">
                                                 <div className="dropdown-custom">
-                                                    <button className="icon-button" onClick={(e) => toggleMenu(e, item.id)} title={lang["update"]}>
-                                                        <FontAwesomeIcon icon={faEllipsisVertical} className="size-24" />
-                                                    </button>
+                                                    {item.status === "Active" &&
+                                                        <button className="icon-button" onClick={(e) => toggleMenu(e, item.id)} title={lang["update"]}>
+                                                            <FontAwesomeIcon icon={faEllipsisVertical} className="size-24" />
+                                                        </button>
+                                                    }
+
                                                     {openMenuCaseId === item.id && (
                                                         <div className="popup-menu-custom show" ref={menuRef}>
                                                             <span className="menu-item-custom pointer" data-toggle="modal" onClick={() => dataUpdateCase(item)} data-target="#updateCase">{lang["update"]}</span>
@@ -2173,7 +2187,8 @@ export default () => {
                                                         onDragLeave={handleDragLeave}
                                                         onDragOver={handleDragOver}
                                                         onDrop={handleFileDropAdd}
-                                                        onClick={(e) => handleFileContainerClick(e)}>
+                                                        onClick={(e) => handleFileContainerClick(e)}
+                                                    >
                                                         <h5 className="mb-2">{lang["attachment"]}</h5>
                                                         <div class="d-flex">
                                                             {/* <h5 className="mb-2"></h5>
@@ -2215,7 +2230,7 @@ export default () => {
                                                             ) :
 
                                                             <div className={`container-no-attachment pointer  ${isDragging ? "container-no-attachment-dragging" : ""}`} >
-                                                                <label style={{ margin: 0 }} htmlFor="file-upload" className="custom-file-upload">
+                                                                <label style={{ margin: 0 }} htmlFor="file-upload-media" className="custom-file-upload">
                                                                     {lang["Drag and drop images here and click"]}
                                                                 </label>
 
@@ -2307,9 +2322,9 @@ export default () => {
                                                                         dataCaseDetail.issue && dataCaseDetail.issue.split('\n').map(s => <span style={{ display: "block" }}>{s}</span>)
                                                                     }
                                                                     <div class="row field-case">
-                                                                 
+
                                                                         <div className="col-md-4">
-                                                                        <h5 className="mb-2">{lang["case image"]}</h5>
+                                                                            <h5 className="mb-2">{lang["case image"]}</h5>
                                                                             <div className="upload-container-case">
                                                                                 {dataCaseDetail.imgcase !== "" ?
                                                                                     <img class=""
@@ -2335,7 +2350,7 @@ export default () => {
                                                                         </div>
                                                                     </div> */}
                                                                         <div class="col-md-8">
-                                                                        <h5 className="mb-2">{lang["attachment"]}</h5>
+                                                                            <h5 className="mb-2">{lang["attachment"]}</h5>
                                                                             {dataCaseDetail?.attachMedia?.length > 0 ?
                                                                                 (
                                                                                     <>
@@ -2374,7 +2389,7 @@ export default () => {
                                                                     </div>
                                                                     <div class="title-suggest mb-1">{lang["SUGGESTED SOLUTION"]}</div>
                                                                     <span class="content-suggest">{dataCaseDetail.solution} </span>
-                                                                    <TableInputUpdate onDataUpdate={handleDataFromChild} data={tableDataProduct} stateAdd={false} caseId={dataCaseDetail.id} stateUpdate={true} />
+                                                                    <TableInputUpdate onDataUpdate={handleDataFromChild} dataDetail={dataCaseDetail} data={tableDataProduct} stateAdd={false} caseId={dataCaseDetail.id} stateUpdate={true} />
                                                                 </div>
                                                             </div>
                                                         </div></div>
@@ -2476,8 +2491,7 @@ export default () => {
                                                 } */}
                                                 {activeTab === 'discussion' &&
                                                     <>
-                                                        <div class="card-block-message  bg-message"
-                                                        >
+                                                        <div class={`card-block-message bg-message`} style={{ height: dataCaseDetail.status === "Active" ? "" : calculateHeight() - 270 }} >
                                                             <div class="col-md-12">
                                                                 <div class="info-case">
                                                                     <div className="messages-wrapper" style={{ height: calculateHeight() - 270 - 45 }} ref={messagesEndRef} id="messages-wrapper">
@@ -2587,57 +2601,60 @@ export default () => {
                                                                 ))}
                                                             </div>
                                                         )}
-
-                                                        <div
-                                                            className="chat-input-container"
-                                                            style={{ bottom: "-10px " }}
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === 'Enter' && !e.shiftKey) {
-                                                                    e.preventDefault();
-                                                                    if (dataMessageSent.message.trim() !== '' || selectedImagesSent.length > 0) {
-                                                                        submitMessage(e);
+                                                        {dataCaseDetail.status === "Active" &&
+                                                            <div
+                                                                className="chat-input-container"
+                                                                style={{ bottom: "-11px " }}
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                                                        e.preventDefault();
+                                                                        if (dataMessageSent.message.trim() !== '' || selectedImagesSent.length > 0) {
+                                                                            submitMessage(e);
+                                                                        }
                                                                     }
-                                                                }
-                                                            }}
-                                                            tabIndex={0}
-                                                        >
-                                                            {getPlaceholder()}
-                                                            <textarea
-                                                                ref={textareaRef}
-                                                                onDragEnter={handleDragEnter}
-                                                                onDragLeave={handleDragLeave}
-                                                                onDragOver={handleDragOver}
-                                                                onDrop={handleFileDropMessage}
-                                                                className={`chat-input no-change-textarea ${isDragging ? 'dragging custom-placeholder-bg' : ''}`}
-                                                                value={dataMessageSent.message}
-                                                                onChange={handleInputChange}
-                                                                // placeholder={getPlaceholderText()}
-                                                                rows={1}
-                                                                spellCheck="false"
+                                                                }}
+                                                                tabIndex={0}
+                                                            >
+                                                                {getPlaceholder()}
 
-                                                            />
+                                                                <textarea
+                                                                    ref={textareaRef}
+                                                                    onDragEnter={handleDragEnter}
+                                                                    onDragLeave={handleDragLeave}
+                                                                    onDragOver={handleDragOver}
+                                                                    onDrop={handleFileDropMessage}
+                                                                    className={`chat-input no-change-textarea ${isDragging ? 'dragging custom-placeholder-bg' : ''}`}
+                                                                    value={dataMessageSent.message}
+                                                                    onChange={handleInputChange}
+                                                                    // placeholder={getPlaceholderText()}
+                                                                    rows={1}
+                                                                    spellCheck="false"
+                                                                    maxLength={4000}
 
-                                                            <input
-                                                                type="file"
-                                                                id="imageInput"
-                                                                hidden="hidden"
-                                                                onChange={handleImageChangeSent}
-                                                                accept="image/*,video/*"
-                                                            />
+                                                                />
 
-                                                            <FontAwesomeIcon
-                                                                icon={faPaperclip}
-                                                                className="size-24 mr-2 pointer"
-                                                                onClick={() => document.getElementById('imageInput').click()}
-                                                                title={lang["attachment"]}
-                                                            />
+                                                                <input
+                                                                    type="file"
+                                                                    id="imageInput"
+                                                                    hidden="hidden"
+                                                                    onChange={handleImageChangeSent}
+                                                                    accept="image/*,video/*"
+                                                                />
 
-                                                            <FontAwesomeIcon onClick={submitMessage} icon={faPaperPlane} className={`size-24 ml-auto mr-2 icon-add-production pointer`} title={lang["send message"]} />
-                                                        </div>
+                                                                <FontAwesomeIcon
+                                                                    icon={faPaperclip}
+                                                                    className="size-24 mr-2 pointer"
+                                                                    onClick={() => document.getElementById('imageInput').click()}
+                                                                    title={lang["attachment"]}
+                                                                />
+
+                                                                <FontAwesomeIcon onClick={submitMessage} icon={faPaperPlane} className={`size-24 ml-auto mr-2 icon-add-production pointer`} title={lang["send message"]} />
+                                                            </div>
+                                                        }
                                                     </>
                                                 }
                                                 {activeTab === 'support' &&
-                                                    <div class="card-block">
+                                                    <div class="card-block" style={{ marginRight: "5px" }}>
                                                         {isLoading ? (
                                                             <div class="row">
                                                                 <div class="mt-4 col-lg-12 align-center">
@@ -2665,7 +2682,8 @@ export default () => {
                                                                         <div class="row">
                                                                             <div class="form-group col-lg-12 align-center">
                                                                                 <div class="form-group col-lg-12 align-center">
-                                                                                    <div className={`icon-rate ${rating === 'No reply' ? 'icon-rate-selected' : ''}`} data-text="No reply" onClick={() => handleRatingClick('No reply')}>
+                                                                                    <div className={`icon-rate ${rating === 'No reply' ? 'icon-rate-selected' : ''}`} data-text="No reply"
+                                                                                        onClick={() => handleRatingClick('No reply')}>
                                                                                         <img class="icon-rate" style={{ filter: rating === 'No reply' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i5.png" />
                                                                                         <span class="tooltip-text5">No Reply</span>
                                                                                     </div>
@@ -2711,7 +2729,8 @@ export default () => {
                                                                                     </>
                                                                                 )}
                                                                                 </p>
-                                                                                <button type="button" onClick={submitRate} data-dismiss="modal" class="btn mt-0 btn-primary ml-auto modal-button-review">{lang["Submit Review"]}</button>
+
+                                                                                <button type="button" onClick={submitRate} data-dismiss="modal" disabled={dataCaseDetail.status === "Active" ? false : true} class="btn mt-0 btn-primary ml-auto modal-button-review">{lang["Submit Review"]}</button>
                                                                             </div>
                                                                         </div>
                                                                     </>

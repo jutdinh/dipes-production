@@ -137,7 +137,7 @@ export default () => {
                               <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
                                  {/* <i class="fa fa-home"></i> */}
                                  <FontAwesomeIcon icon={faHouse} className={`size-20 mr-3`} />
-                                 <span class={`${sideBar ? "" : "hidden-title"}`}>{ui.title}</span>
+                                 <span >{ui.title}</span>
                               </NavLink>
                            </li>
                         ) : null
@@ -147,7 +147,7 @@ export default () => {
                         <NavLink to="/technical" activeClassName="nav-active">
                            {/* <i class=" fa fa-gears icon-technical"></i> */}
                            <FontAwesomeIcon icon={faUsersGear} className={`icon-technical size-20 mr-3`} />
-                           <span class={`${sideBar ? "" : "hidden-title"}`}>TECHNICAL SERVICE</span>
+                           <span >TECHNICAL SERVICE</span>
                         </NavLink>
                      </li>
 
@@ -155,7 +155,7 @@ export default () => {
                         <a href="#dashboard" onClick={toggleMenu} aria-expanded="false" >
                            {/* <i class="fa fa-dashboard yellow_color"></i> */}
                            <FontAwesomeIcon icon={faLockOpen} className={`yellow_color size-20 mr-3`} />
-                           <span class={`${sideBar ? "" : "hidden-title"}`}>ONLINE ACTIVATION</span>
+                           <span >ONLINE ACTIVATION</span>
                            {isExpanded
                               ? <FontAwesomeIcon icon={faCaretDown} className={`size-18 ml-2 ${sideBar ? "" : "hidden-title"}`} />
                               : <FontAwesomeIcon icon={faCaretRight} className={`size-18 ml-2 ${sideBar ? "" : "hidden-title"}`} />
