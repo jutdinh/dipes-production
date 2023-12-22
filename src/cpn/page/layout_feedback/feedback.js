@@ -396,7 +396,7 @@ export default () => {
         localStorage.setItem('selectedCaseDetail', caseid.id);
 
         setShowPageDetail(true)
-        
+
         setPostCase({ casetype: "Undefined" })
         setSelectedImage(null)
         setAttachMedia([])
@@ -2183,14 +2183,12 @@ export default () => {
                                                         </div>
                                                     </div>
                                                     <div class={`col-md-8`}
-                                                        onDragEnter={handleDragEnter}
-                                                        onDragLeave={handleDragLeave}
-                                                        onDragOver={handleDragOver}
-                                                        onDrop={handleFileDropAdd}
-                                                        onClick={(e) => handleFileContainerClick(e)}
+
                                                     >
                                                         <h5 className="mb-2">{lang["attachment"]}</h5>
-                                                        <div class="d-flex">
+                                                        <div class="d-flex"
+
+                                                        >
                                                             {/* <h5 className="mb-2"></h5>
                                                             <label style={{ marginBottom: 0 }} htmlFor="file-upload-media" class="ml-auto" >
                                                                 <FontAwesomeIcon icon={faPlusSquare} className={`size-24 mb-1 icon-add pointer `}  title={lang["attachment"]} /> 
@@ -2206,7 +2204,12 @@ export default () => {
                                                         {attachMedia.length > 0 ?
                                                             (
                                                                 <>
-                                                                    <div className={`upload-container-case-add pointer  ${isDragging ? "container-no-attachment-dragging" : ""}`} title={lang["Drag and drop images here and click"]}>
+                                                                    <div className={`upload-container-case-add pointer  ${isDragging ? "container-no-attachment-dragging" : ""}`} title={lang["Drag and drop images here and click"]}
+                                                                        onDragEnter={handleDragEnter}
+                                                                        onDragLeave={handleDragLeave}
+                                                                        onDragOver={handleDragOver}
+                                                                        onDrop={handleFileDropAdd}
+                                                                        onClick={(e) => handleFileContainerClick(e)}>
                                                                         <div className={`selected-images-container-add`} >
 
                                                                             {attachMedia.map((media, index) => (
@@ -2229,7 +2232,13 @@ export default () => {
                                                                 </>
                                                             ) :
 
-                                                            <div className={`container-no-attachment pointer  ${isDragging ? "container-no-attachment-dragging" : ""}`} >
+                                                            <div className={`container-no-attachment pointer  ${isDragging ? "container-no-attachment-dragging" : ""}`}
+                                                                onDragEnter={handleDragEnter}
+                                                                onDragLeave={handleDragLeave}
+                                                                onDragOver={handleDragOver}
+                                                                onDrop={handleFileDropAdd}
+                                                                onClick={(e) => handleFileContainerClick(e)}
+                                                            >
                                                                 <label style={{ margin: 0 }} htmlFor="file-upload-media" className="custom-file-upload">
                                                                     {lang["Drag and drop images here and click"]}
                                                                 </label>
@@ -2967,11 +2976,7 @@ export default () => {
                                             </div>
                                         </div>
                                         <div class="col-md-8"
-                                            onDragEnter={handleDragEnter}
-                                            onDragLeave={handleDragLeave}
-                                            onDragOver={handleDragOver}
-                                            onDrop={handleFileDropUpdate}
-                                            onClick={(e) => handleFileContainerClick(e)}>
+                                        >
                                             <h5 className="mb-2">{lang["attachment"]}</h5>
                                             <div class="d-flex">
                                                 {/* <h5 className="mb-2"></h5>
@@ -2989,7 +2994,12 @@ export default () => {
                                             {(caseUpdate?.attachMedia?.length > 0 || attachMedia.length > 0) ?
                                                 (
                                                     <>
-                                                        <div className={`upload-container-case-add pointer ${isDragging ? "container-no-attachment-dragging" : ""}`} title={lang["Drag and drop images here and click"]}>
+                                                        <div className={`upload-container-case-add pointer ${isDragging ? "container-no-attachment-dragging" : ""}`} title={lang["Drag and drop images here and click"]}
+                                                            onDragEnter={handleDragEnter}
+                                                            onDragLeave={handleDragLeave}
+                                                            onDragOver={handleDragOver}
+                                                            onDrop={handleFileDropUpdate}
+                                                            onClick={(e) => handleFileContainerClick(e)}>
                                                             <div className="selected-images-container-add">
                                                                 {/* Hình cũ */}
                                                                 {caseUpdate.attachMedia?.length > 0 && (caseUpdate.attachMedia?.map((media, index) => (
@@ -3029,7 +3039,13 @@ export default () => {
                                                         </div>
                                                     </>
                                                 ) :
-                                                <div className={`container-no-attachment pointer  ${isDragging ? "container-no-attachment-dragging" : ""}`} >
+                                                <div className={`container-no-attachment pointer  ${isDragging ? "container-no-attachment-dragging" : ""}`}
+                                                    onDragEnter={handleDragEnter}
+                                                    onDragLeave={handleDragLeave}
+                                                    onDragOver={handleDragOver}
+                                                    onDrop={handleFileDropUpdate}
+                                                    onClick={(e) => handleFileContainerClick(e)}
+                                                >
                                                     <label style={{ margin: 0 }} htmlFor="file-upload" className="custom-file-upload">
                                                         {lang["Drag and drop images here and click"]}
                                                     </label>
