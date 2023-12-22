@@ -67,7 +67,7 @@ class Controller {
     }
 
     makeToken = ( data = {}) => { // new
-        console.log(data)
+        
         const token = jwt.sign(data, this.tokenKey, { expiresIn: '1h' });
         return token;
     }
@@ -121,6 +121,23 @@ class Controller {
 
     verifyToken = async (req) => {
         const token = req.header('Authorization');
+        if( !token ){
+            return false;
+        }else{
+            const result = await new Promise( (resolve, reject) => {
+                jwt.verify(token, this.tokenKey, ( err, decoded ) => {
+                    resolve({ err, decoded })
+                })
+            })
+
+            if( result.err ){
+                return false
+            }
+            return true           
+        }
+    }
+
+    verifyCustomToken = async (token) => {
         if( !token ){
             return false;
         }else{

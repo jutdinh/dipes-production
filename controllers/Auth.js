@@ -84,7 +84,7 @@ class Auth extends Controller {
             status: 200
         }
         const verified = await this.verifyToken(req);
-        console.log(req.ip)
+        
         if (verified) {
             const decodedToken = this.decodeToken(req.header('Authorization'));
             if (privileges.indexOf(decodedToken.role) != -1) {
@@ -414,7 +414,7 @@ class Auth extends Controller {
                         resolve(res)
                     })
                 })
-                console.log(response)
+                
                 const { success, content, token } = response;
                 context.success = success
                 context.content = content
@@ -869,7 +869,7 @@ class Auth extends Controller {
         }
         if (verified) {
             const decodedToken = this.decodeToken(req.header("Authorization"));
-            console.log(decodedToken)
+            
 
         } else {
             context.content = "Token không hợp lệ"
@@ -967,21 +967,24 @@ class Auth extends Controller {
 
 
     refreshToken = async (req, res) => {
-        const verified = await this.verifyToken( req )
+
+        const { token } = req.body
+
+        const verified = await this.verifyCustomToken( token )
         
         const  success = verified;
-        console.log(verified)
+        
         const context = {
             success,
             content: "Invalid token"
         }
         if( success ){
-            const decodedToken = this.decodeToken( req.header('Authorization') )
+            const decodedToken = this.decodeToken( token )
             delete decodedToken.exp 
             delete decodedToken.iat
-            const newToken = this.makeToken(decodedToken)
+            const newToken = this.makeToken( decodedToken )
             context.token = newToken
-            context.content = "Successfully extended token lifetime by 12 hours long"
+            context.content = "Successfully extended token lifetime by 1 hour long"
         }
         res.status(200).send(context)
     }
