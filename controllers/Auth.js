@@ -968,6 +968,17 @@ class Auth extends Controller {
 
     refreshToken = async (req, res) => {
 
+        /**
+         * url: http://ws/auth/refreshtoken
+         * 
+         * req.body {
+         *      token: <String>
+         * }
+         * 
+         * 
+         */
+
+
         const { token } = req.body
 
         const verified = await this.verifyCustomToken( token )
