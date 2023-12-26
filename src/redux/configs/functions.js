@@ -5,6 +5,8 @@ import { format, parseISO } from 'date-fns';
 import { jwtDecode } from 'jwt-decode';
 import { detect } from 'detect-browser';
 
+
+
 function getBrowser() {
     const browserInfo = detect();
     if (browserInfo) {
@@ -488,8 +490,23 @@ function isVideoFormat(fileName) {
     return videoFormats.includes(fileName.split('.').pop().toLowerCase());
 }
 
+function isPdfFormat(fileName) {
+    if (!fileName) return false;
+    const imageFormats = ['pdf'];
+    return imageFormats.includes(fileName.split('.').pop().toLowerCase());
+}
 
+function isExcelFormat(fileName) {
+    if (!fileName) return false;
+    const imageFormats = ['xls', 'xlsx'];
+    return imageFormats.includes(fileName.split('.').pop().toLowerCase());
+}
 
+function isZipFormat(fileName) {
+    if (!fileName) return false;
+    const imageFormats = ['zip'];
+    return imageFormats.includes(fileName.split('.').pop().toLowerCase());
+}
 
 function removeFileExtension(filename) {
 
@@ -646,9 +663,34 @@ function objectsAreEqual(obj1, obj2) {
     return true;
 }
 
+// Trong functions.determineFileType
+function determineFileType(file) {
+    if (file.type.startsWith('video/')) {
+        return 'video';
+    } else if (file.type.startsWith('image/')) {
+        return 'image';
+    } else if (file.type === 'application/pdf') {
+        return 'pdf';
+    } else if (file.type.includes('excel') || file.name.endsWith('.xls') || file.name.endsWith('.xlsx')) {
+        return 'excel';
+    } else if (file.name.endsWith('.zip')) {
+        return 'zip';
+    } else {
+        return 'unknown';
+    }
+}
 
 
-
+function shortenFileName(fileName) {
+    const maxPrefixLength = 3; // Số ký tự từ phần đầu của tên file (không tính phần mở rộng)
+    const parts = fileName.split('.'); // Tách tên file thành phần trước và sau dấu chấm
+    const extension = parts.pop(); // Phần mở rộng của file
+    const namePart = parts.join('.'); // Trường hợp có nhiều dấu chấm trong tên file
+    const prefix = namePart.length > maxPrefixLength ? namePart.substring(namePart.length - maxPrefixLength) : namePart; // Lấy 3 ký tự cuối của phần tên, hoặc toàn bộ nếu ngắn hơn
+  
+    return `${prefix}.${extension}`; // Kết hợp lại và trả về tên file đã rút gọn
+  }
+  
 
 
 export default {
@@ -656,5 +698,6 @@ export default {
     renderDateTimeByFormat, showApiResponseMessage, formatNumberWithCommas, formatNumber, generateUniqueColors,
     formatDate, formatDateCase, formatDateMessage, translateDateToVietnamese, translateDateTimeToVietnamese,
     isEmpty, isImageFormat, isVideoFormat, removeFileExtension, resizeImage,
-    resizeImageToFit, renameDuplicateFiles, arraysAreEqual, getBrowser, detectBrowser
+    resizeImageToFit, renameDuplicateFiles, arraysAreEqual, getBrowser, detectBrowser,shortenFileName,
+    isPdfFormat, isExcelFormat, determineFileType, isZipFormat
 }

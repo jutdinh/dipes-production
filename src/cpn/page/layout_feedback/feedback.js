@@ -1,7 +1,7 @@
 
 import { useParams } from "react-router-dom";
 import ReactDOM from 'react-dom';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, React } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMaximize, faMinimize, faDownload, faCompress, faChartBar, faPlusCircle, faCirclePlus, faCirclePlay, faRectangleXmark, faCircle, faCircleXmark, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft, faClose, faSquare, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
@@ -13,6 +13,17 @@ import isEqual from 'lodash/isEqual';
 import ReactImageMagnify from 'react-image-magnify';
 import Zoom from "./table/image-zoom"
 import platform from "platform";
+
+
+
+
+import ReCAPTCHA from "react-google-recaptcha";
+
+
+
+
+
+
 export default () => {
     const { lang, proxy, auth, functions } = useSelector(state => state);
 
@@ -45,7 +56,21 @@ export default () => {
     const [filteredCases, setFilteredCases] = useState(cases);
 
 
-    // console.log(47, dataCaseDetail)
+
+    const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
+    const recaptchaRef = useRef();
+
+    // Hàm xử lý khi captcha thay đổi (được giải quyết)
+    const onReCAPTCHAChange = (value) => {
+        if (value) {
+            console.log("Thành công, gọi hàm Thêm case")
+        } else {
+            console.log("Thất bại")
+        }
+    };
+
+
+    console.log(47, dataCaseDetail)
     // console.log("data update", caseUpdate)
     // console.log(_token)
     // console.log(dataMessage)
@@ -364,7 +389,7 @@ export default () => {
                     id: mappedCase["CASE ID"],
                     title: mappedCase["CASE TITLE"],
                     casetype: mappedCase["CASE TYPE"],
-                    productname: mappedCase["2PN"],
+                    productname: mappedCase["PRODUCT NAME"],
                     date: mappedCase["CREATED DATE"],
                     issue: mappedCase["ISSUE DESCRIPTION"],
                     customer: mappedCase["CUSTOMER"],
@@ -475,14 +500,17 @@ export default () => {
                         casetype: mappedCase["CASE TYPE"],
                         issue: mappedCase["ISSUE DESCRIPTION"],
                         customer: mappedCase["CUSTOMER"],
-
                         status: mappedCase["STATUS"],
                         imgcase: mappedCase["CASE IMAGE"],
                         solution: mappedCase["SOLUTION DESCRIPTION"],
                         attachMedia: mappedCase["1CA"],
                         supportquanlity: mappedCase["SUPPORT QUALITY"],
                         supportdescription: mappedCase["SUPPORT QUALITY DESCRIPTION"],
-                        lastedsupport: mappedCase["16A"]
+                        lastedsupport: mappedCase["APPRICATOR"],
+                        possibleFeature: mappedCase["POSSIBLE FEATURE"],
+                        caseSuggest: mappedCase["CASE SUGGEST"],
+                        warranty: mappedCase["WARRANTY CLAIM"]
+
                     };
                     // console.log(442, caseDetail);
                     setDataCaseDetail(caseDetail);
@@ -717,22 +745,103 @@ export default () => {
 
     // Attach Media
     const [attachMedia, setAttachMedia] = useState([]);
-    // console.log(attachMedia)
+    console.log(830, attachMedia)
+    // const handleAttachMedia = (e) => {
+    //     const newFiles = Array.from(e.target.files).filter(file =>
+    //         file.type.startsWith('image/') || file.type.startsWith('video/')
+    //     );
+
+    //     if (newFiles.length < e.target.files.length) {
+    //         Swal.fire({
+    //             title: lang['error'],
+    //             text: lang['Only image and video files are accepted'],
+    //             icon: 'error',
+    //             showConfirmButton: true,
+    //             confirmButtonText: lang['confirm'],
+    //             allowOutsideClick: false,
+    //         });
+    //         e.target.value = null;
+    //         return;
+    //     }
+
+    //     const newMediaPromises = newFiles.map(file => {
+    //         return new Promise((resolve) => {
+    //             const reader = new FileReader();
+
+    //             reader.onload = (readerEvent) => {
+    //                 const mediaObject = {
+    //                     name: file.name,
+    //                     size: file.size,
+    //                     url: URL.createObjectURL(file),
+
+    //                     type: file.type.startsWith('video/') ? 'video' : 'image',
+    //                     dataUrl: readerEvent.target.result, // Base64 string
+    //                 };
+
+    //                 if (file.type.startsWith('video/')) {
+    //                     getVideoThumbnail(file).then(({ thumbnailUrl, duration }) => {
+    //                         mediaObject.cover = thumbnailUrl;
+    //                         mediaObject.duration = duration;
+    //                         resolve(mediaObject);
+    //                     });
+    //                 } else {
+    //                     resolve(mediaObject);
+    //                 }
+    //             };
+    //             reader.readAsDataURL(file);
+    //         });
+    //     });
+
+    //     Promise.all(newMediaPromises).then(newMediaFiles => {
+    //         const totalSize = calculateTotalSizeAttach(newMediaFiles);
+    //         // console.log("Dung lượng tổng", totalSize / 1024)
+    //         if (totalSize > 20 * 1024 * 1024) {
+    //             Swal.fire({
+    //                 title: lang["error"],
+    //                 text: lang["File is too large"],
+    //                 icon: "error",
+    //                 showConfirmButton: true,
+    //                 confirmButtonText: lang["confirm"],
+    //                 allowOutsideClick: false,
+    //             });
+    //         } else {
+    //             setAttachMedia(prevImages => [...prevImages, ...newMediaFiles]);
+    //         }
+
+    //     });
+    //     e.target.value = '';
+    // };
+
     const handleAttachMedia = (e) => {
-        const newFiles = Array.from(e.target.files).filter(file =>
-            file.type.startsWith('image/') || file.type.startsWith('video/')
-        );
+
+        const newFiles = Array.from(e.target.files).filter(file => {
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+
+            if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+                return true;
+            } else if (file.type === 'application/pdf' || fileExtension === 'pdf') {
+                return true;
+            } else if (file.type.includes('excel') || fileExtension === 'xls' || fileExtension === 'xlsx') {
+                return true;
+            } else if (fileExtension === 'zip') {
+                return true;
+            }
+
+
+            return false;
+        });
+        console.log(830, newFiles)
 
         if (newFiles.length < e.target.files.length) {
             Swal.fire({
                 title: lang['error'],
-                text: lang['Only image and video files are accepted'],
+                text: lang['Only image, video, PDF, and Excel files are accepted'],
                 icon: 'error',
                 showConfirmButton: true,
                 confirmButtonText: lang['confirm'],
                 allowOutsideClick: false,
             });
-            e.target.value = null;
+            e.target.value = '';
             return;
         }
 
@@ -741,12 +850,27 @@ export default () => {
                 const reader = new FileReader();
 
                 reader.onload = (readerEvent) => {
+                    const fileExtension = file.name.split('.').pop().toLowerCase();
+                    let fileType;
+                    if (file.type.startsWith('video/')) {
+                        fileType = 'video';
+                    } else if (file.type.startsWith('image/')) {
+                        fileType = 'image';
+                    } else if (fileExtension === 'xls' || fileExtension === 'xlsx') {
+                        fileType = 'excel';
+                    } else if (fileExtension === 'pdf') {
+                        fileType = 'pdf';
+                    } else if (fileExtension === 'zip') {
+                        fileType = 'zip';
+                    } else {
+                        fileType = 'unknown'; // Hoặc một giá trị mặc định khác
+                    }
+
                     const mediaObject = {
                         name: file.name,
                         size: file.size,
                         url: URL.createObjectURL(file),
-
-                        type: file.type.startsWith('video/') ? 'video' : 'image',
+                        type: fileType,
                         dataUrl: readerEvent.target.result, // Base64 string
                     };
 
@@ -760,13 +884,18 @@ export default () => {
                         resolve(mediaObject);
                     }
                 };
-                reader.readAsDataURL(file);
+
+                if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+                    reader.readAsDataURL(file);
+                } else {
+                    // Đọc file PDF và Excel dưới dạng base64
+                    reader.readAsDataURL(file);
+                }
             });
         });
 
         Promise.all(newMediaPromises).then(newMediaFiles => {
             const totalSize = calculateTotalSizeAttach(newMediaFiles);
-            // console.log("Dung lượng tổng", totalSize / 1024)
             if (totalSize > 20 * 1024 * 1024) {
                 Swal.fire({
                     title: lang["error"],
@@ -779,9 +908,8 @@ export default () => {
             } else {
                 setAttachMedia(prevImages => [...prevImages, ...newMediaFiles]);
             }
-
         });
-        e.target.value = null;
+        e.target.value = '';
     };
 
     const handleFileContainerClick = (e) => {
@@ -822,6 +950,13 @@ export default () => {
     const [dataPreviewMedia, setDataPreviewMedia] = useState();
     const openModalPreview = (media) => {
         setDataPreviewMedia(media)
+    };
+
+    // Lấy dữ liệu preview file
+    const [dataPreviewFile, setDataPreviewFile] = useState();
+    // console.log(dataPreviewFile)
+    const openModalPreviewFile = (media) => {
+        setDataPreviewFile(media)
     };
 
     //Popup dấu 3 chấm
@@ -978,6 +1113,13 @@ export default () => {
             return;
         }
 
+        if (recaptchaRef.current) {
+            const recaptchaValue = recaptchaRef.current.getValue();
+            console.log(recaptchaValue)
+        }
+
+
+
         const requestBody = {
             checkCustomer: {
                 username,
@@ -1044,6 +1186,7 @@ export default () => {
                     callApiCaseDetail(caseUpdate)
                     setAttachMedia([])
                     setSelectedImage(null)
+                    setIsCaptchaVerified(false)
                 } else {
                     Swal.fire({
                         title: lang["faild"],
@@ -1059,7 +1202,7 @@ export default () => {
     };
 
     const [selectedImagesSent, setSelectedImagesSent] = useState([]);
-
+    console.log(selectedImagesSent)
     // Hàm kiểm tra dung lượng file tải lên
     const calculateTotalSize = (additionalFiles) => {
         return selectedImagesSent.reduce((acc, file) => acc + file.size, 0) + additionalFiles.reduce((acc, file) => acc + file.size, 0);
@@ -1077,47 +1220,62 @@ export default () => {
     })
 
     const handleImageChangeSent = async (e) => {
-        const newFiles = Array.from(e.target.files);
+        const newFiles = Array.from(e.target.files).filter(file => {
+            const fileExtension = file.name.split('.').pop().toLowerCase();
 
-        // console.log(1076, newFiles);
-        const imageAndVideoFiles = Array.from(newFiles).filter(file =>
-            file.type.startsWith('image/') || file.type.startsWith('video/')
-        );
-        const newMediaPromises = imageAndVideoFiles.map(async (file) => {
-            const name = file.name;
-            const base64 = await toBase64(file);
-            if (file.type.startsWith('video/')) {
-                // Sử dụng hàm getVideoThumbnail để lấy thông tin thumbnail và duration
-                return getVideoThumbnail(file).then(({ thumbnailUrl, duration }) => ({
-                    name: name,
-                    size: file.size,
-                    url: URL.createObjectURL(file),
-                    type: 'video',
-                    base64: base64,
-                    cover: thumbnailUrl, // Sử dụng URL của ảnh bìa từ hàm getVideoThumbnail
-                    duration, // Sử dụng thời lượng từ hàm getVideoThumbnail
-                }));
-            } else {
-                return Promise.resolve({
-                    name: name,
-                    size: file.size,
-                    base64: base64,
-                    url: URL.createObjectURL(file),
-                    type: 'image',
-                });
+            if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+                return true;
+            } else if (file.type === 'application/pdf' || fileExtension === 'pdf') {
+                return true;
+            } else if (file.type.includes('excel') || fileExtension === 'xls' || fileExtension === 'xlsx') {
+                return true;
             }
+
+            return false;
         });
-        if (imageAndVideoFiles.length < newFiles.length) {
-            // Có nghĩa là có một số files không phải hình ảnh hoặc video
+
+        if (newFiles.length < e.target.files.length) {
             Swal.fire({
                 title: lang['error'],
-                text: lang['Only image and video files are accepted'],
+                text: lang['Only image, video, PDF, and Excel files are accepted'],
                 icon: 'error',
                 showConfirmButton: true,
                 confirmButtonText: lang['confirm'],
                 allowOutsideClick: false,
             });
+            e.target.value = '';
+            return;
         }
+
+        const newMediaPromises = newFiles.map(file => {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (readerEvent) => {
+                    const fileType = functions.determineFileType(file);
+                    const mediaObject = {
+                        name: file.name,
+                        size: file.size,
+                        base64: readerEvent.target.result,
+                        url: URL.createObjectURL(file),
+                        type: fileType,
+                        dataUrl: readerEvent.target.result, // Base64 string
+                    };
+
+                    // Logic for video thumbnail
+                    if (fileType === 'video') {
+                        getVideoThumbnail(file).then(({ thumbnailUrl, duration }) => {
+                            mediaObject.cover = thumbnailUrl;
+                            mediaObject.duration = duration;
+                            resolve(mediaObject);
+                        });
+                    } else {
+                        resolve(mediaObject);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
         Promise.all(newMediaPromises).then(newMediaFiles => {
             // console.log(newMediaFiles)
             const totalSize = calculateTotalSize(newMediaFiles);
@@ -1136,7 +1294,7 @@ export default () => {
             } else {
                 setSelectedImagesSent(prevImages => [...prevImages, ...newMediaFiles]);
             }
-            e.target.value = null;
+            e.target.value = '';
         });
 
         if (textareaRef.current) {
@@ -1294,6 +1452,14 @@ export default () => {
             })
     }
 
+
+    const handleDownload = (url) => {
+        window.open(url, '_blank');
+    };
+
+
+
+
     // Gửi tin nhắn 
     const submitMessage = (e) => {
         e.preventDefault();
@@ -1383,41 +1549,40 @@ export default () => {
         setIsDragging(false);
 
         const files = e.dataTransfer.files;
-        // console.log(1349, files);
-        const imageAndVideoFiles = Array.from(files).filter(file =>
-            file.type.startsWith('image/') || file.type.startsWith('video/')
-        );
+        const acceptedFileTypes = ['image/', 'video/', 'application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip'];
+        const newMediaPromises = Array.from(files).map(async (file) => {
+            if (acceptedFileTypes.some(type => file.type.startsWith(type) || file.name.endsWith('.zip'))) {
+                const name = file.name;
+                const base64 = await toBase64(file);
+                const fileType = functions.determineFileType(file);
 
-        const newMediaPromises = imageAndVideoFiles.map(async (file) => {
-            const name = file.name;
-            const base64 = await toBase64(file);
-            if (file.type.startsWith('video/')) {
-                // Sử dụng hàm getVideoThumbnail để lấy thông tin thumbnail và duration
-                return getVideoThumbnail(file).then(({ thumbnailUrl, duration }) => ({
+                let mediaObject = {
                     name: name,
                     size: file.size,
                     url: URL.createObjectURL(file),
-                    type: 'video',
+                    type: fileType,
                     base64: base64,
-                    cover: thumbnailUrl, // Sử dụng URL của ảnh bìa từ hàm getVideoThumbnail
-                    duration, // Sử dụng thời lượng từ hàm getVideoThumbnail
-                }));
+                };
+
+                if (fileType === 'video') {
+                    const { thumbnailUrl, duration } = await getVideoThumbnail(file);
+                    mediaObject.cover = thumbnailUrl;
+                    mediaObject.duration = duration;
+                }
+
+                return mediaObject;
             } else {
-                return Promise.resolve({
-                    name: name,
-                    size: file.size,
-                    base64: base64,
-                    url: URL.createObjectURL(file),
-                    type: 'image',
-                });
+                return null;
             }
         });
 
-        if (imageAndVideoFiles.length < files.length) {
-            // Có nghĩa là có một số files không phải hình ảnh hoặc video
+        const filteredMediaFiles = (await Promise.all(newMediaPromises)).filter(Boolean); // Remove any nulls
+
+        if (filteredMediaFiles.length < files.length) {
+            // There were some files that were not accepted
             Swal.fire({
                 title: lang['error'],
-                text: lang['Only image and video files are accepted'],
+                text: lang['Only image, video, PDF, and Excel files are accepted'],
                 icon: 'error',
                 showConfirmButton: true,
                 confirmButtonText: lang['confirm'],
@@ -1425,190 +1590,184 @@ export default () => {
             });
         }
 
-        Promise.all(newMediaPromises)
-            .then((newMediaFiles) => {
+        const totalSize = calculateTotalSize(filteredMediaFiles);
 
-                const totalSize = calculateTotalSize(newMediaFiles);
-
-                // Kiểm tra nếu tổng kích thước file vượt quá 20MB
-                if (totalSize > 20971520) {
-
-                    Swal.fire({
-                        title: lang['error'],
-                        text: lang['File is too large'],
-                        icon: 'error',
-                        showConfirmButton: true,
-                        confirmButtonText: lang['confirm'],
-                        allowOutsideClick: false,
-                    });
-                } else {
-                    setSelectedImagesSent((prevMedia) => [...prevMedia, ...newMediaFiles]);
-                }
-            })
-            .catch((error) => {
-
-                // console.error('Error while processing files:', error);
+        // Check if total file size exceeds 20MB
+        if (totalSize > 20971520) {
+            Swal.fire({
+                title: lang['error'],
+                text: lang['File is too large'],
+                icon: 'error',
+                showConfirmButton: true,
+                confirmButtonText: lang['confirm'],
+                allowOutsideClick: false,
             });
+        } else {
+            setSelectedImagesSent((prevMedia) => [...prevMedia, ...filteredMediaFiles]);
+        }
     };
 
     const handleFileDropAdd = async (e) => {
         e.preventDefault();
 
-
         const files = e.dataTransfer.files;
-        // console.log(1349, files);
-        const imageAndVideoFiles = Array.from(files).filter(file =>
-            file.type.startsWith('image/') || file.type.startsWith('video/')
-        );
+        const acceptedFileTypes = ['image/', 'video/', 'application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip'];
 
-        const newMediaPromises = imageAndVideoFiles.map(async (file) => {
-            const name = file.name;
-            const base64 = await toBase64(file);
-            if (file.type.startsWith('video/')) {
-                // Sử dụng hàm getVideoThumbnail để lấy thông tin thumbnail và duration
-                return getVideoThumbnail(file).then(({ thumbnailUrl, duration }) => ({
-                    name: name,
-                    size: file.size,
-                    url: URL.createObjectURL(file),
-                    type: 'video',
-                    base64: base64,
-                    cover: thumbnailUrl, // Sử dụng URL của ảnh bìa từ hàm getVideoThumbnail
-                    duration, // Sử dụng thời lượng từ hàm getVideoThumbnail
-                }));
-            } else {
+        const newMediaPromises = Array.from(files).map(async (file) => {
+            // Lọc file dựa trên loại file
+            if (acceptedFileTypes.some(type => file.type.startsWith(type) || file.name.endsWith('.zip'))) {
+                const base64 = await toBase64(file);
+                let fileType;
+
+                if (file.type.startsWith('video/')) {
+                    // Xử lý video
+                    fileType = 'video';
+                    return getVideoThumbnail(file).then(({ thumbnailUrl, duration }) => ({
+                        name: file.name,
+                        size: file.size,
+                        url: URL.createObjectURL(file),
+                        type: fileType,
+                        base64: base64,
+                        cover: thumbnailUrl,
+                        duration,
+                    }));
+                } else if (file.type.startsWith('image/')) {
+                    // Xử lý hình ảnh
+                    fileType = 'image';
+                } else if (file.type === 'application/pdf') {
+                    // Xử lý file PDF
+                    fileType = 'pdf';
+                } else if (file.name.endsWith('.zip')) {
+                    // Xử lý file zip
+                    fileType = 'zip';
+                    // ...xử lý zip...
+                } else {
+                    // Xử lý file Excel
+                    fileType = 'excel';
+                }
+
                 return Promise.resolve({
-                    name: name,
+                    name: file.name,
                     size: file.size,
-                    base64: base64,
                     url: URL.createObjectURL(file),
-                    type: 'image',
+                    type: fileType,
+                    base64: base64,
+                    dataUrl: base64,
                 });
+            } else {
+                throw new Error('Invalid file type');
             }
         });
 
-        if (imageAndVideoFiles.length < files.length) {
-            // Có nghĩa là có một số files không phải hình ảnh hoặc video
+        try {
+            const newMediaFiles = await Promise.all(newMediaPromises);
+            const totalSize = calculateTotalSizeAttach(newMediaFiles);
+
+            if (totalSize > 20971520) { // 20 MB
+                Swal.fire({
+                    title: lang['error'],
+                    text: lang['File is too large'],
+                    icon: 'error',
+                    showConfirmButton: true,
+                    confirmButtonText: lang['confirm'],
+                    allowOutsideClick: false,
+                });
+            } else {
+                setAttachMedia((prevMedia) => [...prevMedia, ...newMediaFiles]);
+            }
+        } catch (error) {
             Swal.fire({
                 title: lang['error'],
-                text: lang['Only image and video files are accepted'],
+                text: lang['Only image, video, PDF, and Excel files are accepted'],
                 icon: 'error',
                 showConfirmButton: true,
                 confirmButtonText: lang['confirm'],
                 allowOutsideClick: false,
             });
         }
-
-        Promise.all(newMediaPromises)
-            .then((newMediaFiles) => {
-
-                const totalSize = calculateTotalSizeAttach(newMediaFiles);
-
-                // console.log(1460, totalSize / 1000000)
-
-                // Kiểm tra nếu tổng kích thước file vượt quá 20MB
-                if (totalSize > 20971520) {
-
-                    Swal.fire({
-                        title: lang['error'],
-                        text: lang['File is too large'],
-                        icon: 'error',
-                        showConfirmButton: true,
-                        confirmButtonText: lang['confirm'],
-                        allowOutsideClick: false,
-                    });
-                } else {
-                    setAttachMedia((prevMedia) => [...prevMedia, ...newMediaFiles]);
-                }
-            })
-            .catch((error) => {
-
-                // console.error('Error while processing files:', error);
-            });
         setIsDragging(false);
     };
+
+
 
 
     const handleFileDropUpdate = async (e) => {
         e.preventDefault();
 
-
         const files = e.dataTransfer.files;
-        // console.log(1349, files);
-        const imageAndVideoFiles = Array.from(files).filter(file =>
-            file.type.startsWith('image/') || file.type.startsWith('video/')
-        );
+        const acceptedFileTypes = ['image/', 'video/', 'application/pdf', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip'];
 
-        const newMediaPromises = imageAndVideoFiles.map(async (file) => {
-            const name = file.name;
-            const base64 = await toBase64(file);
-            if (file.type.startsWith('video/')) {
-                // Sử dụng hàm getVideoThumbnail để lấy thông tin thumbnail và duration
-                return getVideoThumbnail(file).then(({ thumbnailUrl, duration }) => ({
-                    name: name,
-                    size: file.size,
-                    url: URL.createObjectURL(file),
-                    type: 'video',
-                    base64: base64,
-                    dataUrl: base64,
-                    cover: thumbnailUrl, // Sử dụng URL của ảnh bìa từ hàm getVideoThumbnail
-                    duration, // Sử dụng thời lượng từ hàm getVideoThumbnail
+        const newMediaPromises = Array.from(files).map(async (file) => {
+            // Lọc file dựa trên loại file
+            if (acceptedFileTypes.some(type => file.type.startsWith(type) || file.name.endsWith('.zip'))) {
+                const base64 = await toBase64(file);
+                let fileType;
 
+                if (file.type.startsWith('video/')) {
+                    // Xử lý video
+                    fileType = 'video';
+                    // ...xử lý video...
+                } else if (file.type.startsWith('image/')) {
+                    // Xử lý hình ảnh
+                    fileType = 'image';
+                    // ...xử lý hình ảnh...
+                } else if (file.type === 'application/pdf') {
+                    // Xử lý file PDF
+                    fileType = 'pdf';
+                    // ...xử lý PDF...
+                } else if (file.name.endsWith('.zip')) {
+                    // Xử lý file zip
+                    fileType = 'zip';
+                    // ...xử lý zip...
+                } else {
+                    // Xử lý file Excel
+                    fileType = 'excel';
+                    // ...xử lý Excel...
+                }
 
-
-
-                }));
-            } else {
                 return Promise.resolve({
-                    name: name,
+                    name: file.name,
                     size: file.size,
+                    url: URL.createObjectURL(file),
+                    type: fileType,
                     base64: base64,
                     dataUrl: base64,
-                    url: URL.createObjectURL(file),
-                    type: 'image',
                 });
+            } else {
+                throw new Error('Invalid file type');
             }
         });
 
-        if (imageAndVideoFiles.length < files.length) {
-            // Có nghĩa là có một số files không phải hình ảnh hoặc video
+        try {
+            const newMediaFiles = await Promise.all(newMediaPromises);
+            const totalSize = calculateTotalSizeAttach(newMediaFiles);
+
+            if (totalSize > 20971520) { // 20 MB
+                Swal.fire({
+                    title: lang['error'],
+                    text: lang['File is too large'],
+                    icon: 'error',
+                    showConfirmButton: true,
+                    confirmButtonText: lang['confirm'],
+                    allowOutsideClick: false,
+                });
+            } else {
+                setAttachMedia((prevMedia) => [...prevMedia, ...newMediaFiles]);
+            }
+        } catch (error) {
             Swal.fire({
                 title: lang['error'],
-                text: lang['Only image and video files are accepted'],
+                text: lang['Only image, video, PDF, and Excel files are accepted'],
                 icon: 'error',
                 showConfirmButton: true,
                 confirmButtonText: lang['confirm'],
                 allowOutsideClick: false,
             });
         }
-
-        Promise.all(newMediaPromises)
-            .then((newMediaFiles) => {
-
-                const totalSize = calculateTotalSizeAttach(newMediaFiles);
-
-                // console.log(1460, totalSize / 1000000)
-
-                // Kiểm tra nếu tổng kích thước file vượt quá 20MB
-                if (totalSize > 20971520) {
-
-                    Swal.fire({
-                        title: lang['error'],
-                        text: lang['File is too large'],
-                        icon: 'error',
-                        showConfirmButton: true,
-                        confirmButtonText: lang['confirm'],
-                        allowOutsideClick: false,
-                    });
-                } else {
-                    setAttachMedia((prevMedia) => [...prevMedia, ...newMediaFiles]);
-                }
-            })
-            .catch((error) => {
-
-                // console.error('Error while processing files:', error);
-            });
         setIsDragging(false);
     };
+
+
     const getPlaceholder = () => {
         if (isDragging) {
             return <span className="custom-placeholder ">{lang["Drag and drop images here"]}</span>;
@@ -2069,6 +2228,7 @@ export default () => {
                                             <div class="heading1 margin_0 d-flex">
                                                 <h5 class="margin-bottom-0">{lang["new case"]}</h5>
                                                 <FontAwesomeIcon icon={faPaperPlane} onClick={submitPostCase} className={`size-24 mt-2 ml-auto icon-add-production pointer `} title={lang["submit case"]} />
+                                                {/* <FontAwesomeIcon icon={faPaperPlane} data-toggle="modal" className={`size-24 mt-2 ml-auto icon-add-production pointer `} data-target="#captcha" title={lang["submit case"]} /> */}
                                             </div>
                                         </div>
                                         <div class="table_section padding_infor_info_case_add">
@@ -2159,6 +2319,7 @@ export default () => {
                                                                 style={{ display: "none" }}
                                                                 onChange={handleImageChange}
                                                                 accept=".png, .jpg, .jpeg"
+
                                                             />
 
                                                             {selectedImage && (
@@ -2198,10 +2359,13 @@ export default () => {
                                                                 type="file"
                                                                 style={{ display: "none" }}
                                                                 onChange={handleAttachMedia}
-                                                                accept="image/*,video/*"
+                                                                // accept="image/*,video/*"
+                                                                accept="image/*,video/*,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip"
+                                                                multiple
                                                             />
                                                         </div>
                                                         {attachMedia.length > 0 ?
+
                                                             (
                                                                 <>
                                                                     <div className={`upload-container-case-add pointer  ${isDragging ? "container-no-attachment-dragging" : ""}`} title={lang["Drag and drop images here and click"]}
@@ -2224,6 +2388,16 @@ export default () => {
                                                                                             <div class="video-duration">Video</div>
                                                                                         </div>
                                                                                     )}
+                                                                                    {media.type === 'pdf' && (
+                                                                                        <img src={"/images/icon/pdf.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
+                                                                                    )}
+                                                                                    {media.type === 'excel' && (
+                                                                                        <img src={"/images/icon/excel.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
+                                                                                    )}
+
+                                                                                    {media.type === 'zip' && (
+                                                                                        <img src={"/images/icon/zip.png"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
+                                                                                    )}
                                                                                     <button onClick={(e) => removeAttachMedia(e, media)} className="remove-image" title={lang["delete image"]}>X</button>
                                                                                 </div>
                                                                             ))}
@@ -2231,23 +2405,30 @@ export default () => {
                                                                     </div>
                                                                 </>
                                                             ) :
+                                                            <>
+                                                                <div className={`container-no-attachment pointer  ${isDragging ? "container-no-attachment-dragging" : ""}`}
+                                                                    onDragEnter={handleDragEnter}
+                                                                    onDragLeave={handleDragLeave}
+                                                                    onDragOver={handleDragOver}
+                                                                    onDrop={handleFileDropAdd}
+                                                                    onClick={(e) => handleFileContainerClick(e)}
+                                                                >
+                                                                    <label style={{ margin: 0 }} htmlFor="file-upload-media" className="custom-file-upload">
+                                                                        {lang["Drag and drop images here and click"]}
+                                                                    </label>
+                                                                    <span class="type-file"> (Image, Video, Pdf, Excel) </span>
+                                                                </div>
 
-                                                            <div className={`container-no-attachment pointer  ${isDragging ? "container-no-attachment-dragging" : ""}`}
-                                                                onDragEnter={handleDragEnter}
-                                                                onDragLeave={handleDragLeave}
-                                                                onDragOver={handleDragOver}
-                                                                onDrop={handleFileDropAdd}
-                                                                onClick={(e) => handleFileContainerClick(e)}
-                                                            >
-                                                                <label style={{ margin: 0 }} htmlFor="file-upload-media" className="custom-file-upload">
-                                                                    {lang["Drag and drop images here and click"]}
-                                                                </label>
-
-                                                            </div>
+                                                            </>
                                                         }
                                                     </div>
                                                 </div>
                                                 <TableInputAdd onDataUpdate={handleDataFromChild} stateAdd={true} stateUpdate={false} />
+                                                {/* <ReCAPTCHA
+                                                    ref={recaptchaRef}
+                                                    sitekey="6LdWVTwpAAAAAHn2EaiOZ7GMnhilokYg2hanEx63"
+                                                    onChange={onReCAPTCHAChange}
+                                                /> */}
                                             </div>
                                         </div>
                                     </div>
@@ -2319,7 +2500,7 @@ export default () => {
                                                         <div class="card-block">
                                                             <div class="col-md-12">
                                                                 <div class="info-case" style={{ height: calculateHeight() - 270 - 9 }}>
-                                                                    <h5 class="mt-1 mb-1">{lang["ISSUE DESCRIPTION"]}</h5>
+                                                                    <h5 class="mt-3 mb-1">{lang["ISSUE DESCRIPTION"]}</h5>
                                                                     {/* <textarea
                                                                             readOnly
                                                                             class=" form-control"
@@ -2333,7 +2514,7 @@ export default () => {
                                                                     <div class="row field-case">
 
                                                                         <div className="col-md-4">
-                                                                            <h5 className="mb-2">{lang["case image"]}</h5>
+                                                                            <h5 className="mt-2 mb-2">{lang["case image"]}</h5>
                                                                             <div className="upload-container-case">
                                                                                 {dataCaseDetail.imgcase !== "" ?
                                                                                     <img class=""
@@ -2359,7 +2540,7 @@ export default () => {
                                                                         </div>
                                                                     </div> */}
                                                                         <div class="col-md-8">
-                                                                            <h5 className="mb-2">{lang["attachment"]}</h5>
+                                                                            <h5 className="mt-2 mb-2">{lang["attachment"]}</h5>
                                                                             {dataCaseDetail?.attachMedia?.length > 0 ?
                                                                                 (
                                                                                     <>
@@ -2384,6 +2565,31 @@ export default () => {
                                                                                                                 <div class="video-duration">Video</div>
                                                                                                             </div>
                                                                                                         )}
+                                                                                                        {functions.isPdfFormat(media["6U"]) && (
+                                                                                                            <img src={"/images/icon/pdf.svg"}
+                                                                                                                alt={`Selected ${index}`}
+                                                                                                                className="selected-image-add"
+                                                                                                                title={media["1FN"]}
+                                                                                                                data-toggle="modal" data-target="#previewFile"
+                                                                                                                onClick={() => openModalPreviewFile({ type: "PDF", url: media["6U"] })} />
+                                                                                                        )}
+                                                                                                        {functions.isExcelFormat(media["6U"]) && (
+                                                                                                            <img src={"/images/icon/excel.svg"}
+                                                                                                                alt={`Selected ${index}`}
+                                                                                                                className="selected-image-add"
+                                                                                                                title={media["1FN"]}
+
+                                                                                                                onClick={() => openModalPreviewFile({ type: "EXCEL", url: media["6U"] })} />
+                                                                                                        )}
+                                                                                                        {functions.isZipFormat(media["6U"]) && (
+                                                                                                            <img src={"/images/icon/zip.png"}
+                                                                                                                alt={`Selected ${index}`}
+                                                                                                                className="selected-image-add"
+                                                                                                                title={media["1FN"]}
+
+                                                                                                                onClick={() => openModalPreviewFile({ type: "zip", url: media["6U"] })}
+                                                                                                            />
+                                                                                                        )}
                                                                                                     </div>
                                                                                                 ))}
                                                                                             </div>
@@ -2396,9 +2602,33 @@ export default () => {
                                                                             }
                                                                         </div>
                                                                     </div>
-                                                                    <div class="title-suggest mb-1">{lang["SUGGESTED SOLUTION"]}</div>
-                                                                    <span class="content-suggest">{dataCaseDetail.solution} </span>
                                                                     <TableInputUpdate onDataUpdate={handleDataFromChild} dataDetail={dataCaseDetail} data={tableDataProduct} stateAdd={false} caseId={dataCaseDetail.id} stateUpdate={true} />
+                                                                    <div class="title-suggest mb-1">{lang["SUGGESTED SOLUTION"]}</div>
+                                                                    <span class="content-suggest">
+                                                                        {/* {dataCaseDetail.solution} */}
+
+                                                                        {dataCaseDetail.solution === "" && lang["No data avasilable"]}
+                                                                        {dataCaseDetail.solution && dataCaseDetail.solution.split('\n').map(s => <span style={{ display: "block" }}>{s}</span>)}
+
+
+                                                                    </span>
+                                                                    <div class="row mt-1">
+                                                                        <div className="col-sm-12">
+                                                                            <h5 className="mt-3"> {lang["Warranty Claim"]}</h5>
+                                                                            {/* W23-0000736 */}
+                                                                            {dataCaseDetail.warranty !== "" ? dataCaseDetail.warranty : lang["No data avasilable"]}
+                                                                        </div>
+                                                                        <div className="col-sm-12">
+                                                                            <h5 className="mt-3">{lang["Case Suggest"]}</h5>
+                                                                            {dataCaseDetail.caseSuggest !== "" ? dataCaseDetail.warrcaseSuggestanty : lang["No data avasilable"]}
+                                                                        </div>
+                                                                        <div className="col-sm-12">
+                                                                            <h5 className="mt-3">{lang["Possible Feature"]}</h5>
+
+                                                                            {dataCaseDetail.possibleFeature !== "" ? dataCaseDetail.possibleFeature : lang["No data avasilable"]}
+                                                                        </div>
+                                                                    </div>
+
                                                                 </div>
                                                             </div>
                                                         </div></div>
@@ -2577,16 +2807,52 @@ export default () => {
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     )}
+                                                                                                    {functions.isPdfFormat(media["5U"]) && (
+                                                                                                        <div className="file-container">
+                                                                                                            <div className="file-icon">
+                                                                                                                <img src="/images/icon/pdf.svg" alt="PDF" title={media["2FN"]} />
+                                                                                                            </div>
+                                                                                                            <div className="file-name">{media["2FN"]}</div>
+                                                                                                            <button className="file-download-btn" onClick={() => handleDownload(media["5U"])}>
+                                                                                                                <img src={"/images/icon/download.png"} alt="Download" />
+                                                                                                            </button>
+                                                                                                        </div>
+                                                                                                    )}
+                                                                                                    {functions.isExcelFormat(media["5U"]) && (
+                                                                                                        <div className="file-container" >
+                                                                                                            <div className="file-icon">
+                                                                                                                <img src="/images/icon/excel.svg" alt="PDF" title={media["2FN"]} />
+                                                                                                            </div>
+                                                                                                            <div className="file-name">{media["2FN"]}</div> <div className="shorten-filename"> {functions.shortenFileName(media["2FN"])}</div>
+                                                                                                            <button className="file-download-btn ml-3" onClick={() => handleDownload(media["5U"])}>
+                                                                                                                {/* <i class="fa fa-download size-24 icon-download-black" aria-hidden="true"></i> */}
+                                                                                                                <img src={"/images/icon/download.png"} ></img>
+
+                                                                                                            </button>
+                                                                                                        </div>
+                                                                                                    )}
+
+                                                                                                    {functions.isZipFormat(media["5U"]) && (
+                                                                                                        <div className="file-container" >
+                                                                                                            <div className="file-icon">
+                                                                                                                <img src="/images/icon/zip.png" alt="PDF" title={media["2FN"]} />
+                                                                                                            </div>
+                                                                                                            <div className="file-name">{media["2FN"]}</div> <div className="shorten-filename"> {functions.shortenFileName(media["2FN"])}</div>
+                                                                                                            <button className="file-download-btn ml-3" onClick={() => handleDownload(media["5U"])}>
+                                                                                                                {/* <i class="fa fa-download size-24 icon-download-black" aria-hidden="true"></i> */}
+                                                                                                                <img src={"/images/icon/download.png"} ></img>
+
+                                                                                                            </button>
+                                                                                                        </div>
+                                                                                                    )}
                                                                                                 </>
                                                                                             ))}
                                                                                         </div>
                                                                                     )}
-
                                                                                     <div className="message-timestamp"> {dataCaseDetail && langItemCheck === "Vi" ? functions.translateDateTimeToVietnamese(functions.formatDateMessage(item["1PA"])) : functions.formatDateMessage(item["1PA"])} </div>
                                                                                 </div>
                                                                             );
                                                                         })}
-
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -2604,6 +2870,15 @@ export default () => {
                                                                                 {/* <div class="video-duration"> {media.name}</div> */}
                                                                                 <div class="video-duration">Video</div>
                                                                             </div>
+                                                                        )}
+                                                                        {media.type === 'pdf' && (
+                                                                            <img src={"/images/icon/pdf.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
+                                                                        )}
+                                                                        {media.type === 'excel' && (
+                                                                            <img src={"/images/icon/excel.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
+                                                                        )}
+                                                                        {media.type === 'zip' && (
+                                                                            <img src={"/images/icon/zip.png"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
                                                                         )}
                                                                         <button onClick={() => removeMedia(media)} className="remove-image" title={lang["delete image"]}>X</button>
                                                                     </div>
@@ -2625,7 +2900,6 @@ export default () => {
                                                                 tabIndex={0}
                                                             >
                                                                 {getPlaceholder()}
-
                                                                 <textarea
                                                                     ref={textareaRef}
                                                                     onDragEnter={handleDragEnter}
@@ -2639,24 +2913,22 @@ export default () => {
                                                                     rows={1}
                                                                     spellCheck="false"
                                                                     maxLength={4000}
-
                                                                 />
-
                                                                 <input
                                                                     type="file"
                                                                     id="imageInput"
                                                                     hidden="hidden"
                                                                     onChange={handleImageChangeSent}
-                                                                    accept="image/*,video/*"
+                                                                    // accept="image/*,video/*"
+                                                                    accept="image/*,video/*,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                                                    multiple
                                                                 />
-
                                                                 <FontAwesomeIcon
                                                                     icon={faPaperclip}
                                                                     className="size-24 mr-2 pointer"
                                                                     onClick={() => document.getElementById('imageInput').click()}
                                                                     title={lang["attachment"]}
                                                                 />
-
                                                                 <FontAwesomeIcon onClick={submitMessage} icon={faPaperPlane} className={`size-24 ml-auto mr-2 icon-add-production pointer`} title={lang["send message"]} />
                                                             </div>
                                                         }
@@ -2856,7 +3128,6 @@ export default () => {
                                     <button type="button" class="close" onClick={handleCloseModal} data-dismiss="modal" title={lang["btn.close"]}>&times;</button>
                                 </div>
                                 <div class="modal-body">
-
                                     <div class="row field-case">
                                         <div class="col-md-8">
 
@@ -2988,7 +3259,9 @@ export default () => {
                                                     type="file"
                                                     style={{ display: "none" }}
                                                     onChange={handleAttachMedia}
-                                                    accept="image/*,video/*"
+                                                    // accept="image/*,video/*"
+                                                    accept="image/*,video/*,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip"
+                                                    multiple
                                                 />
                                             </div>
                                             {(caseUpdate?.attachMedia?.length > 0 || attachMedia.length > 0) ?
@@ -3001,7 +3274,7 @@ export default () => {
                                                             onDrop={handleFileDropUpdate}
                                                             onClick={(e) => handleFileContainerClick(e)}>
                                                             <div className="selected-images-container-add">
-                                                                {/* Hình cũ */}
+                                                                {/* Attach cũ */}
                                                                 {caseUpdate.attachMedia?.length > 0 && (caseUpdate.attachMedia?.map((media, index) => (
                                                                     <div key={index} className="selected-image-wrapper-add">
                                                                         {functions.isImageFormat(media["6U"]) && (
@@ -3015,10 +3288,20 @@ export default () => {
                                                                                 <div class="video-duration">Video</div>
                                                                             </div>
                                                                         )}
+                                                                        {functions.isPdfFormat(media["6U"]) && (
+                                                                            <img src={"/images/icon/pdf.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media["1FN"]} />
+                                                                        )}
+                                                                        {functions.isExcelFormat(media["6U"]) && (
+                                                                            <img src={"/images/icon/excel.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media["1FN"]} />
+                                                                        )}
+                                                                        {functions.isZipFormat(media["6U"]) && (
+                                                                            <img src={"/images/icon/zip.png"} alt={`Selected ${index}`} className="selected-image-add" title={media["1FN"]} />
+                                                                        )}
+
                                                                         <button onClick={(e) => removeAttachMediaUpdate(e, media)} className="remove-image" title={lang["delete image"]} >X</button>
                                                                     </div>
                                                                 )))}
-
+                                                                {/* Attach mới */}
                                                                 {attachMedia.length > 0 && (attachMedia.map((media, index) => (
                                                                     <div key={index} className="selected-image-wrapper-add">
                                                                         {media.type === 'image' && (
@@ -3030,6 +3313,15 @@ export default () => {
                                                                                 {/* <div class="video-duration"> {media.name}</div> */}
                                                                                 <div class="video-duration">Video</div>
                                                                             </div>
+                                                                        )}
+                                                                        {media.type === 'pdf' && (
+                                                                            <img src={"/images/icon/pdf.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
+                                                                        )}
+                                                                        {media.type === 'excel' && (
+                                                                            <img src={"/images/icon/excel.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
+                                                                        )}
+                                                                        {media.type === 'zip' && (
+                                                                            <img src={"/images/icon/zip.png"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
                                                                         )}
                                                                         <button onClick={(e) => removeAttachMedia(e, media)} className="remove-image" title={lang["delete image"]}>X</button>
                                                                     </div>
@@ -3049,7 +3341,7 @@ export default () => {
                                                     <label style={{ margin: 0 }} htmlFor="file-upload" className="custom-file-upload">
                                                         {lang["Drag and drop images here and click"]}
                                                     </label>
-
+                                                    <span class="type-file"> (Image, Video, Pdf, Excel) </span>
                                                 </div>
                                             }
                                         </div>
@@ -3119,6 +3411,78 @@ export default () => {
                                                     </video>
                                                 )}
 
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" onClick={handleCloseModal} data-dismiss="modal" class="btn btn-danger modal-button-review">{lang["btn.close"]}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/* Preview PDF/Excel*/}
+                    <div class={`modal no-select-modal modal-open-no-overflow-y ${showModal ? 'show' : ''}`} id="previewFile">
+                        <div class="modal-dialog modal-dialog-center ">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Preview</h4>
+                                    <button type="button" class="close" onClick={handleCloseModal} data-dismiss="modal" title={lang["btn.close"]}>&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="row">
+                                            <div class="form-group col-lg-12 align-center">
+
+                                                {dataPreviewFile?.type === 'imageDetail' && (
+                                                    <img class="image-responsive" src={dataPreviewFile?.url}
+                                                        style={{ width: '70%' }}
+                                                        alt={dataPreviewFile?.name} />
+                                                )}
+
+                                                {/* Hiển thị PDF */}
+                                                {dataPreviewFile?.type === 'PDF' && (
+                                                    <iframe src={dataPreviewFile?.url} style={{ width: '100%', height: '650px' }} frameBorder="0"></iframe>
+                                                )}
+                                                {/* Hiển thị EXcel */}
+                                                {dataPreviewFile?.type === 'EXCEL' && (
+                                                    <iframe src={dataPreviewFile?.url} style={{ width: '100%', height: '600px' }} frameBorder="0"></iframe>
+                                                )}
+                                                {/* Hiển thị Zip */}
+                                                {dataPreviewFile?.type === 'zip' && (
+                                                    <iframe src={dataPreviewFile?.url} style={{ width: '100%', height: '600px' }} frameBorder="0"></iframe>
+                                                )}
+
+                                                {/*  */}
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" onClick={handleCloseModal} data-dismiss="modal" class="btn btn-danger modal-button-review">{lang["btn.close"]}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Captcha*/}
+                    <div class={`modal no-select-modal modal-open-no-overflow-y ${showModal ? 'show' : ''}`} id="captcha">
+                        <div class="modal-dialog modal-dialog-center ">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">Captcha</h4>
+                                    <button type="button" class="close" onClick={handleCloseModal} data-dismiss="modal" title={lang["btn.close"]}>&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="row">
+                                            <div class="form-group col-lg-12 align-center">
+                                                <ReCAPTCHA
+                                                    ref={recaptchaRef}
+                                                    sitekey="6LdWVTwpAAAAAHn2EaiOZ7GMnhilokYg2hanEx63"
+                                                    onChange={onReCAPTCHAChange}
+                                                />
                                             </div>
                                         </div>
                                     </form>

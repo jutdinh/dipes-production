@@ -66,12 +66,22 @@ function App() {
         // console.error("Error refreshing token:", error);
     }
 }
-useEffect(() => {
-  // Kiểm tra và làm mới token mỗi 30 phút
-  const intervalId = setInterval(updateToken, 5000); // 1800000 ms = 30 phút
-  // return () => clearInterval(intervalId);
 
-}, [_token]);
+
+
+// useEffect(() => {
+//   // Kiểm tra và làm mới token mỗi 30 phút
+//   const intervalId = setInterval(updateToken, 5000); // 1800000 ms = 30 phút
+//   // return () => clearInterval(intervalId);
+
+// }, [_token]);
+
+
+
+
+
+
+
 
 
 // useEffect(() => {
@@ -95,7 +105,6 @@ const expirationDate = functions.getTokenExpirationDate(_token);
         window.location = '/login'
       }
       if (user) {
-
         dispatch({
           branch: "default",
           type: "setAuthInfor",
@@ -119,7 +128,6 @@ const expirationDate = functions.getTokenExpirationDate(_token);
           })
         }
       }
-
       // } catch (error) {
       //   console.error('Error fetching data:', error);
       // }    

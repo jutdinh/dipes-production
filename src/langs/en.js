@@ -117,8 +117,6 @@ export default {
     "versionname": "Version name",
     "p.versionname": "Enter an version name",
     "p.versiondescription": "Enter a description",
-
-
     //User
     "users.title": "Users",
     "users.desc": "Users management",
@@ -165,7 +163,6 @@ export default {
     "error.vaildphone": "Invalid phone number",
     "error.permission": "Please select permissions",
     "error.address": "Please enter the address",
-
     // modal edit user
     "btn.update": "Save",
     // "btn.create": "Create new",
@@ -193,7 +190,6 @@ export default {
     "detaillog": "Log details",
     "log.create_user": "Executor",
     "log.create_at": "Creation date",
-
     //page
     "show": "Showing",
     "of": "of",
@@ -204,7 +200,6 @@ export default {
     "btn.addfield": "Add new field",
     "export": "Export",
     "export-to-excel": "Export to Excel",
-
     "activation": "Activation",
     "success": "Success",
     "success.content": "Successful data import",
@@ -229,7 +224,6 @@ export default {
     "fail.add": "Add data failed",
     "success.update": "Successful update",
     "fail.update": "Update failed",
-
     // "confirm": "Confirm",
     "confirm.content": "Are you sure you want to delete this field?",
     "btn.delete": "Delete",
@@ -421,14 +415,17 @@ export default {
     "Please check the activation file": "Please check the activation file",
     "Click to preview": "Click to preview",
     "delete image": "Delete Image",
-    "Drag and drop images here": "Kéo và thả hình ảnh vào đây",
-    "Only image and video files are accepted": "Only image and video files are accepted",
+    "Drag and drop images here": "Drag and drop (Image, Video, Pdf, Excel) here",
+     "Only image, video, PDF, and Excel files are accepted": "Only image, video, PDF, and Excel files are accepted",
     "Please upload an image file.": "Please upload an image file.",
     "Notification": "Notification",
     "expired": "Session expired. Please log back in to continue.",
     "withdraw": "Information can only be updated within 24 hours of submission.",
     "Drag and drop images here and click": "Drag and drop here or click to select images",
-    "case image": "Case image"
+    "case image": "Case image",
+    "Warranty Claim": "Warranty claim",
+    "Case Suggest": "Case suggest",
+    "Possible Feature": "Possible feature"
 }
 
 

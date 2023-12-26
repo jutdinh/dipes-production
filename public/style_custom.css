@@ -149,10 +149,12 @@
     display: flex;
     justify-content: center;
 }
- .size-img-success{
+
+.size-img-success {
     width: 180px;
- }
- .logo_section img {
+}
+
+.logo_section img {
     height: 42px;
     padding: 0;
     margin: 6px 2px 0;
@@ -166,10 +168,13 @@
     /* border: 1px solid #dee2e6; */
     border-radius: 5px;
     padding: 20px;
-    display: flex; /* Sử dụng Flexbox */
-    justify-content: center; /* Căn giữa chữ theo chiều ngang */
-    align-items: center; /* Căn giữa chữ theo chiều dọc */
-   
+    display: flex;
+    /* Sử dụng Flexbox */
+    justify-content: center;
+    /* Căn giữa chữ theo chiều ngang */
+    align-items: center;
+    /* Căn giữa chữ theo chiều dọc */
+
     /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
     transition: background-color 0.3s ease-in-out;
 }
@@ -179,24 +184,28 @@
 }
 
 .my-box span {
-    font-size: 48px; 
-    color: #445069; 
-    font-weight: bold; 
+    font-size: 48px;
+    color: #445069;
+    font-weight: bold;
 }
-.f-24{
+
+.f-24 {
     font-size: 48px !important;
 }
+
 .sticky-header th {
     position: sticky;
     top: 0;
-    z-index: 100; 
-    background-color: #f0eaea; 
+    z-index: 100;
+    background-color: #f0eaea;
 }
-.total-box{
+
+.total-box {
     padding-top: 50px !important;
     padding-bottom: 50px !important;
     font-size: 24px !important;
 }
+
 .social_icon {
     width: 100%;
     text-align: center;
@@ -210,6 +219,7 @@
     padding-top: 15px */
 
 }
+
 .my-box-half {
     height: 150px;
     /* background-color: #d9dfe4; */
@@ -217,13 +227,17 @@
     /* border: 1px solid #dee2e6; */
     border-radius: 5px;
     padding: 20px;
-    display: flex; /* Sử dụng Flexbox */
-    justify-content: center; /* Căn giữa chữ theo chiều ngang */
-    align-items: center; /* Căn giữa chữ theo chiều dọc */
- 
+    display: flex;
+    /* Sử dụng Flexbox */
+    justify-content: center;
+    /* Căn giữa chữ theo chiều ngang */
+    align-items: center;
+    /* Căn giữa chữ theo chiều dọc */
+
     /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
     transition: background-color 0.3s ease-in-out;
 }
+
 .login_section {
     max-width: 640px;
     background: #fff;
@@ -235,12 +249,15 @@
     border-radius: 10px;
     overflow: hidden;
 }
+
 .my-box-half:hover {
     /* background-color: #f3f7fa; */
 }
+
 .size-img-success {
     pointer-events: none;
 }
+
 #content {
     width: 100%;
     min-height: 100vh;
@@ -249,40 +266,47 @@
     padding: 60px 25px 0px 305px;
     background: #f8f8f8;
 }
+
 .controller .social_icon {
-  
+
     background: #4988ef;
     padding-bottom: 15px;
     height: 55px;
     padding-top: 14px
 }
+
 .printhead .social_icon {
     background: #72c05d;
     padding-bottom: 15px;
     height: 55px;
     padding-top: 14px
 }
+
 .printer .social_icon {
     background: #ff7170;
     padding-bottom: 15px;
     height: 55px;
     padding-top: 14px
 }
-.height-82{
-   min-height: 82vh;
+
+.height-82 {
+    min-height: 82vh;
 }
-.color_month{
+
+.color_month {
     color: '#333';
-     font-weight: bold
+    font-weight: bold
 }
+
 .info_people {
     padding: 15px !important;
     display: flex;
 }
+
 .my-box-half span {
-    font-size: 48px; 
-    color: #445069; 
-    font-weight: bold; 
+    font-size: 48px;
+    color: #445069;
+    font-weight: bold;
 }
 
 .white_shd_cus {
@@ -300,7 +324,7 @@
     padding: 8px 10px 8px;
 }
 
-.color-whiteh5{
+.color-whiteh5 {
     font-size: 18px;
     font-weight: 700;
     text-transform: uppercase;
@@ -310,25 +334,38 @@
     color: #434360;
 }
 
+.navbar-close {
+
+    display: flex;
+
+    margin-right: 10px;
+    flex-direction: column;
+
+}
 
 /* CSS cho nút tải lên tùy chỉnh */
 .custom-file-upload {
     display: inline-block;
     padding: 6px 12px;
     cursor: pointer;
-    background-color: #1a73e8; 
-    color: white; 
-    border-radius: 4px; /* Độ cong của các góc, tùy chỉnh theo ý thích */
+    background-color: #1a73e8;
+    color: white;
+    border-radius: 4px;
+    /* Độ cong của các góc, tùy chỉnh theo ý thích */
     font-family: sans-serif;
-    font-size: 14px; /* Kích thước phông chữ */
-    text-align: center; /* Căn chỉnh chữ nằm giữa */
+    font-size: 14px;
+    /* Kích thước phông chữ */
+    text-align: center;
+    /* Căn chỉnh chữ nằm giữa */
 }
 
 .custom-file-upload:hover {
-    background-color: #0053bf; /* Màu nền khi di chuột qua */
+    background-color: #0053bf;
+    /* Màu nền khi di chuột qua */
 }
+
 .icon_info ul.user_profile_dd>li {
-    width: 155px;
+    max-width: 350px;
     border-radius: 0;
     background: #0066cc;
     margin: 0;
@@ -362,7 +399,7 @@
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s;
-    margin-top: 20px; 
+    margin-top: 20px;
 }
 
 .upload-button:hover {
@@ -374,14 +411,14 @@
     margin-right: 20px;
     color: #ccc;
     margin-bottom: 10px;
-    align-self: center; 
+    align-self: center;
 }
 
 .instructions {
     color: #888;
     margin-top: 10px;
     text-align: center;
-    align-self: center; 
+    align-self: center;
 }
 
 .input-file {
@@ -398,7 +435,7 @@
 
 /* end step */
 .fixed-height {
-    height: 15px; 
+    height: 15px;
     display: block;
 }
 
@@ -431,18 +468,20 @@
 .full_profile {
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
 
 .user-card {
-    background-color: #f9f9f9; /* Light gray background */
+    background-color: #f9f9f9;
+    /* Light gray background */
     transition: all 0.3s ease;
 }
 
 .user-card:hover {
-    transform: scale(1.03); /* Slight zoom in effect on hover */
-    box-shadow: 0px 0px 20px rgba(0,0,0,0.1);
+    transform: scale(1.03);
+    /* Slight zoom in effect on hover */
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
 }
 
 .info_people {
@@ -461,13 +500,15 @@
 }
 
 .user_info_cont a {
-    color: #007BFF; /* Blue color for links */
+    color: #007BFF;
+    /* Blue color for links */
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .user_info_cont a:hover {
-    color: #0056b3; /* Darker blue color on hover */
+    color: #0056b3;
+    /* Darker blue color on hover */
 }
 
 
@@ -475,15 +516,17 @@
 .italic {
     font-style: italic;
 }
+
 .italic-non {
     font-style: normal;
 }
 
 
-.size-32{
+.size-32 {
     font-size: 32px;
 }
-.size-16{
+
+.size-16 {
     font-size: 16px;
 }
 
@@ -526,21 +569,26 @@
     justify-content: flex-end;
     margin-top: 10px;
 }
-.error-group{
+
+.error-group {
     margin-top: 10px;
 }
-.title-error{
+
+.title-error {
     color: #fe402b;
     font-size: 14px;
 }
-.list-error{
+
+.list-error {
     color: #fe402b;
     font-size: 14px;
 }
-.list-error::before{
-   content: "•";
-   font-size: 18px;
+
+.list-error::before {
+    content: "•";
+    font-size: 18px;
 }
+
 .header-cell,
 .cell {
     min-width: 250px;
@@ -548,23 +596,25 @@
 
 .cell {
     max-width: 380px;
-    
+
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .cell-key {
     max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    
-    user-select: none;  
-    pointer-events: none;  
+
+    user-select: none;
+    pointer-events: none;
 }
+
 .error-text {
     color: red;
-   
+
 }
 
 
@@ -573,8 +623,9 @@
     float: left;
     width: 100%;
     border-bottom: solid #dee2e6 1px;
-    
+
 }
+
 .graph_head_cus {
     padding: 10px 25px 10px;
     float: left;
@@ -814,6 +865,14 @@
     padding-top: 6px;
     background: #15283c;
     padding-bottom: 7px;
+}
+
+.name_user {
+    display: block;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
@@ -1885,6 +1944,7 @@ table tr {
     min-height: 560px;
 
 }
+
 .padding_infor_info_layout_chart {
     padding: 5px 20px 5px 20px;
     float: left;
@@ -1892,6 +1952,7 @@ table tr {
     min-height: 480px;
 
 }
+
 .padding_infor_info_layout_chart_half {
     padding: 5px 20px 5px 20px;
     float: left;
@@ -2013,7 +2074,7 @@ table tr {
 }
 
 .size-24 {
-    font-size: 24px ;
+    font-size: 24px;
 }
 
 .size-search {
@@ -2077,25 +2138,25 @@ table tr {
 }
 
 .input-group-text {
-    margin-bottom: 0; /
+    margin-bottom: 0;/
 }
 
 .blur-modal {
     filter: blur(3px);
     pointer-events: none;
-  }
+}
 
 .icon-active {
-    transform: scale(0.9); 
-    transition: transform 0.3s; 
+    transform: scale(0.9);
+    transition: transform 0.3s;
 }
 
 
-  .no-select-modal {
+.no-select-modal {
 
     pointer-events: none;
-  }
-  
+}
+
 
 
 .error-login {

@@ -147,7 +147,7 @@ export default () => {
                                     <a class="dropdown-toggle" data-toggle="dropdown">
                                         {/* <img class="img-responsive circle-image" src={(proxy()) + auth.avatar} alt="#" /> */}
                                         {/* <span class="name_user"> {generateUserLastName()}</span> */}
-                                        <span class="name_user"> {generateUserLastName()}</span>
+                                        <span class="name_user"> {auth.fullname}</span>
                                     </a>
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="/users/profile">{lang["my profile"]}</a>

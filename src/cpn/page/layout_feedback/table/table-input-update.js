@@ -209,7 +209,7 @@ function EditableTable(props) {
     return (
         <>
             {dataDetail.status === "Active" &&
-                < div class="d-flex mb-1 mt-1">
+                < div class="d-flex mb-1 mt-3">
                     <h5>{lang["PRODUCT INFORMATION"]}</h5>
                     <FontAwesomeIcon icon={faPlusSquare} onClick={() => addRow()} className={`size-24 ml-auto  icon-add pointer `} title='Add Product Information' />
                 </div >

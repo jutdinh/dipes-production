@@ -15,6 +15,7 @@ export default () => {
    const sideBar = sidebar ? sidebar.sidebar : null;
    const [isExpanded, setIsExpanded] = useState(true);
    // console.log(isExpanded)
+   // console.log(sideBar)
    useEffect(() => {
       const savedState = localStorage.getItem('menuExpanded');
       if (savedState !== null) {
@@ -137,7 +138,7 @@ export default () => {
                               <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
                                  {/* <i class="fa fa-home"></i> */}
                                  <FontAwesomeIcon icon={faHouse} className={`size-20 mr-3`} />
-                                 <span >{ui.title}</span>
+                                 <span class ={!sideBar && "navbar-close"}>{ui.title}</span>
                               </NavLink>
                            </li>
                         ) : null

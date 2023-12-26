@@ -420,12 +420,17 @@ export default {
     "Please check the activation file": "Vui lòng kiểm tra tập tin kích hoạt",
     "Click to preview": "Nhấn để xem trước",
     "delete image": "Xóa ảnh",
-    "Drag and drop images here": "Kéo và thả hình ảnh vào đây",
-    "Only image and video files are accepted": "Chỉ chấp nhận các tệp hình ảnh và video",
+    "Drag and drop images here": "Kéo và thả (Image, Video, Pdf, Excel) vào đây",
+    "Only image, video, PDF, and Excel files are accepted": "Chỉ chấp nhận các tệp hình ảnh, video, Pdf và Excel",
     "Please upload an image file.": "Vui lòng tải lên một tệp hình ảnh.",
     "Notification": "Thông báo",
     "expired": "Phiên hết hạn. Vui lòng đăng nhập lại để tiếp tục.",
     "withdraw": "Thông tin chỉ có thể được cập nhật trong vòng 24 giờ kể từ khi gửi.",
     "Drag and drop images here and click": "Kéo thả ảnh vào đây hoặc bấm để chọn ảnh",
-    "case image": "Hình ảnh"
+    "case image": "Hình ảnh",
+
+
+    "Warranty Claim": "Yêu cầu bảo hành",
+    "Case Suggest": "Đề xuất",
+    "Possible Feature": "Tính năng đề xuất"
 }
