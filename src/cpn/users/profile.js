@@ -27,37 +27,37 @@ export default (props) => {
         const phoneRegex = /^[0-9]{10}$/;
         return phoneRegex.test(phone);
     };
-    useEffect(() => {
+    // useEffect(() => {
 
-        fetch(`${proxy()}/auth/activation/check`, {
-            headers: {
-                Authorization: _token
-            }
-        })
-            .then(res => res.json())
-            .then(resp => {
-                const { success, data, activated, status, content } = resp;
-                // console.log(resp)
-                if (activated) {
+    //     fetch(`${proxy()}/auth/activation/check`, {
+    //         headers: {
+    //             Authorization: _token
+    //         }
+    //     })
+    //         .then(res => res.json())
+    //         .then(resp => {
+    //             const { success, data, activated, status, content } = resp;
+    //             // console.log(resp)
+    //             if (activated) {
 
-                    setStatusActive(true)
-                }
-                else {
-                    Swal.fire({
-                        title: lang["faild"],
-                        text: lang["fail.active"],
-                        icon: "error",
-                        showConfirmButton: true,
+    //                 setStatusActive(true)
+    //             }
+    //             else {
+    //                 Swal.fire({
+    //                     title: lang["faild"],
+    //                     text: lang["fail.active"],
+    //                     icon: "error",
+    //                     showConfirmButton: true,
 
-                    }).then(function () {
-                        // window.location.reload();
-                    });
-                    setStatusActive(false)
-                }
+    //                 }).then(function () {
+    //                     // window.location.reload();
+    //                 });
+    //                 setStatusActive(false)
+    //             }
 
-            })
+    //         })
 
-    }, [])
+    // }, [])
     useEffect(() => {
         fetch(`${proxy()}/auth/u/${user.username}`, {
             headers: {
@@ -199,7 +199,7 @@ export default (props) => {
                         </div>
                     </div>
                 </div>
-                {statusActive ? (
+                {!statusActive ? (
                     // <div class="row column1">
                     //     <div class="col-md-12">
                     //         <div class="white_shd full margin_bottom_30">

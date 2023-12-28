@@ -1,7 +1,53 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMaximize, faMinimize, faDownload, faCompress, faChartBar, faPlusCircle, faCirclePlus, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft, faTrashCan, faShareSquare } from '@fortawesome/free-solid-svg-icons';
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
+import Papa from 'papaparse';
+
+const convertKeys = (data) => {
+    return data.map((item, index) => ({
+        id: index,
+        col1: item["SERIALNUMBER/LOTNUMBER"],
+        col2: item["HARDWARE"],
+        col3: item["FIRMWARE"],
+        col4: item["SOFTWARE"],
+        col5: item["QUANTITY"]
+    }));
+}
+
+const convertArrayToObjects = (dataArray) => {
+    // Giả định hàng đầu tiên là tiêu đề cột
+    const headers = dataArray[0];
+    // Chuyển đổi mỗi hàng sau đó thành một đối tượng
+    return dataArray.slice(1).map((row, index) => {
+        // Sử dụng reduce để tạo đối tượng với các giá trị tương ứng từ mỗi cột
+        const obj = row.reduce((acc, value, colIndex) => {
+            acc['col' + (colIndex + 1)] = value;
+            return acc;
+        }, {});
+        // Thêm thuộc tính id
+        obj.id = index;
+        return obj;
+    });
+}
+
+// Hàm hỗ trợ để xử lý các giá trị đặc biệt như dấu phẩy trong dữ liệu
+function replacer(key, value) {
+    if (typeof value === 'string' && value.includes(',')) {
+        return `${value}`;
+    }
+    return value;
+}
+
+const sampleData = [
+    { "SERIALNUMBER/LOTNUMBER": "SN123456789", "HARDWARE": "1.3", "FIRMWARE": "1.3", "SOFTWARE": "1.3", "QUANTITY": "1.3" },
+    { "SERIALNUMBER/LOTNUMBER": "SN123456789", "HARDWARE": "1.3", "FIRMWARE": "1.3", "SOFTWARE": "1.3", "QUANTITY": "1.3" },
+    { "SERIALNUMBER/LOTNUMBER": "SN123456789", "HARDWARE": "1.3", "FIRMWARE": "1.3", "SOFTWARE": "1.3", "QUANTITY": "1.3" },
+    // Thêm các hàng mẫu nếu cần
+];
+
 function EditableTable(props) {
     // console.log(props)
     const { lang, proxy, auth } = useSelector(state => state);
@@ -13,6 +59,22 @@ function EditableTable(props) {
     const [data, setData] = useState([
         // { id: 1, col1: '', col2: '', col3: '', col4: '', col5: '', isEditing: false },
     ]);
+    console.log("DATA NÈ", data)
+    //CHọn file
+    const fileInputRef = useRef();
+    const handleImportClick = () => {
+        fileInputRef.current.click();
+    };
+    // Tạo ID
+    let currentMaxId = data?.reduce((max, item) => item.id > max ? item.id : max, 0);
+
+    function getNextId() {
+        return ++currentMaxId; // Tăng ID lên mỗi lần gọi
+    }
+
+    function updateIdsForNewData(newData) {
+        return newData.map(item => ({ ...item, id: getNextId() }));
+    }
 
     const [prevData, setPrevData] = useState(data ? [...data] : []);
     const dataDetail = props.dataDetail
@@ -39,40 +101,130 @@ function EditableTable(props) {
         }
 
     }, [dataProduct]);
+    const handleFileUpload = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        const fileType = file.name.split('.').pop();
 
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            let newData = [];
+
+            if (fileType === 'csv') {
+                newData = await new Promise(resolve => {
+                    Papa.parse(e.target.result, {
+                        complete: (result) => {
+                            const convertedData = convertArrayToObjects(result.data);
+                            newData = updateIdsForNewData(convertedData);
+                            resolve(newData);
+                        }
+                    });
+                });
+            } else if (fileType === 'xlsx' || fileType === 'xls') {
+                const bstr = e.target.result;
+                const wb = XLSX.read(bstr, { type: 'binary' });
+                const wsname = wb.SheetNames[0];
+                const ws = wb.Sheets[wsname];
+                const dataFile = XLSX.utils.sheet_to_json(ws);
+                newData = updateIdsForNewData(convertKeys(dataFile));
+            }
+
+            // Loại bỏ dữ liệu khởi tạo trống nếu có
+            const filteredData = data.filter(item => item.col1 || item.col2 || item.col3 || item.col4 || item.col5);
+            setData([...filteredData, ...newData]);
+
+            // Thêm mỗi hàng mới
+            for (const row of newData) {
+                const detailId = await addRow(row ,false);
+                const updatedRow = { ...row, detailId: detailId, caseId: dataCaseId };
+                await updateRow(updatedRow);
+            }
+
+            event.target.value = '';
+        };
+
+        if (fileType === 'csv') {
+            reader.readAsText(file);
+        } else if (fileType === 'xlsx' || fileType === 'xls') {
+            reader.readAsBinaryString(file);
+        }
+    };
+
+
+    const exportToExcel = (csvData, fileName) => {
+        const worksheet = XLSX.utils.json_to_sheet(csvData);
+        const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+        const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+        const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+        FileSaver.saveAs(data, fileName + '.xlsx');
+    }
+
+    const exportToCSV = (csvData, fileName) => {
+        // Tạo tiêu đề cột từ khóa của đối tượng đầu tiên (giả định tất cả các đối tượng có cùng khóa)
+        const headers = Object.keys(csvData[0]);
+
+        // Chuyển đổi dữ liệu thành CSV
+        const csvRows = [
+            headers.join(','), // Tiêu đề cột
+            ...csvData.map(row => headers.map(fieldName => String(row[fieldName])).join(',')) // Dữ liệu
+        ];
+
+        const csvString = csvRows.join('\n');
+        const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+        FileSaver.saveAs(blob, fileName + '.csv');
+    }
     const [selectedRowId, setSelectedRowId] = useState(null);
 
-    const addRow = () => {
+    const addRow = async (row, shouldUpdateState = true) => {
         const requestBodyProduct = {
             checkCustomer: {
                 username,
                 password: storedPwdString
             },
             "3CI": dataCaseId
+        };
 
+        try {
+            const response = await fetch(`${proxy()}/api/C4F20640B94F4FEE85C35DF21D06F058`, {
+                headers: {
+                    Authorization: _token,
+                    "content-type": "application/json"
+                },
+                method: "POST",
+                body: JSON.stringify(requestBodyProduct)
+            });
+            const resp = await response.json();
+            console.log("Tạo hàng", resp);
+
+            if (resp && resp.Detail && resp.Detail["1DI"]) {
+                const newRow = {
+                    detailId: resp.Detail["1DI"].toString(),
+                    caseId: dataCaseId,
+                    col1: '',
+                    col2: '',
+                    col3: '',
+                    col4: '',
+                    col5: 0,
+                    isEditing: false
+                };
+                if (shouldUpdateState) {
+                    setData(currentData => [...currentData, newRow]);
+                }
+
+                props.onDataUpdate(currentData => [...currentData, newRow]);
+                return resp.Detail["1DI"].toString();
+            } else {
+                throw new Error('Không nhận được detailId từ phản hồi');
+            }
+        } catch (error) {
+            console.error('Lỗi khi thêm hàng mới:', error);
         }
-        fetch(`${proxy()}/api/C4F20640B94F4FEE85C35DF21D06F058`, {
-            headers: {
-                Authorization: _token,
-                "content-type": "application/json"
-            },
-            method: "POST",
-            body: JSON.stringify(requestBodyProduct)
-        })
-            .then(res => res.json())
-            .then(resp => {
-                const { success, activated, status, content } = resp;
-                // console.log("Tạo hàng", resp)
-                const newRow = { detailId: resp.Detail["1DI"], caseId: dataCaseId, col1: '', col2: '', col3: '', col4: '', col5: '0', isEditing: false };
-                setData([...data, newRow]);
-                props.onDataUpdate([...data, newRow]);
-
-            })
     };
+
 
     const updateRow = (updatedRows) => {
         // const updatedRow = newData.find((row) => row.detailId === rowId);
-        // console.log(updatedRows)
+        console.log("data", updatedRows)
 
         const requestBodyProduct = {
 
@@ -81,15 +233,15 @@ function EditableTable(props) {
                 password: storedPwdString
             },
             "3CI": updatedRows.caseId,
-            "1DI": updatedRows.detailId,
+            "1DI": updatedRows.detailId.toString(),
             "2SN": updatedRows.col1,
             "1SV": updatedRows.col2,
             "1HV": updatedRows.col3,
             "1FV": updatedRows.col4,
-            "10Q": updatedRows.col5
+            "10Q": parseInt(updatedRows.col5)
 
         }
-        // console.log("data update product info", requestBodyProduct)
+        console.log("data update product info", requestBodyProduct)
         fetch(`${proxy()}/api/988C23F3D58E4885A93EEE22D7FE4C6E`, {
             headers: {
                 Authorization: _token,
@@ -102,7 +254,7 @@ function EditableTable(props) {
             .then(resp => {
                 const { success, activated, status, content } = resp;
 
-                // console.log("data respon", resp)
+                console.log("data respon", resp)
             })
     };
 
@@ -211,7 +363,21 @@ function EditableTable(props) {
             {dataDetail.status === "Active" &&
                 < div class="d-flex mb-1 mt-3">
                     <h5>{lang["PRODUCT INFORMATION"]}</h5>
-                    <FontAwesomeIcon icon={faPlusSquare} onClick={() => addRow()} className={`size-24 ml-auto  icon-add pointer `} title='Add Product Information' />
+                    {/* <FontAwesomeIcon icon={faPlusSquare} onClick={() => addRow()} className={`size-24 ml-auto  icon-add pointer `} title='Add Product Information' /> */}
+
+                    <FontAwesomeIcon icon={faPlusSquare} className={`size-24 ml-auto icon-add pointer `} id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title={lang["ADD PRODUCT INFORMATION"]} />
+                    <input type="file" onChange={handleFileUpload} style={{ display: 'none' }} ref={fileInputRef} />
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li onClick={() => addRow()}><a class="dropdown-item" href="#"><span>Add Row</span></a></li>
+                        <li onClick={handleImportClick}><span class="dropdown-item">Import file</span></li>
+                        <li class="dropdown-submenu dropdown-submenu-left">
+                            <a class="dropdown-item dropdown-toggle" href="#">File Example</a>
+                            <ul class="dropdown-menu first-sub-menu">
+                                <li onClick={() => exportToExcel(sampleData, "ten_file_mau")}><span class="dropdown-item" > Excel</span></li>
+                                <li onClick={() => exportToCSV(sampleData, "ten_file_mau")}><span class="dropdown-item" >CSV</span></li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div >
             }
 

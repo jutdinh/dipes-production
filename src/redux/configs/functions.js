@@ -693,6 +693,8 @@ function shortenFileName(fileName) {
   
 
 
+  
+
 export default {
     uid, isTokenExpired, refreshToken, getTokenExpirationDate, removeDuplicate, titleCase, openTab, dateGenerator,
     renderDateTimeByFormat, showApiResponseMessage, formatNumberWithCommas, formatNumber, generateUniqueColors,

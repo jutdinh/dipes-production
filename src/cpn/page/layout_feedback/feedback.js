@@ -55,7 +55,7 @@ export default () => {
     const [searchValue, setSearchValue] = useState('');
     const [filteredCases, setFilteredCases] = useState(cases);
 
-
+    console.log(cases)
 
     const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
     const recaptchaRef = useRef();
@@ -70,7 +70,7 @@ export default () => {
     };
 
 
-    console.log(47, dataCaseDetail)
+    // console.log(47, dataCaseDetail)
     // console.log("data update", caseUpdate)
     // console.log(_token)
     // console.log(dataMessage)
@@ -97,7 +97,7 @@ export default () => {
     // Data table 
     const [tableData, setTableData] = useState([]);// Nhận từ Cpn con
     const [tableDataProduct, setTableDataProduct] = useState([]);
-
+    console.log(tableData)
 
     const textareaRef = useRef(null);
     const filteredTableData = tableData.filter(item => {
@@ -127,7 +127,6 @@ export default () => {
 
 
 
-
     // Gọi hàm để cập nhật token
 
     // search
@@ -148,10 +147,53 @@ export default () => {
         setFilteredCases(filtered);
     };
 
+
     //sort
     const [sortBy, setSortBy] = useState('newest'); // Mặc định là 'newest'
     const [sortedCases, setSortedCases] = useState([]);
     // console.log(sortedCases)
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
+
+    // const filterCasesByDate = () => {
+    //     if (!startDate || !endDate) {
+    //         return sortedCases;
+    //     }
+
+    //     const start = new Date(startDate).getTime();
+    //     const end = new Date(endDate).getTime() + (23 * 60 * 60 * 1000 + 59 * 60 * 1000 + 59 * 1000); // Thêm gần một ngày
+
+    //     return sortedCases.filter((item) => {
+    //         const itemDate = new Date(parseInt(item.date.match(/\d+/)[0])).getTime();
+    //         return itemDate >= start && itemDate <= end;
+    //     });
+    // };
+    const filterCases = () => {
+        let filtered = sortedCases;
+
+        // Lọc theo ngày nếu có
+        if (startDate && endDate) {
+            const start = new Date(startDate).getTime();
+            const end = new Date(endDate).getTime() + (23 * 60 * 60 * 1000 + 59 * 60 * 1000 + 59 * 1000); // Thêm gần một ngày
+            filtered = filtered.filter((item) => {
+                const itemDate = new Date(parseInt(item.date.match(/\d+/)[0])).getTime();
+                return itemDate >= start && itemDate <= end;
+            });
+        }
+
+        // Lọc theo từ khóa tìm kiếm nếu có
+        if (searchValue) {
+            filtered = filtered.filter((caseItem) => {
+                const { title, issue, customer } = caseItem;
+                const searchString = `${title} ${issue} ${customer}`.toLowerCase();
+                return searchString.includes(searchValue.toLowerCase());
+            });
+        }
+
+        return filtered;
+    };
+
+
 
     const handleSortChange = (sortType) => {
         setSortBy(sortType);
@@ -745,7 +787,7 @@ export default () => {
 
     // Attach Media
     const [attachMedia, setAttachMedia] = useState([]);
-    console.log(830, attachMedia)
+    // console.log(830, attachMedia)
     // const handleAttachMedia = (e) => {
     //     const newFiles = Array.from(e.target.files).filter(file =>
     //         file.type.startsWith('image/') || file.type.startsWith('video/')
@@ -959,6 +1001,7 @@ export default () => {
         setDataPreviewFile(media)
     };
 
+
     //Popup dấu 3 chấm
     const [openMenuCaseId, setOpenMenuCaseId] = useState(null);
 
@@ -1047,7 +1090,7 @@ export default () => {
             ),
             "11P": mappedArray
         };
-        // console.log(936,requestBody)
+        console.log(936,requestBody)
         fetch(`${proxy()}/api/EF381DD02A6A4FF8B087D5B6BCDE36C9`, {
             method: "POST",
             headers: {
@@ -1964,7 +2007,7 @@ export default () => {
 
 
     // Textarea Chat
-    const [heightChat, setHeightChat] = useState(40);
+    const [heightChat, setHeightChat] = useState(0);
 
     const handleInputChange = (e) => {
         const textarea = e.target;
@@ -1977,9 +2020,11 @@ export default () => {
         // Cập nhật nội dung tin nhắn
         setDataMessageSent({ ...dataMessageSent, message: e.target.value });
     };
+    const windowHeightRespon = window.innerHeight;
 
     const calculateHeight = () => {
         let baseHeight = windowHeightRespon;
+        // console.log("Chieu cao man hinh:", baseHeight)
         const imageAdjustment = selectedImagesSent.length > 0 ? 70 : 0; // Điều chỉnh nếu có hình ảnh
         const maxHeightReduction = 96 - 40; // Giới hạn giảm chiều cao tối đa
 
@@ -1993,10 +2038,16 @@ export default () => {
         baseHeight -= imageAdjustment;
         return `${baseHeight}`;
     };
+    // const calculateMessageWrapperHeight = () => {
+    //     // Giả sử chiều cao tổng cộng của cửa sổ hoặc khối chứa là fixedHeight
+    //     const fixedHeight = 500; // Thay đổi giá trị này theo nhu cầu
+    //     // Chiều cao của khối tin nhắn sẽ là hiệu số giữa chiều cao cố định và chiều cao của textarea
+    //     return fixedHeight - textareaHeight;
+    // }
 
 
 
-    const windowHeightRespon = window.innerHeight;
+
 
 
     // const calculateHeight = (baseHeightPx = 610) => {
@@ -2073,7 +2124,7 @@ export default () => {
                         <div id="portal-root"></div>
                         {/* List Case */}
                         <div class="col-md-5 col-sm-12" style={{ paddingLeft: "5px", paddingRight: "5px" }}>
-                            <div id="listCaseHeight">
+                            <div id="listCaseHeight" style={{ height: calculateHeight() }}>
                                 <div class="search-container">
                                     <input
                                         type="search"
@@ -2083,12 +2134,16 @@ export default () => {
                                         onChange={handleInputChangeSearch}
                                         spellCheck="false"
                                     />
+
                                 </div>
-                                <div class="mt-2" >
+
+                                <div class="mt-2 d-flex" >
                                     <span style={{ display: "flex", alignItems: "center" }}>
                                         <FontAwesomeIcon icon={faSquarePlus} onClick={handlePageAdd} className="size-24 color_icon_plus pointer" title={lang["post your case"]} />
                                         <span class="lable_add ml-2 pointer" onClick={handlePageAdd}>{lang["post your case"]}</span>
                                     </span>
+                                    <div class="ml-auto"> {lang["total"]}: <span class="font-weight-bold  ">{(filterCases().length) || 0}</span> {lang["case(s)"]}</div>
+
 
                                 </div>
                                 <hr class="hr-case"></hr>
@@ -2117,13 +2172,27 @@ export default () => {
                                                 </a>
                                             </div>
                                         </div>
-                                        <div class="ml-auto"> {lang["total"]}: <span class="font-weight-bold  ">{(searchValue === '' ? sortedCases.length : filteredCases.length) || 0}</span> {lang["case(s)"]}</div>
+
+
+                                        <div class="search-date-container ml-auto">
+                                            <input
+                                                type="date"
+                                                className="date-input"
+                                                onChange={(e) => setStartDate(e.target.value)}
+                                                max={endDate}
+                                            />
+                                            <input
+                                                type="date"
+                                                className="date-input"
+                                                onChange={(e) => setEndDate(e.target.value)}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="container-case" style={{ height: heightListCase - 10 }}>
-                                {(searchValue === '' ? sortedCases : filteredCases).map((item, index) => (
+                                {(filterCases()).map((item, index) => (
                                     <div key={index} className={`box-case ${selectedCaseDetail === item.id ? "selected" : ""}`} onClick={() => handlePageDetail(item)}>
                                         <div className="d-flex">
                                             <h4 class="ellipsis-header-case" title={item.title}>{item.title}</h4>
@@ -2232,7 +2301,7 @@ export default () => {
                                             </div>
                                         </div>
                                         <div class="table_section padding_infor_info_case_add">
-                                            <div class="add-case">
+                                            <div class="add-case" style={{ height: calculateHeight() - 255 }}>
                                                 <div class="row field-case">
                                                     <div class="col-md-8">
                                                         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -2452,7 +2521,7 @@ export default () => {
                         {/* Detail Case */}
                         {showPageDetail && (
                             <div class="col-md-7" style={{ paddingLeft: "5px", paddingRight: "5px" }}>
-                                <div class="white_shd full margin_bottom_30" style={{ height: "99%" }}>
+                                <div class="white_shd full " style={{ height: "99%" }}>
                                     <div class="full graph_head_cus min-h-58">
                                         <div class="heading1 margin_0 case-detail">
                                             <div class="d-flex ">
@@ -2568,26 +2637,26 @@ export default () => {
                                                                                                         {functions.isPdfFormat(media["6U"]) && (
                                                                                                             <img src={"/images/icon/pdf.svg"}
                                                                                                                 alt={`Selected ${index}`}
-                                                                                                                className="selected-image-add"
+                                                                                                                className="selected-image-add pointer"
                                                                                                                 title={media["1FN"]}
-                                                                                                                data-toggle="modal" data-target="#previewFile"
-                                                                                                                onClick={() => openModalPreviewFile({ type: "PDF", url: media["6U"] })} />
+                                                                                                                // data-toggle="modal" data-target="#previewFile"
+                                                                                                                onClick={() => handleDownload(media["6U"])} />
                                                                                                         )}
                                                                                                         {functions.isExcelFormat(media["6U"]) && (
                                                                                                             <img src={"/images/icon/excel.svg"}
                                                                                                                 alt={`Selected ${index}`}
-                                                                                                                className="selected-image-add"
+                                                                                                                className="selected-image-add pointer"
                                                                                                                 title={media["1FN"]}
 
-                                                                                                                onClick={() => openModalPreviewFile({ type: "EXCEL", url: media["6U"] })} />
+                                                                                                                onClick={() => handleDownload(media["6U"])} />
                                                                                                         )}
                                                                                                         {functions.isZipFormat(media["6U"]) && (
                                                                                                             <img src={"/images/icon/zip.png"}
                                                                                                                 alt={`Selected ${index}`}
-                                                                                                                className="selected-image-add"
+                                                                                                                className="selected-image-add pointer"
                                                                                                                 title={media["1FN"]}
 
-                                                                                                                onClick={() => openModalPreviewFile({ type: "zip", url: media["6U"] })}
+                                                                                                                onClick={() => handleDownload(media["6U"])}
                                                                                                             />
                                                                                                         )}
                                                                                                     </div>
@@ -2609,8 +2678,6 @@ export default () => {
 
                                                                         {dataCaseDetail.solution === "" && lang["No data avasilable"]}
                                                                         {dataCaseDetail.solution && dataCaseDetail.solution.split('\n').map(s => <span style={{ display: "block" }}>{s}</span>)}
-
-
                                                                     </span>
                                                                     <div class="row mt-1">
                                                                         <div className="col-sm-12">
@@ -2624,116 +2691,21 @@ export default () => {
                                                                         </div>
                                                                         <div className="col-sm-12">
                                                                             <h5 className="mt-3">{lang["Possible Feature"]}</h5>
-
                                                                             {dataCaseDetail.possibleFeature !== "" ? dataCaseDetail.possibleFeature : lang["No data avasilable"]}
                                                                         </div>
                                                                     </div>
 
                                                                 </div>
                                                             </div>
-                                                        </div></div>
-                                                }
-                                                {/* {activeTab === 'products' &&
-                                                    <div class="card-block">
-                                                        <div class="col-md-12">
-                                                            <div class="info-case">
-                                                                <div class="d-flex mb-2 mt-1">
-                                                                    <h5>Production information</h5>
-                                                                    <FontAwesomeIcon icon={faPlusSquare} data-toggle="modal" data-target="#addInfoProduct" className={`size-24 ml-auto icon-add-production pointer `} />
-                                                                </div>
-                                                                <div class="table-responsive">
-                                                                    {
-                                                                        view && view.length > 0 ? (
-                                                                            <>
-                                                                                <table class="table">
-                                                                                    <thead>
-                                                                                        <tr class="color-tr">
-                                                                                            <th>{lang["log.no"]}</th>
-                                                                                            <th>SERIAL NUMBER / LOT NUMBER</th>
-                                                                                            <th>HARDWARE</th>
-                                                                                            <th>FIRMWARE</th>
-                                                                                            <th>SOFTWARE</th>
-                                                                                        </tr>
-                                                                                    </thead>
-                                                                                    <tbody>
-                                                                                        {currentMembersLogs.map((log, index) => {
-                                                                                            return (
-                                                                                                <tr key={log.id}>
-                                                                                                    <td class="align-center">{indexOfFirstMemberLogs + index + 1}</td>
-                                                                                                    <td style={{ width: "300px" }}>
-                                                                                                        {log.serial_Number}
-                                                                                                    </td>
-                                                                                                    <td >{log.hardware}</td>
-                                                                                                    <td>
-                                                                                                        {log.frimware}
-                                                                                                    </td>
-                                                                                                    <td>{log.software}</td>
-                                                                                                </tr>
-                                                                                            );
-                                                                                        })}
-                                                                                    </tbody>
-                                                                                </table>
-                                                                                <div className="d-flex justify-content-between align-items-center">
-                                                                                    <p>{lang["show"]} {indexOfFirstMemberLogs + 1}-{Math.min(indexOfLastMemberLogs, view.length)} {lang["of"]} {view.length} {lang["results"]}</p>
-                                                                                    <nav aria-label="Page navigation example">
-                                                                                        <ul className="pagination mb-0">
-                                                                                            <li className={`page-item ${currentPageLogs === 1 ? 'disabled' : ''}`}>
-                                                                                                <button className="page-link" onClick={() => paginateLogs(1)}>
-                                                                                                    &#8810;
-                                                                                                </button>
-                                                                                            </li>
-                                                                                            <li className={`page-item ${currentPageLogs === 1 ? 'disabled' : ''}`}>
-                                                                                                <button className="page-link" onClick={() => paginateLogs(currentPageLogs - 1)}>
-                                                                                                    &laquo;
-                                                                                                </button>
-                                                                                            </li>
-                                                                                            {currentPageLogs > 3 && <li className="page-item"><span className="page-link">...</span></li>}
-                                                                                            {Array(totalPagesLogs).fill().map((_, index) => {
-                                                                                                if (
-                                                                                                    index + 1 === currentPageLogs ||
-                                                                                                    (index + 1 >= currentPageLogs - 5 && index + 1 <= currentPageLogs + 5)
-                                                                                                ) {
-                                                                                                    return (
-                                                                                                        <li key={index} className={`page-item ${currentPageLogs === index + 1 ? 'active' : ''}`}>
-                                                                                                            <button className="page-link" onClick={() => paginateLogs(index + 1)}>
-                                                                                                                {index + 1}
-                                                                                                            </button>
-                                                                                                        </li>
-                                                                                                    )
-                                                                                                }
-                                                                                            })}
-                                                                                            {currentPageLogs < totalPagesLogs - 2 && <li className="page-item"><span className="page-link">...</span></li>}
-                                                                                            <li className={`page-item ${currentPageLogs === totalPagesLogs ? 'disabled' : ''}`}>
-                                                                                                <button className="page-link" onClick={() => paginateLogs(currentPageLogs + 1)}>
-                                                                                                    &raquo;
-                                                                                                </button>
-                                                                                            </li>
-                                                                                            <li className={`page-item ${currentPageLogs === totalPagesLogs ? 'disabled' : ''}`}>
-                                                                                                <button className="page-link" onClick={() => paginateLogs(totalPagesLogs)}>
-                                                                                                    &#8811;
-                                                                                                </button>
-                                                                                            </li>
-                                                                                        </ul>
-                                                                                    </nav>
-                                                                                </div>
-                                                                            </>
-                                                                        ) : (
-                                                                            <div class="list_cont ">
-                                                                                <p>Hi</p>
-                                                                            </div>
-                                                                        )
-                                                                    }
-                                                                </div>
-                                                            </div>
                                                         </div>
                                                     </div>
-                                                } */}
+                                                }
                                                 {activeTab === 'discussion' &&
                                                     <>
                                                         <div class={`card-block-message bg-message`} style={{ height: dataCaseDetail.status === "Active" ? "" : calculateHeight() - 270 }} >
                                                             <div class="col-md-12">
                                                                 <div class="info-case">
-                                                                    <div className="messages-wrapper" style={{ height: calculateHeight() - 270 - 45 }} ref={messagesEndRef} id="messages-wrapper">
+                                                                    <div className="messages-wrapper" style={{ height: calculateHeight() - 270 - 47 }} ref={messagesEndRef} id="messages-wrapper">
                                                                         {/* <div className="messages-wrapper" ref={messagesEndRef} id="messages-wrapper"> */}
                                                                         {contextMenu.visible && ReactDOM.createPortal(
                                                                             <div
@@ -2776,11 +2748,17 @@ export default () => {
                                                                                     <p style={{ margin: 0 }}>
                                                                                         {shouldTruncate ? (
                                                                                             <>
-                                                                                                {truncatedText}
+
+                                                                                                {
+                                                                                                    truncatedText && truncatedText.split('\n').map(s => <span style={{ display: "block" }}>{s}</span>)
+                                                                                                }
                                                                                                 <a onClick={() => toggleShowFullMessage(item["1MI"])} className="font-weight-bold pointer">... {lang["Show more"]}</a>
                                                                                             </>
                                                                                         ) : (
-                                                                                            item["1MC"]
+
+
+                                                                                            item["1MC"] && item["1MC"].split('\n').map(s => <span style={{ display: "block" }}>{s}</span>)
+
                                                                                         )}
                                                                                     </p>
                                                                                     {item.media && (
@@ -2885,10 +2863,11 @@ export default () => {
                                                                 ))}
                                                             </div>
                                                         )}
+                                                        <hr class="hr-message"></hr>
                                                         {dataCaseDetail.status === "Active" &&
                                                             <div
                                                                 className="chat-input-container"
-                                                                style={{ bottom: "-11px " }}
+                                                                style={{ bottom: "-2px " }}
                                                                 onKeyDown={(e) => {
                                                                     if (e.key === 'Enter' && !e.shiftKey) {
                                                                         e.preventDefault();
@@ -3467,7 +3446,7 @@ export default () => {
                     </div>
 
                     {/* Captcha*/}
-                    <div class={`modal no-select-modal modal-open-no-overflow-y ${showModal ? 'show' : ''}`} id="captcha">
+                    {/* <div class={`modal no-select-modal modal-open-no-overflow-y ${showModal ? 'show' : ''}`} id="captcha">
                         <div class="modal-dialog modal-dialog-center ">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -3492,7 +3471,7 @@ export default () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div >
             </div >
         </div >
