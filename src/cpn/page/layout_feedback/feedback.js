@@ -55,7 +55,7 @@ export default () => {
     const [searchValue, setSearchValue] = useState('');
     const [filteredCases, setFilteredCases] = useState(cases);
 
-    console.log(cases)
+    // console.log(cases)
 
     const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
     const recaptchaRef = useRef();
@@ -97,15 +97,13 @@ export default () => {
     // Data table 
     const [tableData, setTableData] = useState([]);// Nhận từ Cpn con
     const [tableDataProduct, setTableDataProduct] = useState([]);
-    console.log(tableData)
+    // console.log(tableDataProduct)
 
     const textareaRef = useRef(null);
     const filteredTableData = tableData.filter(item => {
         // Kiểm tra xem có ít nhất một trong các thuộc tính col1, col2, col3, col4, col5 có giá trị không
         return item.col1 || item.col2 || item.col3 || item.col4 || item.col5;
     });
-
-
 
     const mappedArray = filteredTableData.map(item => ({
         "2SN": item.col1,
@@ -116,27 +114,21 @@ export default () => {
     }));
 
     const handleDataFromChild = (newData) => {
-
         setTableData(newData);
     };
+
     // Hàm đóng modal
     const handleCloseModal = () => {
         setShowModal(false);
         setAttachMedia([])
     };
 
-
-
     // Gọi hàm để cập nhật token
-
     // search
-
-
     // Hàm xử lý sự kiện khi giá trị của input thay đổi
     const handleInputChangeSearch = (event) => {
         const value = event.target.value;
         setSearchValue(value);
-
         // Lọc danh sách cases dựa trên giá trị nhập vào
         const filtered = cases.filter((caseItem) => {
             const { title, issue, customer } = caseItem;
@@ -146,7 +138,6 @@ export default () => {
 
         setFilteredCases(filtered);
     };
-
 
     //sort
     const [sortBy, setSortBy] = useState('newest'); // Mặc định là 'newest'
@@ -159,15 +150,14 @@ export default () => {
     //     if (!startDate || !endDate) {
     //         return sortedCases;
     //     }
-
     //     const start = new Date(startDate).getTime();
     //     const end = new Date(endDate).getTime() + (23 * 60 * 60 * 1000 + 59 * 60 * 1000 + 59 * 1000); // Thêm gần một ngày
-
     //     return sortedCases.filter((item) => {
     //         const itemDate = new Date(parseInt(item.date.match(/\d+/)[0])).getTime();
     //         return itemDate >= start && itemDate <= end;
     //     });
     // };
+
     const filterCases = () => {
         let filtered = sortedCases;
 
@@ -192,8 +182,6 @@ export default () => {
 
         return filtered;
     };
-
-
 
     const handleSortChange = (sortType) => {
         setSortBy(sortType);
@@ -855,6 +843,7 @@ export default () => {
     // };
 
     const handleAttachMedia = (e) => {
+        console.log(e)
 
         const newFiles = Array.from(e.target.files).filter(file => {
             const fileExtension = file.name.split('.').pop().toLowerCase();
@@ -868,11 +857,9 @@ export default () => {
             } else if (fileExtension === 'zip') {
                 return true;
             }
-
-
             return false;
         });
-        console.log(830, newFiles)
+        // console.log(830, newFiles)
 
         if (newFiles.length < e.target.files.length) {
             Swal.fire({
@@ -956,6 +943,7 @@ export default () => {
 
     const handleFileContainerClick = (e) => {
         e.stopPropagation(); // Ngăn chặn sự kiện click lan truyền ra ngoài
+        e.preventDefault();
         document.getElementById('file-upload-media').click();
     }
     //  Xóa Attach Media
@@ -1090,46 +1078,46 @@ export default () => {
             ),
             "11P": mappedArray
         };
-        console.log(936,requestBody)
-        fetch(`${proxy()}/api/EF381DD02A6A4FF8B087D5B6BCDE36C9`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `${_token}`,
-            },
-            body: JSON.stringify(requestBody),
-        })
-            .then((res) => res.json())
-            .then((resp) => {
-                const { Success, content, data, status } = resp;
-                // console.log(881, resp)
-                if (Success) {
-                    Swal.fire({
-                        title: lang["success"],
-                        text: lang["success create"],
-                        icon: "success",
-                        showConfirmButton: false,
-                        timer: 2000
-                    })
-                    callApiListCase()
-                    setShowPageAdd(false)
-                    setShowPageDetail(false)
-                    setPostCase({ casetype: "Undefined" })
-                    setSelectedImage(null)
-                    setAttachMedia([])
+        console.log(936, requestBody)
+        // fetch(`${proxy()}/api/EF381DD02A6A4FF8B087D5B6BCDE36C9`, {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //         Authorization: `${_token}`,
+        //     },
+        //     body: JSON.stringify(requestBody),
+        // })
+        //     .then((res) => res.json())
+        //     .then((resp) => {
+        //         const { Success, content, data, status } = resp;
+        //         console.log(881, resp)
+        //         if (Success) {
+        //             Swal.fire({
+        //                 title: lang["success"],
+        //                 text: lang["success create"],
+        //                 icon: "success",
+        //                 showConfirmButton: false,
+        //                 timer: 2000
+        //             })
+        //             callApiListCase()
+        //             setShowPageAdd(false)
+        //             setShowPageDetail(false)
+        //             setPostCase({ casetype: "Undefined" })
+        //             setSelectedImage(null)
+        //             setAttachMedia([])
 
-                    localStorage.setItem('selectedCaseDetail', resp["1CI"]);
+        //             localStorage.setItem('selectedCaseDetail', resp["1CI"]);
 
-                } else {
-                    Swal.fire({
-                        title: lang["faild"],
-                        text: lang["faild create"],
-                        icon: "error",
-                        showConfirmButton: true,
-                        cancelButtonText: lang["btn.cancel"],
-                    })
-                }
-            });
+        //         } else {
+        //             Swal.fire({
+        //                 title: lang["faild"],
+        //                 text: lang["faild create"],
+        //                 icon: "error",
+        //                 showConfirmButton: true,
+        //                 cancelButtonText: lang["btn.cancel"],
+        //             })
+        //         }
+        //     });
 
     };
     // Cập nhật Case
@@ -1158,7 +1146,7 @@ export default () => {
 
         if (recaptchaRef.current) {
             const recaptchaValue = recaptchaRef.current.getValue();
-            console.log(recaptchaValue)
+            // console.log(recaptchaValue)
         }
 
 
@@ -1245,7 +1233,7 @@ export default () => {
     };
 
     const [selectedImagesSent, setSelectedImagesSent] = useState([]);
-    console.log(selectedImagesSent)
+    // console.log(selectedImagesSent)
     // Hàm kiểm tra dung lượng file tải lên
     const calculateTotalSize = (additionalFiles) => {
         return selectedImagesSent.reduce((acc, file) => acc + file.size, 0) + additionalFiles.reduce((acc, file) => acc + file.size, 0);
@@ -1378,7 +1366,10 @@ export default () => {
     // Đánh giá 
     const [rating, setRating] = useState(null);
     const handleRatingClick = (newRating) => {
-        setRating(newRating);
+        if (dataCaseDetail.status === "Active") {
+            setRating(newRating);
+        }
+
     };
 
     const [postRating, setPostRating] = useState({});
@@ -2323,7 +2314,7 @@ export default () => {
                                                     </div>
                                                     <div class="col-md-4">
                                                         <h5 class="mb-2">{lang["case type"]}</h5>
-                                                        <select className="form-control" name="role" value={postCase.casetype}
+                                                        <select className="form-control pointer" name="role" value={postCase.casetype}
                                                             onChange={
                                                                 (e) => { setPostCase({ ...postCase, casetype: e.target.value }) }}
                                                         >
@@ -2390,7 +2381,6 @@ export default () => {
                                                                 accept=".png, .jpg, .jpeg"
 
                                                             />
-
                                                             {selectedImage && (
                                                                 <>
                                                                     <img
@@ -2413,11 +2403,9 @@ export default () => {
                                                         </div>
                                                     </div>
                                                     <div class={`col-md-8`}
-
                                                     >
-                                                        <h5 className="mb-2">{lang["attachment"]}</h5>
+                                                        <h5 className="mb-2">{lang["attachment"]} ({lang["maximum"]}: 20MB)</h5>
                                                         <div class="d-flex"
-
                                                         >
                                                             {/* <h5 className="mb-2"></h5>
                                                             <label style={{ marginBottom: 0 }} htmlFor="file-upload-media" class="ml-auto" >
@@ -2486,6 +2474,7 @@ export default () => {
                                                                         {lang["Drag and drop images here and click"]}
                                                                     </label>
                                                                     <span class="type-file"> (Image, Video, Pdf, Excel) </span>
+                                                                    {/* <span class="type-file"> (Tối đa: 20MB) </span> */}
                                                                 </div>
 
                                                             </>
@@ -2525,7 +2514,7 @@ export default () => {
                                     <div class="full graph_head_cus min-h-58">
                                         <div class="heading1 margin_0 case-detail">
                                             <div class="d-flex ">
-                                                <h4 class="ellipsis-header-case" title={dataCaseDetail.title}>{dataCaseDetail.title}</h4>
+                                                <h4 class="ellipsis-header-case mr-2" title={dataCaseDetail.title}>{dataCaseDetail.title}</h4>
                                                 <span
                                                     class="ml-auto font-weight-bold-black"
                                                     style={{
@@ -2568,8 +2557,8 @@ export default () => {
                                                     <div class="container-general" >
                                                         <div class="card-block">
                                                             <div class="col-md-12">
-                                                                <div class="info-case" style={{ height: calculateHeight() - 270 - 9 }}>
-                                                                    <h5 class="mt-3 mb-1">{lang["ISSUE DESCRIPTION"]}</h5>
+                                                                <div class="info-case" style={{ height: calculateHeight() - 270 + 3 }}>
+                                                                    <h5 class="mt-2 mb-1">{lang["ISSUE DESCRIPTION"]}</h5>
                                                                     {/* <textarea
                                                                             readOnly
                                                                             class=" form-control"
@@ -2655,7 +2644,6 @@ export default () => {
                                                                                                                 alt={`Selected ${index}`}
                                                                                                                 className="selected-image-add pointer"
                                                                                                                 title={media["1FN"]}
-
                                                                                                                 onClick={() => handleDownload(media["6U"])}
                                                                                                             />
                                                                                                         )}
@@ -2671,7 +2659,7 @@ export default () => {
                                                                             }
                                                                         </div>
                                                                     </div>
-                                                                    <TableInputUpdate onDataUpdate={handleDataFromChild} dataDetail={dataCaseDetail} data={tableDataProduct} stateAdd={false} caseId={dataCaseDetail.id} stateUpdate={true} />
+                                                                    <TableInputUpdate onDataUpdate={handleDataFromChild} fetchDataProduct={fetchDataProduct} dataDetail={dataCaseDetail} data={tableDataProduct} stateAdd={false} caseId={dataCaseDetail.id} stateUpdate={true} />
                                                                     <div class="title-suggest mb-1">{lang["SUGGESTED SOLUTION"]}</div>
                                                                     <span class="content-suggest">
                                                                         {/* {dataCaseDetail.solution} */}
@@ -2958,7 +2946,7 @@ export default () => {
                                                                                     </div>
 
 
-                                                                                    <div className={`icon-rate ${rating === 'Pretty good' ? 'icon-rate-selected' : ''}`} data-text="Pretty good" onClick={() => handleRatingClick('Pretty good')}>
+                                                                                    <div className={`icon-rate ${rating === 'Pretty good' ? 'icon-rate-selected' : ''}`} data-text="Pretty good" onClick={() =>  handleRatingClick('Pretty good')}>
                                                                                         <img class="icon-rate" style={{ filter: rating === 'Pretty good' ? 'grayscale(0%)' : 'grayscale(100%)' }} src="/images/icon/i2.png" />
                                                                                         <span class="tooltip-text2">Pretty good</span>
                                                                                     </div>
@@ -2976,7 +2964,10 @@ export default () => {
                                                                                     rows={10}
                                                                                     maxLength={2000}
                                                                                     style={{ resize: 'none' }}
-                                                                                    placeholder={lang["Let us know how you feel"]} spellCheck="false"></textarea>
+                                                                                    placeholder={lang["Let us know how you feel"]} spellCheck="false"
+                                                                                    disabled={dataCaseDetail.status === "Active" ? false : true}
+                                                                                ></textarea>
+
                                                                             </div>
 
                                                                         </div>
@@ -3125,7 +3116,7 @@ export default () => {
                                         </div>
                                         <div class="col-md-4">
                                             <h5 class="mb-2">{lang["case type"]}</h5>
-                                            <select className="form-control" name="role" value={caseUpdate.casetype} onChange={
+                                            <select className="form-control pointer" name="role" value={caseUpdate.casetype} onChange={
                                                 (e) => { setCaseUpdate({ ...caseUpdate, casetype: e.target.value }) }}>
                                                 <option value={"Undefined"}>Undefined</option>
                                                 <option value={"Troubleshooting"}>Troubleshooting</option>
@@ -3227,7 +3218,7 @@ export default () => {
                                         </div>
                                         <div class="col-md-8"
                                         >
-                                            <h5 className="mb-2">{lang["attachment"]}</h5>
+                                            <h5 className="mb-2">{lang["attachment"]} ({lang["maximum"]}: 20MB)</h5>
                                             <div class="d-flex">
                                                 {/* <h5 className="mb-2"></h5>
                                                 <label style={{ marginBottom: 0 }} htmlFor="file-upload-media" class="ml-auto" >

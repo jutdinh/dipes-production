@@ -42,9 +42,9 @@ function replacer(key, value) {
 }
 
 const sampleData = [
-    { "SERIALNUMBER/LOTNUMBER": "SN123456789", "HARDWARE": "1.3", "FIRMWARE": "1.3", "SOFTWARE": "1.3", "QUANTITY": "1.3" },
-    { "SERIALNUMBER/LOTNUMBER": "SN123456789", "HARDWARE": "1.3", "FIRMWARE": "1.3", "SOFTWARE": "1.3", "QUANTITY": "1.3" },
-    { "SERIALNUMBER/LOTNUMBER": "SN123456789", "HARDWARE": "1.3", "FIRMWARE": "1.3", "SOFTWARE": "1.3", "QUANTITY": "1.3" },
+    { "SERIALNUMBER/LOTNUMBER": "SN123456789", "HARDWARE": "1.3", "FIRMWARE": "1.3", "SOFTWARE": "1.3", "QUANTITY": "10" },
+    { "SERIALNUMBER/LOTNUMBER": "SN123456789", "HARDWARE": "1.3", "FIRMWARE": "1.3", "SOFTWARE": "1.3", "QUANTITY": "10" },
+    { "SERIALNUMBER/LOTNUMBER": "SN123456789", "HARDWARE": "1.3", "FIRMWARE": "1.3", "SOFTWARE": "1.3", "QUANTITY": "10" },
     // Thêm các hàng mẫu nếu cần
 ];
 
@@ -59,7 +59,8 @@ function EditableTable(props) {
     const [data, setData] = useState([
         // { id: 1, col1: '', col2: '', col3: '', col4: '', col5: '', isEditing: false },
     ]);
-    console.log("DATA NÈ", data)
+    // console.log("DATA NÈ", data)
+
     //CHọn file
     const fileInputRef = useRef();
     const handleImportClick = () => {
@@ -99,8 +100,8 @@ function EditableTable(props) {
         if (dataStateUpdate) {
             setData(mappedArray)
         }
-
     }, [dataProduct]);
+
     const handleFileUpload = async (event) => {
         const file = event.target.files[0];
         if (!file) return;
@@ -128,14 +129,16 @@ function EditableTable(props) {
                 const dataFile = XLSX.utils.sheet_to_json(ws);
                 newData = updateIdsForNewData(convertKeys(dataFile));
             }
-
+            // console.log(newData)
             // Loại bỏ dữ liệu khởi tạo trống nếu có
+            // console.log(219, data)
             const filteredData = data.filter(item => item.col1 || item.col2 || item.col3 || item.col4 || item.col5);
-            setData([...filteredData, ...newData]);
+            // setData([...filteredData, ...newData]);
+
 
             // Thêm mỗi hàng mới
             for (const row of newData) {
-                const detailId = await addRow(row ,false);
+                const detailId = await addRow(row, false);
                 const updatedRow = { ...row, detailId: detailId, caseId: dataCaseId };
                 await updateRow(updatedRow);
             }
@@ -153,6 +156,13 @@ function EditableTable(props) {
 
     const exportToExcel = (csvData, fileName) => {
         const worksheet = XLSX.utils.json_to_sheet(csvData);
+
+        // Thiết lập độ rộng cột dựa trên độ dài của tiêu đề
+        const colsWidth = Object.keys(csvData[0]).map(key => {
+            return { width: key.length + 5 }; // Cộng thêm 2 để có không gian lề
+        });
+        worksheet['!cols'] = colsWidth;
+
         const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
         const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
         const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
@@ -176,6 +186,7 @@ function EditableTable(props) {
     const [selectedRowId, setSelectedRowId] = useState(null);
 
     const addRow = async (row, shouldUpdateState = true) => {
+        // console.log(219, row)
         const requestBodyProduct = {
             checkCustomer: {
                 username,
@@ -194,20 +205,38 @@ function EditableTable(props) {
                 body: JSON.stringify(requestBodyProduct)
             });
             const resp = await response.json();
-            console.log("Tạo hàng", resp);
+            // console.log("Tạo hàng", resp);
 
             if (resp && resp.Detail && resp.Detail["1DI"]) {
-                const newRow = {
-                    detailId: resp.Detail["1DI"].toString(),
-                    caseId: dataCaseId,
-                    col1: '',
-                    col2: '',
-                    col3: '',
-                    col4: '',
-                    col5: 0,
-                    isEditing: false
-                };
+                let newRow = {}
+                if (row === undefined) {
+                    newRow = {
+                        detailId: resp.Detail["1DI"].toString(),
+                        caseId: dataCaseId,
+                        col1: '',
+                        col2: '',
+                        col3: '',
+                        col4: '',
+                        col5: 0,
+                        isEditing: false
+                    };
+                } else {
+                    newRow = {
+                        detailId: resp.Detail["1DI"].toString(),
+                        caseId: dataCaseId,
+                        col1: row.col1,
+                        col2: row.col2,
+                        col3: row.col3,
+                        col4: row.col4,
+                        col5: row.col5,
+                        isEditing: false
+                    };
+                }
+
+                // console.log(219, newRow)
                 if (shouldUpdateState) {
+                    setData(currentData => [...currentData, newRow]);
+                } else {
                     setData(currentData => [...currentData, newRow]);
                 }
 
@@ -224,7 +253,7 @@ function EditableTable(props) {
 
     const updateRow = (updatedRows) => {
         // const updatedRow = newData.find((row) => row.detailId === rowId);
-        console.log("data", updatedRows)
+        // console.log("data", updatedRows)
 
         const requestBodyProduct = {
 
@@ -241,7 +270,7 @@ function EditableTable(props) {
             "10Q": parseInt(updatedRows.col5)
 
         }
-        console.log("data update product info", requestBodyProduct)
+        // console.log("data update product info", requestBodyProduct)
         fetch(`${proxy()}/api/988C23F3D58E4885A93EEE22D7FE4C6E`, {
             headers: {
                 Authorization: _token,
@@ -254,7 +283,7 @@ function EditableTable(props) {
             .then(resp => {
                 const { success, activated, status, content } = resp;
 
-                console.log("data respon", resp)
+                // console.log("data respon", resp)
             })
     };
 
@@ -360,26 +389,29 @@ function EditableTable(props) {
 
     return (
         <>
-            {dataDetail.status === "Active" &&
-                < div class="d-flex mb-1 mt-3">
-                    <h5>{lang["PRODUCT INFORMATION"]}</h5>
-                    {/* <FontAwesomeIcon icon={faPlusSquare} onClick={() => addRow()} className={`size-24 ml-auto  icon-add pointer `} title='Add Product Information' /> */}
 
-                    <FontAwesomeIcon icon={faPlusSquare} className={`size-24 ml-auto icon-add pointer `} id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title={lang["ADD PRODUCT INFORMATION"]} />
-                    <input type="file" onChange={handleFileUpload} style={{ display: 'none' }} ref={fileInputRef} />
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <li onClick={() => addRow()}><a class="dropdown-item" href="#"><span>Add Row</span></a></li>
-                        <li onClick={handleImportClick}><span class="dropdown-item">Import file</span></li>
-                        <li class="dropdown-submenu dropdown-submenu-left">
-                            <a class="dropdown-item dropdown-toggle" href="#">File Example</a>
-                            <ul class="dropdown-menu first-sub-menu">
-                                <li onClick={() => exportToExcel(sampleData, "ten_file_mau")}><span class="dropdown-item" > Excel</span></li>
-                                <li onClick={() => exportToCSV(sampleData, "ten_file_mau")}><span class="dropdown-item" >CSV</span></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div >
-            }
+            < div class="d-flex mb-1 mt-3">
+                <h5>{lang["PRODUCT INFORMATION"]}</h5>
+                {/* <FontAwesomeIcon icon={faPlusSquare} onClick={() => addRow()} className={`size-24 ml-auto  icon-add pointer `} title='Add Product Information' /> */}
+                {dataDetail.status === "Active" && (
+                    <>
+                        {/* <FontAwesomeIcon icon={faPlusSquare} onClick={() => addRow()} className={`size-24 ml-auto  icon-add pointer `} title='Add Product Information' /> */}
+                        <FontAwesomeIcon icon={faPlusSquare} className={`size-24 ml-auto mb-0-5 icon-add pointer `} id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title={lang["ADD PRODUCT INFORMATION"]} />
+                        <input type="file" onChange={handleFileUpload} style={{ display: 'none' }} ref={fileInputRef} />
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li onClick={() => addRow()}><a class="dropdown-item" href="#"><span>{lang["add row"]}</span></a></li>
+                            <li onClick={handleImportClick}><span class="dropdown-item">{lang["import file"]}</span></li>
+                            <li class="dropdown-submenu dropdown-submenu-left">
+                                <a class="dropdown-item dropdown-toggle" href="#">{lang["sample file"]}</a>
+                                <ul class="dropdown-menu first-sub-menu">
+                                    <li onClick={() => exportToExcel(sampleData, "sample_file_Excel")}><span class="dropdown-item" > Excel</span></li>
+                                    <li onClick={() => exportToCSV(sampleData, "sample_file_Csv")}><span class="dropdown-item" >CSV</span></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </>
+                )}
+            </div >
 
             <div class="table-responsive">
                 {
@@ -387,11 +419,11 @@ function EditableTable(props) {
                         <thead>
                             <tr className="color-tr font-weight-bold-black">
                                 <th class="align-center" style={{ width: "40px" }}>{lang["log.no"]}</th>
-                                <th style={{ width: "250px" }}>SERIAL NUMBER / LOT NUMBER</th>
-                                <th style={{ width: "150px" }}>HARDWARE</th>
-                                <th style={{ width: "150px" }}>FIRMWARE</th>
-                                <th style={{ width: "150px" }}>SOFTWARE</th>
-                                <th style={{ width: "150px" }}>QUANTITY</th>
+                                <th style={{ width: "250px" }}>Serial number / LOT number</th>
+                                <th style={{ width: "150px" }}>Hardware</th>
+                                <th style={{ width: "150px" }}>Firmware</th>
+                                <th style={{ width: "150px" }}>Software</th>
+                                <th style={{ width: "150px" }}>Quantity</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -425,7 +457,6 @@ function EditableTable(props) {
                                                 <span class="table-td-product-pl-6">{row.col1}</span>
                                             )}
                                         </td>
-
                                         <td
                                             className="table-td-product-pl-5"
                                             onClick={() => dataDetail.status === "Active" ? handleRowClick(row.detailId) : null}

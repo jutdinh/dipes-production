@@ -183,6 +183,7 @@ export default (props) => {
         const years = [...new Set(data.headers.map(header => header.split(' ')[1]))];
         const currentYear = new Date().getFullYear();
         const [selectedYear, setSelectedYear] = useState(currentYear.toString());
+    
         const [currentMonth, setSurrentMonth] = useState(new Date().getMonth() + 1);
         const [barData, setBarData] = useState([]);
         // console.log(barData)
@@ -237,8 +238,15 @@ export default (props) => {
             setTotalPrintheadForCurrentMonth(monthPrintheadTotal);
             setTotalPrinterForCurrentMonth(monthPrinterTotal);
 
+            
         }, [barData, selectedYear]);
 
+        //fix tạm lỗi thống kê
+        useEffect(() => {
+            if (!years.includes(selectedYear)) {
+                setSelectedYear(prevYears => [...prevYears, selectedYear]);
+            }
+        }, [selectedYear, years]);
 
         useEffect(() => {
             const filteredData = [];
@@ -604,12 +612,12 @@ export default (props) => {
                                 <ul>
                                     <li>
                                         <span><strong class="f-24"> {totalControllerForCurrentMonth || 0}</strong></span>
-                                        <span class="mt-2">{months[currentMonth-1]}</span>
+                                        <span class="mt-2">{months[currentMonth - 1]}</span>
                                     </li>
                                     <li>
                                         <span><strong class="f-24">  {totalControllerForYear || 0}</strong></span>
                                         <span class="mt-2"> {lang["year"]} {selectedYear}
-                                    
+
                                         </span>
                                     </li>
                                 </ul>
@@ -627,7 +635,7 @@ export default (props) => {
                                 <ul>
                                     <li>
                                         <span><strong class="f-24"> {totalPrintheadForCurrentMonth || 0}</strong></span>
-                                        <span class="mt-2">  {months[currentMonth-1]}</span>
+                                        <span class="mt-2">  {months[currentMonth - 1]}</span>
                                     </li>
                                     <li>
                                         <span><strong class="f-24">  {totalPrintheadForYear || 0}</strong></span>
@@ -647,7 +655,7 @@ export default (props) => {
                                 <ul>
                                     <li>
                                         <span><strong class="f-24"> {totalPrinterForCurrentMonth || 0}</strong></span>
-                                        <span class="mt-2">  {months[currentMonth-1]}</span>
+                                        <span class="mt-2">  {months[currentMonth - 1]}</span>
                                     </li>
                                     <li>
                                         <span><strong class="f-24">  {totalPrinterForYear || 0}</strong></span>

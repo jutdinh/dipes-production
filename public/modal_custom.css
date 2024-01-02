@@ -1642,10 +1642,10 @@ img[class="scaled-hover-target"] {
 }
 
 .dropdown-submenu a::after {
-    transform: rotate(-90deg);
+    transform: rotate(0deg);
     position: absolute;
-    right: 6px;
-    top: .8em;
+    right: 30px;
+    top: 1.46em;
 }
 
 .dropdown-submenu .dropdown-menu {
@@ -1666,4 +1666,9 @@ img[class="scaled-hover-target"] {
 .first-sub-menu {
     width: 12rem;
     left: -122% !important;
+}
+
+
+.dropdown-cus .dropdown-toggle::after {
+   
 }

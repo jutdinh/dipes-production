@@ -425,7 +425,11 @@ export default {
     "case image": "Case image",
     "Warranty Claim": "Warranty claim",
     "Case Suggest": "Case suggest",
-    "Possible Feature": "Possible feature"
+    "Possible Feature": "Possible feature",
+    "maximum": "Maximum",
+    "add row": "Add row",
+    "import file": "Import file",
+    "sample file": "Sample file"
 }
 
 

@@ -43,9 +43,9 @@ function replacer(key, value) {
 }
 
 const sampleData = [
-    { "SERIALNUMBER/LOTNUMBER": "SN123456789", "HARDWARE": "1.3", "FIRMWARE": "1.3", "SOFTWARE": "1.3", "QUANTITY": "1.3" },
-    { "SERIALNUMBER/LOTNUMBER": "SN123456789", "HARDWARE": "1.3", "FIRMWARE": "1.3", "SOFTWARE": "1.3", "QUANTITY": "1.3" },
-    { "SERIALNUMBER/LOTNUMBER": "SN123456789", "HARDWARE": "1.3", "FIRMWARE": "1.3", "SOFTWARE": "1.3", "QUANTITY": "1.3" },
+    { "SERIALNUMBER/LOTNUMBER": "SN123456789", "HARDWARE": "1.3", "FIRMWARE": "1.3", "SOFTWARE": "1.3", "QUANTITY": "10" },
+    { "SERIALNUMBER/LOTNUMBER": "SN123456789", "HARDWARE": "1.3", "FIRMWARE": "1.3", "SOFTWARE": "1.3", "QUANTITY": "10" },
+    { "SERIALNUMBER/LOTNUMBER": "SN123456789", "HARDWARE": "1.3", "FIRMWARE": "1.3", "SOFTWARE": "1.3", "QUANTITY": "10" },
     // Thêm các hàng mẫu nếu cần
 ];
 
@@ -112,34 +112,62 @@ function EditableTable(props) {
 
         const reader = new FileReader();
         reader.onload = (e) => {
+            let newData = []
+            const isValidStructure = (data) => {
+                if (!data || data.length === 0) return false;
+                const expectedKeys = ["SERIALNUMBER/LOTNUMBER", "HARDWARE", "FIRMWARE", "SOFTWARE", "QUANTITY"];
+                return data.every(row => 
+                    expectedKeys.every(key => row.hasOwnProperty(key))
+                );
+            };
+            const isValidCSVStructure = (data) => {
+                if (!data || data.length === 0) return false;
+                const expectedHeaders = ["SERIALNUMBER/LOTNUMBER", "HARDWARE", "FIRMWARE", "SOFTWARE", "QUANTITY"];
+                return expectedHeaders.every((header, index) => header === data[0][index]);
+            };
+
+            // Định nghĩa cấu trúc mẫu mong đợi
+          
+
             if (fileType === 'csv') {
                 Papa.parse(e.target.result, {
                     complete: (result) => {
-                        console.log(80, result.data)
-                        const convertedData = convertArrayToObjects(result.data);
+                         // Kiểm tra cấu trúc dữ liệu ngay sau khi chuyển đổi
+                         
+                        newData = convertArrayToObjects(result.data);
+          
+            console.log(result.data)
 
-                        let newData = convertArrayToObjects(result.data);
+            if (!isValidCSVStructure(result.data)) {
+                alert('Cấu trúc file không đúng với mẫu mong đợi.');
+                return;
+            }
+            
                         newData = updateIdsForNewData(newData);
-
                         // Loại bỏ dữ liệu khởi tạo trống nếu có
                         const filteredData = data.filter(item => item.col1 || item.col2 || item.col3 || item.col4 || item.col5);
-
+            
                         setData([...data, ...newData]);
                         props.onDataUpdate([...data, ...newData]);
-                        console.log('Converted CSV Data:', convertedData);
+                        console.log('Converted CSV Data:', newData);
                         // Xử lý dữ liệu CSV ở đây
                     }
                 });
-            } else if (fileType === 'xlsx' || fileType === 'xls') {
+            }
+             else if (fileType === 'xlsx' || fileType === 'xls') {
                 const bstr = e.target.result;
                 const wb = XLSX.read(bstr, { type: 'binary' });
                 const wsname = wb.SheetNames[0];
                 const ws = wb.Sheets[wsname];
                 const dataFile = XLSX.utils.sheet_to_json(ws);
+                console.log(dataFile)
                 const convertedData = convertKeys(dataFile);
-                let newData = convertKeys(dataFile);
+                newData = convertKeys(dataFile);
                 newData = updateIdsForNewData(newData);
-
+                if (!isValidStructure(dataFile)) {
+                    alert('Cấu trúc file không đúng với mẫu mong đợi.');
+                    return;
+                }
                 // Loại bỏ dữ liệu khởi tạo trống nếu có
                 const filteredData = data.filter(item => item.col1 || item.col2 || item.col3 || item.col4 || item.col5);
 
@@ -157,13 +185,29 @@ function EditableTable(props) {
         }
     }
 
+    // const exportToExcel = (csvData, fileName) => {
+    //     const worksheet = XLSX.utils.json_to_sheet(csvData);
+    //     const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+    //     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    //     const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+    //     FileSaver.saveAs(data, fileName + '.xlsx');
+    // }
     const exportToExcel = (csvData, fileName) => {
         const worksheet = XLSX.utils.json_to_sheet(csvData);
+
+        // Thiết lập độ rộng cột dựa trên độ dài của tiêu đề
+        const colsWidth = Object.keys(csvData[0]).map(key => {
+            return { width: key.length + 5 }; // Cộng thêm 2 để có không gian lề
+        });
+        worksheet['!cols'] = colsWidth;
+
         const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
         const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
         const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
         FileSaver.saveAs(data, fileName + '.xlsx');
     }
+
+
 
     const exportToCSV = (csvData, fileName) => {
         // Tạo tiêu đề cột từ khóa của đối tượng đầu tiên (giả định tất cả các đối tượng có cùng khóa)
@@ -246,14 +290,14 @@ function EditableTable(props) {
                 {/* <FontAwesomeIcon icon={faPlusSquare} onClick={() => addRow()} className={`size-24 ml-auto  icon-add pointer `} title={lang["ADD PRODUCT INFORMATION"]} /> */}
                 <FontAwesomeIcon icon={faPlusSquare} className={`size-24 ml-auto icon-add pointer `} id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title={lang["ADD PRODUCT INFORMATION"]} />
                 <input type="file" onChange={handleFileUpload} style={{ display: 'none' }} ref={fileInputRef} />
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                    <li onClick={() => addRow()}><a class="dropdown-item" href="#"><span>Add Row</span></a></li>
-                    <li onClick={handleImportClick}><span class="dropdown-item">Import file</span></li>
+                <ul class="dropdown-menu " aria-labelledby="navbarDropdownMenuLink">
+                    <li onClick={() => addRow()}><a class="dropdown-item" href="#"><span>{lang["add row"]}</span></a></li>
+                    <li onClick={handleImportClick}><span class="dropdown-item">{lang["import file"]}</span></li>
                     <li class="dropdown-submenu dropdown-submenu-left">
-                        <a class="dropdown-item dropdown-toggle" href="#">File Example</a>
+                        <a class="dropdown-item dropdown-toggle" href="#">{lang["sample file"]}</a>
                         <ul class="dropdown-menu first-sub-menu">
-                            <li onClick={() => exportToExcel(sampleData, "ten_file_mau")}><span class="dropdown-item" > Excel</span></li>
-                            <li onClick={() => exportToCSV(sampleData, "ten_file_mau")}><span class="dropdown-item" >CSV</span></li>
+                            <li onClick={() => exportToExcel(sampleData, "sample_file_Excel")}><span class="dropdown-item" > Excel</span></li>
+                            <li onClick={() => exportToCSV(sampleData, "sample_file_Csv")}><span class="dropdown-item" >CSV</span></li>
 
 
                         </ul>
@@ -270,11 +314,11 @@ function EditableTable(props) {
                         <thead>
                             <tr className="color-tr font-weight-bold-black">
                                 <th class="align-center" style={{ width: "40px" }}>{lang["log.no"]}</th>
-                                <th style={{ width: "250px" }}>SERIAL NUMBER / LOT NUMBER</th>
-                                <th style={{ width: "150px" }}>HARDWARE</th>
-                                <th style={{ width: "150px" }}>FIRMWARE</th>
-                                <th style={{ width: "150px" }}>SOFTWARE</th>
-                                <th style={{ width: "150px" }}>QUANTITY</th>
+                                <th style={{ width: "250px" }}>Serial number / LOT number</th>
+                                <th style={{ width: "150px" }}>Hardware</th>
+                                <th style={{ width: "150px" }}>Firmware</th>
+                                <th style={{ width: "150px" }}>Software</th>
+                                <th style={{ width: "150px" }}>Quantity</th>
                             </tr>
                         </thead>
                         <tbody>

@@ -432,5 +432,10 @@ export default {
 
     "Warranty Claim": "Yêu cầu bảo hành",
     "Case Suggest": "Đề xuất",
-    "Possible Feature": "Tính năng đề xuất"
+    "Possible Feature": "Tính năng đề xuất",
+    "maximum": "Tối đa",
+
+    "add row": "Thêm hàng",
+    "import file": "Nhập tệp tin",
+    "sample file": "Tệp tin mẫu"
 }
