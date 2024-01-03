@@ -242,11 +242,11 @@ export default (props) => {
         }, [barData, selectedYear]);
 
         //fix tạm lỗi thống kê
-        useEffect(() => {
-            if (!years.includes(selectedYear)) {
-                setSelectedYear(prevYears => [...prevYears, selectedYear]);
-            }
-        }, [selectedYear, years]);
+        // useEffect(() => {
+        //     // if (!years.includes(selectedYear)) {
+        //     //     setSelectedYear(prevYears => [...prevYears, selectedYear]);
+        //     // }
+        // }, [selectedYear, years]);
 
         useEffect(() => {
             const filteredData = [];
