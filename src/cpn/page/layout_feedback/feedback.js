@@ -1078,46 +1078,46 @@ export default () => {
             ),
             "11P": mappedArray
         };
-        console.log(936, requestBody)
-        // fetch(`${proxy()}/api/EF381DD02A6A4FF8B087D5B6BCDE36C9`, {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //         Authorization: `${_token}`,
-        //     },
-        //     body: JSON.stringify(requestBody),
-        // })
-        //     .then((res) => res.json())
-        //     .then((resp) => {
-        //         const { Success, content, data, status } = resp;
-        //         console.log(881, resp)
-        //         if (Success) {
-        //             Swal.fire({
-        //                 title: lang["success"],
-        //                 text: lang["success create"],
-        //                 icon: "success",
-        //                 showConfirmButton: false,
-        //                 timer: 2000
-        //             })
-        //             callApiListCase()
-        //             setShowPageAdd(false)
-        //             setShowPageDetail(false)
-        //             setPostCase({ casetype: "Undefined" })
-        //             setSelectedImage(null)
-        //             setAttachMedia([])
+        // console.log(936, requestBody)
+        fetch(`${proxy()}/api/EF381DD02A6A4FF8B087D5B6BCDE36C9`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `${_token}`,
+            },
+            body: JSON.stringify(requestBody),
+        })
+            .then((res) => res.json())
+            .then((resp) => {
+                const { Success, content, data, status } = resp;
+                console.log(881, resp)
+                if (Success) {
+                    Swal.fire({
+                        title: lang["success"],
+                        text: lang["success create"],
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 2000
+                    })
+                    callApiListCase()
+                    setShowPageAdd(false)
+                    setShowPageDetail(false)
+                    setPostCase({ casetype: "Undefined" })
+                    setSelectedImage(null)
+                    setAttachMedia([])
 
-        //             localStorage.setItem('selectedCaseDetail', resp["1CI"]);
+                    localStorage.setItem('selectedCaseDetail', resp["1CI"]);
 
-        //         } else {
-        //             Swal.fire({
-        //                 title: lang["faild"],
-        //                 text: lang["faild create"],
-        //                 icon: "error",
-        //                 showConfirmButton: true,
-        //                 cancelButtonText: lang["btn.cancel"],
-        //             })
-        //         }
-        //     });
+                } else {
+                    Swal.fire({
+                        title: lang["faild"],
+                        text: lang["faild create"],
+                        icon: "error",
+                        showConfirmButton: true,
+                        cancelButtonText: lang["btn.cancel"],
+                    })
+                }
+            });
 
     };
     // Cập nhật Case
@@ -2287,7 +2287,7 @@ export default () => {
                                         <div class="full graph_head_cus min-h-58">
                                             <div class="heading1 margin_0 d-flex">
                                                 <h5 class="margin-bottom-0">{lang["new case"]}</h5>
-                                                <FontAwesomeIcon icon={faPaperPlane} onClick={submitPostCase} className={`size-24 mt-2 ml-auto icon-add-production pointer `} title={lang["submit case"]} />
+                                                <FontAwesomeIcon icon={faPaperPlane} onClick={(e) => submitPostCase(e)} className={`size-24 mt-2 ml-auto icon-add-production pointer `} title={lang["submit case"]} />
                                                 {/* <FontAwesomeIcon icon={faPaperPlane} data-toggle="modal" className={`size-24 mt-2 ml-auto icon-add-production pointer `} data-target="#captcha" title={lang["submit case"]} /> */}
                                             </div>
                                         </div>
