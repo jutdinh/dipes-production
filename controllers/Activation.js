@@ -71,6 +71,7 @@ class ActivationClass extends Controller {
         const context = { success: true }
         if (verified) {
             const machineId = await this.getMachineID()
+            console.log(machineId)
             context.machineId = machineId
             const key = await this.#__keys.find({ MAC_ADDRESS: machineId })
             if (key) {

@@ -226,6 +226,8 @@ module.exports = (io, socket) => {
     socket.on("/dipe-production-update-data", async (payload) => {
         const { data, api_id } = payload;
         const apis = await Database.selectAll('apis', { api_id })
+        
+
         if (data && apis && apis[0]) {
             const table_id = apis[0].tables[0]
             const { calculates, statistic } = apis[0]
@@ -300,7 +302,7 @@ module.exports = (io, socket) => {
                     statistics.push(statisRecord)
                 })
             }
-            socket.to(api_id).emit("/dipe-production-update-data", { data: record, api_id, key, statistics })
+            socket.broadcast.emit("/dipe-production-update-data", { data: record, api_id, key, statistics })
         }
     })
 
