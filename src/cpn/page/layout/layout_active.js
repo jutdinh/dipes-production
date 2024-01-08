@@ -141,18 +141,18 @@ export default (props) => {
     function checkErrors(data, errors) {
         let errorMessages = {
             'ERROR0': lang["ERROR0"],
-            'ERROR1':  lang["ERROR1"],
-            'ERROR2':  lang["ERROR2"],
-            'ERROR3':  lang["ERROR3"]
+            'ERROR1': lang["ERROR1"],
+            'ERROR2': lang["ERROR2"],
+            'ERROR3': lang["ERROR3"]
         };
-    
+
         let resultErrors = [];
-    
+
         // Kiểm tra lỗi của controller
         if (data?.controller !== null && errors[0] !== 'ERROR0') {
             resultErrors.push(`Controller: ${errorMessages[errors[0]] || lang["Unknown error"]}`);
         }
-    
+
         // Kiểm tra lỗi của printhead
         if (data?.printhead !== null) {
             data?.printhead?.forEach((head, index) => {
@@ -162,7 +162,7 @@ export default (props) => {
                 }
             });
         }
-    
+
         // Kiểm tra lỗi của printer
         if (data?.printer !== null && data?.controller === null && data?.printhead === null) {
             errors.forEach((error, index) => {
@@ -171,12 +171,12 @@ export default (props) => {
                 }
             });
         }
-    
+
         return resultErrors;
     }
-    
-    
-    
+
+
+
 
     let errorList = checkErrors(data, error);
     // console.log(errorList)
@@ -497,9 +497,12 @@ export default (props) => {
             .then(res => res.json())
             .then(res => {
 
-                const { data, success, error, content } = res;
+                const { data, success, error, content, message} = res;
                 // console.log(res)
                 if (success) {
+
+                    
+
                     if (data && Object.keys(data).length > 0) {
                         setData(data)
                         setError(error)
@@ -527,7 +530,16 @@ export default (props) => {
                         .catch(error => {
                             // Xử lý lỗi nếu cần
                         });
+                } else {
+                    Swal.fire({
+                        title: lang["error"],
+                        text: message,
+                        icon: "error",
+                        showConfirmButton: true,
+
+                    })
                 }
+
                 // socket.emit("/dipe-production-new-data-added", dataSubmit);
             })
             .catch(error => {

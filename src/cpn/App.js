@@ -78,12 +78,6 @@ function App() {
 
 
 
-
-
-
-
-
-
 // useEffect(() => {
 //   const token = localStorage.getItem("_token") ? localStorage.getItem("_token") : ""
 //   console.log("TOKEN CHANGE: ", token.slice(token.length - 20, token.length))
@@ -261,7 +255,7 @@ const expirationDate = functions.getTokenExpirationDate(_token);
         <Route exac path="/page/:url/apis/api/:id_str/input_info" element={< Navigation Child={InputPost} />} />
         <Route path="/page/:url/put/api/:id_str/*" element={< Navigation Child={InputPut} />} />
         <Route path="/page/:url/detail/:id_str/*" element={< Navigation Child={Detail} />} />
-        <Route exac path="/page/:url" element={< Navigation Child={Fetch} />} />
+        <Route path="/page/:url" element={< Navigation Child={Fetch} />} />
         <Route exac path="/page/:url/import" element={< Navigation Child={ImportData} />} />
 
         <Route exac path="/technical" element={< Navigation Child={FeedBack} />} />

@@ -69,7 +69,7 @@ export default () => {
                      <span>{lang["home"]}</span>
                   </NavLink>
                </li> */}
-               {user.role === "ad" || user.role === "uad" ? (
+               { user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/" activeClassName="nav-active">
                         <i class="fa fa-upload size-24 icon-import-nav"></i>
@@ -77,7 +77,7 @@ export default () => {
                      </NavLink>
                   </li>
                ) : null}
-               {user.role === "ad" || user.role === "uad" ? (
+               { user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/active" activeClassName="nav-active">
                         <i class="fa fa-key purple_color3"></i>
@@ -130,13 +130,13 @@ export default () => {
                ) : null}
                {/* Feedback */}
 
-               {user.role === "pd" ? (
+               {/* {user.role === "pd" ? (
                   <>
                      {pages && pages.map((ui, index) => (
                         ui.status && ui.title === "HOME" ? (
                            <li key={index} className="navbar-item">
                               <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
-                                 {/* <i class="fa fa-home"></i> */}
+                                
                                  <FontAwesomeIcon icon={faHouse} className={`size-20 mr-3`} />
                                  <span class ={!sideBar && "navbar-close"}>{ui.title}</span>
                               </NavLink>
@@ -146,7 +146,7 @@ export default () => {
 
                      <li className="navbar-item">
                         <NavLink to="/technical" activeClassName="nav-active">
-                           {/* <i class=" fa fa-gears icon-technical"></i> */}
+                          
                            <FontAwesomeIcon icon={faUsersGear} className={`icon-technical size-20 mr-3`} />
                            <span >TECHNICAL SERVICE</span>
                         </NavLink>
@@ -154,7 +154,7 @@ export default () => {
 
                      <li>
                         <a href="#dashboard" onClick={toggleMenu} aria-expanded="false" >
-                           {/* <i class="fa fa-dashboard yellow_color"></i> */}
+                         
                            <FontAwesomeIcon icon={faLockOpen} className={`yellow_color size-20 mr-3`} />
                            <span >ONLINE ACTIVATION</span>
                            {isExpanded
@@ -164,26 +164,23 @@ export default () => {
                         </a>
                         <ul className={`collapse list-unstyled ${isExpanded ? 'show' : ''} scrollable`} id="dashboard">
                            {pages && pages.map((ui, index) => (
-
                               ui.status && ui.title !== "HOME" ? (
                                  <li key={index} className="navbar-item">
                                     <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
-                                       {/* <i class="fa fa-newspaper-o"></i> */}
+                                    
                                        <FontAwesomeIcon icon={faNewspaper} className={`size-20 mr-3 `} />
                                        <span>{ui.title}</span>
                                     </NavLink>
                                  </li>
                               ) : null
                            ))}
-                          
                         </ul>
-                        
                      </li>
-
                   </>
                ) : null}
+                */}
                {/* Active online */}
-               {/* <div class={`scrollable_user ${user.role === "pd" ? 'no_shadow' : ''}`}>
+               <div class={`scrollable_user ${user.role === "pd" ? 'no_shadow' : ''}`}>
                   {user.role === "pd" ? (
                      <li>
                         {pages && pages.map(ui => (
@@ -198,8 +195,7 @@ export default () => {
                         ))}
                      </li>
                   ) : null}
-               </div> */}
-
+               </div>
                {user.role === "uad" ? (
                   <>
                      <li className="navbar-item">

@@ -65,7 +65,7 @@ export default (props) => {
     useEffect(() => {
 
         socket.on("/dipe-production-new-data-added", newData => {
-            console.log(newData)
+            // console.log(newData)
             // Nếu đang ở trạng thái không search
             if (Object.keys(newData).length !== 0 && Object.keys(searchValues).length === 0) {
                 // Tăng tổng số kết quả lên 1
@@ -79,7 +79,7 @@ export default (props) => {
                     });
                 }
             } else if (Object.keys(searchValues).length !== 0) {
-                console.log(newData)
+                // console.log(newData)
             }
         });
         return () => {
@@ -87,7 +87,7 @@ export default (props) => {
         }
     }, [searchValues, totalPages, currentPage, apiData]);
 
-    console.log(searchValues)
+    // console.log(searchValues)
 
     //Sửa
     useEffect(() => {
@@ -106,7 +106,7 @@ export default (props) => {
                     ...newData.data
                 };
                 setApiData(updatedData);
-                console.log(apiData)
+                // console.log(apiData)
             }
         });
         return () => {
@@ -117,7 +117,7 @@ export default (props) => {
     // Xóa  
     useEffect(() => {
         socket.on("/dipe-production-delete-data", (newData) => {
-            console.log(newData)
+            // console.log(newData)
             // const matchesAllKeys = (item, obj) => {
             //     return Object.entries(obj).every(([key, value]) => item[key] === value);
             // };
@@ -169,7 +169,7 @@ export default (props) => {
             // exact: true
         }
 
-        console.log("ĐÂY LÀ BODY:", searchBody)
+        // console.log("ĐÂY LÀ BODY:", searchBody)
 
         fetch(`${proxy()}${page.components?.[0]?.api_search}`, {
             method: "POST",
@@ -184,7 +184,7 @@ export default (props) => {
             .then(res => {
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
-                console.log(74, res)
+                // console.log(74, res)
                 if (success) {
                     setApiData(data.filter(record => record != undefined));
 
@@ -608,7 +608,7 @@ export default (props) => {
         const { components } = page;
         const cpn = components[0]
         const { api_detail } = cpn;
-        console.log(cpn)
+        // console.log(cpn)/
         if (api_detail != undefined) {
             const id_str = api_detail.split('/')[2]
 
@@ -630,13 +630,15 @@ export default (props) => {
                     })
             })
             const { success, data } = response;
+            console.log(response)
             if (success) {
                 const { params } = data;
                 const stringifiedParams = params.map(param => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                openTab(`/page/${url}/detail/${id_str}/${stringifiedParams}?myParam=${url}`)
+                console.log(stringifiedParams)
+                // openTab(`/page/${url}/detail/${id_str}/${stringifiedParams}?myParam=${url}`)
 
             }
         } else {

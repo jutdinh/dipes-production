@@ -183,7 +183,7 @@ export default () => {
         const url = window.location;
         const rawParams = url.pathname.split(`/${id_str}/`)[1];
         const paramsList = rawParams.split('/');
-        console.log(data)
+        // console.log(data)
 
         if (!emailError && !phoneError && nullCheck(data)) {
             fetch(`${proxy()}/ui/${id_str}/${paramsList.join('/')}`, {
@@ -197,7 +197,7 @@ export default () => {
 
                 .then(res => res.json())
                 .then(res => {
-                    console.log(res)
+                    // console.log(res)
                     if (res.primaryConflict || res.foreignConflict || res.typeError) {
                         handleAPIErrors(res);
                     } else {

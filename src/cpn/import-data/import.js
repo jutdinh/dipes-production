@@ -56,7 +56,7 @@ export default () => {
             const validPrivileges = ["uad", "ad"];
     
             if (validPrivileges.indexOf(role) === -1) {
-                window.location = "/404-notfound";
+                window.location = "/page/thong-ke-thang-nam";
             }
         } else {
 

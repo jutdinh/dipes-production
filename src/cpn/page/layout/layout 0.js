@@ -64,7 +64,7 @@ export default (props) => {
         }
     }, [dataStatis]);
 
-    console.log(apiDataName)
+    // console.log(apiDataName)
 
 
     // Client side
@@ -227,7 +227,7 @@ export default (props) => {
             .then(res => res.json())
             .then(res => {
                 const { success, content, data, count, fields, limit, statistic } = res;
-                console.log(res)
+                // console.log(res)
                 setApiDataName(fields);
                 if (data && data.length > 0) {
                     setApiData(data.filter(record => record != undefined));
@@ -735,6 +735,7 @@ export default (props) => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
+                console.log(stringifiedParams)
                 openTab(`/page/${url}/detail/${id_str}/${stringifiedParams}?myParam=${url}`)
 
             }

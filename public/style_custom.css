@@ -366,6 +366,7 @@
 
 .icon_info ul.user_profile_dd>li {
     max-width: 350px;
+    min-width: 155px;
     border-radius: 0;
     background: #0066cc;
     margin: 0;
@@ -682,7 +683,7 @@
 }
 
 .scrollable {
-    max-height: 200px;
+    max-height: 415px;
     overflow-y: auto;
 }
 
@@ -1512,7 +1513,7 @@ table tr {
     border: none;
     padding: 5px 10px;
     cursor: pointer;
-    margin: 0px 0px 6px 0px;
+    margin: 0px 0px 10px 0px;
 }
 
 .disabled {

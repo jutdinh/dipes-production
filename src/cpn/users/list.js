@@ -318,7 +318,7 @@ export default (props) => {
                             <h4 class="ml-1">{lang["accounts manager"]}</h4>
 
                             {statusActive ? (
-                                <button type="button" class="btn btn-primary custom-buttonadd ml-auto mr-4" data-toggle="modal" data-target="#quoteForm">
+                                <button style={{marginTop: 0 }}type="button" class="btn btn-primary custom-buttonadd ml-auto mr-4" data-toggle="modal" data-target="#quoteForm">
                                     <i class="fa fa-plus"></i>
                                 </button>
                                 // <div class="ml-auto pointer" data-toggle="modal" data-target="#quoteForm" title="Add">
@@ -562,10 +562,10 @@ export default (props) => {
                                                                             <div class="bottom_list">
                                                                                 <div class="right_button">
                                                                                     <button type="button" class="btn btn-primary" onClick={() => handleUpdateUser(item)} data-toggle="modal" data-target="#myEditmodal">
-                                                                                        <i class="fa fa-edit"></i>
+                                                                                        <i class="fa fa-edit size-18"></i>
                                                                                     </button>
                                                                                     <button type="button" class="btn btn-danger" onClick={() => handleDeleteUser(item)}>
-                                                                                        <i class="fa fa-trash-o"></i>
+                                                                                        <i class="fa fa-trash-o size-18"></i>
                                                                                     </button>
                                                                                 </div>
                                                                             </div>
@@ -614,10 +614,10 @@ export default (props) => {
                                                                             <div class="bottom_list">
                                                                                 <div class="right_button">
                                                                                     <button type="button" class="btn btn-primary" onClick={() => handleUpdateUser(item)} data-toggle="modal" data-target="#myEditmodal">
-                                                                                        <i class="fa fa-edit"></i>
+                                                                                        <i class="fa fa-edit size-18"></i>
                                                                                     </button>
                                                                                     <button type="button" class="btn btn-danger" onClick={() => handleDeleteUser(item)}>
-                                                                                        <i class="fa fa-trash-o"></i>
+                                                                                        <i class="fa fa-trash-o size-18"></i>
                                                                                     </button>
                                                                                 </div>
                                                                             </div>
@@ -666,10 +666,10 @@ export default (props) => {
                                                                                 {item.username !== auth.username && item.role !== auth.role && (
                                                                                     <div class="right_button">
                                                                                         <button type="button" class="btn btn-primary" onClick={() => handleUpdateUser(item)} data-toggle="modal" data-target="#myEditmodal">
-                                                                                            <i class="fa fa-edit"></i>
+                                                                                            <i class="fa fa-edit size-18"></i>
                                                                                         </button>
                                                                                         <button type="button" class="btn btn-danger" onClick={() => handleDeleteUser(item)}>
-                                                                                            <i class="fa fa-trash-o"></i>
+                                                                                            <i class="fa fa-trash-o size-18"></i>
                                                                                         </button>
                                                                                     </div>
                                                                                 )}

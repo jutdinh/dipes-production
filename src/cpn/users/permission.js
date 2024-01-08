@@ -409,7 +409,7 @@ export default (props) => {
                                                                             <td class="align-center">
                                                                                 {/* <i class="fa fa-edit icon-edit pointer size-24" onClick={() => handleUpdateUser(profile)} data-toggle="modal" data-target="#myEditmodal"></i>
                                                                         <i class="fa fa-trash-o icon-delete pointer  size-24 ml-2" onClick={() => handleDeleteUser(profile)}></i> */}
-                                                                                <button class="btn btn-primary" onClick={() => redirectTo(profile)}>{lang["viewdetail"]}</button>
+                                                                                <button style={{marginTop: 0}} class="btn btn-primary" onClick={() => redirectTo(profile)}>{lang["viewdetail"]}</button>
                                                                             </td>
                                                                         </tr>
                                                                     ))}
