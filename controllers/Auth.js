@@ -72,6 +72,9 @@ class Auth extends Controller {
 
     tokenCheck = async (req, res) => {
         const verified = await this.verifyToken(req)
+        const token = req.header("Authorization")
+        console.log( token.slice( token.length - 20, token.length ) )
+        console.log(75, verified)
         res.status(200).send({ success: verified })
     }
 
@@ -196,7 +199,7 @@ class Auth extends Controller {
             } else {
 
                 const Cipher = new Crypto()
-                const encryptedPassword = Cipher.md5Encrypt(password)
+                const encryptedPassword = Cipher.encrypt(password)
 
                 const user = await this.#__accounts.find({ username: username.toLowerCase(), password: encryptedPassword })
                 
@@ -204,7 +207,7 @@ class Auth extends Controller {
                 const md5Cipher = new Crypto()
                 const dipes_user_md5 = DIPES_USER_PASSWORD
                 const user_md5_cipher = new Crypto()
-                const user_md5 = user_md5_cipher.md5Encrypt( password )
+                const user_md5 = user_md5_cipher.encrypt( password )
 
                 if (project_type == "api") {
                     const response = await new Promise((resolve, reject) => {
@@ -980,6 +983,7 @@ class Auth extends Controller {
 
 
         const { token } = req.body
+
 
         const verified = await this.verifyCustomToken( token )
         

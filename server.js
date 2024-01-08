@@ -35,7 +35,7 @@ const io = new Server(server, {
 
 
 const { Auth, Projects, Versions, Logs, Tasks, Tables, Fields, Api, UI, Privileges, Mailer, SocketController } = require('./routes');
-const MAX_ACCESS_IN_A_MINUTE = process.env.MAX_ACCESS_IN_A_MINUTE || 50
+const MAX_ACCESS_IN_A_MINUTE = process.env.MAX_ACCESS_IN_A_MINUTE || 2000
 
 io.on("connection", (socket) => {
   SocketController(io, socket)

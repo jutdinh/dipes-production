@@ -125,7 +125,7 @@ class ConsumeApi extends Controller {
                     case "get":
                         await this.GET()
                         const end = new Date()
-                        // console.log("PROCCESS IN : " + `${end - start} `)
+                        // // console.log("PROCCESS IN : " + `${end - start} `)
                         break;
 
                     case "post":
@@ -246,7 +246,7 @@ class ConsumeApi extends Controller {
                 });
 
                 const apiTables = api.tables.map(table_id => this.tables.find(tb => tb.id == table_id));
-                // // console.log(api)
+                // // // console.log(api)
                 let isGranted;
 
                 const { project_type } = project
@@ -257,7 +257,7 @@ class ConsumeApi extends Controller {
                             if (isGranted) {
                                 await this.GET_UI()
                                 const end = new Date()
-                                // console.log("PROCCESS IN : " + `${end - start} `)
+                                // // console.log("PROCCESS IN : " + `${end - start} `)
                             } else {
                                 this.Forbidden()
                             }
@@ -268,7 +268,7 @@ class ConsumeApi extends Controller {
                             if (isGranted) {
                                 await this.POST_UI()
                                 const end = new Date()
-                                // console.log("PROCCESS IN : " + `${end - start} `)
+                                // // console.log("PROCCESS IN : " + `${end - start} `)
                             } else {
                                 this.Forbidden()
                             }
@@ -280,7 +280,7 @@ class ConsumeApi extends Controller {
                             if (isGranted) {
                                 await this.PUT_UI()
                                 const end = new Date()
-                                // console.log("PROCCESS IN : " + `${end - start} `)
+                                // // console.log("PROCCESS IN : " + `${end - start} `)
                             } else {
                                 this.Forbidden()
                             }
@@ -290,7 +290,7 @@ class ConsumeApi extends Controller {
                             if (isGranted) {
                                 await this.DELETE_UI()
                                 const end = new Date()
-                                // console.log("PROCCESS IN : " + `${end - start} `)
+                                // // console.log("PROCCESS IN : " + `${end - start} `)
                             } else {
                                 this.Forbidden()
                             }
@@ -988,16 +988,16 @@ class ConsumeApi extends Controller {
             }
         ]
 
-        // // console.log(string)
+        // // // console.log(string)
 
         for (let i = 0; i < fomulars.length; i++) {
-            // // console.log(string)
+            // // // console.log(string)
             const { fomular, prefix, postfix } = fomulars[i]
             const splitted = string.split(fomular)
 
             if (splitted.length > 1) {
                 for (let h = 1; h < splitted.length; h++) {
-                    // // console.log(splitted[h-1])
+                    // // // console.log(splitted[h-1])
                     splitted[h - 1] += prefix
                     const post = splitted[h]
                     let newPost = ""
@@ -1013,15 +1013,15 @@ class ConsumeApi extends Controller {
                     splitted[h] = newPost
                 }
             }
-            // // console.log(911, splitted)        
+            // // // console.log(911, splitted)        
             string = splitted.join('')
-            // // console.log(913, string)
+            // // // console.log(913, string)
 
             if (i == fomulars.length - 1) {
                 let dateSplitted = string.split('new Date')
                 for (let k = 0; k < dateSplitted.length; k++) {
                     const piece = dateSplitted[k]
-                    // console.log(piece)
+                    // // console.log(piece)
                     if (piece.length > 2) {
                         let pieceCopy = ""
                         let loopBreak = false
@@ -1176,11 +1176,11 @@ class ConsumeApi extends Controller {
                         const currentDataLength = redundantPartition.total
                         data_counter += currentDataLength;
                         tmpDataFrom -= currentDataLength
-                        // // console.log(630, data_counter, found, finale_raw_data_counter, tmpDataFrom )
+                        // // // console.log(630, data_counter, found, finale_raw_data_counter, tmpDataFrom )
                         if (tmpDataFrom < 0 && !found) {
                             const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { position: partitions[i].position })
                             const data = redundantPartitionData.slice(redundantPartitionData.length + tmpDataFrom, redundantPartitionData.length)
-                            // // console.log(636, redundantPartitionData.length + tmpDataFrom, redundantPartitionData.length)
+                            // // // console.log(636, redundantPartitionData.length + tmpDataFrom, redundantPartitionData.length)
                             redundantPartitions.push({
                                 position: partitions[i].position,
                                 total: data.length,
@@ -1193,7 +1193,7 @@ class ConsumeApi extends Controller {
 
                         if (finale_raw_data_counter < dataPerBreak && found) {
                             finale_raw_data_counter += redundantPartition.total
-                            // // console.log(656, finale_raw_data_counter)
+                            // // // console.log(656, finale_raw_data_counter)
 
                             const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { position: partitions[i].position })
 
@@ -1212,10 +1212,10 @@ class ConsumeApi extends Controller {
 
             // redundantPartitions.map(par => {
             //     const { position, total, data } = par;
-            //     // console.log()
-            //     // console.log(position)
-            //     // console.log(total)
-            //     // console.log(data)
+            //     // // console.log()
+            //     // // console.log(position)
+            //     // // console.log(total)
+            //     // // console.log(data)
             // })
 
             if (redundantPartitions.length > 0) {
@@ -1314,7 +1314,7 @@ class ConsumeApi extends Controller {
 
 
                 const endTime = new Date()
-                // console.log("API CALL IN " + `${endTime - startTime}`)
+                // // console.log("API CALL IN " + `${endTime - startTime}`)
                 this.res.status(200).send({
                     msg: "Successfully retrieved data",
                     success: true,
@@ -1353,11 +1353,11 @@ class ConsumeApi extends Controller {
                 await Cache.setData(`${tables[0].table_alias}-periods`, [])
             }
             const end = new Date()
-            // console.log(`GET CACHE PARTITION IN: ${end - start}`)
+            // // console.log(`GET CACHE PARTITION IN: ${end - start}`)
         }
 
         const indices = this.generatePeriodIndex(fromIndex)
-        // // console.log(indices)
+        // // // console.log(indices)
         let paramQueries = [];
 
         if (params.length > 0) {
@@ -1967,7 +1967,7 @@ class ConsumeApi extends Controller {
 
 
     makeAutoIncreament = async (table_alias, pattern, distance = 0) => {
-        // console.log(table_alias)
+        // // console.log(table_alias)
         const auto_id = await Database.getAutoIncrementId(`${table_alias}-id`)
         const number = auto_id + distance
         let result = pattern
@@ -2131,7 +2131,7 @@ class ConsumeApi extends Controller {
                 queries.push(Database.selectAll(`${thatTable.table_alias}`, query))
             }
             const allKeys = await Promise.all(queries)
-            // // console.log(allKeys)
+            // // // console.log(allKeys)
             const primaryRecord = allKeys[0];
 
             const foreignRecords = allKeys.slice(1, allKeys.length)
@@ -2234,11 +2234,11 @@ class ConsumeApi extends Controller {
                     }
                     for (let i = 0; i < statistic.length; i++) {
                         const statis = statistic[i]
-                        // // console.log(statis)
+                        // // // console.log(statis)
                         const { fomular_alias, field, group_by, fomular } = statis;
                         const stringifyGroupKey = group_by.map(group => data[group]).join("_")
 
-                        // // console.log(1741, stringifyGroupKey)
+                        // // // console.log(1741, stringifyGroupKey)
 
                         const statisField = statisSum[fomular_alias];
                         if (!statisField) {
@@ -2416,7 +2416,7 @@ class ConsumeApi extends Controller {
                 }
             }
             tearedBody.push(tearedObject)
-            // // console.log(tearedBody)
+            // // // console.log(tearedBody)
         }
 
         if (!typeError) {
@@ -2593,10 +2593,10 @@ class ConsumeApi extends Controller {
                         })
 
                         const originDatas = await Database.selectAll(table_alias, updateQuery);
-                        // // console.log(updateQuery)
+                        // // // console.log(updateQuery)
 
                         const slaves = this.detectAllSlave(table)
-                        // console.log(`${table.table_name} => `, slaves.map(slave => slave.table_name).join(', '))
+                        // // console.log(`${table.table_name} => `, slaves.map(slave => slave.table_name).join(', '))
 
                         foreign_keys.map(key => {
                             const { field_id, table_id, ref_field_id } = key;
@@ -2616,7 +2616,7 @@ class ConsumeApi extends Controller {
                         // }
                         const targetRecords = await Database.selectAll(table_alias, updateQuery)
 
-                        // // console.log(targetRecords)
+                        // // // console.log(targetRecords)
                         targetRecords.map(record => {
                             delete record.position
                         })
@@ -2641,10 +2641,10 @@ class ConsumeApi extends Controller {
                         const statistics = statis.statistic.valueOrNot()
                         const calculates = statis.calculates.valueOrNot()
 
-                        // // console.log(data)
+                        // // // console.log(data)
                         for (let br = 0; br < originDatas.length; br++) {
                             const originData = originDatas[br];
-                            // // console.log(originData)
+                            // // // console.log(originData)
 
                             if (calculates && calculates.length > 0) {
                                 const keys = Object.keys(data)
@@ -2926,7 +2926,7 @@ class ConsumeApi extends Controller {
         const indexQuery = {}
         const primaryFields = this.getFields(primary_key)
 
-        // console.log(2424, data)
+        // // console.log(2424, data)
 
         const recordIndex = primaryFields.map(field => query[field.fomular_alias])
 
@@ -2979,7 +2979,7 @@ class ConsumeApi extends Controller {
                     return Database.selectAll(foreignTable.table_alias, { [`${ref.fomular_alias}`]: (data[field.fomular_alias] ? data[field.fomular_alias] : data[ref.fomular_alias]) })
                 }
             }))
-            // console.log(2476, foreignData)
+            // // console.log(2476, foreignData)
             let areForeignDataValid = true
 
             for (let i = 0; i < foreignData.length; i++) {
@@ -2995,7 +2995,7 @@ class ConsumeApi extends Controller {
             }
 
             if (areForeignDataValid) {
-                // console.log(2490, data)
+                // // console.log(2490, data)
                 // const partitionData = partition.data;
                 await Database.update(`${table_alias}`, formatedQuery, { ...data })
 
@@ -3003,10 +3003,10 @@ class ConsumeApi extends Controller {
                 for (let i = 0; i < slaves.length; i++) {
                     const startAt = new Date()
                     const slave = slaves[i]
-                    // console.log(2498, data)
+                    // // console.log(2498, data)
                     await Database.update(`${slave.table_alias}`, formatedQuery, { ...data })
                     const endAt = new Date()
-                    // console.log(`Synchorized data in table ${slave.table_name} costs: ${endAt - startAt}ms`)
+                    // // console.log(`Synchorized data in table ${slave.table_name} costs: ${endAt - startAt}ms`)
                 }
 
 
@@ -3111,7 +3111,7 @@ class ConsumeApi extends Controller {
                             }
                         }
                     }
-                    // console.log(2605, statisSum)
+                    // // console.log(2605, statisSum)
                     await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
                 }
 
@@ -3188,7 +3188,7 @@ class ConsumeApi extends Controller {
             const slaves = this.detectAllSlave(table)
             const slaveryBoundRecords = await Promise.all(slaves.map(slave => Database.count(slave.table_alias, formatedQuery)))
             const isBoundBySlaves = slaveryBoundRecords.find(count => count > 0)
-            // // console.log(slaveryBoundRecords)
+            // // // console.log(slaveryBoundRecords)
             if (!isBoundBySlaves) {
 
                 const sumerize = await Table.__findCriteria__({ position: "sumerize" })
@@ -3566,7 +3566,7 @@ class ConsumeApi extends Controller {
 
     REMOTE_GET = async () => {
         const remoteURL = this.generateRemoteURL()
-        // console.log(remoteURL)
+        // // console.log(remoteURL)
         const context = {
             success: true,
             data: [],
@@ -3654,10 +3654,13 @@ class ConsumeApi extends Controller {
 
         for( let i = 0 ; i < apiExternalBody.length ; i++ ){
             const field = apiExternalBody[i];
+            // console.log(field)
             const { fomular_alias, default_value } = field;
             body = this.setPropertyByPath( body, fomular_alias.split('.'), default_value )
         }
         
+        
+
         const response = await new Promise((resolve, reject) => {
             fetch(remoteURL, {
                 method: "POST",
@@ -3680,7 +3683,7 @@ class ConsumeApi extends Controller {
         })
 
 
-
+        
 
 
         const statistic = this.API.statistic.valueOrNot()
@@ -3997,12 +4000,12 @@ class ConsumeApi extends Controller {
             const statistic = []
             if (require_count) {
                 count = await Database.count(table.table_alias, formatedQuery)
-                // console.log("REQ COUNT", count)
+                // // console.log("REQ COUNT", count)
             }
 
             if (require_statistic) {
                 count = await Database.count(table.table_alias, formatedQuery)
-                // console.log("REQ STATIS", count)
+                // // console.log("REQ STATIS", count)
 
                 if (statistics.length > 0) {
 
@@ -4224,7 +4227,7 @@ class ConsumeApi extends Controller {
     //         ).toArray()
 
     //         const endTime = new Date()
-    //         // console.log(`FILTING DATA IN ${ endTime - startTime }`)
+    //         // // console.log(`FILTING DATA IN ${ endTime - startTime }`)
 
     //         let indexCounter = 0
     //         for( let i = 0 ; i < filtedData.length ; i++ ){
@@ -4312,10 +4315,10 @@ class ConsumeApi extends Controller {
                     const privilege = tablePrivileges[j]
                     for (let h = 0; h < rights.length; h++) {
                         const right = rights[h]
-                        // // console.log(tables[i].table)
-                        // // console.log(privilege[right])
-                        // // console.log(privilege)
-                        // // console.log(right)
+                        // // // console.log(tables[i].table)
+                        // // // console.log(privilege[right])
+                        // // // console.log(privilege)
+                        // // // console.log(right)
                         if (!privilege[right]) {
                             isGranted = false
                         }
@@ -4346,7 +4349,7 @@ class ConsumeApi extends Controller {
             const table = tables.find(tb => tb.id == table_id)
 
             if (table && req.method.toLowerCase() == "post") {
-                // // console.log(3220, privileges)
+                // // // console.log(3220, privileges)
                 const tbFields = fields.filter(f => f.table_id == table_id)
 
                 let api = await this.#__apis.find({ api_id })
@@ -5011,7 +5014,7 @@ class ConsumeApi extends Controller {
 
             sumerize.total += data.length
 
-            // // console.log(sumerize)
+            // // // console.log(sumerize)
 
             const calculates = this.API.calculates.valueOrNot()
             const statistics = this.API.statistic.valueOrNot()

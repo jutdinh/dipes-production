@@ -68,7 +68,7 @@ class Controller {
 
     makeToken = ( data = {}) => { // new
         
-        const token = jwt.sign(data, this.tokenKey, { expiresIn: '1h' });
+        const token = jwt.sign(data, this.tokenKey);
         return token;
     }
 
