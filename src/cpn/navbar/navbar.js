@@ -4,6 +4,8 @@ import { NavLink } from "react-router-dom";
 import $ from 'jquery'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMaximize, faMinimize, faDownload, faCompress, faChartBar, faUsersGear, faHouse, faLockOpen, faCaretRight, faCaretLeft, faChevronUp, faChevronDown, faPlusCircle, faCirclePlus, faCirclePlay, faRectangleXmark, faCircle, faCircleXmark, faAngleDown, faEllipsisVertical, faPlusSquare, faPaperPlane, faPaperclip, faAngleLeft, faClose, faNewspaper, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import Navbar_Render from '../render-cpn/render-nav'
+import data_cpn from '../render-cpn/data.json'
 export default () => {
    const { proxy, lang, pages, functions, sidebar } = useSelector(state => state)
    const { openTab } = functions
@@ -128,6 +130,12 @@ export default () => {
                   </li>
 
                ) : null}
+
+
+
+               < Navbar_Render data ={data_cpn.data} />
+
+
                {/* Feedback */}
 
                {/* {user.role === "pd" ? (

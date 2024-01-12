@@ -17,8 +17,8 @@ import StatisTable from './statistic/table_chart'
 import Layout_active from "./layout/layout_active";
 import Layout_keys from "./layout/layout_keys"
 import Layout_chart from "./layout/layout_chart"
-
-
+import data_cpn from '../render-cpn/data.json'
+import RenderUI from '../render-cpn/render'
 const rowsPerPage = 15;
 
 
@@ -26,7 +26,7 @@ export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
-    // console.log(_user)
+    console.log(pages)
     const { formatNumberWithCommas } = functions
 
     const { openTab, renderDateTimeByFormat } = functions
@@ -43,7 +43,7 @@ export default () => {
     const [loading, setLoading] = useState(false);
     const [loadingResult, setLoadingResult] = useState(false);
     const [uploadedJson, setUploadedJson] = useState(null);
-
+    console.log(56, apiData)
 
     const [apiDataName, setApiDataName] = useState([])
     const [dataStatis, setDataStatis] = useState([])
@@ -51,6 +51,9 @@ export default () => {
     const [errorLoadConfig, setErrorLoadConfig] = useState(false);
     const [effectOneCompleted, setEffectOneCompleted] = useState(false);
     const [page, setPage] = useState([]);
+    const [dataUi, setDataUi] = useState([]);
+
+    console.log(56, page)
     const [apiViewPages, setApiViewPages] = useState([]);
 
     const [limit, setLimit] = useState(0)
@@ -126,14 +129,33 @@ export default () => {
 
     }, [])
 
+
+
+    const yourComponentArray = data_cpn.data[1]?.children.length > 0 ? data_cpn.data[1]?.children[0]?.component : data_cpn.data[1]?.component
+    console.log(yourComponentArray)
+
     useEffect(() => {
         if (pages && pages.length > 0) {
+            const result = functions.findPageById(pages, `${url}`);
 
+
+            if (result.component.length > 0) {
+                setDataUi(result.component);
+                setPage(result);
+            } else {
+                setDataUi([result]);
+            }
+        }
+    }, [pages, url]);
+
+
+
+
+    useEffect(() => {
+        if (pages && pages.length > 0) {
             const pagesWithApiView = pages.filter(page => page.type === "apiview");
             setApiViewPages(pagesWithApiView);
-
             const filteredPages = pages.filter(page => page.type !== "apiview");
-
             const result = filteredPages.find(page => page.url === `/${url}`);
             if (result) {
                 setPage(result);
@@ -142,6 +164,7 @@ export default () => {
             }
         }
     }, [pages, url]);
+
 
     useEffect(() => {
         setCurrentPage(1)
@@ -182,7 +205,7 @@ export default () => {
                     setErrorSelect(lang["check file"]);
                 }
             }
-            
+
         };
 
         function extractValueInBrackets(value) {
@@ -387,11 +410,12 @@ export default () => {
                 .then(res => res.json())
                 .then(res => {
                     const { data, success, content } = res;
-                    // console.log(res)
+                    console.log(res)
                     if (success) {
                         setDataTables(data.tables)
                         setDataTableID(data.tables[0].id)
                         setDataFields(data.body)
+                        setApiDataName(data.fields)
                         setLoaded(true)
                     }
                 })
@@ -584,6 +608,7 @@ export default () => {
                 // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
             });
     };
+
     const callApiStatistic = (requireCount = false) => {
 
         const startTime = new Date().getTime();
@@ -665,11 +690,22 @@ export default () => {
                 // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
             });
     };
+
+    useEffect(() => {
+        // callApiView()
+        if (page) {
+            callApiView()
+
+        }
+    }, [page, dataTable_id])
+
+
+
     // useEffect(() => {
-    //     if (page && page.components) {
-    //         callApiView()
-    //     }
-    // }, [page, dataTable_id])
+
+    //         callApiViewtTest()
+
+    // }, [dataUi, dataTable_id])
 
     // console.log(loadingSearch)
     //searching
@@ -693,6 +729,7 @@ export default () => {
             clearTimeout(timeout);
         };
     }, [loadingSearch]);
+
     ///Loading
     useEffect(() => {
         let timeout;
@@ -714,6 +751,7 @@ export default () => {
             clearTimeout(timeout);
         };
     }, [loading]);
+
     const handleKeyDown = (event) => {
         if (event.keyCode === 13) {
             handleSearchClick();
@@ -733,22 +771,23 @@ export default () => {
     }
 
     const redirectToInput = () => {
-        if (errorLoadConfig) {
-            Swal.fire({
-                title: lang["faild"],
-                text: lang["not found config"],
-                icon: "error",
-                showConfirmButton: true,
-                customClass: {
-                    confirmButton: 'swal2-confirm my-confirm-button-class'
-                }
-            })
-            return;
-        }
+        // if (errorLoadConfig) {
+        //     Swal.fire({
+        //         title: lang["faild"],
+        //         text: lang["not found config"],
+        //         icon: "error",
+        //         showConfirmButton: true,
+        //         customClass: {
+        //             confirmButton: 'swal2-confirm my-confirm-button-class'
+        //         }
+        //     })
+        //     return;
+        // }
         // console.log(page)
-        const id_str = page.components?.[0]?.api_post.split('/')[2];
-
-        window.location.href = `${url}/apis/api/${id_str}/input_info`;
+        const result = functions.findPostApi(page);
+        console.log(result)
+        // const id_str = page.components?.[0]?.api_post.split('/')[2];
+        window.location.href = `${url}/apis/api/${result.replace("/ui/", "")}/input_info`;
     }
 
     const redirectToImportData = () => {
@@ -883,6 +922,9 @@ export default () => {
     }
 
     const redirectToInputPUT = async (record) => {
+        console.log(record)
+        const dataApiPut = functions.findPutApi(page);
+        console.log(dataApiPut)
 
         const { components } = page;
         const cpn = components[0]
@@ -961,6 +1003,11 @@ export default () => {
             return "Invalid value"
         }
     };
+    console.log(page)
+
+
+
+    // Sử dụng hàm
 
     const callApiView = (startAt = 0, amount = 15) => {
         const headerApi = {
@@ -968,28 +1015,77 @@ export default () => {
             'start-at': startAt,
             'data-amount': amount
         }
+        const getApi = functions.findGetApi(page);
 
-        const apiGet = page.components?.[0]?.api_get;
-        fetch(`${proxy()}${apiGet}`, {
-            headers: headerApi
-        })
+        console.log(56, getApi)
 
-            .then(res => res.json())
-            .then(res => {
-                const { success, content, data, count, fields, limit, statistic } = res;
-                // console.log(res)
-                if (data && data.length > 0) {
-                    setApiData(data.filter(record => record != undefined));
-                    setApiDataName(fields);
-                    setDataStatis(statistic);
+        if (getApi) {
 
-                    setSumerize(count)
-                    // setLimit(limit)
-                    // setApiViewData(data)
-                    // setApiViewFields(fields)
-                }
-            });
+            fetch(`${proxy()}${getApi}`, {
+                headers: headerApi
+            })
+
+                .then(res => res.json())
+                .then(res => {
+                    const { success, content, data, count, fields, limit, statistic } = res;
+                    console.log(56, res)
+                    setApiData([])
+                    if (data && data.length > 0) {
+                        setApiData(data.filter(record => record != undefined));
+                        setApiDataName(fields);
+                        setDataStatis(statistic);
+
+                        setSumerize(count)
+                        // setLimit(limit)
+                        // setApiViewData(data)
+                        // setApiViewFields(fields)
+                    }
+                });
+        } else {
+            console.error('Invalid API URL');
+        }
     }
+
+
+    // const callApiViewtTest = (startAt = 0, amount = 15) => {
+    //     const headerApi = {
+    //         Authorization: _token,
+    //         'start-at': startAt,
+    //         'data-amount': amount
+    //     }
+
+    //     // const apiGet = page.components?.[0]?.api_get;
+    //     const apiGet = "/api/61EF5341548149488D0BACB64794267C"
+    //     fetch(`${proxy()}${apiGet}`, {
+    //         headers: headerApi
+    //     })
+
+    //         .then(res => res.json())
+    //         .then(res => {
+    //             const { success, content, data, count, fields, limit, statistic } = res;
+    //             console.log(res)
+    //             if (data && data.length > 0) {
+    //                 setApiData(data.filter(record => record != undefined));
+    //                 setApiDataName(fields);
+    //                 setDataStatis(statistic);
+
+    //                 setSumerize(count)
+    //                 // setLimit(limit)
+    //                 // setApiViewData(data)
+    //                 // setApiViewFields(fields)
+    //             }
+    //         });
+    // }
+
+
+
+
+
+
+
+
+
+
 
     const [totalPages, setTotalPages] = useState(0);
 
@@ -1016,7 +1112,7 @@ export default () => {
     const [selectedFields, setSelectedFields] = useState([]);/// fields
     const [selectedStats, setSelectedStats] = useState([]);
     const [exportType, setExportType] = useState("excel");
-
+    console.log(selectedFields)
     // statis fields
     const handleStatsChange = (event) => {
         const { value } = event.target;
@@ -1487,9 +1583,9 @@ export default () => {
                         < Layout_active page={page} statusActive={statusActive} dataCheck={dataCheck} />
                     ) : layoutId === 3 ? (
                         < Layout_keys page={page} statusActive={statusActive} dataCheck={dataCheck} />
-                    ) :  layoutId === 4 ? (
+                    ) : layoutId === 4 ? (
                         < Layout_chart page={page} statusActive={statusActive} dataCheck={dataCheck} />
-                    ):null
+                    ) : null
                     }
 
                     {/* {layoutId === 0 ? (
@@ -2168,6 +2264,7 @@ export default () => {
                     )
                     } */}
                 </div>
+                < RenderUI component={dataUi} apiData={apiData} redirectToInput={redirectToInput} redirectToInputPUT={redirectToInputPUT} />
             </div >
         </div >
     )

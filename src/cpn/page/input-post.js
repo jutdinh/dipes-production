@@ -38,7 +38,7 @@ export default () => {
             }
         });
     });
-   
+
 
     const [phoneError, setPhoneError] = useState(false);
     const handlePhoneError = (error) => {
@@ -59,7 +59,7 @@ export default () => {
             .then(res => res.json())
             .then(res => {
                 const { success, api, relatedTables, data } = res;
-// console.log(res)
+                // console.log(res)
                 if (success) {
                     setFields(data.body)
                     setTables(data.tables)
@@ -69,14 +69,30 @@ export default () => {
             })
     }, [pages])
     // console.log(fields)
-    const result = pages?.filter(item => item.type !== "apiview").find(item => {
-        // Lấy id từ api_get
-        const api_get_id = item.components?.[0]?.api_post.split('/')[2];
-        // So sánh với id_str
-        return api_get_id === id_str;
-    });
+    // const result = pages?.filter(item => item.type !== "apiview").find(item => {
+    //     // Lấy id từ api_get
+    //     const api_get_id = item.components?.[0]?.api_post.split('/')[2];
+    //     // So sánh với id_str
+    //     return api_get_id === id_str;
+    // });
 
-    // console.log (result)
+    useEffect(() => {
+        if (pages && pages.length > 0) {
+            const result = functions.findPageById(pages, `${url}`);
+
+
+            if (result.component.length > 0) {
+
+                setPage(result);
+            } else {
+
+            }
+        }
+    }, [pages, url]);
+
+
+    const result = functions.findPostApi(page);
+    console.log(result)
 
     const changeTrigger = (field, value) => {
         const newData = data;
@@ -117,58 +133,60 @@ export default () => {
     };
     const handleAPIErrors = (res) => {
         const { primaryConflict, foreignConflict, typeError } = res;
-    
+
         if (primaryConflict && foreignConflict) return showError(lang["faild"], lang["erorr pk fk"]);
         if (primaryConflict) return showError(lang["faild"], lang["erorr pk"]);
         if (foreignConflict) return showError(lang["faild"], lang["erorr fk"]);
         if (typeError) return showError(lang["faild"], lang["fail.add"]);
     };
-    
-        
 
-   const submit = () => {
-    if (!emailError && !phoneError && nullCheck(data)) {
-        fetch(`${proxy()}${result?.components?.[0]?.api_post}`, {
-            method: "POST",
-            headers: {
-                Authorization: _token,
-                "content-type": "application/json"
-            },
-            body: JSON.stringify({ ...data })
-        })
-        .then(res => res.json())
-        .then(res => {
-        //   console.log(res)
-            if (res.primaryConflict || res.foreignConflict || res.typeError) {
-                handleAPIErrors(res);
-            } else {
-                Swal.fire({
-                    title: lang["success"],
-                    text: lang["success.add"],
-                    icon: "success",
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(function () {
-                    window.location.reload();
+
+
+    const submit = () => {
+        console.log(result)
+        if (!emailError && !phoneError && nullCheck(data)) {
+
+            fetch(`${proxy()}${result}`, {
+                method: "POST",
+                headers: {
+                    Authorization: _token,
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({ ...data })
+            })
+                .then(res => res.json())
+                .then(res => {
+                    console.log(res)
+                    if (res.primaryConflict || res.foreignConflict || res.typeError) {
+                        handleAPIErrors(res);
+                    } else {
+                        Swal.fire({
+                            title: lang["success"],
+                            text: lang["success.add"],
+                            icon: "success",
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(function () {
+                            window.location.reload();
+                        });
+                    }
+                    const dataSubmit = {
+                        api_id: id_str,
+                        data: data
+                    }
+                    //    console.log(dataSubmit)
+                    socket.emit("/dipe-production-new-data-added", dataSubmit);
+                })
+                .catch(error => {
+
+                    // Xử lý lỗi nếu cần
                 });
-            }
-            const dataSubmit = {
-                api_id: id_str,
-                data: data
-            }
-        //    console.log(dataSubmit)
-            socket.emit("/dipe-production-new-data-added", dataSubmit);
-        })
-        .catch(error => {
-           
-            // Xử lý lỗi nếu cần
-        });
-    } else {
-        if (emailError) showError(lang["faild"], lang["error.email_invalid"]);
-        else if (phoneError) showError(lang["faild"], lang["error.phone_invalid"]);
-        else showError(lang["faild"], lang["fail.null"]);
-    }
-};
+        } else {
+            if (emailError) showError(lang["faild"], lang["error.email_invalid"]);
+            else if (phoneError) showError(lang["faild"], lang["error.phone_invalid"]);
+            else showError(lang["faild"], lang["fail.null"]);
+        }
+    };
 
 
 
@@ -251,7 +269,7 @@ export default () => {
                                                         }
                                                         {field.DATATYPE == "TEXT" ?
                                                             <Text
-                                                            selectOption={true}
+                                                                selectOption={true}
                                                                 table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                                 related={relatedTables} field={field}
                                                                 changeTrigger={changeTrigger} /> : null

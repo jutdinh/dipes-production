@@ -141,9 +141,6 @@ export default (props) => {
         }
     }, [apiData]);
 
-
-
-
     const callApi = (startIndex = currentPage - 1,) => {
         const startTime = new Date().getTime();
         let loadingTimeout;
@@ -404,6 +401,7 @@ export default (props) => {
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
     const current = apiData
+    
 
     const paginate = (pageNumber) => {
         const startAt = (pageNumber - 1) * rowsPerPage;

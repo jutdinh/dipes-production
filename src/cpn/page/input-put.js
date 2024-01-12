@@ -16,7 +16,7 @@ export default () => {
     const _token = localStorage.getItem("_token");
     const { project_id, version_id, url } = useParams();
     let navigate = useNavigate();
-    const { proxy, pages, lang, socket } = useSelector(state => state);
+    const { proxy, pages, lang, socket, functions } = useSelector(state => state);
     const [api, setApi] = useState({})
     const [tables, setTables] = useState([])
     const [keyFields, setKeyFields] = useState([]);
@@ -26,6 +26,8 @@ export default () => {
     const [relatedTables, setRelatedTables] = useState([])
     const [initialData, setInitData] = useState({})
     const [loaded, setLoaded] = useState(false)
+    const [page, setPage] = useState(null);
+
 
     const urlParams = new URLSearchParams(window.location.search);
     const myParam = urlParams.get('myParam');
@@ -48,13 +50,28 @@ export default () => {
 
 
 
-    const result = pages?.filter(item => item.type !== "apiview").find(item => {
-        // Lấy id từ api_get
-        const api_get_id = item.components?.[0]?.api_put.split('/')[2];
-        // So sánh với id_str
-        return api_get_id === id_str;
-    });
+    // const result = pages?.filter(item => item.type !== "apiview").find(item => {
+    //     // Lấy id từ api_get
+    //     const api_get_id = item.components?.[0]?.api_put.split('/')[2];
+    //     // So sánh với id_str
+    //     return api_get_id === id_str;
+    // });
+    useEffect(() => {
+        if (pages && pages.length > 0) {
+            const result = functions.findPageById(pages, `${url}`);
 
+
+            if (result.component.length > 0) {
+
+                setPage(result);
+            } else {
+
+            }
+        }
+    }, [pages, url]);
+
+    const result = functions.findPutApi(page);
+    console.log(result)
     // console.log(result)
 
     const changeTrigger = (field, value) => {

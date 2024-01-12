@@ -7,6 +7,90 @@ import { detect } from 'detect-browser';
 
 
 
+
+function findPageById(data, pageId) {
+    for (const item of data) {
+        if (item.page_id === pageId) {
+            return item; // Tìm thấy ở cấp hiện tại
+        }
+
+        if (item.children && item.children.length > 0) {
+            const foundInChild = findPageById(item.children, pageId);
+            if (foundInChild) {
+                return foundInChild; // Tìm thấy ở cấp con
+            }
+        }
+    }
+    return null; // Không tìm thấy
+}
+
+
+
+function findGetApi(data) {
+    if (data && data.component && Array.isArray(data.component)) {
+        const tableComponent = data.component.find(comp => comp.name === "table");
+        return tableComponent && tableComponent.props && tableComponent.props.source ? tableComponent.props.source.get.url : '';
+    }
+    return null;
+}
+
+function findPostApi(data) {
+    console.log(data)
+    if (data && data.component && Array.isArray(data.component)) {
+        const tableComponent = data.component.find(comp => comp.name === "table");
+        return tableComponent && tableComponent.props && tableComponent.props.buttons ? tableComponent.props.buttons.add.api.url     : '';
+    }
+    return null;
+}
+
+function findPutApi(data) {
+    console.log(data)
+    if (data && data.component && Array.isArray(data.component)) {
+        const tableComponent = data.component.find(comp => comp.name === "table");
+        return tableComponent && tableComponent.props && tableComponent.props.buttons ? tableComponent.props.buttons.update.api    : '';
+    }
+    return null;
+}
+
+
+
+
+
+const renderBoolData = (data, field) => {
+    const IF_TRUE = field.DEFAULT_TRUE;
+    const IF_FALSE = field.DEFAULT_FALSE
+    if (data != undefined) {
+        if (data) {
+            return IF_TRUE ? IF_TRUE : "true"
+        }
+        return IF_FALSE ? IF_FALSE : "false"
+    } else {
+        return IF_FALSE ? IF_FALSE : "false"
+    }
+}
+
+const renderData = (field, data) => {
+    console.log(field)
+    if (data) {
+        switch (field.DATATYPE) {
+            case "DATE":
+            case "DATETIME":
+                return renderDateTimeByFormat(data[field.fomular_alias], field.FORMAT);
+            case "DECIMAL":
+            case "DECIMAL UNSIGNED":
+                const { DECIMAL_PLACE } = field;
+                const decimalNumber = parseFloat(data[field.fomular_alias]);
+                return decimalNumber.toFixed(DECIMAL_PLACE)
+            case "BOOL":
+                return renderBoolData(data[field.fomular_alias], field)
+            default:
+                return data[field.fomular_alias];
+        }
+    } else {
+        return "Invalid value"
+    }
+};
+
 function getBrowser() {
     const browserInfo = detect();
     if (browserInfo) {
@@ -701,5 +785,5 @@ export default {
     formatDate, formatDateCase, formatDateMessage, translateDateToVietnamese, translateDateTimeToVietnamese,
     isEmpty, isImageFormat, isVideoFormat, removeFileExtension, resizeImage,
     resizeImageToFit, renameDuplicateFiles, arraysAreEqual, getBrowser, detectBrowser,shortenFileName,
-    isPdfFormat, isExcelFormat, determineFileType, isZipFormat
+    isPdfFormat, isExcelFormat, determineFileType, isZipFormat, renderData, findGetApi, findPostApi, findPageById, findPutApi
 }
