@@ -25,7 +25,7 @@ export default () => {
 
     const { openTab, renderDateTimeByFormat } = functions
     const _token = localStorage.getItem("_token");
-    const { project_id, version_id, url } = useParams();
+    const { project_id, version_id, url , id} = useParams();
     let navigate = useNavigate();
     const [dataTables, setDataTables] = useState([]);
     const [dataTable_id, setDataTableID] = useState([]);
@@ -34,7 +34,7 @@ export default () => {
     const [time, setTime] = useState("")
     const [errorSelect, setErrorSelect] = useState(null);
     const [loadingExportFile, setLoadingExportFile] = useState(false);
-
+console.log(id)
     const [loadingReadFile, setLoadingReadFile] = useState(false);
     const [loadingSearch, setLoadingSearch] = useState(false);
     const [uploadedJson, setUploadedJson] = useState(null);
@@ -70,15 +70,15 @@ export default () => {
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     }
     const location = useLocation();
+
     const goToHomePage = () => {
         navigate(`/page/${url}`);
     };
+console.log(id)
     useEffect(() => {
 
         setSearchValues({});
     }, [location.pathname]);
-
-
 
     useEffect(() => {
         if (isImporting) {
@@ -89,7 +89,6 @@ export default () => {
     }, [isImporting]);
 
     useEffect(() => {
-
         fetch(`${proxy()}/auth/activation/check`, {
             headers: {
                 Authorization: _token
@@ -124,7 +123,6 @@ export default () => {
     }, [])
 
     const callApi = () => {
-
         if (Object.keys(searchValues).length !== 0) {
             setLoadingSearch(true);
         }
@@ -156,23 +154,20 @@ export default () => {
                     setDataStatis(statisticValues)
                     setLoaded(true)
                     if (count !== undefined) {
-
                         setSumerize(count);
                     }
                     else {
                         setSumerize(sumerize)
                     }
-
                 }
                 setLoadingSearch(false)
-
             })
     };
     useEffect(() => {
         if (page && page.components) {
-            const id_str = page.components?.[0]?.api_post.split('/')[2];
+            // const id_str = page.components?.[0]?.api_post.split('/')[2];
             // console.log(id_str)
-            fetch(`${proxy()}/apis/api/${id_str}/input_info`)
+            fetch(`${proxy()}/apis/api/${id}/input_info`)
                 .then(res => res.json())
                 .then(res => {
                     const { data, success, content } = res;
@@ -533,7 +528,7 @@ console.log(apiDataName)
             };
 
             try {
-                const response = await fetch(`${proxy()}${page.components?.[0]?.api_import}`, {
+                const response = await fetch(`${proxy()}/import/${id}`, {
                     method: "POST",
                     headers: {
                         "content-type": "application/json",
@@ -662,6 +657,7 @@ console.log(apiDataName)
     //     await Promise.all(requests);
     //     console.log("All batches have been processed");
     // };
+    
     const importReceivedData = async (data) => {
         const requestBody = {
             data: data,
@@ -697,9 +693,9 @@ console.log(apiDataName)
 
     useEffect(() => {
         if (page && page.components) {
-            const id_str = page.components?.[0]?.api_post.split('/')[2];
+            // const id_str = page.components?.[0]?.api_post.split('/')[2];
             // console.log(id_str)
-            fetch(`${proxy()}/apis/api/${id_str}/input_info`)
+            fetch(`${proxy()}/apis/api/${id}/input_info`)
                 .then(res => res.json())
                 .then(res => {
                     const { data, success, content } = res;

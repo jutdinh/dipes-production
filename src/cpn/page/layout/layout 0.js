@@ -164,9 +164,7 @@ export default (props) => {
             api_id: page.components?.[0]?.api_get.split('/')[2]
             // exact: true
         }
-
         // console.log("ĐÂY LÀ BODY:", searchBody)
-
         fetch(`${proxy()}${page.components?.[0]?.api_search}`, {
             method: "POST",
             headers: {

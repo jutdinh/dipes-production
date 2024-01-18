@@ -31,9 +31,9 @@ export default () => {
 
     const urlParams = new URLSearchParams(window.location.search);
     const myParam = urlParams.get('myParam');
- 
+
     const goToHomePage = () => {
-        navigate(`/page/${myParam}`);
+        navigate(`/page/${url}`);
     };
 
 
@@ -56,11 +56,10 @@ export default () => {
     //     // So sánh với id_str
     //     return api_get_id === id_str;
     // });
+
     useEffect(() => {
         if (pages && pages.length > 0) {
             const result = functions.findPageById(pages, `${url}`);
-
-
             if (result.component.length > 0) {
 
                 setPage(result);
@@ -71,8 +70,7 @@ export default () => {
     }, [pages, url]);
 
     const result = functions.findPutApi(page);
-    console.log(result)
-    // console.log(result)
+ console.log(result)
 
     const changeTrigger = (field, value) => {
         if (loaded) {
@@ -140,7 +138,7 @@ export default () => {
                     setFields(apiFields)
                     setTables(data.tables)
                     setRelatedTables(relatedTables)
-
+                    // fetch(`${proxy()}/apis/retrieve/${id_str}/${rawParams}`, {
                     fetch(`${proxy()}/apis/retrieve/${id_str}/${rawParams}`, {
                         headers: {
                             Authorization: _token
@@ -264,10 +262,13 @@ export default () => {
                             <div class="full graph_head_cus d-flex">
                                 <div class="heading1_cus margin_0 ">
                                     {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
-                                    <h5> <label class="pointer" onClick={() => goToHomePage()}>
-                                        <a title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-0 nav-item nav-link"></i></a>{result?.title}
-                                    </label> <i class="fa fa-chevron-right"></i>  {lang["update"]}</h5>
-
+                                    <h5>
+                                        <label class="pointer" onClick={() => goToHomePage()}>
+                                            <a title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-0 nav-item nav-link"></i></a>{(functions.getNamePage(page))?.name}
+                                            <i class={` ${functions.getNamePage(page)?.name.trim() !== '' && 'fa fa-chevron-right ml-2'} `}></i>  
+                                            {lang["update"]}
+                                        </label>
+                                    </h5>
                                 </div>
                                 {/* <div class="ml-auto">
                                 <i class="fa fa-newspaper-o icon-ui"></i>
@@ -412,8 +413,8 @@ export default () => {
                                                 <div class="row justify-content-center">
                                                     <div class="col-md-6">
                                                         <div class="mt-2 d-flex justify-content-end">
-                                                            <button type="button"  style={{ minWidth: "105px" }} onClick={submit} class="btn btn-success mr-2">{lang["btn.update"]}</button>
-                                                            <button type="button"  style={{ minWidth: "105px" }} onClick={() => goToHomePage()} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
+                                                            <button type="button" style={{ minWidth: "105px" }} onClick={submit} class="btn btn-success mr-2">{lang["btn.update"]}</button>
+                                                            <button type="button" style={{ minWidth: "105px" }} onClick={() => goToHomePage()} data-dismiss="modal" class="btn btn-danger">{lang["btn.close"]}</button>
                                                         </div>
                                                     </div>
                                                 </div>

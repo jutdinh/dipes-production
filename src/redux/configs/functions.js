@@ -8,14 +8,41 @@ import { detect } from 'detect-browser';
 
 
 
+// function findPageById(data, pageId) {
+//     for (const item of data) {
+//         if (item.page_id === pageId) {
+//             return item; // Tìm thấy ở cấp hiện tại
+//         }
+
+//         if (item.children && item.children.length > 0) {
+//             const foundInChild = findPageById(item.children, pageId);
+//             if (foundInChild) {
+//                 return foundInChild; // Tìm thấy ở cấp con
+//             }
+//         }
+//     }
+//     return null; // Không tìm thấy
+// }
+
 function findPageById(data, pageId) {
+
     for (const item of data) {
         if (item.page_id === pageId) {
+   
             return item; // Tìm thấy ở cấp hiện tại
+        }
+
+        if (item.component && item.component.length > 0) {
+            const foundInComponent = findPageById(item.component, pageId);
+         
+            if (foundInComponent) {
+                return foundInComponent; // Tìm thấy ở cấp con trong thành phần
+            }
         }
 
         if (item.children && item.children.length > 0) {
             const foundInChild = findPageById(item.children, pageId);
+    
             if (foundInChild) {
                 return foundInChild; // Tìm thấy ở cấp con
             }
@@ -25,8 +52,8 @@ function findPageById(data, pageId) {
 }
 
 
-
 function findGetApi(data) {
+    //console.log(5656, data)
     if (data && data.component && Array.isArray(data.component)) {
         const tableComponent = data.component.find(comp => comp.name === "table");
         return tableComponent && tableComponent.props && tableComponent.props.source ? tableComponent.props.source.get.url : '';
@@ -34,26 +61,218 @@ function findGetApi(data) {
     return null;
 }
 
+// function findGetApi(data) {
+//     if (data && data.component && Array.isArray(data.component)) {
+//         const tableComponents = data.component.filter(comp => comp.name === "table");
+//         const urls = [];
+
+//         for (const tableComponent of tableComponents) {
+//             if (tableComponent.props && tableComponent.props.source && tableComponent.props.source.get && tableComponent.props.source.get.url) {
+//                 urls.push(tableComponent.props.source.get.url);
+//             }
+//         }
+
+//         return urls;
+//     }
+
+//     return [];
+// }
+
+
+
+
 function findPostApi(data) {
-    console.log(data)
+    //console.log(data)
     if (data && data.component && Array.isArray(data.component)) {
+
+        
         const tableComponent = data.component.find(comp => comp.name === "table");
-        return tableComponent && tableComponent.props && tableComponent.props.buttons ? tableComponent.props.buttons.add.api.url     : '';
+        return tableComponent && tableComponent.props && tableComponent.props.buttons ? tableComponent.props.buttons.add.api.url : '';
     }
+    
     return null;
 }
+
+// function findPostApi(data) {
+//     if (data && data.component && Array.isArray(data.component)) {
+//         // Tìm tất cả các thành phần "table" trong trang
+//         const tableComponents = data.component.filter(comp => comp.name === "table");
+//         //console.log("Data 1")
+//         for (const tableComponent of tableComponents) {
+//             if (tableComponent.props && tableComponent.props.buttons) {
+//                 return tableComponent.props.buttons.add.api.url;
+//             }
+//         }
+
+//         // Nếu không tìm thấy trong các thành phần "table", hãy tìm trong các thành phần "flex" con
+//         for (const tableComponent of tableComponents) {
+//             if (tableComponent.props && tableComponent.props.flex && Array.isArray(tableComponent.props.flex.children)) {
+//                 //console.log("Data 1")
+//                 for (const child of tableComponent.props.flex.children) {
+//                     if (child.component) {
+//                         //console.log("Data 2")
+//                         const childTableComponents = child.component.filter(comp => comp.name === "table");
+//                         for (const childTableComponent of childTableComponents) {
+//                             if (childTableComponent.props && childTableComponent.props.buttons) {
+//                                 //console.log("Data 3")
+//                                 //console.log(456,childTableComponent.props.buttons.add.api.url)
+//                                 return childTableComponent.props.buttons.add.api.url;
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+    
+//     return null;
+// }
+
+
+
 
 function findPutApi(data) {
-    console.log(data)
+    //console.log(data)
     if (data && data.component && Array.isArray(data.component)) {
         const tableComponent = data.component.find(comp => comp.name === "table");
-        return tableComponent && tableComponent.props && tableComponent.props.buttons ? tableComponent.props.buttons.update.api    : '';
+        return tableComponent && tableComponent.props && tableComponent.props.buttons ? tableComponent.props.buttons.update.api : '';
+    }
+    return null;
+}
+
+// function findPutApi(data, url) {
+//     //console.log(data);
+//     if (data && data.component && Array.isArray(data.component)) {
+//         const tableComponent = data.component.find(comp => comp.name === "table");
+//         if (tableComponent && tableComponent.props && tableComponent.props.buttons) {
+//             const updateApi = tableComponent.props.buttons.update.api;
+//             if (updateApi && updateApi.url.split('/')[2] === url) {
+//                 return updateApi;
+//             }
+//         }
+//     }
+//     return null;
+// }
+
+function findDeleteApi(data) {
+    // //console.log(data)
+    if (data && data.component && Array.isArray(data.component)) {
+        const tableComponent = data.component.find(comp => comp.name === "table");
+        return tableComponent && tableComponent.props && tableComponent.props.buttons ? tableComponent.props.buttons.delete.api : '';
+    }
+    return null;
+}
+
+
+function findComponentWithDeleteApiUrl(data, url) {
+    //console.log(data);
+    if (data && data.component && Array.isArray(data.component)) {
+        for (let i = 0; i < data.component.length; i++) {
+            const component = data.component[i];
+            if (component.props && component.props.buttons && component.props.buttons.delete && component.props.buttons.delete.api) {
+                const deleteApi = component.props.buttons.delete.api;
+                if (deleteApi.url === url) {
+                    return component.props.buttons.delete.api;
+                }
+            }
+        }
     }
     return null;
 }
 
 
 
+function findDetailApi(data) {
+    // //console.log(data)
+    if (data && data.component && Array.isArray(data.component)) {
+        const tableComponent = data.component.find(comp => comp.name === "table");
+        return tableComponent && tableComponent.props && tableComponent.props.buttons ? tableComponent.props.buttons.detail.api.url : '';
+    }
+    return null;
+}
+
+function findExportApi(data) {
+    // //console.log(data)
+    if (data && data.component && Array.isArray(data.component)) {
+        const tableComponent = data.component.find(comp => comp.name === "table");
+        return tableComponent && tableComponent.props && tableComponent.props.buttons ? tableComponent.props.buttons.export.api.url : '';
+    }
+    return null;
+}
+
+function findSearchApi(data) {
+    // //console.log(data)
+    if (data && data.component && Array.isArray(data.component)) {
+        const tableComponent = data.component.find(comp => comp.name === "table");
+        return tableComponent && tableComponent.props && tableComponent.props.source ? tableComponent.props.source.search.url : '';
+    }
+    return null;
+}
+function findRowsPerPage(component) {
+
+    if (component && Array.isArray(component)) {
+        const tableComponent = component.find(comp => comp.name === "table");
+        //console.log(tableComponent)
+        return tableComponent && tableComponent.props && tableComponent.props.visibility ? tableComponent.props.visibility.row_per_page : '';
+    }
+    return null;
+}
+
+function getNamePage(data) {
+    if (data && data.component && Array.isArray(data.component)) {
+        // Tìm kiếm thành phần có tên là "table"
+        const tableComponent = data.component.find(comp => comp.name === "table");
+        if (tableComponent && tableComponent.props) {
+            return tableComponent.props;
+        }
+
+        // Nếu không tìm thấy "table", tìm kiếm thành phần có tên là "flex"
+        const flexComponent = data.component.find(comp => comp.name === "flex");
+        return flexComponent ? flexComponent.children : null;
+    }
+    return null;
+}
+
+
+
+function getComponentText(data) {
+    // //console.log(data)
+    if (data && data.component && Array.isArray(data.component)) {
+        const tableComponent = data.component.find(comp => comp.name === "table");
+        return tableComponent && tableComponent.props && tableComponent.props ? tableComponent.props : '';
+    }
+    return null;
+}
+
+function extractValuesFromData(apiInfo, data) {
+    //console.log(data);
+    //console.log(apiInfo);
+
+    if (typeof data !== 'object' || data === null) {
+        // Nếu data không phải là một đối tượng hoặc là null, trả về null
+        return null;
+    }
+
+    const fields = apiInfo.fields || [];
+    const params = apiInfo.params || [];
+
+    // Tạo một map từ id của field đến fomular_alias
+    const fieldIdToAlias = fields.reduce((map, field) => {
+        map[field.id] = field.fomular_alias;
+        return map;
+    }, {});
+    //console.log(fieldIdToAlias);
+
+    // Lặp qua các params và trả về giá trị đầu tiên tìm thấy
+    for (let param of params) {
+        const fomularAlias = fieldIdToAlias[param];
+        if (fomularAlias && data.hasOwnProperty(fomularAlias)) {
+            return data[fomularAlias];
+        }
+    }
+
+    return null;
+}
 
 
 const renderBoolData = (data, field) => {
@@ -70,7 +289,7 @@ const renderBoolData = (data, field) => {
 }
 
 const renderData = (field, data) => {
-    console.log(field)
+    // //console.log(field)
     if (data) {
         switch (field.DATATYPE) {
             case "DATE":
@@ -160,17 +379,17 @@ function getTokenExpirationDate(token) {
 
 function isTokenExpired(token) {
     const expirationDate = getTokenExpirationDate(token);
-    // console.log(expirationDate)
+    // //console.log(expirationDate)
     return expirationDate < new Date();
 }
 
 function refreshToken(proxy, token) {
-    // console.log(token)
+    // //console.log(token)
     if (token) {
-        return fetch(`${proxy}/auth/refreshtoken`, { 
+        return fetch(`${proxy}/auth/refreshtoken`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",                
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 token
@@ -180,7 +399,7 @@ function refreshToken(proxy, token) {
             .then((resp) => {
                 const { success, content, token, status } = resp;
                 if (success) {
-                    return token; 
+                    return token;
                 } else {
                     throw new Error(content || 'Unable to refresh token');
                 }
@@ -771,19 +990,20 @@ function shortenFileName(fileName) {
     const extension = parts.pop(); // Phần mở rộng của file
     const namePart = parts.join('.'); // Trường hợp có nhiều dấu chấm trong tên file
     const prefix = namePart.length > maxPrefixLength ? namePart.substring(namePart.length - maxPrefixLength) : namePart; // Lấy 3 ký tự cuối của phần tên, hoặc toàn bộ nếu ngắn hơn
-  
+
     return `${prefix}.${extension}`; // Kết hợp lại và trả về tên file đã rút gọn
-  }
-  
+}
 
 
-  
+
+
 
 export default {
     uid, isTokenExpired, refreshToken, getTokenExpirationDate, removeDuplicate, titleCase, openTab, dateGenerator,
     renderDateTimeByFormat, showApiResponseMessage, formatNumberWithCommas, formatNumber, generateUniqueColors,
     formatDate, formatDateCase, formatDateMessage, translateDateToVietnamese, translateDateTimeToVietnamese,
     isEmpty, isImageFormat, isVideoFormat, removeFileExtension, resizeImage,
-    resizeImageToFit, renameDuplicateFiles, arraysAreEqual, getBrowser, detectBrowser,shortenFileName,
-    isPdfFormat, isExcelFormat, determineFileType, isZipFormat, renderData, findGetApi, findPostApi, findPageById, findPutApi
+    resizeImageToFit, renameDuplicateFiles, arraysAreEqual, getBrowser, detectBrowser, shortenFileName,
+    isPdfFormat, isExcelFormat, determineFileType, isZipFormat, renderData, findGetApi, findPostApi, findPageById, findPutApi, findRowsPerPage,
+    getNamePage, findDeleteApi, extractValuesFromData, findSearchApi, findExportApi, findDetailApi, findComponentWithDeleteApiUrl
 }

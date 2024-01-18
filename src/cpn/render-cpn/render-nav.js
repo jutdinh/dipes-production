@@ -12,12 +12,12 @@ import { faHome, faIcons, faLemon, faLocation, faMagnifyingGlass, faPaperPlane, 
 
 
 const NavbarItem = ({ item, level }) => {
-    console.log(item)
+    // //console.log(item)
 
     if (item.is_hidden) {
         return null;
     }
-    console.log(`Level ${level}: ${item.page_title}`);
+    // //console.log(`Level ${level}: ${item.page_title}`);
     const hasChildren = item.children && item.children.length > 0;
 
     return (

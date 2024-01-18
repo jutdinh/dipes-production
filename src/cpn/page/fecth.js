@@ -26,7 +26,7 @@ export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
-    console.log(pages)
+    //console.log(29, pages)
     const { formatNumberWithCommas } = functions
 
     const { openTab, renderDateTimeByFormat } = functions
@@ -37,13 +37,15 @@ export default () => {
     const [dataTable_id, setDataTableID] = useState(null);
     const [dataFields, setDataFields] = useState([]);
     const [apiData, setApiData] = useState([])
+
+    const [dataUrlExport, setDataUrlExport] = useState('')
     const [errorSelect, setErrorSelect] = useState(null);
     const [loadingExportFile, setLoadingExportFile] = useState(false);
     const [loadingSearch, setLoadingSearch] = useState(false);
     const [loading, setLoading] = useState(false);
     const [loadingResult, setLoadingResult] = useState(false);
     const [uploadedJson, setUploadedJson] = useState(null);
-    console.log(56, apiData)
+    //console.log(46, apiData)
 
     const [apiDataName, setApiDataName] = useState([])
     const [dataStatis, setDataStatis] = useState([])
@@ -53,7 +55,7 @@ export default () => {
     const [page, setPage] = useState([]);
     const [dataUi, setDataUi] = useState([]);
 
-    console.log(56, page)
+    console.log(apiDataName)
     const [apiViewPages, setApiViewPages] = useState([]);
 
     const [limit, setLimit] = useState(0)
@@ -72,7 +74,7 @@ export default () => {
 
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     }
-    // console.log(dataStatis)
+    // //console.log(dataStatis)
     const formatNumberSize = (num) => {
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     }
@@ -103,7 +105,7 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                // console.log(resp)
+                // //console.log(resp)
                 if (activated) {
                     setStatusActive(true)
                 }
@@ -132,13 +134,13 @@ export default () => {
 
 
     const yourComponentArray = data_cpn.data[1]?.children.length > 0 ? data_cpn.data[1]?.children[0]?.component : data_cpn.data[1]?.component
-    console.log(yourComponentArray)
+    //console.log(yourComponentArray)
 
     useEffect(() => {
         if (pages && pages.length > 0) {
             const result = functions.findPageById(pages, `${url}`);
 
-
+            //console.log(141, result)
             if (result.component.length > 0) {
                 setDataUi(result.component);
                 setPage(result);
@@ -171,7 +173,7 @@ export default () => {
     }, [page, url])
 
     const layoutId = page.components?.[0].layout_id;
-    // console.log(layoutId)
+    // //console.log(layoutId)
     const tableClassName = layoutId === 0 ? "table" : "table table-hover";
 
     const CustomFileInput = ({ onChange, ...props }) => {
@@ -235,7 +237,7 @@ export default () => {
                                         return newRow;
                                     });
 
-                                // console.log("Parsed CSV Result:", modifiedData);
+                                // //console.log("Parsed CSV Result:", modifiedData);
                                 setUploadedJson(modifiedData);
                                 importData();
                             },
@@ -252,7 +254,7 @@ export default () => {
                             }
                             return newRow;
                         });
-                        // console.log("Parsed Excel Result:", modifiedData);
+                        // //console.log("Parsed Excel Result:", modifiedData);
                         setUploadedJson({ data: modifiedData });
                         importData();
                     }
@@ -320,7 +322,7 @@ export default () => {
         );
     };
 
-    // console.log(uploadedJson)
+    // //console.log(uploadedJson)
 
     const BATCH_SIZE = 1000;
 
@@ -339,7 +341,7 @@ export default () => {
                 // type: "import"
             };
             logCount++;
-            // console.log("Sample batch data:", requestBody);
+            // //console.log("Sample batch data:", requestBody);
 
             try {
                 const response = await fetch(`${proxy()}${page.components?.[0]?.api_import}`, {
@@ -353,13 +355,13 @@ export default () => {
 
                 const jsonResponse = await response.json();
                 const { success, content, data, result, total, fields, statisticValues, count, sumerize } = jsonResponse;
-                // console.log(jsonResponse)
+                // //console.log(jsonResponse)
                 if (!success) {
                     console.error("Server did not process batch successfully:", jsonResponse);
                     break;
                 }
 
-                // console.log("Successfully processed batch number:", logCount);
+                // //console.log("Successfully processed batch number:", logCount);
             } catch (error) {
                 console.error("Error sending batch:", error);
                 break;
@@ -380,16 +382,16 @@ export default () => {
 
                 if (success && data.length > 0) {
                     const dataUser = data.find(item => item.username === _user.username);
-                    // console.log(_user.username)
-                    // console.log(dataUser)
+                    // //console.log(_user.username)
+                    // //console.log(dataUser)
                     setDataPrivileges(dataUser?.privileges)
                 }
             })
 
     }, [])
-    // console.log(dataPrivileges)
+    // //console.log(dataPrivileges)
     const dataCheck = dataPrivileges?.find(item => item.table_id === dataTable_id);
-    // console.log(dataCheck)
+    // //console.log(dataCheck)
     useEffect(() => {
 
         importData()
@@ -398,11 +400,15 @@ export default () => {
 
 
     useEffect(() => {
-        if (page && page.components) {
+        if (page) {
             // const id_str = page.components?.[0]?.api_post.split('/')[2];
             const id_str = page.components?.[0]?.api_post.split('/')[2];
-            // console.log(id_str)
-            fetch(`${proxy()}/apis/api/${id_str}/input_info`, {
+            const result = functions.findPostApi(page);
+
+            //console.log(456, page)
+            //console.log(456, result)
+            // //console.log(id_str)
+            fetch(`${proxy()}/apis/api/${result?.split('/')[2]}/input_info`, {
                 headers: {
                     Authorization: _token
                 }
@@ -410,7 +416,7 @@ export default () => {
                 .then(res => res.json())
                 .then(res => {
                     const { data, success, content } = res;
-                    console.log(res)
+                    console.log(413, res)
                     if (success) {
                         setDataTables(data.tables)
                         setDataTableID(data.tables[0].id)
@@ -421,8 +427,8 @@ export default () => {
                 })
         }
     }, [page, dataTable_id])
-    // console.log(dataTable_id)
-    // console.log(page)
+    // //console.log(dataTable_id)
+    // //console.log(page)
     const handleCloseModal = () => {
         setSelectedFields([]);
         setSelectedStats([]);
@@ -430,7 +436,7 @@ export default () => {
     }
     const [loaded, setLoaded] = useState(false);
 
-    // console.log(page)
+    // //console.log(page)
     //search
     const [currentPage, setCurrentPage] = useState(0);
 
@@ -455,15 +461,15 @@ export default () => {
         if (currentPage >= 1) {
             setRequireCount(false);
         }
-        // console.log(requireCount)
+        // //console.log(requireCount)
     }, [currentPage]);
 
-    // console.log(2343243243324242, currentPage - 1)
+    // //console.log(2343243243324242, currentPage - 1)
     const [previousSearchValues, setPreviousSearchValues] = useState({});
     const [currentCount, setCurrentCount] = useState(null);
 
 
-    const callApi = (startIndex = currentPage - 1,) => {
+    const callApi = (data, dataUrl, startIndex = currentPage - 1,) => {
         const startTime = new Date().getTime();
         let loadingTimeout;
         let loadingTimeoutSearch;
@@ -476,59 +482,62 @@ export default () => {
         loadingTimeout = setTimeout(() => {
             setLoading(true)
         }, 300);
-
+        const getApi = functions.findGetApi(page);
+        //console.log(482, getApi)
         const searchBody = {
-            table_id: dataTable_id,
+            // table_id: dataTable_id,
             start_index: startIndex,
-            criteria: searchValues,
+            criteria: data,
             require_count: false,
             require_statistic: false,
-            api_id: page.components?.[0]?.api_get.split('/')[2]
+            // api_id: getApi?.split('/')[2]
             // exact: true
         }
 
-        // console.log("ĐÂY LÀ BODY:", searchBody)
+        console.log("ĐÂY LÀ BODY:", searchBody)
+        if (dataUrl) {
+            fetch(`${proxy()}${dataUrl}`, {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                    Authorization: _token,
+                    fromIndex: currentPage - 1
+                },
+                body: JSON.stringify(searchBody)
+            })
+                .then(res => res.json())
+                .then(res => {
+                    const { success, content, data, result, total, fields, count, sumerize } = res;
+                    const statisticValues = res.statistic;
+                    console.log(74, res)
+                    if (success) {
+                        setApiData(data.filter(record => record != undefined));
 
-        fetch(`${proxy()}${page.components?.[0]?.api_search}`, {
-            method: "POST",
-            headers: {
-                "content-type": "application/json",
-                Authorization: _token,
-                fromIndex: currentPage - 1
-            },
-            body: JSON.stringify(searchBody)
-        })
-            .then(res => res.json())
-            .then(res => {
-                const { success, content, data, result, total, fields, count, sumerize } = res;
-                const statisticValues = res.statistic;
-                // console.log(74, res)
-                if (success) {
-                    setApiData(data.filter(record => record != undefined));
+                        setDataStatis(statisticValues);
+                        setLoaded(true);
 
-                    setDataStatis(statisticValues);
-                    setLoaded(true);
+                        if (data.length < 15) {
+                            setTotalPages(currentPage);
+                        } else if (currentPage === totalPages) {
+                            setTotalPages(prevTotalPages => prevTotalPages + 1);
+                        }
 
-                    if (data.length < 15) {
-                        setTotalPages(currentPage);
-                    } else if (currentPage === totalPages) {
-                        setTotalPages(prevTotalPages => prevTotalPages + 1);
+                    } else {
+                        setApiData([]);
+                        setApiDataName([])
                     }
 
-                } else {
-                    setApiData([]);
-                    setApiDataName([])
-                }
+                    const endTime = new Date().getTime();
+                    const elapsedTime = endTime - startTime;
 
-                const endTime = new Date().getTime();
-                const elapsedTime = endTime - startTime;
+                    clearTimeout(loadingTimeout);
+                    clearTimeout(loadingTimeoutSearch);// Clear the timeout
+                    setLoadingSearch(false);
+                    setLoading(false)
+                    // //console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                });
+        }
 
-                clearTimeout(loadingTimeout);
-                clearTimeout(loadingTimeoutSearch);// Clear the timeout
-                setLoadingSearch(false);
-                setLoading(false)
-                // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
-            });
     };
 
     const callApiCount = (requireCount = false) => {
@@ -551,19 +560,19 @@ export default () => {
             setPreviousSearchValues(searchValues);
             requireCount = true;
         }
-
+        const getApi = functions.findGetApi(page);
         const searchBody = {
             table_id: dataTable_id,
             start_index: currentPage - 1,
             criteria: searchValues,
             require_count: true,
             require_statistic: false,
-            api_id: page.components?.[0]?.api_get.split('/')[2]
+            api_id: getApi?.split('/')[2]
             // exact: true
         }
 
-        // console.log(searchBody)
-        fetch(`${proxy()}${page.components?.[0]?.api_search}`, {
+        // //console.log(searchBody)
+        fetch(`${proxy()}${functions.findSearchApi(page)}`, {
             method: "POST",
             headers: {
                 "content-type": "application/json",
@@ -577,7 +586,7 @@ export default () => {
 
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
-                // console.log(74, res)
+                // //console.log(74, res)
                 if (success) {
                     // setApiData(data.filter(record => record != undefined));
                     // setApiDataName(fields);
@@ -605,10 +614,9 @@ export default () => {
                 setLoadingResult(false)
                 // setLoadingSearch(false);
                 // setLoading(false)
-                // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                // //console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
             });
     };
-
     const callApiStatistic = (requireCount = false) => {
 
         const startTime = new Date().getTime();
@@ -631,20 +639,20 @@ export default () => {
             setPreviousSearchValues(searchValues);
             requireCount = true;
         }
-
+        const getApi = functions.findGetApi(page);
         const searchBody = {
             table_id: dataTable_id,
             start_index: currentPage - 1,
             criteria: searchValues,
             require_count: false,
             require_statistic: true,
-            api_id: page.components?.[0]?.api_get.split('/')[2]
+            api_id: getApi?.split('/')[2]
             // exact: true
         }
 
-        console.log(searchBody)
+        //console.log(searchBody)
 
-        fetch(`${proxy()}${page.components?.[0]?.api_search}`, {
+        fetch(`${proxy()}${functions.findSearchApi(page)}`, {
             method: "POST",
             headers: {
                 "content-type": "application/json",
@@ -659,7 +667,7 @@ export default () => {
 
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
-                console.log(74, res)
+                //console.log(74, res)
                 if (success) {
                     // setApiData(data.filter(record => record != undefined));
                     // setApiDataName(fields);
@@ -687,7 +695,7 @@ export default () => {
                 setLoadingResult(false)
                 // setLoadingSearch(false);
                 // setLoading(false)
-                // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                // //console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
             });
     };
 
@@ -707,7 +715,7 @@ export default () => {
 
     // }, [dataUi, dataTable_id])
 
-    // console.log(loadingSearch)
+    // //console.log(loadingSearch)
     //searching
     useEffect(() => {
         let timeout;
@@ -755,22 +763,28 @@ export default () => {
     const handleKeyDown = (event) => {
         if (event.keyCode === 13) {
             handleSearchClick();
+
         }
     }
 
-    const handleSearchClick = () => {
+    const handleSearchClick = (data) => {
+        setSearchValues(data)
+        //console.log(762, data)
         setCurrentPage(1);
         if (currentPage === 1) {
 
             callApiCount()
-            callApi();
+            callApi(data);
             callApiStatistic()
-            // setApiData([])
+
+
             setSumerize(0)
         }
     }
+    //console.log(775, searchValues)
 
-    const redirectToInput = () => {
+    const redirectToInput = (url_button) => {
+        //console.log(779, url_button)
         // if (errorLoadConfig) {
         //     Swal.fire({
         //         title: lang["faild"],
@@ -783,31 +797,80 @@ export default () => {
         //     })
         //     return;
         // }
-        // console.log(page)
+        // //console.log(page)
         const result = functions.findPostApi(page);
-        console.log(result)
+        //console.log(result)
         // const id_str = page.components?.[0]?.api_post.split('/')[2];
-        window.location.href = `${url}/apis/api/${result.replace("/ui/", "")}/input_info`;
+        window.location.href = `${url}/apis/api/${url_button.replace("/ui/", "")}/input_info`;
     }
 
-    const redirectToImportData = () => {
-        if (errorLoadConfig) {
+    
+    const redirectToImportData = (id) => {
+
+        // if (errorLoadConfig) {
+        //     Swal.fire({
+        //         title: lang["faild"],
+        //         text: lang["not found config"],
+        //         icon: "error",
+        //         showConfirmButton: true,
+        //         customClass: {
+        //             confirmButton: 'swal2-confirm my-confirm-button-class'
+        //         }
+        //     })
+        //     return;
+        // }
+        // // //console.log(page)
+
+        window.location.href = `/page/${url}/import/${id}`;
+    }
+    const handleViewDetail = async (record, dataUrl) => {
+        //console.log(record)
+        //console.log(dataUrl)
+        // const { components } = page;
+        // const cpn = components[0]
+        // const { api_detail } = cpn;
+        const api_detail = functions.findDetailApi(page)
+        if (api_detail != undefined) {
+            const id_str = dataUrl.split('/')[2]
+
+            const response = await new Promise((resolve, reject) => {
+                fetch(`${proxy()}/apis/api/${id_str}/input_info`, {
+                    headers: {
+                        Authorization: _token
+                    }
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        const { data, success, content } = res;
+                        if (success) {
+                            // //console.log("succcess", data)
+                            setDataTables(data.tables)
+                            setDataFields(data.body)
+                        }
+                        resolve(res)
+                    })
+            })
+            const { success, data } = response;
+            if (success) {
+                const { params } = data;
+                const stringifiedParams = params.map(param => {
+                    const { fomular_alias } = param
+                    return record[fomular_alias]
+                }).join('/')
+
+                openTab(`/page/${url}/detail/${id_str}/${stringifiedParams}`)
+
+            }
+        } else {
             Swal.fire({
                 title: lang["faild"],
-                text: lang["not found config"],
+                text: lang["not found"],
                 icon: "error",
-                showConfirmButton: true,
-                customClass: {
-                    confirmButton: 'swal2-confirm my-confirm-button-class'
-                }
+                showConfirmButton: false,
+                timer: 2000,
             })
-            return;
         }
-        // console.log(page)
-
-        window.location.href = `/page/${url}/import`;
     }
-
     const deleteData = (data) => {
         let rawParams = page.apis.delete;
         // const keys = Object.keys(data);
@@ -835,103 +898,117 @@ export default () => {
             }
         })
     }
-
-    const handleDelete = (data) => {
-        // console.log(data)
+    //console.log(838, functions.findDeleteApi(page))
 
 
-        let api_delete = page.components[0].api_delete;
-
-        let primaryKeys = dataTables && dataTables[0] && dataTables[0].primary_key ? dataTables[0].primary_key : null;
-        let newParams = api_delete;
-        if (primaryKeys) {
-            let foundObjects = dataFields.filter((obj) => primaryKeys.includes(obj.id));
-
-            if (foundObjects.length > 0) {
-                // Lấy ra mảng các id từ foundObjects
-                let fomular_alias = foundObjects.map(obj => obj.fomular_alias);
-                // console.log(fomular_alias)
-
-                const newData = [];
-
-                fomular_alias.map(alias => {
-                    newData.push(data[alias])
-                })
-
-                // console.log(newData);
-                // Tạo chuỗi newParams bằng cách nối api_delete và ids
-                newParams = `${api_delete}/${newData.join("/")}`;
+    const handleDelete = (data, dataUrl) => {
+        //console.log(data)
 
 
-            } else {
-                // console.log('Không tìm thấy đối tượng nào có id trong primaryKeys');
-            }
-        } else {
-            // console.log('Không tìm thấy primaryKeys');
+
+        if (typeof data === 'object' || data !== undefined) {
+
+            const extractedValues = functions.extractValuesFromData(functions.findComponentWithDeleteApiUrl(page, dataUrl), data);
+
+            let api_delete = dataUrl;
+
+            // let primaryKeys = dataTables && dataTables[0] && dataTables[0].primary_key ? dataTables[0].primary_key : null;
+            // let newParams = api_delete;
+            //     if (primaryKeys) {
+            //         let foundObjects = dataFields.filter((obj) => primaryKeys.includes(obj.id));
+
+            //         if (foundObjects.length > 0) {
+            //             // Lấy ra mảng các id từ foundObjects
+            //             let fomular_alias = foundObjects.map(obj => obj.fomular_alias);
+            //             // //console.log(fomular_alias)
+
+            //             const newData = [];
+
+            //             fomular_alias.map(alias => {
+            //                 newData.push(data[alias])
+            //             })
+
+            //             // //console.log(newData);
+            //             // Tạo chuỗi newParams bằng cách nối api_delete và ids
+            //             newParams = `${api_delete}/${newData.join("/")}`;
+
+
+            //         } else {
+            //             // //console.log('Không tìm thấy đối tượng nào có id trong primaryKeys');
+            //         }
+            //     } else {
+            //         // //console.log('Không tìm thấy primaryKeys');
+            //     }
+            //     // //console.log(newParams);
+            const newParams = `${api_delete}/${extractedValues}`;
+            //console.log(newParams)
+            Swal.fire({
+                title: lang["confirm"],
+                text: lang["confirm.content"],
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: lang["btn.delete"],
+                cancelButtonText: lang["btn.cancel"],
+                confirmButtonColor: 'rgb(209, 72, 81)',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // const newParams = functions.findDeleteApi(page)
+                    fetch(`${proxy()}${newParams}`, {
+                        method: 'DELETE',
+                        headers: {
+                            "content-type": "application/json",
+                            Authorization: `${_token}`,
+                        },
+                        body: JSON.stringify({ position: data.position })
+                    })
+                        .then(res => res.json())
+                        .then((resp) => {
+                            const { success, content, data, status } = resp;
+                            //console.log(resp)
+                            // functions.showApiResponseMessage(status)
+
+                            if (success) {
+                                Swal.fire({
+                                    title: lang["success"],
+                                    text: lang["success.delete"],
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                }).then(function () {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: lang["faild"],
+                                    text: lang["fail.delete"],
+                                    icon: "error",
+                                    showConfirmButton: false,
+                                    timer: 2000,
+                                }).then(function () {
+                                    // Không cần reload trang
+                                });
+                            }
+                        });
+                }
+            });
         }
-        // console.log(newParams);
-
-        Swal.fire({
-            title: lang["confirm"],
-            text: lang["confirm.content"],
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: lang["btn.delete"],
-            cancelButtonText: lang["btn.cancel"],
-            confirmButtonColor: 'rgb(209, 72, 81)',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(`${proxy()}${newParams}`, {
-                    method: 'DELETE',
-                    headers: {
-                        "content-type": "application/json",
-                        Authorization: `${_token}`,
-                    },
-                    body: JSON.stringify({ position: data.__position__ })
-                })
-                    .then(res => res.json())
-                    .then((resp) => {
-                        const { success, content, data, status } = resp;
-                        // console.log(resp)
-                        // functions.showApiResponseMessage(status)
-
-                        if (success) {
-                            Swal.fire({
-                                title: lang["success"],
-                                text: lang["success.delete"],
-                                icon: "success",
-                                showConfirmButton: false,
-                                timer: 1500,
-                            }).then(function () {
-                                window.location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: lang["faild"],
-                                text: lang["fail.delete"],
-                                icon: "error",
-                                showConfirmButton: false,
-                                timer: 2000,
-                            }).then(function () {
-                                // Không cần reload trang
-                            });
-                        }
-                    });
-            }
-        });
     }
 
-    const redirectToInputPUT = async (record) => {
-        console.log(record)
+    const redirectToInputPUT = async (record, dataUrl) => {
+        //console.log(420, dataUrl)
+
+
         const dataApiPut = functions.findPutApi(page);
-        console.log(dataApiPut)
+        //console.log(dataApiPut)
 
-        const { components } = page;
-        const cpn = components[0]
-        const { api_put } = cpn;
-        if (api_put != undefined) {
-            const id_str = api_put.split('/')[2]
+        // const { components } = page;
+        // const cpn = components[0]
+        // const { api_put } = cpn;
 
+
+        if (dataApiPut != undefined) {
+            // const id_str = dataApiPut.url.split('/')[2]
+            const id_str = dataUrl.split('/')[2]
             const response = await new Promise((resolve, reject) => {
                 fetch(`${proxy()}/apis/api/${id_str}/input_info`, {
                     headers: {
@@ -941,8 +1018,9 @@ export default () => {
                     .then(res => res.json())
                     .then(res => {
                         const { data, success, content } = res;
+                        //console.log(res)
                         if (success) {
-                            // console.log("succcess", data)
+
                             setDataTables(data.tables)
                             setDataFields(data.body)
                         }
@@ -950,13 +1028,15 @@ export default () => {
                     })
             })
             const { success, data } = response;
+            //console.log(54, response)
             if (success) {
                 const { params } = data;
                 const stringifiedParams = params.map(param => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                openTab(`/page/${url}/put/api/${id_str}/${stringifiedParams}?myParam=${url}`)
+                //console.log(962, stringifiedParams)
+                openTab(`/page/${url}/put/api/${id_str}/${stringifiedParams}`)
 
             }
         } else {
@@ -1003,7 +1083,7 @@ export default () => {
             return "Invalid value"
         }
     };
-    console.log(page)
+    //console.log(page)
 
 
 
@@ -1017,7 +1097,7 @@ export default () => {
         }
         const getApi = functions.findGetApi(page);
 
-        console.log(56, getApi)
+        //console.log(getApi)
 
         if (getApi) {
 
@@ -1028,7 +1108,7 @@ export default () => {
                 .then(res => res.json())
                 .then(res => {
                     const { success, content, data, count, fields, limit, statistic } = res;
-                    console.log(56, res)
+                    //console.log(123456, res)
                     setApiData([])
                     if (data && data.length > 0) {
                         setApiData(data.filter(record => record != undefined));
@@ -1063,7 +1143,7 @@ export default () => {
     //         .then(res => res.json())
     //         .then(res => {
     //             const { success, content, data, count, fields, limit, statistic } = res;
-    //             console.log(res)
+    //             //console.log(res)
     //             if (data && data.length > 0) {
     //                 setApiData(data.filter(record => record != undefined));
     //                 setApiDataName(fields);
@@ -1092,7 +1172,7 @@ export default () => {
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
     const current = apiData
-
+    console.log(apiData)
     const paginate = (pageNumber) => {
         const startAt = (pageNumber - 1) * rowsPerPage;
         if (Object.keys(searchValues).length === 0) {
@@ -1122,7 +1202,7 @@ export default () => {
                 : [...prevStats, value]
         );
     }
-    // console.log(selectedStats)
+    // //console.log(selectedStats)
     //fields
     const [selectAll, setSelectAll] = useState(false);
     const handleSelectAllChange = () => {
@@ -1136,7 +1216,7 @@ export default () => {
 
     const handleFieldChange = (event) => {
         const { value } = event.target;
-        // console.log(value)
+        // //console.log(value)
         setSelectedFields(prevFields =>
             prevFields.includes(value)
                 ? prevFields.filter(field => field !== value)
@@ -1149,8 +1229,9 @@ export default () => {
         return [header, ...rows].join("\n");
     }
 
-    const exportToCSV = (csvData) => {
-        const selectedHeaders = apiDataName;
+    const exportToCSV = (csvData, fields) => {
+console.log(fields)
+        const selectedHeaders = fields;
         function styleHeaders(ws) {
             const headerStyle = {
                 fill: {
@@ -1203,33 +1284,45 @@ export default () => {
             }
         }
         // const headerRow = selectedHeaders.reduce((obj, header) => ({ ...obj, [header.fomular_alias]: header.display_name }), {});
-        const segments = page.url.split('/');
-        const lastSegment = segments[segments.length - 1];//tên
-        const result = lastSegment.replace(/-/g, '');
+
+        const segments = page.page_title;
+
+        // const lastSegment = segments[segments.length - 1];//tên
+
+        const result = segments;
 
         const headerRow = selectedHeaders.map(header => `${header.field_name}(${header.fomular_alias})`);
+
         const sampleRow = selectedHeaders.map(header => generateSampleData(header));
 
-        if (selectedFileType === 'xlsx') {
+        if (csvData === 'xlsx') {
             const ws = XLSX.utils.json_to_sheet([headerRow, sampleRow], { skipHeader: true });
             styleHeaders(ws);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Template");
 
+            XLSX.writeFile(wb, `TEMPLATE_EXCEL_${result.toUpperCase()}_${(new Date()).getTime()}.xlsx`);
 
-            XLSX.writeFile(wb, `TEMPLATE_${result.toUpperCase()}_${(new Date()).getTime()}.xlsx`);
+        } else if (csvData === 'csv') {
 
-        } else if (selectedFileType === 'csv') {
             const utf8BOM = "\uFEFF";
+
             const csv = utf8BOM + headerRow.join(",") + "\n" + sampleRow.join(",") + "\n";
 
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
             const link = document.createElement("a");
+
             const url = URL.createObjectURL(blob);
+
             link.setAttribute("href", url);
-            link.setAttribute("download", `TEMPLATE_${result.toUpperCase()}_${(new Date()).getTime()}.csv`);
+
+            link.setAttribute("download", `TEMPLATE_CSV_${result.toUpperCase()}_${(new Date()).getTime()}.csv`);
+
             document.body.appendChild(link);
+
             link.click();
+
             document.body.removeChild(link);
         }
         $('#closeModalExportFileSample').click();
@@ -1247,6 +1340,7 @@ export default () => {
     };
 
     const Export = () => {
+
         const selectFields = [...selectedFields, ...selectedStats]
         const exportBody = {
             export_fields: selectFields,
@@ -1254,9 +1348,10 @@ export default () => {
             export_type: exportType
         };
 
-        // console.log(exportBody)
+        console.log(exportBody)
+        console.log(`${proxy()}${functions.findExportApi(page)}`)
         setLoadingExportFile(true)
-        fetch(`${proxy()}${page.components?.[0]?.api_export}`, {
+        fetch(`${proxy()}${dataUrlExport}`, {
             method: "POST",
             headers: {
                 "content-type": "application/json",
@@ -1266,20 +1361,24 @@ export default () => {
             body: JSON.stringify(exportBody)
         })
             .then(res => res.blob())
+
+
             .then(blob => {
+                //console.log(1300, blob)
                 if (exportType === 'csv') {
                     const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
                     const withBom = new Blob([bom, blob], { type: 'text/csv' });
                     blob = withBom;
                 }
                 const url = window.URL.createObjectURL(blob);
+                //console.log(1300, url)
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
 
                 const datetimeString = getCurrentDateTimeForFilename();
 
-                const segments = page.url.split('/');
+                const segments = page.page_title.split('/');
                 const lastSegment = segments[segments.length - 1];//tên
                 const result = lastSegment.replace(/-/g, '');
 
@@ -1297,6 +1396,43 @@ export default () => {
                 setLoadingExportFile(false)
             });
     };
+
+    const callApiDataModalExport = (url, startAt = 0, amount = 15) => {
+        const headerApi = {
+            // Authorization: _token,
+            'start-at': startAt,
+            'data-amount': amount
+        }
+
+        //console.log(55, url)
+        fetch(`${proxy()}${url}`, {
+            headers: headerApi
+        })
+
+            .then(res => res.json())
+            .then(res => {
+                const { success, content, data, count, fields, limit, statistic } = res;
+                console.log(123456, res)
+                setApiData([])
+                if (data && data.length > 0) {
+                    setApiData(data.filter(record => record != undefined));
+
+                    // setLimit(limit)
+                    // setApiViewData(data)
+                    // setApiViewFields(fields)
+                }
+            });
+
+    }
+
+    const exportFile = (dataField, dataUrlGet, dataUrl) => {
+        setApiDataName(dataField)
+        setDataUrlExport(dataUrl)
+        console.log(1388, dataUrl)
+        console.log(1388, dataUrlGet)
+        callApiDataModalExport(dataUrlGet)
+    }
+
     // Loading Export
     const [isInitialRender, setIsInitialRender] = useState(true);
     useEffect(() => {
@@ -1415,7 +1551,6 @@ export default () => {
                                             {apiDataName.map((header, index) => (
                                                 <label key={index}>
                                                     <input
-
                                                         type="checkbox"
                                                         value={header.fomular_alias}
                                                         checked={selectedFields.includes(header.fomular_alias)}
@@ -1437,7 +1572,6 @@ export default () => {
                                                                     {dataStatis.map((stat, index) => (
                                                                         <label key={index}>
                                                                             <input
-
                                                                                 type="checkbox"
                                                                                 value={stat.fomular_alias}
                                                                                 checked={selectedStats.includes(stat.fomular_alias)}
@@ -1485,12 +1619,12 @@ export default () => {
                                             (
                                                 <>
                                                 </>
-
                                             ) :
                                             <>
                                                 {lang["preview.content"]}
                                             </>
                                         }
+
                                         {selectedFields && selectedFields.length > 0 || current & current.length > 0 || dataStatis && dataStatis.length > 0 ? (
                                             <div class="table-responsive">
                                                 <table class="table table-striped excel-preview">
@@ -1506,7 +1640,7 @@ export default () => {
                                                         {current.slice(0, 5).map((row, rowIndex) => (
                                                             <tr key={rowIndex}>
                                                                 {selectedFields.map((field) => (
-                                                                    <td key={field}>{row[field]}</td>
+                                                                    <td key={field}>{functions.renderData(field, row)}</td>
                                                                 ))}
                                                             </tr>
                                                         ))}
@@ -2264,7 +2398,18 @@ export default () => {
                     )
                     } */}
                 </div>
-                < RenderUI component={dataUi} apiData={apiData} redirectToInput={redirectToInput} redirectToInputPUT={redirectToInputPUT} />
+                < RenderUI
+                    component={dataUi}
+                    apiData={apiData}
+                    redirectToInput={redirectToInput}
+                    redirectToInputPUT={redirectToInputPUT}
+                    handleDelete={handleDelete}
+                    handleSearchClick={handleSearchClick}
+                    exportToCSV={exportToCSV}
+                    handleViewDetail={handleViewDetail}
+                    exportFile={exportFile}
+                    redirectToImportData = {redirectToImportData}
+                />
             </div >
         </div >
     )

@@ -26,7 +26,7 @@ export default () => {
     const [page, setPage] = useState(null);
 
 
-    // console.log(url); 
+    console.log(id_str); 
     const goToHomePage = () => {
         navigate(`/page/${url}`);
     };
@@ -146,7 +146,7 @@ export default () => {
         console.log(result)
         if (!emailError && !phoneError && nullCheck(data)) {
 
-            fetch(`${proxy()}${result}`, {
+            fetch(`${proxy()}/ui/${id_str}`, {
                 method: "POST",
                 headers: {
                     Authorization: _token,
@@ -188,7 +188,7 @@ export default () => {
         }
     };
 
-
+    console.log(1919, (functions.getNamePage(page))?.name)
 
     return (
 
@@ -209,9 +209,13 @@ export default () => {
                                 <div class="heading1_cus margin_0 ">
                                     {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
 
-                                    <h5> <label class="pointer" onClick={() => goToHomePage()}>
-                                        <a title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-1 nav-item nav-link"></i></a>{result?.title}
-                                    </label> <i class="fa fa-chevron-right"></i>  {lang["create"]}</h5>
+                                    <h5>
+                                        <label class="pointer" onClick={() => goToHomePage()}>
+                                            <a title={lang["back"]}><i class=" fa fa-chevron-circle-left  mt-3 mb-1 nav-item nav-link"></i></a>{(functions.getNamePage(page))?.name}
+
+                                            {/* <i class={` ${functions.getNamePage(page)?.name.trim() !== '' && 'fa fa-chevron-right ml-2'} `}></i> {lang["create"]} */}
+                                        </label>
+                                    </h5>
 
                                 </div>
                                 {/* <div class="ml-auto">
