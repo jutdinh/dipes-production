@@ -54,7 +54,9 @@ class ConsumeApi extends Controller {
     }
 
     NotFound = () => {
+
         this.res.status(404).send({ succes: false, content: "404 - Not found" })
+        // this.res.redirect("http://115.78.237.91:2089/login")
     }
 
     Forbidden = () => {
@@ -1057,6 +1059,9 @@ class ConsumeApi extends Controller {
         const datafrom = intValidate(this.req.header("start-at")) ? parseInt(this.req.header("start-at")) : 0
         let dataPerBreak = intValidate(this.req.header("data-amount")) ? parseInt(this.req.header("data-amount")) : RESULT_PER_SEARCH_PAGE
         let tmpDataFrom = datafrom
+        
+        
+        
         if (dataPerBreak > 100_000) {
             this.res.status(200).send({
                 success: false,
@@ -1089,6 +1094,8 @@ class ConsumeApi extends Controller {
                     return
                 }
             }
+
+            
 
             const foreignKeys = []
             tables.map(tb => {
@@ -5144,7 +5151,6 @@ class ConsumeApi extends Controller {
         } else {
             res.status(200).send({ succes: false, content: "Not found" })
         }
-
     }
 
     CONSUME_DETAIL_RECORD = async () => {
@@ -5201,9 +5207,6 @@ class ConsumeApi extends Controller {
             this.res.status(200).send({ success: false, error: "Query return more than one record or nothing" })
         }
     }
-
-
 }
-
 
 module.exports = ConsumeApi

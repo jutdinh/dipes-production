@@ -40,20 +40,20 @@ module.exports = (io, socket) => {
             if (sessionAccount != undefined) {
                 console.log(`${ username } JOINS ROOM ITSELF`)
                 socket.join(username)
-                const uis = jsonUI.data ? jsonUI.data : [];
-                const getApiURLs = uis.map(ui => {
+                // const uis = jsonUI.data ? jsonUI.data : [];
+                // const getApiURLs = uis.map(ui => {
 
-                    const component = ui.components[0]
-                    if (component) {
-                        const keys = Object.keys(component)
-                        keys.map(k => {
-                            if (k && k.includes('api_')) {
-                                // console.log(component[k].split('/')[2])
-                                socket.join(component[k].split('/')[2])
-                            }
-                        })
-                    }
-                })
+                //     const component = ui.components[0]
+                //     if (component) {
+                //         const keys = Object.keys(component)
+                //         keys.map(k => {
+                //             if (k && k.includes('api_')) {
+                //                 // console.log(component[k].split('/')[2])
+                //                 socket.join(component[k].split('/')[2])
+                //             }
+                //         })
+                //     }
+                // })
             }
             // socket.broadcast.emit("/dipe-production-user-login", { username })
             const rooms = io.sockets.adapter.rooms
@@ -67,56 +67,56 @@ module.exports = (io, socket) => {
         socket.leave(username)
         console.log(`${ username } LEAVES ROOM ITSELF`)
         const jsonUI = retriveUI()
-        const uis = jsonUI.data ? jsonUI.data : [];
+        // const uis = jsonUI.data ? jsonUI.data : [];
 
-        const getApiURLs = uis.map(ui => {
-            const component = ui.components[0]
-            if (component) {
-                const keys = Object.keys(component)
-                keys.map(k => {
-                    if (k && k.includes('api_')) {
-                        socket.leave(component[k].split('/')[2])
-                    }
-                })
-            }
-        })
+        // const getApiURLs = uis.map(ui => {
+        //     const component = ui.components[0]
+        //     if (component) {
+        //         const keys = Object.keys(component)
+        //         keys.map(k => {
+        //             if (k && k.includes('api_')) {
+        //                 socket.leave(component[k].split('/')[2])
+        //             }
+        //         })
+        //     }
+        // })
         // console.log("leave mot dong rooms")
     })
 
     socket.on("/dipe-production-import-ui", () => {
-        const jsonUI = retriveUI()
-        const uis = jsonUI.data ? jsonUI.data : [];
+        // const jsonUI = retriveUI()
+        // const uis = jsonUI.data ? jsonUI.data : [];
 
-        const getApiURLs = uis.map(ui => {
-            const component = ui.components[0]
-            if (component) {
-                const keys = Object.keys(component)
-                keys.map(k => {
-                    if (k && k.includes('api_')) {
-                        socket.join(component[k].split('/')[2])
-                    }
-                })
-            }
-        })
+        // const getApiURLs = uis.map(ui => {
+        //     const component = ui.components[0]
+        //     if (component) {
+        //         const keys = Object.keys(component)
+        //         keys.map(k => {
+        //             if (k && k.includes('api_')) {
+        //                 socket.join(component[k].split('/')[2])
+        //             }
+        //         })
+        //     }
+        // })
 
         socket.broadcast.emit("/dipe-production-import-ui")
     })
 
     socket.on("/dipe-production-reconnect-ui", () => {
-        const jsonUI = retriveUI()
-        const uis = jsonUI.data ? jsonUI.data : [];
-        console.log("reconnect ui")
-        const getApiURLs = uis.map(ui => {
-            const component = ui.components[0]
-            if (component) {
-                const keys = Object.keys(component)
-                keys.map(k => {
-                    if (k && k.includes('api_')) {
-                        socket.join(component[k].split('/')[2])
-                    }
-                })
-            }
-        })
+        // const jsonUI = retriveUI()
+        // const uis = jsonUI.data ? jsonUI.data : [];
+        // console.log("reconnect ui")
+        // const getApiURLs = uis.map(ui => {
+        //     const component = ui.components[0]
+        //     if (component) {
+        //         const keys = Object.keys(component)
+        //         keys.map(k => {
+        //             if (k && k.includes('api_')) {
+        //                 socket.join(component[k].split('/')[2])
+        //             }
+        //         })
+        //     }
+        // })
     })
     // not tested
     socket.on("/dipe-production-new-data-added", async (payload) => {
