@@ -3922,6 +3922,11 @@ class ConsumeApi extends Controller {
         }
     }
 
+
+    STATIS = () => {
+        
+    }
+
     SEARCH = async () => {
 
         const tables = this.tearTablesAndFieldsToObjects()
