@@ -162,7 +162,11 @@ app.use(async (req, res, next) => {
           if (requestType == "d") {
             await Consumer.consumeDetail(req, res, api_id)
           } else {
-            await Consumer.consume(req, res, api_id)
+            if( requestType == "statis" ){
+              await Consumer.consumeStatis(req, res, api_id)
+            }else{
+              await Consumer.consume(req, res, api_id)
+            }
           }
         }
       }

@@ -3892,6 +3892,36 @@ class ConsumeApi extends Controller {
         }
     }
 
+
+    consumeStatis = async ( req, res, api_id ) => {
+        this.writeReq(req)
+
+        const { url, method } = req;
+        this.url = decodeURI(url);
+        const [api, projects, tables, fields] = await Promise.all([this.#__apis.find({ api_id }), this.#__projects.findAll(), this.#__tables.findAll(), this.#__fields.findAll()])
+        // if (api && api.status && api.api_method == method.toLowerCase() ) {
+        if (api && api.status) {
+            const Api = new ApisRecord(api)
+            const project = projects[0]
+            this.project = project;
+
+            this.API = Api;
+            this.req = req;
+            this.res = res;
+            this.fields = fields;
+            this.tables = tables.map(table => {
+                const { id } = table;
+                table.fields = fields.filter(field => field.table_id == id)
+                return table
+            });
+
+            this.STATIS()
+            
+        } else {
+            res.status(200).send({ success: false, content: "No API Found" })
+        }
+    }
+
     SEARCH = async () => {
 
         const tables = this.tearTablesAndFieldsToObjects()
