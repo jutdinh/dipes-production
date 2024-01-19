@@ -16,7 +16,8 @@ export default () => {
             submit(e)
         }
     }
-    const check = pages[0]?.url
+   
+    const check = pages[0]?.page_id
     const [statusActive, setStatusActive] = useState(false);
 
     useEffect(() => {
@@ -95,7 +96,7 @@ export default () => {
                                 }
                             } else if (credential.data?.role === "pd") {
                                 if (check !== "") {
-                                    window.location = `/page${check}`;
+                                    window.location = `/page/${check}`;
                                 } else {
                                     window.location = `/page-not-found-404`;
                                 }

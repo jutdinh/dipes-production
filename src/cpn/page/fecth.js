@@ -804,7 +804,7 @@ export default () => {
         window.location.href = `${url}/apis/api/${url_button.replace("/ui/", "")}/input_info`;
     }
 
-    
+
     const redirectToImportData = (id) => {
 
         // if (errorLoadConfig) {
@@ -1230,7 +1230,7 @@ export default () => {
     }
 
     const exportToCSV = (csvData, fields) => {
-console.log(fields)
+        console.log(fields)
         const selectedHeaders = fields;
         function styleHeaders(ws) {
             const headerStyle = {
@@ -2408,7 +2408,7 @@ console.log(fields)
                     exportToCSV={exportToCSV}
                     handleViewDetail={handleViewDetail}
                     exportFile={exportFile}
-                    redirectToImportData = {redirectToImportData}
+                    redirectToImportData={redirectToImportData}
                 />
             </div >
         </div >

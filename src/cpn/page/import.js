@@ -25,7 +25,7 @@ export default () => {
 
     const { openTab, renderDateTimeByFormat } = functions
     const _token = localStorage.getItem("_token");
-    const { project_id, version_id, url , id} = useParams();
+    const { project_id, version_id, url, id } = useParams();
     let navigate = useNavigate();
     const [dataTables, setDataTables] = useState([]);
     const [dataTable_id, setDataTableID] = useState([]);
@@ -34,7 +34,7 @@ export default () => {
     const [time, setTime] = useState("")
     const [errorSelect, setErrorSelect] = useState(null);
     const [loadingExportFile, setLoadingExportFile] = useState(false);
-console.log(id)
+
     const [loadingReadFile, setLoadingReadFile] = useState(false);
     const [loadingSearch, setLoadingSearch] = useState(false);
     const [uploadedJson, setUploadedJson] = useState(null);
@@ -74,7 +74,7 @@ console.log(id)
     const goToHomePage = () => {
         navigate(`/page/${url}`);
     };
-console.log(id)
+    console.log(id)
     useEffect(() => {
 
         setSearchValues({});
@@ -164,14 +164,14 @@ console.log(id)
             })
     };
     useEffect(() => {
-        if (page && page.components) {
+        if (page) {
             // const id_str = page.components?.[0]?.api_post.split('/')[2];
             // console.log(id_str)
             fetch(`${proxy()}/apis/api/${id}/input_info`)
                 .then(res => res.json())
                 .then(res => {
                     const { data, success, content } = res;
-                    // console.log(res)
+                    console.log(res)
                     if (success) {
                         setDataTables(data.tables)
                         setDataTableID(data.tables[0].id)
@@ -198,20 +198,32 @@ console.log(id)
         }
     }, [page, dataTable_id])
 
-console.log(apiDataName)
+    console.log(apiDataName)
 
+    // useEffect(() => {
+    //     if (pages && pages.length > 0) {
+    //         const result = pages.find(page => page.url === `/${url}`);
+    //         // console.log(result)
+    //         if (result) {
+    //             setPage(result);
+    //         } else {
+    //             // openTab('/page/not/found')
+    //         }
+    //     }
+    // }, [pages, url]);
     useEffect(() => {
         if (pages && pages.length > 0) {
-            const result = pages.find(page => page.url === `/${url}`);
-            // console.log(result)
-            if (result) {
+            const result = functions.findPageById(pages, `${url}`);
+
+
+            if (result.component.length > 0) {
+
                 setPage(result);
             } else {
-                // openTab('/page/not/found')
+
             }
         }
     }, [pages, url]);
-
 
     useEffect(() => {
         setCurrentPage(1)
@@ -321,9 +333,9 @@ console.log(apiDataName)
                                         }
                                         return newRow;
                                     });
-                                    const endTime = new Date().getTime();
-                                    const elapsedTime = endTime - startTime;
-                                    // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                                const endTime = new Date().getTime();
+                                const elapsedTime = endTime - startTime;
+                                // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
                                 // console.log("Parsed CSV Result:", modifiedData);
                             },
                             header: true
@@ -526,7 +538,7 @@ console.log(apiDataName)
             const requestBody = {
                 data: batch,
             };
-
+            console.log(requestBody)
             try {
                 const response = await fetch(`${proxy()}/import/${id}`, {
                     method: "POST",
@@ -538,7 +550,7 @@ console.log(apiDataName)
 
                 const jsonResponse = await response.json();
                 const { success } = jsonResponse
-                // console.log(jsonResponse)
+                console.log(jsonResponse)
                 if (!success) {
                     console.error("Server did not process batch successfully:", jsonResponse);
                     setErrorOccurred(true);
@@ -657,7 +669,7 @@ console.log(apiDataName)
     //     await Promise.all(requests);
     //     console.log("All batches have been processed");
     // };
-    
+
     const importReceivedData = async (data) => {
         const requestBody = {
             data: data,
@@ -666,7 +678,7 @@ console.log(apiDataName)
         };
         // console.log(371, requestBody)
         try {
-            const response = await fetch(`${proxy()}${page.components?.[0]?.api_import}`, {
+            const response = await fetch(`${proxy()}/import/${id}`, {
                 method: "POST",
                 headers: {
                     "content-type": "application/json",
@@ -801,7 +813,7 @@ console.log(apiDataName)
     const [exportType, setExportType] = useState("excel");
 
     // statis fields
-   
+
 
 
 
@@ -860,7 +872,7 @@ console.log(apiDataName)
     }, [loadingSearch]);
 
 
-    
+
 
     function getErrorMessages(row) {
         const errors = [];
@@ -879,7 +891,7 @@ console.log(apiDataName)
         return errors.join('; ');
     }
 
-   
+    console.log(functions.getNamePage(page))
 
     return (
         <div class="midde_cont">
@@ -898,10 +910,14 @@ console.log(apiDataName)
                             <div class="full graph_head d-flex">
                                 <div class="heading1 margin_0 ">
                                     {/* <h5>{page?.components?.[0]?.component_name}</h5> */}
-                         
-                                    <h5> <label class="pointer"onClick={() => goToHomePage()}>
-                                        <a title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1"></i></a>{page?.title}
-                                    </label> <i class="fa fa-chevron-right"></i>  Import data</h5>
+
+                                    <h5> <label class="pointer" onClick={() => goToHomePage()}>
+                                        <a title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-1 nav-item nav-link"></i></a>{(functions.findPropsNameImportByUrl(page, id))}
+
+                                    </label>
+                                        <i class={` ${functions.findPropsNameImportByUrl(page, id)?.trim() !== '' && 'fa fa-chevron-right ml-2 mr-1'} `}></i>
+                                        Import data
+                                    </h5>
                                 </div>
                             </div>
                             <div className={`table_section padding_infor_info ${isImporting ? 'loading' : ''}`}>
@@ -945,7 +961,7 @@ console.log(apiDataName)
                                                                     <tr>
                                                                         <th class="font-weight-bold " style={{ width: "100px" }} scope="col">{lang["log.no"]}</th>
                                                                         {dataFields.map((header, index) => (
-                                                                            <th class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
+                                                                            <th key={index} class="font-weight-bold">{header.display_name ? header.display_name : header.field_name}</th>
                                                                         ))}
                                                                         <th class="font-weight-bold">{lang["note"]}</th>
                                                                     </tr>

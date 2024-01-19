@@ -188,7 +188,7 @@ export default () => {
                ) : null}
                 */}
                {/* Active online */}
-               <div class={`scrollable_user ${user.role === "pd" ? 'no_shadow' : ''}`}>
+               {/* <div class={`scrollable_user ${user.role === "pd" ? 'no_shadow' : ''}`}>
                   {user.role === "pd" ? (
                      <li>
                         {pages && pages.map(ui => (
@@ -203,7 +203,7 @@ export default () => {
                         ))}
                      </li>
                   ) : null}
-               </div>
+               </div> */}
                {user.role === "uad" ? (
                   <>
                      <li className="navbar-item">
@@ -239,7 +239,7 @@ export default () => {
             </ul>
          </div>
          <div class="footer-custom">
-            <p>&copy; 2023 - Designed by Mylan Group </p>
+            {/* <p>&copy; 2023 - Designed by Mylan Group </p> */}
          </div>
       </nav>
    )

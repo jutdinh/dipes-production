@@ -264,8 +264,8 @@ export default () => {
                                     {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
                                     <h5>
                                         <label class="pointer" onClick={() => goToHomePage()}>
-                                            <a title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-0 nav-item nav-link"></i></a>{(functions.getNamePage(page))?.name}
-                                            <i class={` ${functions.getNamePage(page)?.name.trim() !== '' && 'fa fa-chevron-right ml-2'} `}></i>  
+                                            <a title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-0 nav-item nav-link"></i></a>{functions.findPropsNameUpdateByUrl(page,id_str)}
+                                            <i class={` ${functions.findPropsNameUpdateByUrl(page,id_str)?.trim() !== '' && 'fa fa-chevron-right ml-2 mr-1'} `}></i>  
                                             {lang["update"]}
                                         </label>
                                     </h5>

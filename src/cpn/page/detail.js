@@ -177,15 +177,20 @@ export default () => {
                             <div class="full graph_head_cus d-flex">
                                 <div class="heading1_cus margin_0 ">
                                     {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
-                                    <h5> <label class="pointer" onClick={() => goToHomePage()}>
-                                        <a title={lang["back"]}>
-                                            <i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-0 nav-item nav-link"></i>
-                                        </a>
-                                        {/* {result?.title} */}
-                                    </label>
-                                        {/* <i class="fa fa-chevron-right"></i> */}
-                                        {lang["viewdetail"]}
+                                    <h5>
+                                        <label class="pointer" onClick={() => goToHomePage()}>
+                                            <a title={lang["back"]}>
+                                                <i class=" fa fa-chevron-circle-left mr-1 mt-3 mb-0 nav-item nav-link"></i>
+                                            </a>
+                                            {functions.findPropsNameDetailByUrl(page, id_str)}
+                                            {/* {result?.title} */}
+
+                                            <i class={` ${functions.findPropsNameDetailByUrl(page, id_str)?.trim() !== '' && 'fa fa-chevron-right ml-2 mr-1'} `}></i>
+                                            {lang["viewdetail"]}
+                                        </label>
                                     </h5>
+
+
 
                                 </div>
                                 {/* <div class="ml-auto">

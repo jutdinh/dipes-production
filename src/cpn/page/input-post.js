@@ -188,7 +188,7 @@ export default () => {
         }
     };
 
-    console.log(1919, (functions.getNamePage(page))?.name)
+    console.log(functions.findPropsNameAddByUrl(page,id_str))
 
     return (
 
@@ -211,9 +211,8 @@ export default () => {
 
                                     <h5>
                                         <label class="pointer" onClick={() => goToHomePage()}>
-                                            <a title={lang["back"]}><i class=" fa fa-chevron-circle-left  mt-3 mb-1 nav-item nav-link"></i></a>{(functions.getNamePage(page))?.name}
-
-                                            {/* <i class={` ${functions.getNamePage(page)?.name.trim() !== '' && 'fa fa-chevron-right ml-2'} `}></i> {lang["create"]} */}
+                                            <a title={lang["back"]}><i class=" fa fa-chevron-circle-left  mt-3 mb-1 nav-item nav-link"></i></a>{functions.findPropsNameAddByUrl( page, id_str)}
+                                            <i class={` ${functions.findPropsNameAddByUrl( page,id_str)?.trim() !== '' && 'fa fa-chevron-right ml-2 mr-1'} `}></i> {lang["create"]}
                                         </label>
                                     </h5>
 

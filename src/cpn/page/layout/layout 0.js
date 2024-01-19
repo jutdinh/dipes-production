@@ -399,7 +399,7 @@ export default (props) => {
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
     const current = apiData
-    
+
 
     const paginate = (pageNumber) => {
         const startAt = (pageNumber - 1) * rowsPerPage;
@@ -636,7 +636,7 @@ export default (props) => {
         } else {
             // console.log('Không tìm thấy primaryKeys');
         }
- 
+
 
         Swal.fire({
             title: lang["confirm"],
@@ -873,8 +873,6 @@ export default (props) => {
         }
         $('#closeModalExportFileSample').click();
     }
-
-
     return (
         <>
             {/* modal export excel/csv example */}
@@ -970,9 +968,7 @@ export default (props) => {
                                 </div>
                             </div>
                         </div>
-
                         {statusActive ? (
-
                             <>
                                 {
                                     _user.role === "uad"
@@ -989,8 +985,6 @@ export default (props) => {
                                             :
                                             null
                                 }
-
-
                             </>
                         ) : null}
                         {
@@ -1001,21 +995,17 @@ export default (props) => {
                                 </div>
                             ) : null
                         }
-
-
                         {
                             _user.role === "uad"
                                 ?
                                 <>
                                     <div class="ml-4 mt-2 pointer" data-toggle="modal" data-target="#exportExcelEx" title={lang["export data example"]}>
                                         <FontAwesomeIcon icon={faFileExport} className="icon-export-ex" />
-
                                     </div>
                                     <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
                                         <FontAwesomeIcon icon={faFileImport} className="icon-import" />
                                     </div>
                                 </>
-
                                 :
                                 (dataCheck && dataCheck?.write)
                                     ?
@@ -1027,12 +1017,9 @@ export default (props) => {
                                         <div class="ml-4 mt-2 pointer" onClick={redirectToImportData} title={lang["import data"]}>
                                             <FontAwesomeIcon icon={faFileImport} className="icon-import" />
                                         </div></>
-
                                     :
                                     null
                         }
-
-
 
                     </div>
                     <div class="full inner_elements">
@@ -1051,7 +1038,6 @@ export default (props) => {
                                                                         current && current.length > 0 ? (
                                                                             <>
                                                                                 <div class="table-responsive">
-
                                                                                     <div style={{ overflowX: 'auto' }}>
                                                                                         <table className={"table"} style={{ marginBottom: "10px", width: '100%' }}>
                                                                                             <thead>
@@ -1214,9 +1200,9 @@ export default (props) => {
 
                                                                                         </thead>
                                                                                         <tbody>
-                                                                                                <tr>
-                                                                                                    <td class="font-weight-bold cell" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
-                                                                                                </tr>
+                                                                                            <tr>
+                                                                                                <td class="font-weight-bold cell" colspan={`${apiDataName.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
+                                                                                            </tr>
                                                                                         </tbody>
                                                                                     </table>
                                                                                 </div>

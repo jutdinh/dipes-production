@@ -208,14 +208,15 @@ function findSearchApi(data) {
     }
     return null;
 }
-function findRowsPerPage(component) {
-
-    if (component && Array.isArray(component)) {
-        const tableComponent = component.find(comp => comp.name === "table");
-        //console.log(tableComponent)
-        return tableComponent && tableComponent.props && tableComponent.props.visibility ? tableComponent.props.visibility.row_per_page : '';
+function findRowsPerPage(data) {
+    if (!data || typeof data !== 'object') {
+        return null;
     }
-    return null;
+    
+      
+        return data.visibility ? data.visibility.row_per_page : '';
+    
+   
 }
 
 function getNamePage(data) {
@@ -232,6 +233,109 @@ function getNamePage(data) {
     }
     return null;
 }
+
+const findPropsNameAddByUrl = (data, targetUrl) => {
+    console.log(data)
+    console.log(targetUrl)
+    // Kiểm tra xem mảng component có tồn tại và đúng định dạng không
+    if (!data || typeof data !== 'object' || !Array.isArray(data.component)) {
+        return null;
+    }
+
+    // Duyệt qua từng đối tượng trong mảng component
+    for (const component of data.component) {
+        // Kiểm tra xem đối tượng có chứa button.add.api.url phù hợp không
+        if (component.props && component.props.buttons && component.props.buttons.add &&
+            component.props.buttons.add.api && component.props.buttons.add.api.url.split('/')[2] === targetUrl) {
+            // Trả về giá trị của props.name
+            return component.props.name;
+        }
+    }
+
+    // Trả về null nếu không tìm thấy
+    return null;
+};
+
+const findPropsNameUpdateByUrl = (data, targetUrl) => {
+    console.log(data)
+    console.log(targetUrl)
+
+    // Kiểm tra xem mảng component có tồn tại và đúng định dạng không
+    if (!data || typeof data !== 'object' || !Array.isArray(data.component)) {
+        return null;
+    }
+
+    // Duyệt qua từng đối tượng trong mảng component
+    for (const component of data.component) {
+        // Kiểm tra xem đối tượng có chứa button.add.api.url phù hợp không
+        if (component.props && component.props.buttons && component.props.buttons.update &&
+            component.props.buttons.update.api && component.props.buttons.update.api.url.split('/')[2] === targetUrl) {
+            // Trả về giá trị của props.name
+            return component.props.name;
+        }
+    }
+    // Trả về null nếu không tìm thấy
+    return null;
+};
+
+const findPropsNameDetailByUrl = (data, targetUrl) => {
+    console.log(data)
+    console.log(targetUrl)
+
+    // Kiểm tra xem mảng component có tồn tại và đúng định dạng không
+    if (!data || typeof data !== 'object' || !Array.isArray(data.component)) {
+        return null;
+    }
+
+    // Duyệt qua từng đối tượng trong mảng component
+    for (const component of data.component) {
+        // Kiểm tra xem đối tượng có chứa button.add.api.url phù hợp không
+        if (component.props && component.props.buttons && component.props.buttons.detail &&
+            component.props.buttons.detail.api && component.props.buttons.detail.api.url.split('/')[2] === targetUrl) {
+            // Trả về giá trị của props.name
+            return component.props.name;
+        }
+    }
+    // Trả về null nếu không tìm thấy
+    return null;
+};
+
+
+const findPropsNameImportByUrl = (data, targetUrl) => {
+    console.log(data)
+    console.log(targetUrl)
+
+    // Kiểm tra xem mảng component có tồn tại và đúng định dạng không
+    if (!data || typeof data !== 'object' || !Array.isArray(data.component)) {
+        return null;
+    }
+
+    // Duyệt qua từng đối tượng trong mảng component
+    for (const component of data.component) {
+        // Kiểm tra xem đối tượng có chứa button.add.api.url phù hợp không
+        if (component.props && component.props.buttons && component.props.buttons.import &&
+            component.props.buttons.import.api && component.props.buttons.import.api.url.split('/')[2] === targetUrl) {
+            // Trả về giá trị của props.name
+            return component.props.name;
+        }
+    }
+    // Trả về null nếu không tìm thấy
+    return null;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1005,5 +1109,6 @@ export default {
     isEmpty, isImageFormat, isVideoFormat, removeFileExtension, resizeImage,
     resizeImageToFit, renameDuplicateFiles, arraysAreEqual, getBrowser, detectBrowser, shortenFileName,
     isPdfFormat, isExcelFormat, determineFileType, isZipFormat, renderData, findGetApi, findPostApi, findPageById, findPutApi, findRowsPerPage,
-    getNamePage, findDeleteApi, extractValuesFromData, findSearchApi, findExportApi, findDetailApi, findComponentWithDeleteApiUrl
+    getNamePage, findDeleteApi, extractValuesFromData, findSearchApi, findExportApi, findDetailApi, findComponentWithDeleteApiUrl, findPropsNameAddByUrl, 
+    findPropsNameUpdateByUrl, findPropsNameImportByUrl, findPropsNameDetailByUrl
 }

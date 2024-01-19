@@ -1589,7 +1589,27 @@ table tr {
     height: 24px;
 }
 
+.icon-table {
+    display: flex;
+}
 
+.icon-table .icon-table-line {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0.9;
+    padding: 0em;
+    font-size: 16px;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    border: 1px solid;
+    margin: 0 2px;
+    border-radius: 3px;
+}
+.icon-table :hover {
+    background-color: rgb(214, 206, 206)
+}
 .custom-tooltip {
     background-color: #fff;
     border: 1px solid #ced4da;

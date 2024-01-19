@@ -47,7 +47,7 @@ export default () => {
             reader.readAsText(file);
         }
     };
-
+    
     useEffect(() => {
         const stringifiedUser = localStorage.getItem("user");
         if (stringifiedUser) {
@@ -56,7 +56,7 @@ export default () => {
             const validPrivileges = ["uad", "ad"];
     
             if (validPrivileges.indexOf(role) === -1) {
-                window.location = "/page/thong-ke-thang-nam";
+                window.location = "/page/page-not-found";
             }
         } else {
 
