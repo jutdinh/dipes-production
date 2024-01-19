@@ -3960,6 +3960,8 @@ class ConsumeApi extends Controller {
 
         const { query, start_index, require_count, require_statistic, exact } = this.req.body;
 
+        const RESULT_PER_SEARCH_PAGE = this.req.header("data-amount") ? parseInt(this.req.header("data-amount")) : 15
+
         const start = (start_index ? start_index : 0) * RESULT_PER_SEARCH_PAGE
         const end = start + RESULT_PER_SEARCH_PAGE
 
