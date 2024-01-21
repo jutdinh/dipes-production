@@ -12,6 +12,11 @@ class Apis extends Model{
         this.__addField__( "params", Model.types.array) // Đối số của API
         this.__addField__( "fields", Model.types.array) // { id, displayName }
 
+        this.__addField__( "group_by", Model.types.array)  // <Field>[]
+        this.__addField__( "fomular", Model.types.string) // only for statis ENUM [ "SUM", "COUNT", "AVERAGE" ]
+        this.__addField__( "criterias", Model.types.string) 
+        this.__addField__( "field", Model.types.unknown)
+
         this.__addField__( "body", Model.types.array)
         this.__addField__( "external_body", Model.types.array)
 
@@ -62,9 +67,9 @@ class Apis extends Model{
     }
 }   
 class ApisRecord extends Apis {
-    constructor( { id,  api_id, api_name, tables, params, fields, body, url, api_method, api_scope, version_id,  create_at, calculates, statistic, remote_url, external_body, status=false } ){
+    constructor( { id,  api_id, api_name, tables, params, fields, body, url, api_method, api_scope, version_id,  create_at, calculates, statistic, remote_url, external_body, group_by, fomular, criterias, field, status=false } ){
         super();
-        this.setDefaultValue( { id,  api_id, api_name, tables, params, fields, body, url, api_method, api_scope, version_id,  calculates, statistic, create_at, status, remote_url, external_body } )        
+        this.setDefaultValue( { id,  api_id, api_name, tables, params, fields, body, url, api_method, api_scope, version_id,  calculates, statistic, create_at, status, remote_url, external_body, group_by, fomular, criterias, field } )        
     }
 
     get = async () => {
@@ -82,7 +87,11 @@ class ApisRecord extends Apis {
             api_method: this.api_method.value(), 
             api_scope: this.api_scope.value(), 
             version_id: this.version_id.value(), 
-            create_at: this.create_at.getFormatedValue()
+            create_at: this.create_at.getFormatedValue(),
+            group_by: this.group_by.value(),
+            fomular: this.fomular.value(),
+            criterias: this.criterias.value(),
+            field: this.field.value()
         }
     }
 

@@ -686,6 +686,35 @@ class ConsumeApi extends Controller {
     }
 
 
+    parseCriteriasToStrings = ( criterias="" ) => {
+        const regex = /(\s*AND\s*|\s*OR\s*|\s*NOT\s*)/i;
+        const parts = criterias.split(regex);
+
+        const result = [];
+        let currentClause = { operator: null, formula: "" };
+
+        for (const part of parts) {
+            const trimmedPart = part.trim();
+
+            if (['AND', 'OR', 'NOT'].includes(trimmedPart.toUpperCase())) {
+                if (currentClause.formula !== "") {
+                    result.push({ operator: currentClause.operator, formula: currentClause.formula });
+                }
+                currentClause = { operator: trimmedPart.toUpperCase(), formula: "" };
+            } else {
+                currentClause.formula += part;
+            }
+        }
+
+        // Add the last clause to the result
+        if (currentClause.formula !== "") {
+            result.push({ operator: currentClause.operator, formula: currentClause.formula });
+        }
+
+        return result;
+    }
+
+
     generatePeriodIndex = (rawIndex) => {
 
         /**
@@ -3923,8 +3952,77 @@ class ConsumeApi extends Controller {
     }
 
 
-    STATIS = () => {
-        
+    STATIS = async () => {
+
+        const tables = this.tearTablesAndFieldsToObjects()
+        const table = tables[0]
+
+        const api = await this.API.get()
+
+        const { criterias, group_by, fomular, field } = api;
+        console.log(fomular, fomular.length)
+        const fields = []
+        tables.map( tb => {
+            fields.push( ...tb.fields )
+        })
+
+        const parsedCriterias = this.parseCriteriasToStrings( criterias )
+
+        let partitions = [];        
+
+        const stringifiedPeriods = await Cache.getData(`${tables[0].table_alias}-periods`)
+        const periods = stringifiedPeriods?.value
+        if (stringifiedPeriods && periods.length > 0) {
+           partitions = periods
+        } 
+
+        console.log( periods )
+
+        const statistics = {}
+
+        for( let i = 0 ; i <  periods.length; i++ ){
+            const period = periods[i]
+
+            const { position } = period;
+
+            const data = await Database.select(table.table_alias, { position })            
+
+            for( let k = 0; k < data.length; k++ ){
+                const record = data[k]
+                const groupByStrings = []
+                
+                for( let h = 0; h < group_by.length; h++ ){
+                    const { fomular_alias } = group_by[h]
+                    groupByStrings.push( record[fomular_alias] )
+                }
+
+                const concat = groupByStrings.join(' - ')
+
+                switch(fomular){
+                    case "SUM":
+                        if( statistics[concat] ){
+                            statistics[concat] += record[field.fomular_alias]
+                        }else{
+                            statistics[concat] = record[field.fomular_alias]
+                        }
+                        break;
+                    case "AVERAGE":
+
+
+                        break;
+                    case "COUNT":
+                        if( statistics[concat] ){
+                            statistics[concat] += 1
+                        }else{
+                            statistics[concat] = 1
+                        }
+                        break;
+                }
+            }
+
+        }
+
+        this.res.status(200).send({ success: false, content: "No API Found", statistics })
     }
 
     SEARCH = async () => {
