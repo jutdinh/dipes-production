@@ -438,6 +438,23 @@ class ConsumeApi extends Controller {
         return fields
     }
 
+    getFieldByAlias = (fieldAlias) => {
+        /**
+         * @desc Lấy thông tin trường có field.fomular_alias là fieldAlias
+         * 
+         * @params [
+         *      fieldAliases: <String>
+         * ]
+         * 
+         * @return fields<Objetc>
+         * 
+         */
+
+        const field = this.fields.find(f => f.fomular_alias == fieldAlias )
+        return field
+    }
+
+
     getFieldsByAlias = (fieldAliases) => {
         /**
          * @desc Lấy thông tin tất cả các trường có field.fomular_alias thuộc danh sách fieldAliases
@@ -657,7 +674,7 @@ class ConsumeApi extends Controller {
                         return { valid: false, reason: "Ngày giờ hông hợp lệ" }
                     }
         /*(5)*/ case "TEXT":
-                    const stringifiedValue = value.toString();
+                    const stringifiedValue = value ? value.toString() : "";
                     const { LENGTH } = field;
                     if (LENGTH && LENGTH > 0 && stringifiedValue.length <= LENGTH) {
                         return { valid: true, result: stringifiedValue }
@@ -691,28 +708,77 @@ class ConsumeApi extends Controller {
         const parts = criterias.split(regex);
 
         const result = [];
-        let currentClause = { operator: null, formula: "" };
+        let currentClause = { operator: null, fomular: "" };
 
         for (const part of parts) {
             const trimmedPart = part.trim();
 
             if (['AND', 'OR', 'NOT'].includes(trimmedPart.toUpperCase())) {
-                if (currentClause.formula !== "") {
-                    result.push({ operator: currentClause.operator, formula: currentClause.formula });
+                if (currentClause.fomular !== "") {
+                    result.push({ operator: currentClause.operator, fomular: currentClause.fomular });
                 }
-                currentClause = { operator: trimmedPart.toUpperCase(), formula: "" };
+                currentClause = { operator: trimmedPart.toUpperCase(), fomular: "" };
             } else {
-                currentClause.formula += part;
+                currentClause.fomular += part;
             }
         }
 
         // Add the last clause to the result
-        if (currentClause.formula !== "") {
-            result.push({ operator: currentClause.operator, formula: currentClause.formula });
+        if (currentClause.fomular !== "") {
+            result.push({ operator: currentClause.operator, fomular: currentClause.fomular });
         }
 
         return result;
     }
+
+    getPropByPath = ( object, path ) => {
+        /**
+         *  Đệ quy liên tục cho đến khi path chỉ còn một phần tử thì trả về kết quả,
+         * 
+         *  Nếu ở vòng cuối cùng, tức là path.length == 0 mà object vẫn còn tồn tại thì vẫn trả về object, nếu không thì trả về value,
+         * 
+         *  Chắc chắn ở vòng cuối cùng value chỉ có thể là object hoặc value đang tìm kiếm, hễ value cần truy xuất không phải một list
+         * thì kể như mọi thứ ok, vì list có thể dẫn đến cái mapping function gặp vấn đề với object.
+         * 
+         * 
+         */
+
+
+        const value = object[path[0]]
+        if (path.length > 0 && value != undefined) {
+            return this.getPropByPath(value, path.slice(1, path.length) )
+        } else {
+            if ( path.length == 0 ) {
+                return object
+            }
+            return value
+        }
+    }
+
+    setPropByPath = (object, path, value) => {
+        /**
+         * Đệ quy này sẽ không tái tạo vòng lập bằng cách trả về kết quả trực tiếp mà nó trả về kết quả thông qua việc recursive qua toàn bộ
+         * children nằm trên path và đặt lại kết quả của chúng bằng một đệ quy ở cấp thấp hơn.
+         * 
+         * Cho đến khi đi đến path cuối cùng thì trả về kế quả đã được cập nhật, các kết quả sẽ lần lượt được cập nhật cho đến khi recursive
+         * dừng lại.
+         * 
+         * Đệ quy này trả về một object với các children đã cập nhật trạng thái mới.
+         * 
+         * 
+         */
+
+
+        if (path.length == 1) {
+            object = { ...object, [path[0]]: value }
+        } else {
+            object[path[0]] = this.setPropByPath(object[path[0]], path.slice(1, path.length), value)
+        }
+        return object
+    }
+
+
+
 
 
     generatePeriodIndex = (rawIndex) => {
@@ -3951,6 +4017,57 @@ class ConsumeApi extends Controller {
         }
     }
 
+    validRecordOfDataByCriterias = ( record, criterias = [] ) => {
+        /**
+         * Phân tích danh sách điều kiện từ trái sang phải, hiện tại chưa có ngoặc ưu tiên hay nhiều phân cấp
+         * Phần tử đầu tiên kể như là điều kiện khởi đầu:
+         *      - Nếu nó không tồn tại thì trả về true và lập tức kết thúc
+         *      - Nếu nó true thì tiếp tục phân tích
+         *      - Nếu nó false thì trả về false
+         *     
+         */
+
+
+        const firstCriteria = criterias[0]
+        
+        if( firstCriteria ){
+            const { operator } = firstCriteria;
+
+            let fomular = firstCriteria.fomular;
+            const NOW = new Date()
+
+            const keys = Object.keys( record )
+            keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
+
+            for( let i = 0; i < keys.length; i++ ){
+                const key = keys[i]
+
+                const field = this.getFieldByAlias(key)
+                
+                if( field && ["DATE", "DATETIME"].indexOf(field.DATATYPE) != -1 ){
+                    const time = new Date( record[key] )
+                    
+                    fomular = fomular.replaceAll( key, time.getTime() )
+                }else{
+                    fomular = fomular.replaceAll( key, record[key] )
+                }
+            }            
+            const result = eval( fomular )
+
+            // console.log( fomular, result )
+
+            if( result ){
+
+
+            }else{
+                
+
+            }
+        }else{
+            return true
+        }
+    }
+
 
     STATIS = async () => {
 
@@ -3960,13 +4077,16 @@ class ConsumeApi extends Controller {
         const api = await this.API.get()
 
         const { criterias, group_by, fomular, field } = api;
-        console.log(fomular, fomular.length)
+        
         const fields = []
         tables.map( tb => {
             fields.push( ...tb.fields )
         })
 
         const parsedCriterias = this.parseCriteriasToStrings( criterias )
+        console.log( criterias )
+        console.log(parsedCriterias)
+
 
         let partitions = [];        
 
@@ -3976,9 +4096,7 @@ class ConsumeApi extends Controller {
            partitions = periods
         } 
 
-        console.log( periods )
-
-        const statistics = {}
+        let statistics = {}
 
         for( let i = 0 ; i <  periods.length; i++ ){
             const period = periods[i]
@@ -3991,30 +4109,52 @@ class ConsumeApi extends Controller {
                 const record = data[k]
                 const groupByStrings = []
                 
+                const isRecordValid = this.validRecordOfDataByCriterias( record, parsedCriterias )
+
                 for( let h = 0; h < group_by.length; h++ ){
                     const { fomular_alias } = group_by[h]
                     groupByStrings.push( record[fomular_alias] )
                 }
 
-                const concat = groupByStrings.join(' - ')
+                const currentValue = this.getPropByPath( statistics, groupByStrings )
+                               
 
                 switch(fomular){
                     case "SUM":
-                        if( statistics[concat] ){
-                            statistics[concat] += record[field.fomular_alias]
+                        if( currentValue ){
+                            statistics = this.setPropByPath( statistics, groupByStrings, currentValue + record[field.fomular_alias] )
                         }else{
-                            statistics[concat] = record[field.fomular_alias]
+                            statistics = this.setPropByPath( statistics, groupByStrings, record[field.fomular_alias] )
                         }
                         break;
                     case "AVERAGE":
+                        // Not tested yet
+                        if( currentValue ){
+                            const { total, value } = currentValue;
 
+                            const newValue = ( total * value + record[field.fomular_alias] ) / ( total + 1 )
+
+                            const newAvg = {
+                                total: total + 1,
+                                value: newValue
+                            }
+                            statistics = this.setPropByPath( statistics, groupByStrings, newAvg )
+
+                        }else{
+                            const newAvg = {
+                                total: 1,
+                                value: record[field.fomular_alias]
+                            }
+
+                            statistics = this.setPropByPath( statistics, groupByStrings, newAvg )
+                        }
 
                         break;
                     case "COUNT":
-                        if( statistics[concat] ){
-                            statistics[concat] += 1
+                        if( currentValue ){
+                            statistics = this.setPropByPath( statistics, groupByStrings, currentValue + 1 )
                         }else{
-                            statistics[concat] = 1
+                            statistics = this.setPropByPath( statistics, groupByStrings, 1 )
                         }
                         break;
                 }
@@ -4022,7 +4162,7 @@ class ConsumeApi extends Controller {
 
         }
 
-        this.res.status(200).send({ success: false, content: "No API Found", statistics })
+        this.res.status(200).send({ success: true, content: "Succeed", statistics })
     }
 
     SEARCH = async () => {
