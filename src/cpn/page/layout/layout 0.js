@@ -181,12 +181,8 @@ export default (props) => {
                 // console.log(74, res)
                 if (success) {
                     setApiData(data.filter(record => record != undefined));
-
                     setDataStatis(statisticValues);
                     setLoaded(true);
-
-
-
                 } else {
                     setApiData([]);
                     setApiDataName([])

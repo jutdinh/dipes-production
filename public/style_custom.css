@@ -1616,7 +1616,12 @@ table tr {
     padding: 10px;
     border-bottom: none;
 }
+.table-custom thead th {
+    font-weight: 700 !important;
+    height: 40px;
 
+    
+}
 .icon-import-nav {
     color: #ddda31;
     font-size: 24px;
@@ -1942,6 +1947,15 @@ table tr {
     min-height: 280px;
     height: calc(100% - 16px);
 }
+.tab-content-data .padding_infor_info {
+    padding: 5px 35px 5px 35px;
+    float: left;
+    width: 100%;
+    min-height: 560px;
+    max-height: 91vh !important;
+
+}
+
 
 .padding_infor_info {
     padding: 5px 35px 5px 35px;

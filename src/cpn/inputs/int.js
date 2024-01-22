@@ -26,7 +26,7 @@ export default (props) => {
     const { foreign_keys } = table;
     const corespondingKey = foreign_keys.find(key => key.field_id == field.id)
 
-    // console.log(startIndex)
+
     useEffect(() => {
         const key = isFieldForeign()
         const { foreign_keys } = table;
@@ -116,8 +116,10 @@ export default (props) => {
             }
         }
     }, [defaultValue])
+
     useEffect(() => {
     }, [pk])
+
     const [selectedValue, setSelectedValue] = useState(null);
     const [loadedRecordCount, setLoadedRecordCount] = useState(0);
     const [options, setOption] = useState([]);
@@ -302,7 +304,7 @@ export default (props) => {
                 });
 
                 const res = await response.json();
-
+                console.log(res)
                 let returnedData = res.data;
 
                 const foundData = returnedData.find(d => d != undefined && d[pk] === defaultValue);

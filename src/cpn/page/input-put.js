@@ -114,7 +114,7 @@ export default () => {
             .then(res => res.json())
             .then(res => {
                 const { success, data } = res;
-                // console.log(res)
+                console.log(res)
                 if (success) {
                     // const { tables } = data.tables;
                     const apiFields = data.params;

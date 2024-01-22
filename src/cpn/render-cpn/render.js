@@ -40,14 +40,14 @@ const RenderComponent = ({ component, apiData, redirectToInput, redirectToInputP
                 switch (key) {
                     case 'add':
                         return (
-                            <FontAwesomeIcon icon={faSquarePlus} key={key} onClick={() => redirectToInput(buttons.add.api.url)} className="icon-add mr-2 pointer" />
+                            <FontAwesomeIcon icon={faSquarePlus} key={key} onClick={() => redirectToInput(buttons.add.api.url)} className="icon-add mr-2 pointer" title={"Create"} />
                         );
 
                     case 'import':
                         return (
                             // <FontAwesomeIcon icon={faFileImport} key={key} className="icon-import mr-2 pointer" />
                             <>
-                                <FontAwesomeIcon icon={faUpload} className={`size-24 mr-2 icon-add pointer `} id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" />
+                                <FontAwesomeIcon icon={faUpload} className={`size-24 mr-2 icon-add pointer `} id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title={"Import data"}/>
                                 <input type="file" style={{ display: 'none' }} />
                                 <ul class="dropdown-menu " aria-labelledby="navbarDropdownMenuLink">
                                     <li ><span class="dropdown-item" onClick={() => redirectToImportData(props.buttons.import.api.url.split('/')[2], props.source.get.url, props.buttons.add.api)} >Import File</span></li>
@@ -63,7 +63,7 @@ const RenderComponent = ({ component, apiData, redirectToInput, redirectToInputP
                         );
                     case 'export':
                         return (
-                            <FontAwesomeIcon icon={faDownload} className="icon-export" onClick={() => exportFile(props.source.fields, props.source.get.url, buttons.export.api.url)} data-toggle="modal" data-target="#exportExcel" />
+                            <FontAwesomeIcon icon={faDownload} className="icon-export pointer" onClick={() => exportFile(props.source.fields, props.source.get.url, buttons.export.api.url)} data-toggle="modal" data-target="#exportExcel" title={"Export_excel_csv"} />
                         );
                         break;
                     // Thêm các trường hợp khác nếu cần
@@ -75,7 +75,7 @@ const RenderComponent = ({ component, apiData, redirectToInput, redirectToInputP
             case 'text':
                 return <div style={props.style}>{props.content}</div>;
             case 'table':
-                const extraButtons = hasFlexData(flex) ? renderExtraButtons(foundChild.props.buttons, props) : renderExtraButtons(props.buttons, props);
+                const extraButtons = hasFlexData(flex) ? renderExtraButtons(foundChild.props.buttons, props, lang) : renderExtraButtons(props.buttons, props);
                 const tableStyle = applyFlexStyle(props.style); // Áp dụng style ở đây
                 return (
                     <div style={tableStyle}>
@@ -100,7 +100,7 @@ const RenderComponent = ({ component, apiData, redirectToInput, redirectToInputP
         }
     };
     return (
-        <div class="row">
+        <div class="row mt-2">
             <div class="col-md-12" >
                 <div class="white_shd full">
                     <div class="full graph_head_cus d-flex">
@@ -112,7 +112,7 @@ const RenderComponent = ({ component, apiData, redirectToInput, redirectToInputP
                     <div class="full inner_elements">
                         <div class="row" >
                             <div class="col-md-12">
-                                <div class="tab_style2">
+                                <div class="tab_style2 ">
                                     <div class="tabbar padding_infor_info">
                                         <div class="tab-content" id="nav-tabContent">
                                             <div class={`tab-pane fade ${'nav-home_s2' ? 'show active' : ''}`} id="nav-home_s2" role="tabpanel" aria-labelledby="nav-home-tab">
@@ -176,65 +176,38 @@ const RenderTable = (props) => {
     const [sumerize, setSumerize] = useState(0)
     console.log(currentPage)
     // const handleSearchClick = () => {
-
     //     //console.log(762, data)
     //     setCurrentPage(1);
     //     if (currentPage === 1) {
-
     //         // callApiCount()
-
     //         // callApi(data);
-
     //         // callApiStatistic()
     //         // setSumerize(0)
     //     }
     // }
 
-    const handleSearchClick = (data, dataurl) => {
-        setSearchUrl(dataurl);
-        setSearchValues(data)
+    const handleSearchClick = () => {
         setCurrentPage(1);
         callApi(searchValues, searchUrl)
-
-
         // setSearching(true)
         setCurrentPage(1);
         callApiCount()
-
         // callApiStatistic()
         setApiData([])
         setSumerize(0)
     }
 
-
-
     // Hàm để xử lý thay đổi giá trị tìm kiếm
-    // const handleInputChange = (fieldAlias, value) => {
-    //     setSearchValues({ ...searchValues, [fieldAlias]: value });
-    // };
-   const handleInputChange = (fomular_alias, value) => {
-        setSearchValues(prevValues => {
-            if (value.trim() === '') {
-                const { [fomular_alias]: _, ...newValues } = prevValues;
-                return newValues;
-            } else {
-                return {
-                    ...prevValues,
-                    [fomular_alias]: value
-                };
-            }
-        });
+    const handleInputChange = (fieldAlias, value, searchData) => {
+        setSearchUrl(searchData.url)
+        setSearchValues({ ...searchValues, [fieldAlias]: value });
     };
 
-    
     // Hàm xử lý sự kiện nhấn phím, ví dụ nhấn Enter để tìm kiếm
     const handleKeyDown = (e) => {
-        // if (e.key === 'Enter') {
-        //     if (Object.keys(searchValues).length === 0) {
-        //         handleSearchClick(searchValues, searchUrl);
-        //     }
-
-        // }
+        if (e.key === 'Enter') {
+            handleSearchClick();
+        }
     };
 
 
@@ -255,7 +228,7 @@ const RenderTable = (props) => {
 
     const currentData = apiData;
     console.log(396, currentData)
-        ;
+        
     const paginate = (pageNumber) => {
         const startAt = (pageNumber - 1) * rowsPerPage;
         if (Object.keys(searchValues).length === 0) {
@@ -266,8 +239,9 @@ const RenderTable = (props) => {
         }
         setCurrentPage(pageNumber);
     };
+
     const renderSourceButtons = (source, lang) => {
-        console.log(source)
+        console.log(244,source)
         return Object.entries(source).map(([key, value]) => {
             if (!value.state) {
                 return null;
@@ -338,7 +312,8 @@ const RenderTable = (props) => {
                 headers: {
                     "content-type": "application/json",
                     Authorization: _token,
-                    fromIndex: currentPage - 1
+                    fromIndex: currentPage - 1,
+                    "data-amount": rowsPerPage
                 },
                 body: JSON.stringify(searchBody)
             })
@@ -374,7 +349,6 @@ const RenderTable = (props) => {
         }
 
     };
-
 
     const callApiPa = (startIndex = currentPage - 1) => {
         const startTime = new Date().getTime();
@@ -387,7 +361,7 @@ const RenderTable = (props) => {
             require_count: false,
             require_statistic: false,
         }
-        console.log(396, searchBody)
+        console.log("ĐÂY LÀ BODY:", searchBody)
         if (searchUrl) {
 
             fetch(`${proxy()}${searchUrl}`, {
@@ -395,7 +369,8 @@ const RenderTable = (props) => {
                 headers: {
                     "content-type": "application/json",
                     Authorization: _token,
-                    fromIndex: currentPage - 1
+                    fromIndex: currentPage - 1,
+                    "data-amount": rowsPerPage
                 },
                 body: JSON.stringify(searchBody)
             })
@@ -431,6 +406,7 @@ const RenderTable = (props) => {
         }
 
     };
+
     const callApiCount = (requireCount = false) => {
 
         const startTime = new Date().getTime();
@@ -461,13 +437,14 @@ const RenderTable = (props) => {
             // exact: true
         }
 
-        // console.log(searchBody)
+        console.log(447,searchBody)
         fetch(`${proxy()}${searchUrl}`, {
             method: "POST",
             headers: {
                 "content-type": "application/json",
                 Authorization: _token,
-                fromIndex: currentPage - 1
+                fromIndex: currentPage - 1,
+               
             },
             body: JSON.stringify(searchBody)
         })
@@ -508,12 +485,72 @@ const RenderTable = (props) => {
             });
     };
 
-   
+    // const callApiStatistic = (requireCount = false) => {
+
+    //     const startTime = new Date().getTime();
+    //     let loadingTimeout;
+    //     let loadingTimeoutSearch;
+    //     // if (Object.keys(searchValues).length !== 0) {
+    //     //     loadingTimeoutSearch = setTimeout(() => {
+    //     //         setLoadingSearch(true);
+    //     //     }, 310);
+    //     // }
+    //     loadingTimeout = setTimeout(() => {
+
+    //         // setLoading(true)
+    //         setLoadingResult(true)
+    //     }, 300);
+    //     if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
+    //         setPreviousSearchValues(searchValues);
+    //         requireCount = true;
+    //     }
+    //     const searchBody = {
+    //         table_id: dataTable_id,
+    //         start_index: currentPage - 1,
+    //         criteria: searchValues,
+    //         require_count: false,
+    //         require_statistic: true,
+    //         api_id: page.components?.[0]?.api_get.split('/')[2]
+    //         // exact: true
+    //     }
+    //     // console.log(searchBody)
+    //     fetch(`${proxy()}${page.components?.[0]?.api_search}`, {
+    //         method: "POST",
+    //         headers: {
+    //             "content-type": "application/json",
+    //             Authorization: _token,
+    //             fromIndex: currentPage - 1
+    //         },
+    //         body: JSON.stringify(searchBody)
+    //     })
+    //         .then(res => res.json())
+    //         .then(res => {
+    //             const { success, content, data, result, total, fields, count, sumerize } = res;
+    //             const statisticValues = res.statistic;
+    //             // console.log(74, res)
+    //             if (success) {
+    //                 // setApiData(data.filter(record => record != undefined));
+    //                 // setApiDataName(fields);
+    //                 setDataStatis(statisticValues);
+    //                 // setLoaded(true);
+    //             } else {
+    //                 setApiData([]);
+    //                 setApiDataName([])
+    //             }
+    //             const endTime = new Date().getTime();
+    //             const elapsedTime = endTime - startTime;
+    //             clearTimeout(loadingTimeout);
+    //             clearTimeout(loadingTimeoutSearch);// Clear the timeout
+    //             setLoadingResult(false)
+    //             // setLoadingSearch(false);
+    //             // setLoading(false)
+    //             // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+    //         });
+    // };
+
     return (
-
         <div>
-
-            <div class="table-responsive mb-2">
+            <div class="table-responsive table-custom mb-2">
                 <table class="table " style={tableProps.style}>
                     <thead>
                         <tr>
@@ -524,7 +561,6 @@ const RenderTable = (props) => {
                             {hasInlineButtons && <th class="align-center">Actions</th>}
                         </tr>
                     </thead>
-
                     <tbody>
                         <tr>
                             {visibility.indexing && <th></th>}
@@ -534,14 +570,13 @@ const RenderTable = (props) => {
                                         type="search"
                                         className="form-control"
                                         value={searchValues[field.fomular_alias] || ''}
-                                        onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)}
+                                        onChange={(e) => handleInputChange(field.fomular_alias, e.target.value, search)}
                                         onKeyDown={handleKeyDown}
                                     />
                                 </th>
                             ))}
                             <th class="align-center"> {renderSourceButtons(tableProps.source)}</th>
                         </tr>
-
                         {currentData && currentData.length > 0 ?
                             <>
                                 {
@@ -550,6 +585,7 @@ const RenderTable = (props) => {
                                             return (
                                                 <tr key={index}>
                                                     <td scope="row" style={{ minWidth: "50px" }} className="cell">{indexOfFirst + index + 1}</td>
+
                                                     {fields?.map((header) => (
                                                         <td key={header.fomular_alias} className="cell">{functions.renderData(header, row)}</td>
                                                     ))}
@@ -559,6 +595,7 @@ const RenderTable = (props) => {
                                                             <div class="icon-table">
                                                                 < RenderInlineButtonsForRow {...props} row={row} redirectToInputPUT={redirectToInputPUT} handleViewDetail={handleViewDetail} handleDelete={handleDelete} />
                                                             </div>
+
                                                         </td>
                                                     )}
                                                 </tr>)
@@ -645,6 +682,7 @@ const RenderTable = (props) => {
 
 const RenderInlineButtonsForRow = (props) => {
     //console.log(420, props)
+    const { lang, proxy, auth, functions } = useSelector(state => state);
     const { buttons, row, handleViewDetail, redirectToInputPUT, handleDelete } = props
     const orderedKeys = ['approve', 'unapprove', 'detail', 'update', 'delete']; // Thứ tự mong muốn
 
@@ -658,17 +696,18 @@ const RenderInlineButtonsForRow = (props) => {
                 return <div class="icon-table-line">
                     <i className="fa fa-times-circle-o size-24 pointer icon-close" key={key}></i>
                 </div>
+
             case 'detail':
                 return <div class="icon-table-line">
-                    <i className="fa fa-eye size-24 mr-1  pointer icon-view" key={key} onClick={() => handleViewDetail(row, props.buttons.detail.api.url)} ></i>
+                    <i className="fa fa-eye size-24 mr-1  pointer icon-view" key={key} onClick={() => handleViewDetail(row, props.buttons.detail.api.url)} title={lang["viewdetail"]}></i>
                 </div>
             case 'update':
                 return <div class="icon-table-line">
-                    <i className="fa fa-edit size-24 pointer  icon-edit" key={key} onClick={() => redirectToInputPUT(row, props.buttons.update.api.url)}></i>
+                    <i className="fa fa-edit size-24 pointer  icon-edit" key={key} onClick={() => redirectToInputPUT(row, props.buttons.update.api.url)} title={lang["edit"]}></i>
                 </div>
             case 'delete':
                 return <div class="icon-table-line">
-                    <i className="fa fa-trash-o size-24 pointer icon-delete" key={key} onClick={() => handleDelete(row, props.buttons.delete.api.url)}></i>
+                    <i className="fa fa-trash-o size-24 pointer icon-delete" key={key} onClick={() => handleDelete(row, props.buttons.delete.api.url)}  title={lang["delete"]}></i>
                 </div>
             default:
                 return <button key={key}>{key}</button>;
