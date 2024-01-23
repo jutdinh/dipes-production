@@ -251,13 +251,13 @@ export default (props) => {
     // const dataClickedTrigger = (data) => {
     //     setCurrent(data);
     //     changeTrigger(field, data[pk])
-    // }
+    // }changeRawData
 
 
     const handleChange = option => {
-        // console.log("Before update: ", selectedValue);
+        console.log("Before update: ", selectedValue);
         setSelectedValue(option);
-        // console.log("After update: ", selectedValue);
+        console.log("After update: ", selectedValue);
         fieldChangeData({ target: { value: option.value } });
     };
 
@@ -336,9 +336,7 @@ export default (props) => {
     }, [defaultValue, pk]);
     // console.log(pk)
     if (isPrimaryKey()) {
-
         if (!isFieldForeign()) {
-
             return (
                 <div class="row justify-content-center">
                     <div class="col-md-6">

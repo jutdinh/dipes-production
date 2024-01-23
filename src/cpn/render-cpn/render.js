@@ -1,9 +1,9 @@
 import React from 'react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSquarePlus, faFileImport, faFileExport, faUpload, faMagnifyingGlass, faDownload } from '@fortawesome/free-solid-svg-icons';
-
+import Chart from 'react-apexcharts'
 
 const RenderComponent = ({ component, apiData, redirectToInput, redirectToInputPUT, handleDelete, handleSearchClick, exportToCSV, handleViewDetail, exportFile, redirectToImportData }) => {
 
@@ -47,7 +47,7 @@ const RenderComponent = ({ component, apiData, redirectToInput, redirectToInputP
                         return (
                             // <FontAwesomeIcon icon={faFileImport} key={key} className="icon-import mr-2 pointer" />
                             <>
-                                <FontAwesomeIcon icon={faUpload} className={`size-24 mr-2 icon-add pointer `} id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title={"Import data"}/>
+                                <FontAwesomeIcon icon={faUpload} className={`size-24 mr-2 icon-add pointer `} id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title={"Import data"} />
                                 <input type="file" style={{ display: 'none' }} />
                                 <ul class="dropdown-menu " aria-labelledby="navbarDropdownMenuLink">
                                     <li ><span class="dropdown-item" onClick={() => redirectToImportData(props.buttons.import.api.url.split('/')[2], props.source.get.url, props.buttons.add.api)} >Import File</span></li>
@@ -93,6 +93,14 @@ const RenderComponent = ({ component, apiData, redirectToInput, redirectToInputP
                         <div class="d-flex align-items-center mt-2">
                             hi
                         </div>
+                    </>
+                );
+
+            case 'chart_1':
+
+                return (
+                    <>
+                        <RenderChart props={props} />
                     </>
                 );
             default:
@@ -228,7 +236,7 @@ const RenderTable = (props) => {
 
     const currentData = apiData;
     console.log(396, currentData)
-        
+
     const paginate = (pageNumber) => {
         const startAt = (pageNumber - 1) * rowsPerPage;
         if (Object.keys(searchValues).length === 0) {
@@ -241,7 +249,7 @@ const RenderTable = (props) => {
     };
 
     const renderSourceButtons = (source, lang) => {
-        console.log(244,source)
+        console.log(244, source)
         return Object.entries(source).map(([key, value]) => {
             if (!value.state) {
                 return null;
@@ -437,14 +445,14 @@ const RenderTable = (props) => {
             // exact: true
         }
 
-        console.log(447,searchBody)
+        console.log(447, searchBody)
         fetch(`${proxy()}${searchUrl}`, {
             method: "POST",
             headers: {
                 "content-type": "application/json",
                 Authorization: _token,
                 fromIndex: currentPage - 1,
-               
+
             },
             body: JSON.stringify(searchBody)
         })
@@ -485,68 +493,7 @@ const RenderTable = (props) => {
             });
     };
 
-    // const callApiStatistic = (requireCount = false) => {
 
-    //     const startTime = new Date().getTime();
-    //     let loadingTimeout;
-    //     let loadingTimeoutSearch;
-    //     // if (Object.keys(searchValues).length !== 0) {
-    //     //     loadingTimeoutSearch = setTimeout(() => {
-    //     //         setLoadingSearch(true);
-    //     //     }, 310);
-    //     // }
-    //     loadingTimeout = setTimeout(() => {
-
-    //         // setLoading(true)
-    //         setLoadingResult(true)
-    //     }, 300);
-    //     if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
-    //         setPreviousSearchValues(searchValues);
-    //         requireCount = true;
-    //     }
-    //     const searchBody = {
-    //         table_id: dataTable_id,
-    //         start_index: currentPage - 1,
-    //         criteria: searchValues,
-    //         require_count: false,
-    //         require_statistic: true,
-    //         api_id: page.components?.[0]?.api_get.split('/')[2]
-    //         // exact: true
-    //     }
-    //     // console.log(searchBody)
-    //     fetch(`${proxy()}${page.components?.[0]?.api_search}`, {
-    //         method: "POST",
-    //         headers: {
-    //             "content-type": "application/json",
-    //             Authorization: _token,
-    //             fromIndex: currentPage - 1
-    //         },
-    //         body: JSON.stringify(searchBody)
-    //     })
-    //         .then(res => res.json())
-    //         .then(res => {
-    //             const { success, content, data, result, total, fields, count, sumerize } = res;
-    //             const statisticValues = res.statistic;
-    //             // console.log(74, res)
-    //             if (success) {
-    //                 // setApiData(data.filter(record => record != undefined));
-    //                 // setApiDataName(fields);
-    //                 setDataStatis(statisticValues);
-    //                 // setLoaded(true);
-    //             } else {
-    //                 setApiData([]);
-    //                 setApiDataName([])
-    //             }
-    //             const endTime = new Date().getTime();
-    //             const elapsedTime = endTime - startTime;
-    //             clearTimeout(loadingTimeout);
-    //             clearTimeout(loadingTimeoutSearch);// Clear the timeout
-    //             setLoadingResult(false)
-    //             // setLoadingSearch(false);
-    //             // setLoading(false)
-    //             // console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
-    //         });
-    // };
 
     return (
         <div>
@@ -681,20 +628,132 @@ const RenderTable = (props) => {
 
 
 const RenderInlineButtonsForRow = (props) => {
-    //console.log(420, props)
+    console.log(420, props)
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const { buttons, row, handleViewDetail, redirectToInputPUT, handleDelete } = props
+
+    const _token = localStorage.getItem("_token");
     const orderedKeys = ['approve', 'unapprove', 'detail', 'update', 'delete']; // Thứ tự mong muốn
+
+
+    // const handleApprove = (url, fomular) => {
+
+    //     const bodyApprove = {
+    //         fomular: true
+    //     }
+    //     console.log(bodyApprove)
+    //     fetch(`${proxy()}${url}`, {
+    //         method: "PUT",
+    //         headers: {
+    //             Authorization: _token,
+    //             "content-type": "application/json"
+    //         },
+    //         body: JSON.stringify({ bodyApprove})
+    //     })
+    //         .then(res => res.json())
+    //         .then(res => {
+    //             console.log(res)
+    //             // Swal.fire({
+    //             //     title: lang["success"],
+    //             //     text: lang["success.add"],
+    //             //     icon: "success",
+    //             //     showConfirmButton: false,
+    //             //     timer: 1500
+    //             // }).then(function () {
+    //             //     window.location.reload();
+    //             // });
+    //         })
+    //         .catch(error => {
+    //             // Xử lý lỗi nếu cần
+    //         });
+    // }
+    const handleApprove = async (record, dataApi) => {
+
+
+
+        const urlApprove = dataApi.api.url;
+        //console.log(dataApiPut)
+
+        // const { components } = page;
+        // const cpn = components[0]
+        // const { api_put } = cpn;
+
+
+        if (urlApprove != undefined) {
+            // const id_str = dataApiPut.url.split('/')[2]
+            const id_str = urlApprove.split('/')[2]
+            const response = await new Promise((resolve, reject) => {
+                fetch(`${proxy()}/apis/api/${id_str}/input_info`, {
+                    headers: {
+                        Authorization: _token
+                    }
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        const { data, success, content } = res;
+                        console.log(res)
+                        if (success) {
+
+
+                        }
+                        resolve(res)
+                    })
+            })
+            const { success, data } = response;
+            console.log(54, response)
+            if (success) {
+                const { params } = data;
+                const stringifiedParams = params.map(param => {
+                    const { fomular_alias } = param
+                    return record[fomular_alias]
+                }).join('/')
+                console.log(962, stringifiedParams)
+
+
+                const bodyApprove = {
+                    fomular: true
+                }
+                console.log(bodyApprove)
+                fetch(`${proxy()}${urlApprove}/${stringifiedParams}`, {
+                    method: "PUT",
+                    headers: {
+                        Authorization: _token,
+                        "content-type": "application/json"
+                    },
+                    body: JSON.stringify({ bodyApprove })
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        console.log(res)
+                        // Swal.fire({
+                        //     title: lang["success"],
+                        //     text: lang["success.add"],
+                        //     icon: "success",
+                        //     showConfirmButton: false,
+                        //     timer: 1500
+                        // }).then(function () {
+                        //     window.location.reload();
+                        // });
+                    })
+                    .catch(error => {
+                        // Xử lý lỗi nếu cần
+                    });
+
+            }
+        } else {
+
+        }
+    }
 
     return orderedKeys.filter(key => buttons[key] && buttons[key].state).map(key => {
         switch (key) {
             case 'approve':
                 return <div class="icon-table-line">
-                    <i className="fa fa-check-circle-o size-24 pointer icon-check" key={key}></i>
+                    <i className="fa fa-check-circle-o size-24 pointer icon-check" key={key} onClick={() => handleApprove(row, props.buttons.approve)} ></i>
                 </div>
             case 'unapprove':
                 return <div class="icon-table-line">
-                    <i className="fa fa-times-circle-o size-24 pointer icon-close" key={key}></i>
+                    <i className="fa fa-times-circle-o size-24 pointer icon-close" key={key}  ></i>
                 </div>
 
             case 'detail':
@@ -707,11 +766,186 @@ const RenderInlineButtonsForRow = (props) => {
                 </div>
             case 'delete':
                 return <div class="icon-table-line">
-                    <i className="fa fa-trash-o size-24 pointer icon-delete" key={key} onClick={() => handleDelete(row, props.buttons.delete.api.url)}  title={lang["delete"]}></i>
+                    <i className="fa fa-trash-o size-24 pointer icon-delete" key={key} onClick={() => handleDelete(row, props.buttons.delete.api.url)} title={lang["delete"]}></i>
                 </div>
             default:
                 return <button key={key}>{key}</button>;
         }
     });
 };
+
+const RenderChart = (props) => {
+    console.log(730, props.props)
+    const url = props.props.api
+    console.log(url.url)
+    const { lang, proxy, auth, functions } = useSelector(state => state);
+    const _token = localStorage.getItem("_token");
+    const [apiDataStatis, setApiDataStatis] = useState({})
+    const [height, setHeight] = useState(350)
+    console.log(675, height)
+    useEffect(() => {
+        callApiStatistic()
+
+    }, []);
+
+    // useEffect(() => {
+    //     // Sử dụng sự kiện thay đổi kích thước cửa sổ để cập nhật chiều cao
+    //     const handleResize = () => {
+    //         // Tính toán chiều cao mới dựa trên kích thước cửa sổ hoặc phần tử chứa biểu đồ
+    //         const newHeight = window.innerHeight; // Hoặc thay thế bằng logic tính toán khác
+    //         setHeight(newHeight);
+    //     };
+
+    //     // Gắn sự kiện thay đổi kích thước cửa sổ
+    //     window.addEventListener('resize', handleResize);
+
+    //     // Gọi hàm handleResize để cài đặt chiều cao ban đầu
+    //     handleResize();
+
+    //     // Loại bỏ sự kiện khi component unmount
+    //     return () => {
+    //         window.removeEventListener('resize', handleResize);
+    //     };
+    // }, []);
+
+
+    const callApiStatistic = () => {
+        fetch(`${proxy()}${url.url}`, {
+            method: "GET",
+            headers: {
+                "content-type": "application/json",
+                Authorization: _token,
+            },
+        })
+            .then((res) => res.json())
+            .then((res) => {
+                const { success, content, statistics } = res;
+                console.log(res)
+                if (success) {
+                    setApiDataStatis(statistics)
+
+                }
+            });
+    };
+
+    console.log(apiDataStatis)
+
+    const state = {
+        series: [{
+            data: []
+        }],
+        options: {
+            chart: {
+                height: height,
+                type: 'bar',
+                toolbar: {
+                    show: false
+                },
+                events: {
+                    click: function (chart, w, e) {
+                        // console.log(chart, w, e)
+                    }
+                }
+            },
+            colors: [],
+            plotOptions: {
+                bar: {
+                    horizontal: typeof Object.values(apiDataStatis)[0] === 'number' ? true : false, // Thiết lập này để thay đổi sang biểu đồ cột ngang
+                    columnWidth: '10%',
+                    distributed: true,
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                fontSize: '11px',
+            },
+            legend: {
+                show: true, // Hiển thị chú thích
+                position: 'bottom', // Vị trí của chú thích (có thể là 'top', 'bottom', 'right', 'left')
+                horizontalAlign: 'center', // Canh lề ngang của chú thích (có thể là 'left', 'center', 'right')
+                fontSize: '11px', // Kích thước font chữ
+                onItemClick: {
+                    toggleDataSeries: false // Ngăn chặn việc ẩn/mở các dòng dữ liệu khi nhấp vào chú thích
+                },
+                onItemHover: {
+                    highlightDataSeries: false // Ngăn chặn việc tô đậm các dòng dữ liệu khi di chuột qua chú thích
+                },
+            },
+            tooltip: {
+                enabled: true, // Kích hoạt tooltip
+
+            },
+            // xaxis: {
+            //     categories: [
+            //         [''],
+            //         [''],
+
+            //     ],
+            //     labels: {
+            //         style: {
+            //             colors: [],
+            //             fontSize: '10px'
+            //         }
+            //     }
+            // }
+        },
+    };
+    const transformDataForChart = (apiData) => {
+        if (!apiData) {
+            // apiData là null hoặc undefined
+            return { series: [], options: state.options };
+        }
+        if (typeof Object.values(apiData)[0] === 'number') {
+            // Dữ liệu dạng thứ hai
+            setHeight(200)
+            return {
+                series: [{ data: Object.values(apiData) }],
+                options: {
+                    ...state.options,
+                    xaxis: {
+                        categories: Object.keys(apiData).map(key => [key, ''])
+                    }
+                }
+            };
+        } else {
+            // Dữ liệu dạng thứ nhất
+            const firstKey = Object.keys(apiData)[0];
+            if (firstKey && typeof apiData[firstKey] === 'object') {
+                setHeight(350)
+                const series = Object.keys(apiData).map(key => {
+                    return { name: key, data: Object.values(apiData[key]) };
+                });
+                const categories = Object.keys(apiData[firstKey]);
+                return {
+                    series: series,
+                    options: {
+                        ...state.options,
+                        xaxis: {
+                            categories: categories.map(status => [status, ''])
+                        }
+                    }
+                };
+            } else {
+                // apiData không có cấu trúc như mong đợi
+                return { series: [], options: state.options };
+            }
+        }
+    };
+
+    const chartData = useMemo(() => transformDataForChart(apiDataStatis), [apiDataStatis]);
+
+
+    console.log(chartData)
+
+    return (
+        <div>
+            Biểu đồ
+
+            <div id="chart" style={{ width: '100%' }}>
+                <Chart options={chartData.options} series={chartData.series} type="bar" height={height} />
+            </div>
+        </div>
+    );
+};
+
 export default RenderComponent;

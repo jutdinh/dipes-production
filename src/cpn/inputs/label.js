@@ -48,7 +48,7 @@ export default (props) => {
                     <div class="form-group">
                         <label className='font-weight-bold' for="name">{field.field_name}:</label> <br></br>
                         {/* <p>{current}</p> */}
-                        <p> {field.DATATYPE === "DATE" || field.DATATYPE === "DATETIME" ? functions.renderDateTimeByFormat(defaultValue, field.FORMAT) : current }</p>
+                        <p> {field.DATATYPE === "DATE" || field.DATATYPE === "DATETIME" ? functions.renderDateTimeByFormat(defaultValue, field.FORMAT) : ( field.DATATYPE === "BOOL" ? defaultValue ? field.DEFAULT_TRUE : field.DEFAULT_FALSE : current) }</p>
                     </div>
                 </form>
             </div>

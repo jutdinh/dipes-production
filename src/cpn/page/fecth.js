@@ -26,7 +26,7 @@ export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
-    //console.log(29, pages)
+    console.log(29, pages)
     const { formatNumberWithCommas } = functions
 
     const { openTab, renderDateTimeByFormat } = functions
@@ -55,7 +55,7 @@ export default () => {
     const [page, setPage] = useState([]);
     const [dataUi, setDataUi] = useState([]);
 
-    console.log(apiDataName)
+    console.log(1175,apiDataName)
     const [apiViewPages, setApiViewPages] = useState([]);
 
     const [limit, setLimit] = useState(0)
@@ -1172,7 +1172,7 @@ export default () => {
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
     const current = apiData
-    console.log(apiData)
+    console.log(1175,current)
     const paginate = (pageNumber) => {
         const startAt = (pageNumber - 1) * rowsPerPage;
         if (Object.keys(searchValues).length === 0) {
@@ -1640,7 +1640,8 @@ export default () => {
                                                         {current.slice(0, 5).map((row, rowIndex) => (
                                                             <tr key={rowIndex}>
                                                                 {selectedFields.map((field) => (
-                                                                    <td key={field}>{functions.renderData(field, row)}</td>
+                                                                    // <td key={field}>{functions.renderData(field, row)}</td>
+                                                                    <td key={field}>{row[field]}</td>
                                                                 ))}
                                                             </tr>
                                                         ))}

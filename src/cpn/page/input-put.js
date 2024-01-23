@@ -28,7 +28,7 @@ export default () => {
     const [loaded, setLoaded] = useState(false)
     const [page, setPage] = useState(null);
 
-
+console.log(fields)
     const urlParams = new URLSearchParams(window.location.search);
     const myParam = urlParams.get('myParam');
 

@@ -1,21 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import $ from 'jquery';
+import Select from 'react-select';
 import { AsyncPaginate } from 'react-select-async-paginate';
 
-export default (props) => {
 
+
+
+export default (props) => {
     const { field, changeTrigger, related, table, defaultValue, selectOption } = props;
-    console.log(8, props)
-    const [current, setCurrent] = useState('')
-    const { proxy, unique_string, lang } = useSelector(state => state);
-    const [textError, settextError] = useState(false);
-    const validateVarchar = (varchar) => {
-        return varchar.length <= 65535;
-    };
+    const selectRef = useRef(null);
     const _token = localStorage.getItem("_token");
+    const [current, setCurrent] = useState(defaultValue ? defaultValue : "")
+    const [fields, setFields] = useState([])
+    const [height, setHeight] = useState(0)
     const [foreignData, setForeignData] = useState([])
     const [showKey, setShowKey] = useState("")
-
+    const { proxy, unique_string } = useSelector(state => state);
     const [relatedTable, setRelatedTable] = useState({})
     const [pk, setPK] = useState(undefined);
 
@@ -26,45 +27,6 @@ export default (props) => {
     const corespondingKey = foreign_keys.find(key => key.field_id == field.id)
 
 
-
-
-    const isFieldForeign = () => {
-        if (table) {
-            const { foreign_keys } = table;
-            const key = foreign_keys.find(key => key.field_id == field.id)
-            if (key) {
-                return key
-            }
-        }
-        return false
-    }
-
-    const isPrimaryKey = () => {
-        if (table) {
-            const { primary_key } = table;
-            const key = primary_key.find(key => key == field.id)
-            if (key) {
-                return key
-            }
-        }
-        return false
-    }
-
-    const fieldChangeData = (e) => {
-        const { value } = e.target
-        setCurrent(value)
-        if (validateVarchar(value) || value === '') {
-            settextError(false);
-            changeTrigger(field, value);
-        } else {
-            settextError(true);
-        }
-
-    }
-
-    // useEffect(() => {
-    //     setCurrent(defaultValue)
-    // }, [defaultValue])
     useEffect(() => {
         const key = isFieldForeign()
         const { foreign_keys } = table;
@@ -94,7 +56,7 @@ export default (props) => {
                     // console.log(res)
 
                     setForeignData(data)
-                    // setFields(fields)
+                    setFields(fields)
 
                     const { ref_field_id } = key;
                     const primaryField = fields.find(field => field.id == ref_field_id);
@@ -107,67 +69,57 @@ export default (props) => {
                 setCurrent(defaultValue)
             }
         } else {
-            if (!isFieldForeign() && field.AUTO_INCREMENT) {
-                fetch(`${proxy()}/apis/field/autoid/${field.id}`)
-                    .then(res => res.json()).then(res => {
-                        const { data } = res;
-                        // console.log(data.id)
-                        setCurrent(data.id)
-                        changeTrigger(field, data.id)
-                    })
-            } else {
-                const key = isFieldForeign()
-                if (key) {
-                    if (foreignData.length == 0) {
-                        const dataBody = {
-                            table_id: corespondingKey.table_id,
-                            start_index: startIndex,
-                            criteria: {}
-                        };
+            // if (!isFieldForeign() && field.AUTO_INCREMENT) {
+            //     fetch(`${proxy()}/apis/field/autoid/${field.id}`)
+            //         .then(res => res.json()).then(res => {
+            //             const { data } = res;
+            //             // console.log(data.id)
+            //             setCurrent(data.id)
+            //             changeTrigger(field, data.id)
+            //         })
+            // } else {
+            const key = isFieldForeign()
+            if (key) {
+                if (foreignData.length == 0) {
+                    const dataBody = {
+                        table_id: corespondingKey.table_id,
+                        start_index: startIndex,
+                        criteria: {}
+                    };
 
-                        // console.log(69, dataBody)
-                        fetch(`${proxy()}/api/foreign/data`, {
-                            method: "POST",
-                            headers: {
-                                Authorization: _token,
-                                "content-type": "application/json",
+                    // console.log(69, dataBody)
+                    fetch(`${proxy()}/api/foreign/data`, {
+                        method: "POST",
+                        headers: {
+                            Authorization: _token,
+                            "content-type": "application/json",
 
-                            },
-                            body: JSON.stringify(dataBody)
+                        },
+                        body: JSON.stringify(dataBody)
 
-                        }).then(res => res.json())
-                            .then(res => {
-                                const { success, data, fields, sumerize, statistic } = res;
-                                // console.log(82, res)
-                                setForeignData([...data.filter(record => record !== undefined)]);
-                                // setFields(fields)
-                                const { ref_field_id } = key;
-                                // console.log(key)
-                                const primaryField = fields.find(field => field.id == ref_field_id);
-                                if (primaryField) {
-                                    // console.log(primaryField)
-                                    setPK(primaryField.fomular_alias)
-                                }
-                            })
-                    }
+                    }).then(res => res.json())
+                        .then(res => {
+                            const { success, data, fields, sumerize, statistic } = res;
+                            // console.log(82, res)
+                            setForeignData([...data.filter(record => record !== undefined)]);
+                            setFields(fields)
+                            const { ref_field_id } = key;
+                            // console.log(key)
+                            const primaryField = fields.find(field => field.id == ref_field_id);
+                            if (primaryField) {
+                                // console.log(primaryField)
+                                setPK(primaryField.fomular_alias)
+                            }
+                        })
                 }
             }
+            // }
         }
     }, [defaultValue])
-    const generateData = (data) => {
 
-        if (pk && data) {
-            return data[pk];
-        }
-        return null;
-    }
+    useEffect(() => {
+    }, [pk])
 
-    const handleChange = option => {
-        // console.log("Before update: ", selectedValue);
-        setSelectedValue(option);
-        // console.log("After update: ", selectedValue);
-        fieldChangeData({ target: { value: option.value } });
-    };
     const [selectedValue, setSelectedValue] = useState(null);
     const [loadedRecordCount, setLoadedRecordCount] = useState(0);
     const [options, setOption] = useState([]);
@@ -204,7 +156,7 @@ export default (props) => {
         const returnedData = res.data;
 
 
-        console.log(returnedData)
+        // console.log(returnedData)
         const dataWithoutNull = returnedData.filter(record => record !== null && record !== undefined);
 
         setForeignData(dataWithoutNull)
@@ -244,62 +196,187 @@ export default (props) => {
     }
 
 
+    const isFieldForeign = () => {
+        if (table) {
+            const { foreign_keys } = table;
+            const key = foreign_keys.find(key => key.field_id == field.id)
+            if (key) {
+                return key
+            }
+        }
+        return false
+    }
+
+    const isPrimaryKey = () => {
+        if (table) {
+            const { primary_key } = table;
+            const key = primary_key.find(key => key == field.id)
+            if (key) {
+                return key
+            }
+        }
+        return false
+    }
+
+    const fieldChangeData = (e) => {
+        // console.log(e.target.value)
+        const rawJSON = e.target.value
+        const value = JSON.parse(rawJSON)
+
+        setCurrent(value[pk])
+        changeTrigger(field, value[pk])
+    }
+
+    const changeRawData = (e) => {
+        const { value } = e.target
+        setCurrent(value)
+        changeTrigger(field, value)
+    }
+
+    const focusTrigger = () => {
+        setHeight(250);
+    }
+
+    const generateData = (data) => {
+        // console.log(data)
+        // console.log(pk)
+        if (pk && data) {
+            return data[pk];
+        }
+        return null;
+    }
 
 
+
+    // const dataClickedTrigger = (data) => {
+    //     setCurrent(data);
+    //     changeTrigger(field, data[pk])
+    // }changeRawData
+
+
+    const handleChange = option => {
+        console.log("Before update: ", selectedValue);
+        setSelectedValue(option);
+        console.log("After update: ", selectedValue);
+        fieldChangeData({ target: { value: option.value } });
+    };
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleScrollToBottom = () => {
+        if (!isLoading) {
+            setIsLoading(true);
+            // console.log("Reached bottom!");
+            setStartIndex(prevIndex => prevIndex + 1);
+        }
+    };
+
+    // console.log(JSON.stringify(defaultValue))
+    const [defaultOption, setDefaultOption] = useState(null);
+
+    const [initialValue, setInitialValue] = useState(null);
+    // console.log(defaultOption)
+    useEffect(() => {
+
+        const fetchDataForDefaultValue = async () => {
+            const { foreign_keys } = table;
+            const corespondingKey = foreign_keys.find(key => key.field_id == field.id)
+            if (corespondingKey) {
+                const dataBody = {
+                    table_id: corespondingKey.table_id,
+                    start_index: 0,
+                    require_count: false,
+                    //  exact: true
+                };
+
+                const criteria = {};
+
+                criteria[pk] = defaultValue;
+                dataBody.criteria = criteria;
+                // console.log(290, dataBody)
+                const response = await fetch(`${proxy()}/api/foreign/data`, {
+                    method: "POST",
+                    headers: {
+                        Authorization: _token,
+                        "content-type": "application/json",
+                    },
+                    body: JSON.stringify(dataBody)
+                });
+
+                const res = await response.json();
+                console.log(res)
+                let returnedData = res.data;
+
+                const foundData = returnedData.find(d => d != undefined && d[pk] === defaultValue);
+                // console.log(criteria)
+                const label = generateData(foundData);
+                // console.log(label);
+
+                if (foundData) {
+                    const dataOption = {
+                        value: JSON.stringify(foundData),
+                        label: generateData(foundData)
+                    };
+
+                    setDefaultOption(dataOption);
+
+                    if (!initialValue) {
+                        setInitialValue(dataOption);
+                        setSelectedValue(dataOption);
+                    } else if (selectedValue && initialValue.value === selectedValue.value) {
+                        setSelectedValue(dataOption);
+                    }
+                }
+            }
+
+        };
+        if (current != undefined) {
+            fetchDataForDefaultValue()
+        }
+    }, [defaultValue, pk]);
+    // console.log(pk)
     if (isPrimaryKey()) {
         if (!isFieldForeign()) {
+            return (
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <form>
+                            <div class="form-group">
+                                <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
+                                {/* <input
+                                    type={field.AUTO_INCREMENT ? "text" : "number"}
+                                    className="form-control"
+                                    placeholder=""
+                                    onChange={changeRawData}
+                                    defaultValue={defaultValue == undefined ? current : defaultValue}
+                                    readOnly={field.AUTO_INCREMENT ? true : false}
+                                /> */}
+
+                                <textarea type="text"
+                                    onKeyDown={e => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+
+                                        }
+                                    }}
+                                    className="form-control"
+                                    onChange={changeRawData}
+                                    defaultValue={defaultValue == undefined ? current : defaultValue}
+                                                                  />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )
+        }
+        else {
             if (selectOption) {
                 return (
                     <div class="row justify-content-center">
-                        <div class="form-group col-md-6">
+                        <div class="col-md-6">
                             <form>
                                 <div class="form-group">
-                                    <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
-                                    <textarea type="text"
-                                        onKeyDown={e => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
-
-                                            }
-                                        }}
-                                        className="form-control"
-                                        value={current}
-                                        placeholder="" onChange={fieldChangeData}
-                                    />
-                                    {textError && (
-                                        <div className="rel">
-                                            <div className="abs">
-                                                <span className="block crimson mb-2 text-14-px " style={{ color: 'red' }}>
-                                                    {lang["char error"]}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-
-                            </form>
-                        </div>
-                    </div>
-                )
-
-            } else {
-                return (
-                    <div class="row justify-content-center">
-                        <div class="form-group col-md-6">
-                            <form>
-                                <div class="form-group">
-                                    <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
-                                    {/* <textarea disabled type="text"
-                                        onKeyDown={e => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
-
-                                            }
-                                        }}
-                                        className="form-control"
-                                        value={current}
-                                        placeholder="" onChange={fieldChangeData}
-                                    /> */}
+                                    <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
 
                                     <AsyncPaginate
                                         loadOptions={loadOptions}
@@ -317,154 +394,66 @@ export default (props) => {
                                         }}
                                         allowCreateWhileLoading={false} // Không cho phép tạo mới khi đang tải dữ liệu
                                     />
-                                    {textError && (
-                                        <div className="rel">
-                                            <div className="abs">
-                                                <span className="block crimson mb-2 text-14-px " style={{ color: 'red' }}>
-                                                    {lang["char error"]}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
 
+                                </div>
                             </form>
                         </div>
                     </div>
-                )
-
-            }
-
-        }
-        else {
-            if (selectOption) {
-                return (
-                    <div class="row justify-content-center">
-                        <div class="form-group col-md-6">
-                            <form>
-                                <div class="form-group">
-                                    <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
-                                    {/* <textarea type="text"
-                                        onKeyDown={e => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
-
-                                            }
-                                        }}
-                                        className="form-control"
-                                        value={current}
-                                        placeholder="" onChange={fieldChangeData}
-                                    /> */}
-
-                                    {textError && (
-                                        <div className="rel">
-                                            <div className="abs">
-                                                <span className="block crimson mb-2 text-14-px " style={{ color: 'red' }}>
-                                                    {lang["char error"]}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-
-                            </form>
-                        </div>
-                    </div>
-                )
+                );
             } else {
                 return (
                     <div class="row justify-content-center">
-                        <div class="form-group col-md-6">
+                        <div class="col-md-6">
                             <form>
                                 <div class="form-group">
-                                    <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
-                                    <textarea disabled type="text"
-                                        onKeyDown={e => {
-                                            if (e.key === 'Enter') {
-                                                e.preventDefault();
-
-                                            }
-                                        }}
+                                    <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
+                                    <input
+                                        type={field.AUTO_INCREMENT ? "text" : "number"}
                                         className="form-control"
-                                        value={current}
-                                        placeholder="" onChange={fieldChangeData}
+                                        placeholder=""
+                                        onChange={changeRawData}
+                                        defaultValue={defaultValue == undefined ? current : defaultValue}
+                                        readOnly={field.AUTO_INCREMENT ? true : false}
                                     />
-                                    {textError && (
-                                        <div className="rel">
-                                            <div className="abs">
-                                                <span className="block crimson mb-2 text-14-px " style={{ color: 'red' }}>
-                                                    {lang["char error"]}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
-
                             </form>
                         </div>
                     </div>
                 )
             }
-
         }
     } else {
+
         if (!isFieldForeign()) {
             return (
                 <div class="row justify-content-center">
-                    <div class="form-group col-md-6">
+                    <div class="col-md-6">
                         <form>
                             <div class="form-group">
-                                <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
-                                <textarea type="text" rows="1"
-                                onKeyDown={e => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
+                                <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
+                                <input
+                                    type={field.AUTO_INCREMENT ? "text" : "number"}
+                                    className="form-control"
+                                    placeholder=""
+                                    onChange={changeRawData}
+                                    value={current}
+                                // readOnly={field.AUTO_INCREMENT ? true : false}
+                                />
 
-                                    }
-                                }}
-                                className="form-control"
-                                value={current}
-                                placeholder="" onChange={fieldChangeData}
-                            />
-
-
-                              
-                                {textError && (
-                                    <div className="rel">
-                                        <div className="abs">
-                                            <span className="block crimson mb-2 text-14-px " style={{ color: 'red' }}>
-                                                {lang["char error"]}
-                                            </span>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
-
                         </form>
                     </div>
                 </div>
             )
-        }else {
+        } else {
             return (
-                <div class="row justify-content-center">
-                    <div class="form-group col-md-6">
+                <div className="row justify-content-center">
+                    <div className="col-md-6">
                         <form>
-                            <div class="form-group">
-                                <label for="name">{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label> <br></br>
-                                {/* <textarea type="text" rows="1"
-                                onKeyDown={e => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-
-                                    }
-                                }}
-                                className="form-control"
-                                value={current}
-                                placeholder="" onChange={fieldChangeData}
-                            /> */}
-
-
+                            <div className="form-group">
+                                <label>{field.field_name}{!field.NULL && <span style={{ color: 'red' }}> *</span>}</label>
                                 <AsyncPaginate
+
                                     loadOptions={loadOptions}
                                     onChange={handleChange}
                                     isSearchable={true}
@@ -478,23 +467,13 @@ export default (props) => {
                                     additional={{
                                         page: 0,
                                     }}
-                                    allowCreateWhileLoading={false} // Không cho phép tạo mới khi đang tải dữ liệu
                                 />
-                                {textError && (
-                                    <div className="rel">
-                                        <div className="abs">
-                                            <span className="block crimson mb-2 text-14-px " style={{ color: 'red' }}>
-                                                {lang["char error"]}
-                                            </span>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
-
                         </form>
                     </div>
                 </div>
-            )
+            );
+
         }
     }
 
