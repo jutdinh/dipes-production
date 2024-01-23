@@ -769,9 +769,9 @@ class ConsumeApi extends Controller {
          */
 
 
-        if (path.length == 1) {
+        if (path.length <= 1) {            
             object = { ...object, [path[0]]: value }
-        } else {
+        } else {            
             object[path[0]] = this.setPropByPath(object[path[0]], path.slice(1, path.length), value)
         }
         return object
@@ -4164,9 +4164,13 @@ class ConsumeApi extends Controller {
                         const { fomular_alias } = group_by[h]
                         groupByStrings.push( record[fomular_alias] )
                     }
+
+                    if( groupByStrings.length == 0 ){
+                        groupByStrings.push( field.field_name )
+                    }
     
                     const currentValue = this.getPropByPath( statistics, groupByStrings )
-                                   
+                    
     
                     switch(fomular){
                         case "SUM":
