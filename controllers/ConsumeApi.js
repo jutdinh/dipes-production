@@ -4030,9 +4030,7 @@ class ConsumeApi extends Controller {
 
         const firstCriteria = criterias[0]
         
-        if( firstCriteria ){
-            const { operator } = firstCriteria;
-
+        if( firstCriteria ){           
             let fomular = firstCriteria.fomular;
             const NOW = new Date()
 
@@ -4053,15 +4051,67 @@ class ConsumeApi extends Controller {
                 }
             }            
             const result = eval( fomular )
-
             // console.log( fomular, result )
 
             if( result ){
+                criterias[0].value = true
 
+                const remainCriterias = criterias.slice(1, criterias.length)
+                for( let i = 0 ; i < remainCriterias.length; i++ ){
+                    const criteria = remainCriterias[i]
 
+                    const { operator } = criteria;
+
+                    let fomular = criteria.fomular;
+
+                    for( let j = 0; j < keys.length; j++ ){
+                        const key = keys[j]
+                        
+                        const field = this.getFieldByAlias(key)
+
+                        if( field && ["DATE", "DATETIME"].indexOf(field.DATATYPE) != -1 ){
+                            const time = new Date( record[key] )
+                            
+                            fomular = fomular.replaceAll( key, time.getTime() )
+                        }else{
+                            fomular = fomular.replaceAll( key, record[key] )
+                        }
+
+                    }
+
+                    const nextResult = eval( fomular )
+                    criterias[ i + 1 ].value = nextResult
+                }
+
+                let final = result;
+
+                for( let i = 1 ; i < criterias.length; i++ ){
+                    const { operator, value } = criterias[i]
+                    if( final ){
+                        if( operator == "AND" ){                        
+                            if( value && final ){
+
+                            }else{
+                                final = false
+                            }
+                        }
+
+                        if( operator == "OR" ){
+                            if( final || value ){
+                                final = false
+                            }else{
+                                if( !final && !value ){
+                                    final = false
+                                }
+                            }
+                        }
+                    }else{
+                        break
+                    }
+                }
+                return final
             }else{
-                
-
+                return false
             }
         }else{
             return true
@@ -4084,9 +4134,6 @@ class ConsumeApi extends Controller {
         })
 
         const parsedCriterias = this.parseCriteriasToStrings( criterias )
-        console.log( criterias )
-        console.log(parsedCriterias)
-
 
         let partitions = [];        
 
@@ -4111,54 +4158,58 @@ class ConsumeApi extends Controller {
                 
                 const isRecordValid = this.validRecordOfDataByCriterias( record, parsedCriterias )
 
-                for( let h = 0; h < group_by.length; h++ ){
-                    const { fomular_alias } = group_by[h]
-                    groupByStrings.push( record[fomular_alias] )
-                }
-
-                const currentValue = this.getPropByPath( statistics, groupByStrings )
-                               
-
-                switch(fomular){
-                    case "SUM":
-                        if( currentValue ){
-                            statistics = this.setPropByPath( statistics, groupByStrings, currentValue + record[field.fomular_alias] )
-                        }else{
-                            statistics = this.setPropByPath( statistics, groupByStrings, record[field.fomular_alias] )
-                        }
-                        break;
-                    case "AVERAGE":
-                        // Not tested yet
-                        if( currentValue ){
-                            const { total, value } = currentValue;
-
-                            const newValue = ( total * value + record[field.fomular_alias] ) / ( total + 1 )
-
-                            const newAvg = {
-                                total: total + 1,
-                                value: newValue
+                if(isRecordValid){
+                    
+                    for( let h = 0; h < group_by.length; h++ ){
+                        const { fomular_alias } = group_by[h]
+                        groupByStrings.push( record[fomular_alias] )
+                    }
+    
+                    const currentValue = this.getPropByPath( statistics, groupByStrings )
+                                   
+    
+                    switch(fomular){
+                        case "SUM":
+                            if( currentValue ){
+                                statistics = this.setPropByPath( statistics, groupByStrings, currentValue + record[field.fomular_alias] )
+                            }else{
+                                statistics = this.setPropByPath( statistics, groupByStrings, record[field.fomular_alias] )
                             }
-                            statistics = this.setPropByPath( statistics, groupByStrings, newAvg )
-
-                        }else{
-                            const newAvg = {
-                                total: 1,
-                                value: record[field.fomular_alias]
+                            break;
+                        case "AVERAGE":
+                            // Not tested yet
+                            if( currentValue ){
+                                const { total, value } = currentValue;
+    
+                                const newValue = ( total * value + record[field.fomular_alias] ) / ( total + 1 )
+    
+                                const newAvg = {
+                                    total: total + 1,
+                                    value: newValue
+                                }
+                                statistics = this.setPropByPath( statistics, groupByStrings, newAvg )
+    
+                            }else{
+                                const newAvg = {
+                                    total: 1,
+                                    value: record[field.fomular_alias]
+                                }
+    
+                                statistics = this.setPropByPath( statistics, groupByStrings, newAvg )
                             }
-
-                            statistics = this.setPropByPath( statistics, groupByStrings, newAvg )
-                        }
-
-                        break;
-                    case "COUNT":
-                        if( currentValue ){
-                            statistics = this.setPropByPath( statistics, groupByStrings, currentValue + 1 )
-                        }else{
-                            statistics = this.setPropByPath( statistics, groupByStrings, 1 )
-                        }
-                        break;
+    
+                            break;
+                        case "COUNT":
+                            if( currentValue ){
+                                statistics = this.setPropByPath( statistics, groupByStrings, currentValue + 1 )
+                            }else{
+                                statistics = this.setPropByPath( statistics, groupByStrings, 1 )
+                            }
+                            break;
+                    }
                 }
             }
+
 
         }
 
