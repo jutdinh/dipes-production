@@ -4296,7 +4296,7 @@ class ConsumeApi extends Controller {
             return value != undefined
         })
 
-        console.log(isAtLeastOneCriteriaIsNotNull)
+        // console.log(isAtLeastOneCriteriaIsNotNull)
 
         if (isAtLeastOneCriteriaIsNotNull.length > 0) {
 
@@ -4310,10 +4310,38 @@ class ConsumeApi extends Controller {
 
                     const { DATATYPE, AUTO_INCREMENT } = field;
                     if (Fields.stringFamily.indexOf(DATATYPE) != -1 || (Fields.intFamily.indexOf(DATATYPE) != -1 && AUTO_INCREMENT)) {
+
+                        /**
+                         * 
+                         * This regex is restricted for string datatype
+                         * 
+                         * An Int-family field with AUTO INCREMENT = true counts as a string field
+                         * 
+                         */
+
                         qr[`${key}`] = { $regex: query[key] } //approximate
                         // qr[`${key}`] = query[key] // exact
+
                     } else {
-                        qr[`${key}`] = query[key]
+
+                        if( DATATYPE == "DATE" || DATATYPE == "DATETIME" ){                            
+                            const date = new Date( query[key] )
+
+                            qr[`${key}`] = date;
+                            
+                            if(DATATYPE == "DATE"){  // Mấy cái này sao này banh xác r tính
+                                // const day = date.getDate()
+                                // const month = date.getMonth() + 1
+                                // const year = date.getFullYear()
+                                
+
+                            }
+                            if( DATATYPE == "DATETIME" ){
+                                
+                            }
+                        }else{
+                            qr[`${key}`] = query[key]
+                        }
                     }
 
                     formatedQuery["$and"].push(qr)
