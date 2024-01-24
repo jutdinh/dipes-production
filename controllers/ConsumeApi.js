@@ -633,11 +633,12 @@ class ConsumeApi extends Controller {
                         }
                         /*(1.2)*/
                     } else {
-                        if (intValidate(value)) {
-                            return { valid: true, result: parseInt(value) };
-                        } else {
-                            return { valid: true, result: value };
-                        }
+                        // if (intValidate(value)) {
+                        //     return { valid: true, result: parseInt(value) };
+                        // } else {
+                        //     return { valid: true, result: value };
+                        // }
+                        return { valid: true, result: value };
                     }
         /*(2)*/ case "DECIMAL":
                 case "DECIMAL UNSIGNED":
@@ -4332,12 +4333,11 @@ class ConsumeApi extends Controller {
                             if(DATATYPE == "DATE"){  // Mấy cái này sao này banh xác r tính
                                 // const day = date.getDate()
                                 // const month = date.getMonth() + 1
-                                // const year = date.getFullYear()
-                                
-
+                                // const year = date.getFullYear()                               
                             }
+
                             if( DATATYPE == "DATETIME" ){
-                                
+
                             }
                         }else{
                             qr[`${key}`] = query[key]
