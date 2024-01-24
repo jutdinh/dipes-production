@@ -1075,7 +1075,7 @@ export default (props) => {
                                                                                                                     <td key={header.fomular_alias} className="cell">{renderData(header, row)}</td>
                                                                                                                 ))}
                                                                                                                 <td class="align-center" style={{ width: "100px" }}>
-                                                                                                                    {checkDetail && <i className="fa fa-eye size-24 pointer icon-view" onClick={() => handleViewDetail(row)} title={lang["viewdetail"]}></i>}
+                                                                                                                    {checkDetail && <i className="fa fa-eye size-24 pointer icon-view" onClick={() => handleViewDetail(row)} title={lang["viewdetail"]} ></i>}
                                                                                                                     {
                                                                                                                         _user.role === "uad"
                                                                                                                             ? <>

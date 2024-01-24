@@ -725,6 +725,14 @@ img[class="scaled-hover-target"] {
     transform: scale(1.1);
 }
 
+
+.icon-disable {
+    pointer-events: "none";
+    opacity: 0.4; 
+   cursor: not-allowed
+}
+
+
 .card-block-message h5 {
     font-size: 14px;
     font-weight: 700;
@@ -757,7 +765,9 @@ img[class="scaled-hover-target"] {
     background-color: rgba(0, 0, 0, .03);
     border-bottom: 1px solid rgba(0, 0, 0, .125);
 }
-
+.margin-bottom-1 {
+    margin-bottom: 1px;
+}
 .info-case {
     padding-left: 5px;
     padding-right: 5px;

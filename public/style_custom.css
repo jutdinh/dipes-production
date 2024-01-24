@@ -1570,9 +1570,8 @@ table tr {
 
 .icon-export {
     color: #269c1b;
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
+    font-size: 25px
+
 }
 
 .icon-export-ex {
@@ -1583,16 +1582,26 @@ table tr {
 }
 
 .icon-import {
-    color: #1a507c;
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
+    color: #ff6655;
+    font-size: 2em;
+    margin-bottom: 1px;
 }
 
 .icon-table {
     display: flex;
+    justify-content: center;
 }
 
+select:required:invalid {
+    color: #666;
+  }
+  option[value=""][disabled] {
+    display: none;
+  }
+  option {
+    color: #000;
+  }
+  
 .icon-table .icon-table-line {
     display: flex;
     justify-content: center;
@@ -1610,15 +1619,18 @@ table tr {
 .icon-table :hover {
     background-color: rgb(214, 206, 206)
 }
+
+
+
 .custom-tooltip {
     background-color: #fff;
     border: 1px solid #ced4da;
     padding: 10px;
     border-bottom: none;
 }
-.table-custom thead th {
-    font-weight: 700 !important;
-    height: 40px;
+.table-custom thead td {
+  font-weight: bold;
+    background-color: #f0eaea;
 
     
 }
@@ -1665,9 +1677,7 @@ table tr {
 
 .icon-add {
     color: #0056b3;
-    font-size: 24px;
-    width: 24px;
-    height: 27px;
+    font-size: 2em
 }
 
 .icon-database {

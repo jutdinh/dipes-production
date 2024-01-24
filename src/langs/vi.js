@@ -437,5 +437,10 @@ export default {
 
     "add row": "Thêm hàng",
     "import file": "Nhập tệp tin",
-    "sample file": "Tệp tin mẫu"
+    "sample file": "Tệp tin mẫu",
+    "success.update": "Cập nhật thành công",
+    "no privileges": "Không có quyền",
+    "username not available": "Tên đăng nhập không khả dụng",
+    "log.login": "Lịch sử đăng nhập"
+    
 }

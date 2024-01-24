@@ -26,7 +26,7 @@ export default () => {
     const { lang, proxy, auth, pages, functions } = useSelector(state => state);
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
-    console.log(29, pages)
+    //console.log(29, pages)
     const { formatNumberWithCommas } = functions
 
     const { openTab, renderDateTimeByFormat } = functions
@@ -45,7 +45,7 @@ export default () => {
     const [loading, setLoading] = useState(false);
     const [loadingResult, setLoadingResult] = useState(false);
     const [uploadedJson, setUploadedJson] = useState(null);
-    //console.log(46, apiData)
+    ////console.log(46, apiData)
 
     const [apiDataName, setApiDataName] = useState([])
     const [dataStatis, setDataStatis] = useState([])
@@ -55,7 +55,7 @@ export default () => {
     const [page, setPage] = useState([]);
     const [dataUi, setDataUi] = useState([]);
 
-    console.log(1175,apiDataName)
+    //console.log(1175,apiDataName)
     const [apiViewPages, setApiViewPages] = useState([]);
 
     const [limit, setLimit] = useState(0)
@@ -74,7 +74,7 @@ export default () => {
 
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     }
-    // //console.log(dataStatis)
+    // ////console.log(dataStatis)
     const formatNumberSize = (num) => {
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
     }
@@ -105,7 +105,7 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                // //console.log(resp)
+                // ////console.log(resp)
                 if (activated) {
                     setStatusActive(true)
                 }
@@ -134,13 +134,13 @@ export default () => {
 
 
     const yourComponentArray = data_cpn.data[1]?.children.length > 0 ? data_cpn.data[1]?.children[0]?.component : data_cpn.data[1]?.component
-    //console.log(yourComponentArray)
+    ////console.log(yourComponentArray)
 
     useEffect(() => {
         if (pages && pages.length > 0) {
             const result = functions.findPageById(pages, `${url}`);
 
-            //console.log(141, result)
+            ////console.log(141, result)
             if (result.component.length > 0) {
                 setDataUi(result.component);
                 setPage(result);
@@ -173,7 +173,7 @@ export default () => {
     }, [page, url])
 
     const layoutId = page.components?.[0].layout_id;
-    // //console.log(layoutId)
+    // ////console.log(layoutId)
     const tableClassName = layoutId === 0 ? "table" : "table table-hover";
 
     const CustomFileInput = ({ onChange, ...props }) => {
@@ -237,7 +237,7 @@ export default () => {
                                         return newRow;
                                     });
 
-                                // //console.log("Parsed CSV Result:", modifiedData);
+                                // ////console.log("Parsed CSV Result:", modifiedData);
                                 setUploadedJson(modifiedData);
                                 importData();
                             },
@@ -254,7 +254,7 @@ export default () => {
                             }
                             return newRow;
                         });
-                        // //console.log("Parsed Excel Result:", modifiedData);
+                        // ////console.log("Parsed Excel Result:", modifiedData);
                         setUploadedJson({ data: modifiedData });
                         importData();
                     }
@@ -322,7 +322,7 @@ export default () => {
         );
     };
 
-    // //console.log(uploadedJson)
+    // ////console.log(uploadedJson)
 
     const BATCH_SIZE = 1000;
 
@@ -341,7 +341,7 @@ export default () => {
                 // type: "import"
             };
             logCount++;
-            // //console.log("Sample batch data:", requestBody);
+            // ////console.log("Sample batch data:", requestBody);
 
             try {
                 const response = await fetch(`${proxy()}${page.components?.[0]?.api_import}`, {
@@ -355,13 +355,13 @@ export default () => {
 
                 const jsonResponse = await response.json();
                 const { success, content, data, result, total, fields, statisticValues, count, sumerize } = jsonResponse;
-                // //console.log(jsonResponse)
+                // ////console.log(jsonResponse)
                 if (!success) {
                     console.error("Server did not process batch successfully:", jsonResponse);
                     break;
                 }
 
-                // //console.log("Successfully processed batch number:", logCount);
+                // ////console.log("Successfully processed batch number:", logCount);
             } catch (error) {
                 console.error("Error sending batch:", error);
                 break;
@@ -382,16 +382,16 @@ export default () => {
 
                 if (success && data.length > 0) {
                     const dataUser = data.find(item => item.username === _user.username);
-                    // //console.log(_user.username)
-                    // //console.log(dataUser)
+                    // ////console.log(_user.username)
+                    // ////console.log(dataUser)
                     setDataPrivileges(dataUser?.privileges)
                 }
             })
 
     }, [])
-    // //console.log(dataPrivileges)
+    // ////console.log(dataPrivileges)
     const dataCheck = dataPrivileges?.find(item => item.table_id === dataTable_id);
-    // //console.log(dataCheck)
+    // ////console.log(dataCheck)
     useEffect(() => {
 
         importData()
@@ -405,9 +405,9 @@ export default () => {
             const id_str = page.components?.[0]?.api_post.split('/')[2];
             const result = functions.findPostApi(page);
 
-            //console.log(456, page)
-            //console.log(456, result)
-            // //console.log(id_str)
+            ////console.log(456, page)
+            ////console.log(456, result)
+            // ////console.log(id_str)
             fetch(`${proxy()}/apis/api/${result?.split('/')[2]}/input_info`, {
                 headers: {
                     Authorization: _token
@@ -416,7 +416,7 @@ export default () => {
                 .then(res => res.json())
                 .then(res => {
                     const { data, success, content } = res;
-                    console.log(413, res)
+                    //console.log(413, res)
                     if (success) {
                         setDataTables(data.tables)
                         setDataTableID(data.tables[0].id)
@@ -427,8 +427,8 @@ export default () => {
                 })
         }
     }, [page, dataTable_id])
-    // //console.log(dataTable_id)
-    // //console.log(page)
+    // ////console.log(dataTable_id)
+    // ////console.log(page)
     const handleCloseModal = () => {
         setSelectedFields([]);
         setSelectedStats([]);
@@ -436,7 +436,7 @@ export default () => {
     }
     const [loaded, setLoaded] = useState(false);
 
-    // //console.log(page)
+    // ////console.log(page)
     //search
     const [currentPage, setCurrentPage] = useState(0);
 
@@ -461,10 +461,10 @@ export default () => {
         if (currentPage >= 1) {
             setRequireCount(false);
         }
-        // //console.log(requireCount)
+        // ////console.log(requireCount)
     }, [currentPage]);
 
-    // //console.log(2343243243324242, currentPage - 1)
+    // ////console.log(2343243243324242, currentPage - 1)
     const [previousSearchValues, setPreviousSearchValues] = useState({});
     const [currentCount, setCurrentCount] = useState(null);
 
@@ -483,7 +483,7 @@ export default () => {
             setLoading(true)
         }, 300);
         const getApi = functions.findGetApi(page);
-        //console.log(482, getApi)
+        ////console.log(482, getApi)
         const searchBody = {
             // table_id: dataTable_id,
             start_index: startIndex,
@@ -494,7 +494,7 @@ export default () => {
             // exact: true
         }
 
-        console.log("ĐÂY LÀ BODY:", searchBody)
+        //console.log("ĐÂY LÀ BODY:", searchBody)
         if (dataUrl) {
             fetch(`${proxy()}${dataUrl}`, {
                 method: "POST",
@@ -509,7 +509,7 @@ export default () => {
                 .then(res => {
                     const { success, content, data, result, total, fields, count, sumerize } = res;
                     const statisticValues = res.statistic;
-                    console.log(74, res)
+                    //console.log(74, res)
                     if (success) {
                         setApiData(data.filter(record => record != undefined));
 
@@ -534,7 +534,7 @@ export default () => {
                     clearTimeout(loadingTimeoutSearch);// Clear the timeout
                     setLoadingSearch(false);
                     setLoading(false)
-                    // //console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                    // ////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
                 });
         }
 
@@ -571,7 +571,7 @@ export default () => {
             // exact: true
         }
 
-        // //console.log(searchBody)
+        // ////console.log(searchBody)
         fetch(`${proxy()}${functions.findSearchApi(page)}`, {
             method: "POST",
             headers: {
@@ -586,7 +586,7 @@ export default () => {
 
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
-                // //console.log(74, res)
+                // ////console.log(74, res)
                 if (success) {
                     // setApiData(data.filter(record => record != undefined));
                     // setApiDataName(fields);
@@ -614,7 +614,7 @@ export default () => {
                 setLoadingResult(false)
                 // setLoadingSearch(false);
                 // setLoading(false)
-                // //console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                // ////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
             });
     };
     const callApiStatistic = (requireCount = false) => {
@@ -650,7 +650,7 @@ export default () => {
             // exact: true
         }
 
-        //console.log(searchBody)
+        ////console.log(searchBody)
 
         fetch(`${proxy()}${functions.findSearchApi(page)}`, {
             method: "POST",
@@ -667,7 +667,7 @@ export default () => {
 
                 const { success, content, data, result, total, fields, count, sumerize } = res;
                 const statisticValues = res.statistic;
-                //console.log(74, res)
+                ////console.log(74, res)
                 if (success) {
                     // setApiData(data.filter(record => record != undefined));
                     // setApiDataName(fields);
@@ -695,7 +695,7 @@ export default () => {
                 setLoadingResult(false)
                 // setLoadingSearch(false);
                 // setLoading(false)
-                // //console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                // ////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
             });
     };
 
@@ -715,7 +715,7 @@ export default () => {
 
     // }, [dataUi, dataTable_id])
 
-    // //console.log(loadingSearch)
+    // ////console.log(loadingSearch)
     //searching
     useEffect(() => {
         let timeout;
@@ -769,7 +769,7 @@ export default () => {
 
     const handleSearchClick = (data) => {
         setSearchValues(data)
-        //console.log(762, data)
+        ////console.log(762, data)
         setCurrentPage(1);
         if (currentPage === 1) {
 
@@ -781,10 +781,10 @@ export default () => {
             setSumerize(0)
         }
     }
-    //console.log(775, searchValues)
+    ////console.log(775, searchValues)
 
     const redirectToInput = (url_button) => {
-        //console.log(779, url_button)
+        ////console.log(779, url_button)
         // if (errorLoadConfig) {
         //     Swal.fire({
         //         title: lang["faild"],
@@ -797,9 +797,9 @@ export default () => {
         //     })
         //     return;
         // }
-        // //console.log(page)
+        // ////console.log(page)
         const result = functions.findPostApi(page);
-        //console.log(result)
+        ////console.log(result)
         // const id_str = page.components?.[0]?.api_post.split('/')[2];
         window.location.href = `${url}/apis/api/${url_button.replace("/ui/", "")}/input_info`;
     }
@@ -819,13 +819,13 @@ export default () => {
         //     })
         //     return;
         // }
-        // // //console.log(page)
+        // // ////console.log(page)
 
         window.location.href = `/page/${url}/import/${id}`;
     }
     const handleViewDetail = async (record, dataUrl) => {
-        //console.log(record)
-        //console.log(dataUrl)
+        ////console.log(record)
+        ////console.log(dataUrl)
         // const { components } = page;
         // const cpn = components[0]
         // const { api_detail } = cpn;
@@ -843,7 +843,7 @@ export default () => {
                     .then(res => {
                         const { data, success, content } = res;
                         if (success) {
-                            // //console.log("succcess", data)
+                            // ////console.log("succcess", data)
                             setDataTables(data.tables)
                             setDataFields(data.body)
                         }
@@ -898,11 +898,11 @@ export default () => {
             }
         })
     }
-    //console.log(838, functions.findDeleteApi(page))
+    ////console.log(838, functions.findDeleteApi(page))
 
 
     const handleDelete = (data, dataUrl) => {
-        //console.log(data)
+        ////console.log(data)
 
 
 
@@ -920,7 +920,7 @@ export default () => {
             //         if (foundObjects.length > 0) {
             //             // Lấy ra mảng các id từ foundObjects
             //             let fomular_alias = foundObjects.map(obj => obj.fomular_alias);
-            //             // //console.log(fomular_alias)
+            //             // ////console.log(fomular_alias)
 
             //             const newData = [];
 
@@ -928,20 +928,20 @@ export default () => {
             //                 newData.push(data[alias])
             //             })
 
-            //             // //console.log(newData);
+            //             // ////console.log(newData);
             //             // Tạo chuỗi newParams bằng cách nối api_delete và ids
             //             newParams = `${api_delete}/${newData.join("/")}`;
 
 
             //         } else {
-            //             // //console.log('Không tìm thấy đối tượng nào có id trong primaryKeys');
+            //             // ////console.log('Không tìm thấy đối tượng nào có id trong primaryKeys');
             //         }
             //     } else {
-            //         // //console.log('Không tìm thấy primaryKeys');
+            //         // ////console.log('Không tìm thấy primaryKeys');
             //     }
-            //     // //console.log(newParams);
+            //     // ////console.log(newParams);
             const newParams = `${api_delete}/${extractedValues}`;
-            //console.log(newParams)
+            ////console.log(newParams)
             Swal.fire({
                 title: lang["confirm"],
                 text: lang["confirm.content"],
@@ -964,7 +964,7 @@ export default () => {
                         .then(res => res.json())
                         .then((resp) => {
                             const { success, content, data, status } = resp;
-                            //console.log(resp)
+                            ////console.log(resp)
                             // functions.showApiResponseMessage(status)
 
                             if (success) {
@@ -995,11 +995,11 @@ export default () => {
     }
 
     const redirectToInputPUT = async (record, dataUrl) => {
-        //console.log(420, dataUrl)
+        ////console.log(420, dataUrl)
 
 
         const dataApiPut = functions.findPutApi(page);
-        //console.log(dataApiPut)
+        ////console.log(dataApiPut)
 
         // const { components } = page;
         // const cpn = components[0]
@@ -1018,7 +1018,7 @@ export default () => {
                     .then(res => res.json())
                     .then(res => {
                         const { data, success, content } = res;
-                        //console.log(res)
+                        ////console.log(res)
                         if (success) {
 
                             setDataTables(data.tables)
@@ -1028,14 +1028,14 @@ export default () => {
                     })
             })
             const { success, data } = response;
-            //console.log(54, response)
+            ////console.log(54, response)
             if (success) {
                 const { params } = data;
                 const stringifiedParams = params.map(param => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                //console.log(962, stringifiedParams)
+                ////console.log(962, stringifiedParams)
                 openTab(`/page/${url}/put/api/${id_str}/${stringifiedParams}`)
 
             }
@@ -1083,7 +1083,7 @@ export default () => {
             return "Invalid value"
         }
     };
-    //console.log(page)
+    ////console.log(page)
 
 
 
@@ -1097,7 +1097,7 @@ export default () => {
         }
         const getApi = functions.findGetApi(page);
 
-        //console.log(getApi)
+        ////console.log(getApi)
 
         if (getApi) {
 
@@ -1108,7 +1108,7 @@ export default () => {
                 .then(res => res.json())
                 .then(res => {
                     const { success, content, data, count, fields, limit, statistic } = res;
-                    //console.log(123456, res)
+                    ////console.log(123456, res)
                     setApiData([])
                     if (data && data.length > 0) {
                         setApiData(data.filter(record => record != undefined));
@@ -1122,7 +1122,7 @@ export default () => {
                     }
                 });
         } else {
-            console.error('Invalid API URL');
+            // console.error('Invalid API URL');
         }
     }
 
@@ -1143,7 +1143,7 @@ export default () => {
     //         .then(res => res.json())
     //         .then(res => {
     //             const { success, content, data, count, fields, limit, statistic } = res;
-    //             //console.log(res)
+    //             ////console.log(res)
     //             if (data && data.length > 0) {
     //                 setApiData(data.filter(record => record != undefined));
     //                 setApiDataName(fields);
@@ -1172,7 +1172,7 @@ export default () => {
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
     const current = apiData
-    console.log(1175,current)
+    //console.log(1175,current)
     const paginate = (pageNumber) => {
         const startAt = (pageNumber - 1) * rowsPerPage;
         if (Object.keys(searchValues).length === 0) {
@@ -1192,7 +1192,7 @@ export default () => {
     const [selectedFields, setSelectedFields] = useState([]);/// fields
     const [selectedStats, setSelectedStats] = useState([]);
     const [exportType, setExportType] = useState("excel");
-    console.log(selectedFields)
+    //console.log(selectedFields)
     // statis fields
     const handleStatsChange = (event) => {
         const { value } = event.target;
@@ -1202,7 +1202,7 @@ export default () => {
                 : [...prevStats, value]
         );
     }
-    // //console.log(selectedStats)
+    // ////console.log(selectedStats)
     //fields
     const [selectAll, setSelectAll] = useState(false);
     const handleSelectAllChange = () => {
@@ -1216,7 +1216,7 @@ export default () => {
 
     const handleFieldChange = (event) => {
         const { value } = event.target;
-        // //console.log(value)
+        // ////console.log(value)
         setSelectedFields(prevFields =>
             prevFields.includes(value)
                 ? prevFields.filter(field => field !== value)
@@ -1230,7 +1230,7 @@ export default () => {
     }
 
     const exportToCSV = (csvData, fields) => {
-        console.log(fields)
+        //console.log(fields)
         const selectedHeaders = fields;
         function styleHeaders(ws) {
             const headerStyle = {
@@ -1348,8 +1348,8 @@ export default () => {
             export_type: exportType
         };
 
-        console.log(exportBody)
-        console.log(`${proxy()}${functions.findExportApi(page)}`)
+        //console.log(exportBody)
+        //console.log(`${proxy()}${functions.findExportApi(page)}`)
         setLoadingExportFile(true)
         fetch(`${proxy()}${dataUrlExport}`, {
             method: "POST",
@@ -1364,14 +1364,14 @@ export default () => {
 
 
             .then(blob => {
-                //console.log(1300, blob)
+                ////console.log(1300, blob)
                 if (exportType === 'csv') {
                     const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
                     const withBom = new Blob([bom, blob], { type: 'text/csv' });
                     blob = withBom;
                 }
                 const url = window.URL.createObjectURL(blob);
-                //console.log(1300, url)
+                ////console.log(1300, url)
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
@@ -1404,7 +1404,7 @@ export default () => {
             'data-amount': amount
         }
 
-        //console.log(55, url)
+        ////console.log(55, url)
         fetch(`${proxy()}${url}`, {
             headers: headerApi
         })
@@ -1412,7 +1412,7 @@ export default () => {
             .then(res => res.json())
             .then(res => {
                 const { success, content, data, count, fields, limit, statistic } = res;
-                console.log(123456, res)
+                //console.log(123456, res)
                 setApiData([])
                 if (data && data.length > 0) {
                     setApiData(data.filter(record => record != undefined));
@@ -1428,8 +1428,8 @@ export default () => {
     const exportFile = (dataField, dataUrlGet, dataUrl) => {
         setApiDataName(dataField)
         setDataUrlExport(dataUrl)
-        console.log(1388, dataUrl)
-        console.log(1388, dataUrlGet)
+        //console.log(1388, dataUrl)
+        //console.log(1388, dataUrlGet)
         callApiDataModalExport(dataUrlGet)
     }
 
@@ -2410,6 +2410,7 @@ export default () => {
                     handleViewDetail={handleViewDetail}
                     exportFile={exportFile}
                     redirectToImportData={redirectToImportData}
+                    dataCheck={dataCheck}
                 />
             </div >
         </div >

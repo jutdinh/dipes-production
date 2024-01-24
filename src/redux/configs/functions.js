@@ -28,13 +28,13 @@ function findPageById(data, pageId) {
 
     for (const item of data) {
         if (item.page_id === pageId) {
-   
+
             return item; // Tìm thấy ở cấp hiện tại
         }
 
         if (item.component && item.component.length > 0) {
             const foundInComponent = findPageById(item.component, pageId);
-         
+
             if (foundInComponent) {
                 return foundInComponent; // Tìm thấy ở cấp con trong thành phần
             }
@@ -42,7 +42,7 @@ function findPageById(data, pageId) {
 
         if (item.children && item.children.length > 0) {
             const foundInChild = findPageById(item.children, pageId);
-    
+
             if (foundInChild) {
                 return foundInChild; // Tìm thấy ở cấp con
             }
@@ -85,11 +85,11 @@ function findPostApi(data) {
     //console.log(data)
     if (data && data.component && Array.isArray(data.component)) {
 
-        
+
         const tableComponent = data.component.find(comp => comp.name === "table");
         return tableComponent && tableComponent.props && tableComponent.props.buttons ? tableComponent.props.buttons.add.api.url : '';
     }
-    
+
     return null;
 }
 
@@ -124,7 +124,7 @@ function findPostApi(data) {
 //             }
 //         }
 //     }
-    
+
 //     return null;
 // }
 
@@ -212,11 +212,11 @@ function findRowsPerPage(data) {
     if (!data || typeof data !== 'object') {
         return null;
     }
-    
-      
-        return data.visibility ? data.visibility.row_per_page : '';
-    
-   
+
+
+    return data.visibility ? data.visibility.row_per_page : '';
+
+
 }
 
 function getNamePage(data) {
@@ -235,8 +235,7 @@ function getNamePage(data) {
 }
 
 const findPropsNameAddByUrl = (data, targetUrl) => {
-    console.log(data)
-    console.log(targetUrl)
+
     // Kiểm tra xem mảng component có tồn tại và đúng định dạng không
     if (!data || typeof data !== 'object' || !Array.isArray(data.component)) {
         return null;
@@ -257,8 +256,7 @@ const findPropsNameAddByUrl = (data, targetUrl) => {
 };
 
 const findPropsNameUpdateByUrl = (data, targetUrl) => {
-    console.log(data)
-    console.log(targetUrl)
+
 
     // Kiểm tra xem mảng component có tồn tại và đúng định dạng không
     if (!data || typeof data !== 'object' || !Array.isArray(data.component)) {
@@ -279,8 +277,6 @@ const findPropsNameUpdateByUrl = (data, targetUrl) => {
 };
 
 const findPropsNameDetailByUrl = (data, targetUrl) => {
-    console.log(data)
-    console.log(targetUrl)
 
     // Kiểm tra xem mảng component có tồn tại và đúng định dạng không
     if (!data || typeof data !== 'object' || !Array.isArray(data.component)) {
@@ -302,8 +298,6 @@ const findPropsNameDetailByUrl = (data, targetUrl) => {
 
 
 const findPropsNameImportByUrl = (data, targetUrl) => {
-    console.log(data)
-    console.log(targetUrl)
 
     // Kiểm tra xem mảng component có tồn tại và đúng định dạng không
     if (!data || typeof data !== 'object' || !Array.isArray(data.component)) {
@@ -349,8 +343,7 @@ function getComponentText(data) {
 }
 
 function extractValuesFromData(apiInfo, data) {
-    //console.log(data);
-    //console.log(apiInfo);
+
 
     if (typeof data !== 'object' || data === null) {
         // Nếu data không phải là một đối tượng hoặc là null, trả về null
@@ -1098,6 +1091,81 @@ function shortenFileName(fileName) {
     return `${prefix}.${extension}`; // Kết hợp lại và trả về tên file đã rút gọn
 }
 
+function renderInput(field, handleInputChange, searchValues, search, handleKeyDown) {
+    const datatype = field.DATATYPE;
+    const value = searchValues[field.fomular_alias] || '';
+    const valueBool = [
+        {
+            id: 0,
+            label: field.DEFAULT_TRUE,
+            value: true
+        },
+        {
+            id: 1,
+            label: field.DEFAULT_FALSE,
+            value: false
+        },
+    ]
+    switch (datatype) {
+        case 'TEXT':
+            return (
+                <input
+                    type="text"
+                    className="form-control"
+                    value={value}
+                    onChange={(e) => handleInputChange(e, field.fomular_alias, e.target.value, search)}
+                    onKeyDown={handleKeyDown}
+                />
+            );
+        case 'DATE':
+            return (
+                <input
+                    type="date"
+                    className="form-control"
+                    value={value}
+                    onChange={(e) => handleInputChange(e, field.fomular_alias, e.target.value, search)}
+                    onKeyDown={handleKeyDown}
+                />
+            );
+
+        case 'DATETIME':
+            return (
+                <input
+                    type="datetime-local"
+                    className="form-control"
+                    value={value}
+                    onChange={(e) => handleInputChange(e, field.fomular_alias, e.target.value, search)}
+                    onKeyDown={handleKeyDown}
+                />
+            );
+        case 'BOOL':
+            return (
+                <select
+                    onChange={(e) => handleInputChange(e, field.fomular_alias, e.target.value === "true", search)}
+                    placeholder='hihihih'
+                    className="form-control"
+                    onKeyDown={handleKeyDown}
+                >
+                    <option value="" disabled selected>Choose</option>
+                    {valueBool.map((val, index) => (
+                        <option key={index} value={val.value.toString()}>{val.label}</option>
+                    ))}
+                </select>
+            );
+
+        // Thêm các trường hợp khác tùy theo DATATYPE
+        default:
+            return (
+                <input
+                    type="text"
+                    className="form-control"
+                    value={value}
+                    onChange={(e) => handleInputChange(e, field.fomular_alias, e.target.value, search)}
+                    onKeyDown={handleKeyDown}
+                />
+            );
+    }
+}
 
 
 
@@ -1109,6 +1177,6 @@ export default {
     isEmpty, isImageFormat, isVideoFormat, removeFileExtension, resizeImage,
     resizeImageToFit, renameDuplicateFiles, arraysAreEqual, getBrowser, detectBrowser, shortenFileName,
     isPdfFormat, isExcelFormat, determineFileType, isZipFormat, renderData, findGetApi, findPostApi, findPageById, findPutApi, findRowsPerPage,
-    getNamePage, findDeleteApi, extractValuesFromData, findSearchApi, findExportApi, findDetailApi, findComponentWithDeleteApiUrl, findPropsNameAddByUrl, 
-    findPropsNameUpdateByUrl, findPropsNameImportByUrl, findPropsNameDetailByUrl
+    getNamePage, findDeleteApi, extractValuesFromData, findSearchApi, findExportApi, findDetailApi, findComponentWithDeleteApiUrl, findPropsNameAddByUrl,
+    findPropsNameUpdateByUrl, findPropsNameImportByUrl, findPropsNameDetailByUrl, renderInput
 }

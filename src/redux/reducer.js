@@ -6,6 +6,9 @@ import { socket } from './configs/socket';
 
 import DatabaseBranch from './router/db';
 import ApiBranch from './router/api';
+import Approve from './router/ui';
+
+import Privilege from './router/privilege';
 
 // const localUI = localStorage.getItem("ui");
 // console.log(localUI)
@@ -36,6 +39,14 @@ export default (state = initState, action) => {
 
         case "api":
             return ApiBranch(state, action);
+            break;
+
+        case "ui":
+            return Approve(state, action);
+            break;
+
+        case "privilege":
+            return Privilege(state, action);
             break;
 
         default:

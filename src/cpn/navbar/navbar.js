@@ -228,6 +228,19 @@ export default () => {
                   </>
 
                ) : null}
+               {user.role !== "uad" ? (
+                  <>
+                    
+                     <li className="navbar-item">
+                        <NavLink to="/logs" activeClassName="nav-active">
+                           <i class=" fa fa-shield"></i>
+                           <span>{lang["log.login"]}</span>
+                        </NavLink>
+                     </li>
+
+                  </>
+
+               ) : null}
                {/* {user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/logs" activeClassName="nav-active">

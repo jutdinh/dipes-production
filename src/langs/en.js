@@ -429,7 +429,12 @@ export default {
     "maximum": "Maximum",
     "add row": "Add row",
     "import file": "Import file",
-    "sample file": "Sample file"
+    "sample file": "Sample file",
+    "approve": "Approve",
+    "success.update": "Update successful",
+    "no privileges": "No permission",
+    "username not available": "The username is not available",
+    "log.login": "Login history"
 }
 
 

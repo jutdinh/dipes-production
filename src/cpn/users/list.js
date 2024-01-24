@@ -22,6 +22,12 @@ export default (props) => {
         // { id: 3, label: "Người theo dõi dự án ( Monitor Staff )", value: "ps" },
     ]
 
+    const status = [
+        { id: 0, label: "Đang hoạt động", value: true },
+        { id: 1, label: "Không hoạt động", value: false },
+      
+    ]
+
     const [user, setUser] = useState({});
     const [editUser, setEditUser] = useState({});
     // Close Modal
@@ -63,7 +69,7 @@ export default (props) => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                // console.log(resp)
+                // //console.log(resp)
                 if (activated) {
                     fetch(`${proxy()}/auth/all/accounts`, {
                         headers: {
@@ -73,11 +79,11 @@ export default (props) => {
                         .then(res => res.json())
                         .then(resp => {
                             const { success, data, status, content } = resp;
-                            // console.log(resp)
+                            // //console.log(resp)
                             if (success) {
                                 if (data != undefined && data.length > 0) {
                                     setProfile(data);
-                                    // console.log(data)
+                                    // //console.log(data)
                                 }
                             } else {
                                 window.location = "/login"
@@ -129,6 +135,12 @@ export default (props) => {
         if (!username) {
             errors.username = lang["error.username"];
         }
+
+        // if (username.toLowerCase() === "administrator") {
+        //     errors.username = lang["username not available"];
+
+        // }
+
         if (!password) {
             errors.password = lang["error.password"];
         }
@@ -162,7 +174,7 @@ export default (props) => {
             setErrorMessagesadd(errors);
             return;
         }
-        // console.log(_token);
+        // //console.log(_token);
         if (user.username && user.password) {
             fetch(`${proxy()}/auth/signup`, {
                 method: "POST",
@@ -211,17 +223,14 @@ export default (props) => {
                     });
             }
         });
-        // console.log(requestBody)
+        // //console.log(requestBody)
 
     }
     // Update user
     const submitUpdate = (e) => {
         e.preventDefault();
 
-
-
         const errors = {};
-
 
         if (!editUser.fullname) {
             errors.fullname = lang["error.fullname"];
@@ -255,7 +264,7 @@ export default (props) => {
                 ...editUser
             }
         };
-        console.log(requestBody)
+        //console.log(requestBody)
         fetch(`${proxy()}/auth/user`, {
             method: 'PUT',
             headers: {
@@ -267,7 +276,7 @@ export default (props) => {
             .then(res => res.json())
             .then((resp) => {
                 const { success, content, status } = resp;
-                console.log(resp)
+                //console.log(resp)
                 const newProfiles = profiles.map(user => {
                     if (user.username == editUser.username) {
                         return editUser
@@ -277,12 +286,13 @@ export default (props) => {
                 })
                 setProfile(newProfiles)
                 // close modal
-                // console.log(resp)
-                // functions.showApiResponseMessage(status)
+                // //console.log(resp)
+
+                functions.showApiResponseMessage(status)
             });
     }
     const handleUpdateUser = (editUser) => {
-        // console.log("Thông tin người dùng:", editUser.role);
+        // //console.log("Thông tin người dùng:", editUser.role);
         setEditUser(editUser)
         // if (editUser.role === users.role) {
         //     Swal.fire({
@@ -318,7 +328,7 @@ export default (props) => {
                             <h4 class="ml-1">{lang["accounts manager"]}</h4>
 
                             {statusActive ? (
-                                <button style={{marginTop: 0 }}type="button" class="btn btn-primary custom-buttonadd ml-auto mr-4" data-toggle="modal" data-target="#quoteForm">
+                                <button style={{ marginTop: 0 }} type="button" class="btn btn-primary custom-buttonadd ml-auto mr-4" data-toggle="modal" data-target="#quoteForm">
                                     <i class="fa fa-plus"></i>
                                 </button>
                                 // <div class="ml-auto pointer" data-toggle="modal" data-target="#quoteForm" title="Add">
@@ -452,14 +462,14 @@ export default (props) => {
                                         <div class="modal-body">
                                             <form>
                                                 <div class="row">
-                                                    <div class="form-group col-lg-6">
+                                                    <div class="form-group col-lg-12">
                                                         <label class="font-weight-bold text-small" for="firstname">{lang["fullname"]}<span className='red_star ml-1'>*</span></label>
                                                         <input type="text" class="form-control" value={editUser.fullname} onChange={
                                                             (e) => { setEditUser({ ...editUser, fullname: e.target.value }) }
                                                         } placeholder={lang["p.fullname"]} />
                                                         {errorMessagesedit.fullname && <span class="error-message">{errorMessagesedit.fullname}</span>}
                                                     </div>
-                                                    <div class="form-group col-lg-12">
+                                                    <div class="form-group col-lg-6">
                                                         <label class="font-weight-bold text-small" for="email">{lang["email"]}<span class="red_star ml-1">*</span></label>
                                                         <input type="email" class="form-control" value={editUser.email} onChange={
                                                             (e) => { setEditUser({ ...editUser, email: e.target.value }) }
@@ -473,6 +483,7 @@ export default (props) => {
                                                         } placeholder={lang["p.phone"]} />
                                                         {errorMessagesedit.phone && <span class="error-message">{errorMessagesedit.phone}</span>}
                                                     </div>
+
                                                     <div class="form-group col-lg-6">
                                                         <label class="font-weight-bold text-small" htmlFor="sel1">{lang["permission"]} <span className='red_star'>*</span></label>
                                                         <select className="form-control" name="role" value={editUser.role} onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}>
@@ -486,6 +497,17 @@ export default (props) => {
                                                                     <option key={role.id} value={role.value}>{role.label}</option>
                                                                 ))
                                                             )}
+                                                        </select>
+                                                        {errorMessagesedit.role && <span class="error-message">{errorMessagesedit.role}</span>}
+                                                    </div>
+
+                                                    <div class="form-group col-lg-6">
+                                                        <label class="font-weight-bold text-small" htmlFor="sel1">{lang["permission"]} <span className='red_star'>*</span></label>
+                                                        <select className="form-control" name="role" value={editUser.status} onChange={(e) => setEditUser({ ...editUser, status: e.target.value === "true" })}>
+                                                            {status.map(sta => (
+                                                                <option key={sta.id} value={sta.value}>{sta.label}</option>
+                                                            ))}
+
                                                         </select>
                                                         {errorMessagesedit.role && <span class="error-message">{errorMessagesedit.role}</span>}
                                                     </div>

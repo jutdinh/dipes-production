@@ -8,6 +8,8 @@ import Swal from 'sweetalert2';
 export default () => {
     const { lang, proxy, auth } = useSelector(state => state);
     const _token = localStorage.getItem("_token");
+    const stringifiedUser = localStorage.getItem("user");
+    const _user = JSON.parse(stringifiedUser)
     const [logs, setLogs] = useState([]);
 
     const [view, setView] = useState([])
@@ -36,11 +38,11 @@ export default () => {
         const { role } = user;
         const validPrivileges = ["uad"]
 
-        if( validPrivileges.indexOf( role ) == -1 ){
-            window.location = "/404-notfound"
+        if (validPrivileges.indexOf(role) == -1) {
+            // window.location = "/404-notfound"
         }
     }, [])
-
+console.log(_user.username)
     useEffect(() => {
 
         fetch(`${proxy()}/logs/${languages}`, {
@@ -54,10 +56,11 @@ export default () => {
                 // console.log(resp)
                 if (success) {
                     if (data != undefined && data.length > 0) {
+                      
 
-
-                        setLogs(data);
-                        setView(data);
+                        const dataFilter = _user.username !== "administrator" ? data.filter(item => item.create_user === _user.username) : data;
+                        setLogs(dataFilter)
+                        setView(dataFilter);
                     }
                 } else {
                     window.location = "/login"
@@ -124,6 +127,11 @@ export default () => {
 
 
     }
+
+
+    console.log(view)
+
+    console.log(logs)
 
     return (
         <div class="midde_cont">
@@ -208,7 +216,7 @@ export default () => {
                                                             <th scope="col" class="align-center">{lang["log.type"]}</th>
                                                             <th scope="col">{lang["log.listtitle"]}</th>
                                                             <th scope="col">{lang["description"]}</th>
-                                                            <th scope="col">{lang["log.dayupdate"]}</th>
+                                                            <th scope="col">{lang["time"]}</th>
                                                             <th scope="col" class="align-center">{lang["log.action"]}</th>
                                                         </tr>
                                                     </thead>
