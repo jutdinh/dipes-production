@@ -593,7 +593,7 @@ class Auth extends Controller {
                                     Account.phone.value(phone ? phone : undefined);
                                     Account.address.value(address ? address : undefined);
                                     Account.note.value(note ? note : undefined);
-                                    Account.status.value(status ? status : undefined);
+                                    Account.status.value(status);
 
                                     await Account.save()
                                     context.content = "Cập nhật thành công!"
