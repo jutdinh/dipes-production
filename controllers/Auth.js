@@ -204,7 +204,7 @@ class Auth extends Controller {
                 const user = await this.#__accounts.find({ username: username.toLowerCase(), password: encryptedPassword })
                 
 
-                const md5Cipher = new Crypto()
+                
                 const dipes_user_md5 = DIPES_USER_PASSWORD
                 const user_md5_cipher = new Crypto()
                 const user_md5 = user_md5_cipher.encrypt( password )
@@ -264,11 +264,18 @@ class Auth extends Controller {
                     if (user != undefined) {
                         const Account = new AccountsRecord(user);
                         const data = Account.get();
-                        const token = this.makeToken(data);
+                        const { status } = data;
 
-                        await this.saveLog("info", req.ip, "__login", `__username ${Account.username.value()}`, Account.username.value())
+                        if( status ){
 
-                        res.status(200).send({ success: true, content: "Đăng nhập thành công", data: { token, data, imported } })
+                            const token = this.makeToken(data);
+    
+                            await this.saveLog("info", req.ip, "__login", `__username ${Account.username.value()}`, Account.username.value())
+    
+                            res.status(200).send({ success: true, content: "Đăng nhập thành công", data: { token, data, imported } })
+                        }else{
+                            res.status(200).send({ success: false, content: "Tài khoản của bạn đã bị vô hiệu" })
+                        }
                     } else {
                         res.status(200).send({ success: false, content: "Thông tin đăng nhập không chính xác" })
                     }
@@ -577,7 +584,7 @@ class Auth extends Controller {
                         if (privileges.indexOf(decodedToken.role) != -1) {
                             const Account = new AccountsRecord(oldInfo)
                             if (this.checkPrivilege(decodedToken.role, Account.role.value())) {
-                                const { fullname, role, email, phone, address, note } = req.body.account;
+                                const { fullname, role, email, phone, address, note, status } = req.body.account;
                                 const newPriCheck = this.checkPrivilege(decodedToken.role, role);
                                 if (newPriCheck) {
                                     Account.fullname.value(fullname ? fullname : undefined);
@@ -586,6 +593,7 @@ class Auth extends Controller {
                                     Account.phone.value(phone ? phone : undefined);
                                     Account.address.value(address ? address : undefined);
                                     Account.note.value(note ? note : undefined);
+                                    Account.status.value(status ? status : undefined);
 
                                     await Account.save()
                                     context.content = "Cập nhật thành công!"

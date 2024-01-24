@@ -24,6 +24,7 @@ class Accounts extends Model{
         this.__addField__( "address", Model.types.string)
         this.__addField__( "avatar", Model.types.string)
         this.__addField__( "note", Model.types.string)
+        this.__addField__( "status", Model.types.bool, { default: true })
         this.__addField__( "create_by", Model.types.string );
         this.__addField__( "create_at", Model.types.datetime, { format: "DD-MM-YYYY lúc hh:mm" } );
 
@@ -44,9 +45,9 @@ class Accounts extends Model{
     }
 }   
 class AccountsRecord extends Accounts {
-    constructor( { id, username, password, fullname, role, email, phone, avatar, address, note, create_by, create_at } ){
+    constructor( { id, username, password, fullname, role, email, phone, avatar, address, note, create_by, create_at, status } ){
         super();
-        this.setDefaultValue( { id, username, password, fullname, role, email, phone, avatar, address, note, create_by, create_at } )        
+        this.setDefaultValue( { id, username, password, fullname, role, email, phone, avatar, address, note, create_by, create_at, status } )        
     }
 
     get = () => {
@@ -59,6 +60,7 @@ class AccountsRecord extends Accounts {
             avatar:   this.avatar.value(),
             address:  this.address.value(),
             note:     this.note.value(),
+            status:   this.status.value(),
             create_by:this.create_by.value(), 
             create_at:this.create_at.getFormatedValue()
         }
