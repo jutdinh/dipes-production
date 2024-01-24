@@ -621,11 +621,11 @@
                                 "statistic": [],
                                 "api_method": "get",
                                 "api_scope": "private",
-                                "url": "/api/74A13FFC5CFB4868904E9AF1F207F060",
-                                "remote_url": "/api/74A13FFC5CFB4868904E9AF1F207F060",
+                                "url": "/api/361B13296372480384546A82673662D7",
+                                "remote_url": "/api/361B13296372480384546A82673662D7",
                                 "create_by": {},
-                                "id": 16580,
-                                "api_id": "74A13FFC5CFB4868904E9AF1F207F060"
+                                "id": 16729,
+                                "api_id": "361B13296372480384546A82673662D7"
                             },
                             "search": {
                                 "api_name": "SEARCH API for UI ",
@@ -649,11 +649,11 @@
                                 ],
                                 "api_method": "post",
                                 "api_scope": "private",
-                                "url": "/search/D9E37177380B42529FC6D0DF1CF76166",
-                                "remote_url": "/search/D9E37177380B42529FC6D0DF1CF76166",
+                                "url": "/search/08F9821D46B54F569EF82CA14C14DFD5",
+                                "remote_url": "/search/08F9821D46B54F569EF82CA14C14DFD5",
                                 "create_by": {},
-                                "id": 16584,
-                                "api_id": "D9E37177380B42529FC6D0DF1CF76166",
+                                "id": 16733,
+                                "api_id": "08F9821D46B54F569EF82CA14C14DFD5",
                                 "state": true
                             }
                         },
@@ -718,11 +718,11 @@
                                     "statistic": [],
                                     "api_method": "post",
                                     "api_scope": "private",
-                                    "url": "/ui/04A6A940714944578E68A9CD41E3223B",
-                                    "remote_url": "/ui/04A6A940714944578E68A9CD41E3223B",
+                                    "url": "/ui/CC50882D14D2440E882CCCC408A0EB50",
+                                    "remote_url": "/ui/CC50882D14D2440E882CCCC408A0EB50",
                                     "create_by": {},
-                                    "id": 16581,
-                                    "api_id": "04A6A940714944578E68A9CD41E3223B"
+                                    "id": 16730,
+                                    "api_id": "CC50882D14D2440E882CCCC408A0EB50"
                                 }
                             },
                             "import": {
@@ -749,11 +749,11 @@
                                     "statistic": [],
                                     "api_method": "post",
                                     "api_scope": "private",
-                                    "url": "/import/0659AD274029475BAA70E998E692AD9E",
-                                    "remote_url": "/import/0659AD274029475BAA70E998E692AD9E",
+                                    "url": "/import/B479393545114205B8D47229552D3AE0",
+                                    "remote_url": "/import/B479393545114205B8D47229552D3AE0",
                                     "create_by": {},
-                                    "id": 16586,
-                                    "api_id": "0659AD274029475BAA70E998E692AD9E"
+                                    "id": 16735,
+                                    "api_id": "B479393545114205B8D47229552D3AE0"
                                 }
                             },
                             "export": {
@@ -816,11 +816,11 @@
                                     ],
                                     "api_method": "post",
                                     "api_scope": "private",
-                                    "url": "/export/5BB0CC7FEBA9429CAEE49E7D32669622",
-                                    "remote_url": "/export/5BB0CC7FEBA9429CAEE49E7D32669622",
+                                    "url": "/export/E8C65880D980487EAD776ECFD742AC66",
+                                    "remote_url": "/export/E8C65880D980487EAD776ECFD742AC66",
                                     "create_by": {},
-                                    "id": 16585,
-                                    "api_id": "5BB0CC7FEBA9429CAEE49E7D32669622"
+                                    "id": 16734,
+                                    "api_id": "E8C65880D980487EAD776ECFD742AC66"
                                 }
                             },
                             "update": {
@@ -884,11 +884,11 @@
                                     "statistic": [],
                                     "api_method": "put",
                                     "api_scope": "private",
-                                    "url": "/ui/B9BB7501BEF54BEE8B2193B7A996F27E",
-                                    "remote_url": "/ui/B9BB7501BEF54BEE8B2193B7A996F27E",
+                                    "url": "/ui/EE9AB8C85BB04776A86B92F521E21DC7",
+                                    "remote_url": "/ui/EE9AB8C85BB04776A86B92F521E21DC7",
                                     "create_by": {},
-                                    "id": 16582,
-                                    "api_id": "B9BB7501BEF54BEE8B2193B7A996F27E"
+                                    "id": 16731,
+                                    "api_id": "EE9AB8C85BB04776A86B92F521E21DC7"
                                 }
                             },
                             "delete": {
@@ -952,11 +952,11 @@
                                     "statistic": [],
                                     "api_method": "delete",
                                     "api_scope": "private",
-                                    "url": "/ui/BD0B0FE87B4545AAAF33BF29F2F63612",
-                                    "remote_url": "/ui/BD0B0FE87B4545AAAF33BF29F2F63612",
+                                    "url": "/ui/338F8E248CAF4AF2B250760A191F6A19",
+                                    "remote_url": "/ui/338F8E248CAF4AF2B250760A191F6A19",
                                     "create_by": {},
-                                    "id": 16583,
-                                    "api_id": "BD0B0FE87B4545AAAF33BF29F2F63612"
+                                    "id": 16732,
+                                    "api_id": "338F8E248CAF4AF2B250760A191F6A19"
                                 }
                             },
                             "detail": {
@@ -1020,11 +1020,11 @@
                                     "statistic": [],
                                     "api_method": "get",
                                     "api_scope": "private",
-                                    "url": "/d/49DAF3C0DA6741109154A679D3BD2769",
-                                    "remote_url": "/d/49DAF3C0DA6741109154A679D3BD2769",
+                                    "url": "/d/64FFF89111F24E1DAE199EC4CA132402",
+                                    "remote_url": "/d/64FFF89111F24E1DAE199EC4CA132402",
                                     "create_by": {},
-                                    "id": 16587,
-                                    "api_id": "49DAF3C0DA6741109154A679D3BD2769"
+                                    "id": 16736,
+                                    "api_id": "64FFF89111F24E1DAE199EC4CA132402"
                                 }
                             },
                             "approve": {
@@ -1363,11 +1363,11 @@
                                         "statistic": [],
                                         "api_method": "get",
                                         "api_scope": "private",
-                                        "url": "/api/3FD0C2EA5AF84E089E79B4EDC135C7D7",
-                                        "remote_url": "/api/3FD0C2EA5AF84E089E79B4EDC135C7D7",
+                                        "url": "/api/1ECCA46A0AC843C387DAA82257F94687",
+                                        "remote_url": "/api/1ECCA46A0AC843C387DAA82257F94687",
                                         "create_by": {},
-                                        "id": 16588,
-                                        "api_id": "3FD0C2EA5AF84E089E79B4EDC135C7D7"
+                                        "id": 16737,
+                                        "api_id": "1ECCA46A0AC843C387DAA82257F94687"
                                     },
                                     "search": {
                                         "api_name": "SEARCH API for UI Cấp nhà phân phối",
@@ -1387,11 +1387,11 @@
                                         ],
                                         "api_method": "post",
                                         "api_scope": "private",
-                                        "url": "/search/6C5A5B5A883249C0A91E46FB6CA6FC4C",
-                                        "remote_url": "/search/6C5A5B5A883249C0A91E46FB6CA6FC4C",
+                                        "url": "/search/1C057FC7342D4AF8A6FB01E5BC51FC17",
+                                        "remote_url": "/search/1C057FC7342D4AF8A6FB01E5BC51FC17",
                                         "create_by": {},
-                                        "id": 16592,
-                                        "api_id": "6C5A5B5A883249C0A91E46FB6CA6FC4C",
+                                        "id": 16741,
+                                        "api_id": "1C057FC7342D4AF8A6FB01E5BC51FC17",
                                         "state": true
                                     }
                                 },
@@ -1432,11 +1432,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/ui/0120D822A2934282974B1F2DFF19C715",
-                                            "remote_url": "/ui/0120D822A2934282974B1F2DFF19C715",
+                                            "url": "/ui/8883300B1E814E33A5A6AD0BC2211734",
+                                            "remote_url": "/ui/8883300B1E814E33A5A6AD0BC2211734",
                                             "create_by": {},
-                                            "id": 16589,
-                                            "api_id": "0120D822A2934282974B1F2DFF19C715"
+                                            "id": 16738,
+                                            "api_id": "8883300B1E814E33A5A6AD0BC2211734"
                                         }
                                     },
                                     "import": {
@@ -1459,11 +1459,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/import/7597691C66AD447D969EF180257EF3CE",
-                                            "remote_url": "/import/7597691C66AD447D969EF180257EF3CE",
+                                            "url": "/import/D472A388759740CC809BE5CD4AB368D1",
+                                            "remote_url": "/import/D472A388759740CC809BE5CD4AB368D1",
                                             "create_by": {},
-                                            "id": 16594,
-                                            "api_id": "7597691C66AD447D969EF180257EF3CE"
+                                            "id": 16743,
+                                            "api_id": "D472A388759740CC809BE5CD4AB368D1"
                                         }
                                     },
                                     "export": {
@@ -1502,11 +1502,11 @@
                                             ],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/export/4CECCDABCBFE441AB9174B4C63DB48B2",
-                                            "remote_url": "/export/4CECCDABCBFE441AB9174B4C63DB48B2",
+                                            "url": "/export/B510F587A04E43629F50D09FFF8DFCC5",
+                                            "remote_url": "/export/B510F587A04E43629F50D09FFF8DFCC5",
                                             "create_by": {},
-                                            "id": 16593,
-                                            "api_id": "4CECCDABCBFE441AB9174B4C63DB48B2"
+                                            "id": 16742,
+                                            "api_id": "B510F587A04E43629F50D09FFF8DFCC5"
                                         }
                                     },
                                     "update": {
@@ -1546,11 +1546,11 @@
                                             "statistic": [],
                                             "api_method": "put",
                                             "api_scope": "private",
-                                            "url": "/ui/953A2DCAAC0C4C7182DC31E5445B691D",
-                                            "remote_url": "/ui/953A2DCAAC0C4C7182DC31E5445B691D",
+                                            "url": "/ui/BBBB064A10B84ACEBBBB036C27E254F5",
+                                            "remote_url": "/ui/BBBB064A10B84ACEBBBB036C27E254F5",
                                             "create_by": {},
-                                            "id": 16590,
-                                            "api_id": "953A2DCAAC0C4C7182DC31E5445B691D"
+                                            "id": 16739,
+                                            "api_id": "BBBB064A10B84ACEBBBB036C27E254F5"
                                         }
                                     },
                                     "delete": {
@@ -1590,11 +1590,11 @@
                                             "statistic": [],
                                             "api_method": "delete",
                                             "api_scope": "private",
-                                            "url": "/ui/F9BE111F63B54242946CA8F440451C4F",
-                                            "remote_url": "/ui/F9BE111F63B54242946CA8F440451C4F",
+                                            "url": "/ui/6FA1132C0D624B2EB87D007F59BA7749",
+                                            "remote_url": "/ui/6FA1132C0D624B2EB87D007F59BA7749",
                                             "create_by": {},
-                                            "id": 16591,
-                                            "api_id": "F9BE111F63B54242946CA8F440451C4F"
+                                            "id": 16740,
+                                            "api_id": "6FA1132C0D624B2EB87D007F59BA7749"
                                         }
                                     },
                                     "detail": {
@@ -1634,11 +1634,11 @@
                                             "statistic": [],
                                             "api_method": "get",
                                             "api_scope": "private",
-                                            "url": "/d/37C183435384412F98931D75C0B3C987",
-                                            "remote_url": "/d/37C183435384412F98931D75C0B3C987",
+                                            "url": "/d/13D5ED79A08849E99B3FCCF2CD9A562E",
+                                            "remote_url": "/d/13D5ED79A08849E99B3FCCF2CD9A562E",
                                             "create_by": {},
-                                            "id": 16595,
-                                            "api_id": "37C183435384412F98931D75C0B3C987"
+                                            "id": 16744,
+                                            "api_id": "13D5ED79A08849E99B3FCCF2CD9A562E"
                                         }
                                     },
                                     "approve": {
@@ -2905,11 +2905,11 @@
                                         "statistic": [],
                                         "api_method": "get",
                                         "api_scope": "private",
-                                        "url": "/api/0129FA7E5D5D4EA2ACB79CE6D50A6FD3",
-                                        "remote_url": "/api/0129FA7E5D5D4EA2ACB79CE6D50A6FD3",
+                                        "url": "/api/03F70BD8C8C44125844C0D192F5FA008",
+                                        "remote_url": "/api/03F70BD8C8C44125844C0D192F5FA008",
                                         "create_by": {},
-                                        "id": 16596,
-                                        "api_id": "0129FA7E5D5D4EA2ACB79CE6D50A6FD3"
+                                        "id": 16745,
+                                        "api_id": "03F70BD8C8C44125844C0D192F5FA008"
                                     },
                                     "search": {
                                         "api_name": "SEARCH API for UI NHÀ PHÂN PHỐI",
@@ -2933,11 +2933,11 @@
                                         ],
                                         "api_method": "post",
                                         "api_scope": "private",
-                                        "url": "/search/BDD6559117A54BCB9D41D0F752FC87E3",
-                                        "remote_url": "/search/BDD6559117A54BCB9D41D0F752FC87E3",
+                                        "url": "/search/F810BB664AD74A1BA518395BD7AAB8A1",
+                                        "remote_url": "/search/F810BB664AD74A1BA518395BD7AAB8A1",
                                         "create_by": {},
-                                        "id": 16600,
-                                        "api_id": "BDD6559117A54BCB9D41D0F752FC87E3",
+                                        "id": 16749,
+                                        "api_id": "F810BB664AD74A1BA518395BD7AAB8A1",
                                         "state": true
                                     }
                                 },
@@ -3010,11 +3010,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/ui/64ABD0D059C046DE9E9805DDC61FF083",
-                                            "remote_url": "/ui/64ABD0D059C046DE9E9805DDC61FF083",
+                                            "url": "/ui/B397743EBA8D4849BC005B0E60FFB0F0",
+                                            "remote_url": "/ui/B397743EBA8D4849BC005B0E60FFB0F0",
                                             "create_by": {},
-                                            "id": 16597,
-                                            "api_id": "64ABD0D059C046DE9E9805DDC61FF083"
+                                            "id": 16746,
+                                            "api_id": "B397743EBA8D4849BC005B0E60FFB0F0"
                                         }
                                     },
                                     "import": {
@@ -3049,11 +3049,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/import/1BACBF91308448F69B58D41DC0A5F856",
-                                            "remote_url": "/import/1BACBF91308448F69B58D41DC0A5F856",
+                                            "url": "/import/AECFDCA8E53C4CDEA4F643C47C62D3C7",
+                                            "remote_url": "/import/AECFDCA8E53C4CDEA4F643C47C62D3C7",
                                             "create_by": {},
-                                            "id": 16602,
-                                            "api_id": "1BACBF91308448F69B58D41DC0A5F856"
+                                            "id": 16751,
+                                            "api_id": "AECFDCA8E53C4CDEA4F643C47C62D3C7"
                                         }
                                     },
                                     "export": {
@@ -3124,11 +3124,11 @@
                                             ],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/export/FDEF96500B9540BA8C22AD95A930CF20",
-                                            "remote_url": "/export/FDEF96500B9540BA8C22AD95A930CF20",
+                                            "url": "/export/DEE3FF0953584B87AFF1CEB3C055146B",
+                                            "remote_url": "/export/DEE3FF0953584B87AFF1CEB3C055146B",
                                             "create_by": {},
-                                            "id": 16601,
-                                            "api_id": "FDEF96500B9540BA8C22AD95A930CF20"
+                                            "id": 16750,
+                                            "api_id": "DEE3FF0953584B87AFF1CEB3C055146B"
                                         }
                                     },
                                     "update": {
@@ -3200,11 +3200,11 @@
                                             "statistic": [],
                                             "api_method": "put",
                                             "api_scope": "private",
-                                            "url": "/ui/EFBC16A4DEF143C5B62643A80062E1EC",
-                                            "remote_url": "/ui/EFBC16A4DEF143C5B62643A80062E1EC",
+                                            "url": "/ui/1CBDF64D9DCE43639379B2BB98454E8B",
+                                            "remote_url": "/ui/1CBDF64D9DCE43639379B2BB98454E8B",
                                             "create_by": {},
-                                            "id": 16598,
-                                            "api_id": "EFBC16A4DEF143C5B62643A80062E1EC"
+                                            "id": 16747,
+                                            "api_id": "1CBDF64D9DCE43639379B2BB98454E8B"
                                         }
                                     },
                                     "delete": {
@@ -3268,11 +3268,11 @@
                                             "statistic": [],
                                             "api_method": "delete",
                                             "api_scope": "private",
-                                            "url": "/ui/CE93515101D54DF2B26F829FA5C9E1BC",
-                                            "remote_url": "/ui/CE93515101D54DF2B26F829FA5C9E1BC",
+                                            "url": "/ui/57DBB16F0D614BAB897C2506E5DD2412",
+                                            "remote_url": "/ui/57DBB16F0D614BAB897C2506E5DD2412",
                                             "create_by": {},
-                                            "id": 16599,
-                                            "api_id": "CE93515101D54DF2B26F829FA5C9E1BC"
+                                            "id": 16748,
+                                            "api_id": "57DBB16F0D614BAB897C2506E5DD2412"
                                         }
                                     },
                                     "detail": {
@@ -3344,11 +3344,11 @@
                                             "statistic": [],
                                             "api_method": "get",
                                             "api_scope": "private",
-                                            "url": "/d/C52F82B88B784B9DA7F73091C202137A",
-                                            "remote_url": "/d/C52F82B88B784B9DA7F73091C202137A",
+                                            "url": "/d/2F21570976C24598B570E1918BB5970E",
+                                            "remote_url": "/d/2F21570976C24598B570E1918BB5970E",
                                             "create_by": {},
-                                            "id": 16603,
-                                            "api_id": "C52F82B88B784B9DA7F73091C202137A"
+                                            "id": 16752,
+                                            "api_id": "2F21570976C24598B570E1918BB5970E"
                                         }
                                     },
                                     "approve": {
@@ -3697,11 +3697,11 @@
                                                 "statistic": [],
                                                 "api_method": "get",
                                                 "api_scope": "private",
-                                                "url": "/api/D2DD72F0555F494CA51F276CA4FED55A",
-                                                "remote_url": "/api/D2DD72F0555F494CA51F276CA4FED55A",
+                                                "url": "/api/3AC03756847944519D9ECF626C2CE19B",
+                                                "remote_url": "/api/3AC03756847944519D9ECF626C2CE19B",
                                                 "create_by": {},
-                                                "id": 16604,
-                                                "api_id": "D2DD72F0555F494CA51F276CA4FED55A"
+                                                "id": 16753,
+                                                "api_id": "3AC03756847944519D9ECF626C2CE19B"
                                             },
                                             "search": {
                                                 "api_name": "SEARCH API for UI Loại sản phẩm",
@@ -3721,11 +3721,11 @@
                                                 ],
                                                 "api_method": "post",
                                                 "api_scope": "private",
-                                                "url": "/search/430F438282F2455796E942BCC000D7FC",
-                                                "remote_url": "/search/430F438282F2455796E942BCC000D7FC",
+                                                "url": "/search/D82B4F60DF1944008E7D3DE1283AC5C5",
+                                                "remote_url": "/search/D82B4F60DF1944008E7D3DE1283AC5C5",
                                                 "create_by": {},
-                                                "id": 16608,
-                                                "api_id": "430F438282F2455796E942BCC000D7FC"
+                                                "id": 16757,
+                                                "api_id": "D82B4F60DF1944008E7D3DE1283AC5C5"
                                             }
                                         },
                                         "buttons": {
@@ -3765,11 +3765,11 @@
                                                     "statistic": [],
                                                     "api_method": "post",
                                                     "api_scope": "private",
-                                                    "url": "/ui/AFC39A2D3672464BB8217D34C55A0952",
-                                                    "remote_url": "/ui/AFC39A2D3672464BB8217D34C55A0952",
+                                                    "url": "/ui/4FD3A86A6CF04B1995589A996F385386",
+                                                    "remote_url": "/ui/4FD3A86A6CF04B1995589A996F385386",
                                                     "create_by": {},
-                                                    "id": 16605,
-                                                    "api_id": "AFC39A2D3672464BB8217D34C55A0952"
+                                                    "id": 16754,
+                                                    "api_id": "4FD3A86A6CF04B1995589A996F385386"
                                                 }
                                             },
                                             "import": {
@@ -3792,11 +3792,11 @@
                                                     "statistic": [],
                                                     "api_method": "post",
                                                     "api_scope": "private",
-                                                    "url": "/import/B9B27A486D064053973AF46991DBA2D0",
-                                                    "remote_url": "/import/B9B27A486D064053973AF46991DBA2D0",
+                                                    "url": "/import/85D176B11F874A8F8EDD45075476B0C2",
+                                                    "remote_url": "/import/85D176B11F874A8F8EDD45075476B0C2",
                                                     "create_by": {},
-                                                    "id": 16610,
-                                                    "api_id": "B9B27A486D064053973AF46991DBA2D0"
+                                                    "id": 16759,
+                                                    "api_id": "85D176B11F874A8F8EDD45075476B0C2"
                                                 }
                                             },
                                             "export": {
@@ -3835,11 +3835,11 @@
                                                     ],
                                                     "api_method": "post",
                                                     "api_scope": "private",
-                                                    "url": "/export/024C54B67EC54F679C7AB3F75454F750",
-                                                    "remote_url": "/export/024C54B67EC54F679C7AB3F75454F750",
+                                                    "url": "/export/2663A45B328941FDAFCAC1A18FF46113",
+                                                    "remote_url": "/export/2663A45B328941FDAFCAC1A18FF46113",
                                                     "create_by": {},
-                                                    "id": 16609,
-                                                    "api_id": "024C54B67EC54F679C7AB3F75454F750"
+                                                    "id": 16758,
+                                                    "api_id": "2663A45B328941FDAFCAC1A18FF46113"
                                                 }
                                             },
                                             "update": {
@@ -3879,11 +3879,11 @@
                                                     "statistic": [],
                                                     "api_method": "put",
                                                     "api_scope": "private",
-                                                    "url": "/ui/CFCB207A1A7B4D8ABDF6C6F419387406",
-                                                    "remote_url": "/ui/CFCB207A1A7B4D8ABDF6C6F419387406",
+                                                    "url": "/ui/C08794EE207544248FC9F328FF178C2D",
+                                                    "remote_url": "/ui/C08794EE207544248FC9F328FF178C2D",
                                                     "create_by": {},
-                                                    "id": 16606,
-                                                    "api_id": "CFCB207A1A7B4D8ABDF6C6F419387406"
+                                                    "id": 16755,
+                                                    "api_id": "C08794EE207544248FC9F328FF178C2D"
                                                 }
                                             },
                                             "delete": {
@@ -3923,11 +3923,11 @@
                                                     "statistic": [],
                                                     "api_method": "delete",
                                                     "api_scope": "private",
-                                                    "url": "/ui/2F98B2E1ABAE4749922A2B38CFBDD109",
-                                                    "remote_url": "/ui/2F98B2E1ABAE4749922A2B38CFBDD109",
+                                                    "url": "/ui/AF6FF35836C04311A5B65515BBFD3C42",
+                                                    "remote_url": "/ui/AF6FF35836C04311A5B65515BBFD3C42",
                                                     "create_by": {},
-                                                    "id": 16607,
-                                                    "api_id": "2F98B2E1ABAE4749922A2B38CFBDD109"
+                                                    "id": 16756,
+                                                    "api_id": "AF6FF35836C04311A5B65515BBFD3C42"
                                                 }
                                             },
                                             "detail": {
@@ -3967,11 +3967,11 @@
                                                     "statistic": [],
                                                     "api_method": "get",
                                                     "api_scope": "private",
-                                                    "url": "/d/2038B3244647473ABEBF6942126EAD94",
-                                                    "remote_url": "/d/2038B3244647473ABEBF6942126EAD94",
+                                                    "url": "/d/151106C1A7134519B2387CB0B7A05A8C",
+                                                    "remote_url": "/d/151106C1A7134519B2387CB0B7A05A8C",
                                                     "create_by": {},
-                                                    "id": 16611,
-                                                    "api_id": "2038B3244647473ABEBF6942126EAD94"
+                                                    "id": 16760,
+                                                    "api_id": "151106C1A7134519B2387CB0B7A05A8C"
                                                 }
                                             },
                                             "approve": {
@@ -4303,11 +4303,11 @@
                                                 "statistic": [],
                                                 "api_method": "get",
                                                 "api_scope": "private",
-                                                "url": "/api/EE3AC5D797C64AC5A4FA7E828AF8FB01",
-                                                "remote_url": "/api/EE3AC5D797C64AC5A4FA7E828AF8FB01",
+                                                "url": "/api/EA7F24038951410580C1B3B6291192BB",
+                                                "remote_url": "/api/EA7F24038951410580C1B3B6291192BB",
                                                 "create_by": {},
-                                                "id": 16612,
-                                                "api_id": "EE3AC5D797C64AC5A4FA7E828AF8FB01"
+                                                "id": 16761,
+                                                "api_id": "EA7F24038951410580C1B3B6291192BB"
                                             },
                                             "search": {
                                                 "api_name": "SEARCH API for UI Nhóm sản phẩm",
@@ -4327,11 +4327,11 @@
                                                 ],
                                                 "api_method": "post",
                                                 "api_scope": "private",
-                                                "url": "/search/7DEEB0050790465095DAD30A1845E383",
-                                                "remote_url": "/search/7DEEB0050790465095DAD30A1845E383",
+                                                "url": "/search/DB071ACABC754FECA61047052D59DBF2",
+                                                "remote_url": "/search/DB071ACABC754FECA61047052D59DBF2",
                                                 "create_by": {},
-                                                "id": 16616,
-                                                "api_id": "7DEEB0050790465095DAD30A1845E383"
+                                                "id": 16765,
+                                                "api_id": "DB071ACABC754FECA61047052D59DBF2"
                                             }
                                         },
                                         "buttons": {
@@ -4371,11 +4371,11 @@
                                                     "statistic": [],
                                                     "api_method": "post",
                                                     "api_scope": "private",
-                                                    "url": "/ui/725A16714DEB4D568E975291E0EB7F79",
-                                                    "remote_url": "/ui/725A16714DEB4D568E975291E0EB7F79",
+                                                    "url": "/ui/8791AA5E718145AD9B8295699F61F283",
+                                                    "remote_url": "/ui/8791AA5E718145AD9B8295699F61F283",
                                                     "create_by": {},
-                                                    "id": 16613,
-                                                    "api_id": "725A16714DEB4D568E975291E0EB7F79"
+                                                    "id": 16762,
+                                                    "api_id": "8791AA5E718145AD9B8295699F61F283"
                                                 }
                                             },
                                             "import": {
@@ -4398,11 +4398,11 @@
                                                     "statistic": [],
                                                     "api_method": "post",
                                                     "api_scope": "private",
-                                                    "url": "/import/B4E97EB0D57A48DA878997972C80B26E",
-                                                    "remote_url": "/import/B4E97EB0D57A48DA878997972C80B26E",
+                                                    "url": "/import/176F166F908F49EA8044C2D50ADF7E89",
+                                                    "remote_url": "/import/176F166F908F49EA8044C2D50ADF7E89",
                                                     "create_by": {},
-                                                    "id": 16618,
-                                                    "api_id": "B4E97EB0D57A48DA878997972C80B26E"
+                                                    "id": 16767,
+                                                    "api_id": "176F166F908F49EA8044C2D50ADF7E89"
                                                 }
                                             },
                                             "export": {
@@ -4441,11 +4441,11 @@
                                                     ],
                                                     "api_method": "post",
                                                     "api_scope": "private",
-                                                    "url": "/export/92CA0C7660E14BC28F4E80A46B654640",
-                                                    "remote_url": "/export/92CA0C7660E14BC28F4E80A46B654640",
+                                                    "url": "/export/FA8CFD91CCFF41D98DE0412579B06903",
+                                                    "remote_url": "/export/FA8CFD91CCFF41D98DE0412579B06903",
                                                     "create_by": {},
-                                                    "id": 16617,
-                                                    "api_id": "92CA0C7660E14BC28F4E80A46B654640"
+                                                    "id": 16766,
+                                                    "api_id": "FA8CFD91CCFF41D98DE0412579B06903"
                                                 }
                                             },
                                             "update": {
@@ -4485,11 +4485,11 @@
                                                     "statistic": [],
                                                     "api_method": "put",
                                                     "api_scope": "private",
-                                                    "url": "/ui/326E717363E641C189FFDC2FB69C395B",
-                                                    "remote_url": "/ui/326E717363E641C189FFDC2FB69C395B",
+                                                    "url": "/ui/AD97299C51764DDFAD9E8116CAB61D6F",
+                                                    "remote_url": "/ui/AD97299C51764DDFAD9E8116CAB61D6F",
                                                     "create_by": {},
-                                                    "id": 16614,
-                                                    "api_id": "326E717363E641C189FFDC2FB69C395B"
+                                                    "id": 16763,
+                                                    "api_id": "AD97299C51764DDFAD9E8116CAB61D6F"
                                                 }
                                             },
                                             "delete": {
@@ -4529,11 +4529,11 @@
                                                     "statistic": [],
                                                     "api_method": "delete",
                                                     "api_scope": "private",
-                                                    "url": "/ui/AA662A5B69E84057BA18C96289959D1D",
-                                                    "remote_url": "/ui/AA662A5B69E84057BA18C96289959D1D",
+                                                    "url": "/ui/B8F78C3E4D7440679F1F0A2E08440C9E",
+                                                    "remote_url": "/ui/B8F78C3E4D7440679F1F0A2E08440C9E",
                                                     "create_by": {},
-                                                    "id": 16615,
-                                                    "api_id": "AA662A5B69E84057BA18C96289959D1D"
+                                                    "id": 16764,
+                                                    "api_id": "B8F78C3E4D7440679F1F0A2E08440C9E"
                                                 }
                                             },
                                             "detail": {
@@ -4573,11 +4573,11 @@
                                                     "statistic": [],
                                                     "api_method": "get",
                                                     "api_scope": "private",
-                                                    "url": "/d/777D8B861B3440B3956633C0B838D9E7",
-                                                    "remote_url": "/d/777D8B861B3440B3956633C0B838D9E7",
+                                                    "url": "/d/88B187DF7BDA498DB4DBDDCD91296E2D",
+                                                    "remote_url": "/d/88B187DF7BDA498DB4DBDDCD91296E2D",
                                                     "create_by": {},
-                                                    "id": 16619,
-                                                    "api_id": "777D8B861B3440B3956633C0B838D9E7"
+                                                    "id": 16768,
+                                                    "api_id": "88B187DF7BDA498DB4DBDDCD91296E2D"
                                                 }
                                             },
                                             "approve": {
@@ -5059,11 +5059,11 @@
                                                 "statistic": [],
                                                 "api_method": "get",
                                                 "api_scope": "private",
-                                                "url": "/api/888010F796E948429AF80811CF9971BB",
-                                                "remote_url": "/api/888010F796E948429AF80811CF9971BB",
+                                                "url": "/api/014ED017C2714B78A99A8D4ED334D393",
+                                                "remote_url": "/api/014ED017C2714B78A99A8D4ED334D393",
                                                 "create_by": {},
-                                                "id": 16620,
-                                                "api_id": "888010F796E948429AF80811CF9971BB"
+                                                "id": 16769,
+                                                "api_id": "014ED017C2714B78A99A8D4ED334D393"
                                             },
                                             "search": {
                                                 "api_name": "SEARCH API for UI Quy cách đống gói",
@@ -5085,11 +5085,11 @@
                                                 ],
                                                 "api_method": "post",
                                                 "api_scope": "private",
-                                                "url": "/search/3878703881634664885821C0C0CFF4C8",
-                                                "remote_url": "/search/3878703881634664885821C0C0CFF4C8",
+                                                "url": "/search/76F004D8C261496D88C1DA6AC0289EAF",
+                                                "remote_url": "/search/76F004D8C261496D88C1DA6AC0289EAF",
                                                 "create_by": {},
-                                                "id": 16624,
-                                                "api_id": "3878703881634664885821C0C0CFF4C8"
+                                                "id": 16773,
+                                                "api_id": "76F004D8C261496D88C1DA6AC0289EAF"
                                             }
                                         },
                                         "buttons": {
@@ -5141,11 +5141,11 @@
                                                     "statistic": [],
                                                     "api_method": "post",
                                                     "api_scope": "private",
-                                                    "url": "/ui/4F75E086170846768F967E51248CC165",
-                                                    "remote_url": "/ui/4F75E086170846768F967E51248CC165",
+                                                    "url": "/ui/D22926BAF610490088EA8E74C5E64AB9",
+                                                    "remote_url": "/ui/D22926BAF610490088EA8E74C5E64AB9",
                                                     "create_by": {},
-                                                    "id": 16621,
-                                                    "api_id": "4F75E086170846768F967E51248CC165"
+                                                    "id": 16770,
+                                                    "api_id": "D22926BAF610490088EA8E74C5E64AB9"
                                                 }
                                             },
                                             "import": {
@@ -5170,11 +5170,11 @@
                                                     "statistic": [],
                                                     "api_method": "post",
                                                     "api_scope": "private",
-                                                    "url": "/import/5C0B44EAB0FF4C14ABC74FC2113DD6DF",
-                                                    "remote_url": "/import/5C0B44EAB0FF4C14ABC74FC2113DD6DF",
+                                                    "url": "/import/0038A0D82B984CEDB6BACA7C485F1C3B",
+                                                    "remote_url": "/import/0038A0D82B984CEDB6BACA7C485F1C3B",
                                                     "create_by": {},
-                                                    "id": 16626,
-                                                    "api_id": "5C0B44EAB0FF4C14ABC74FC2113DD6DF"
+                                                    "id": 16775,
+                                                    "api_id": "0038A0D82B984CEDB6BACA7C485F1C3B"
                                                 }
                                             },
                                             "export": {
@@ -5225,11 +5225,11 @@
                                                     ],
                                                     "api_method": "post",
                                                     "api_scope": "private",
-                                                    "url": "/export/8BD58CF3D78A4CCD8C3A86D05E45954B",
-                                                    "remote_url": "/export/8BD58CF3D78A4CCD8C3A86D05E45954B",
+                                                    "url": "/export/017CAB8275784A8CB012ADC712D97602",
+                                                    "remote_url": "/export/017CAB8275784A8CB012ADC712D97602",
                                                     "create_by": {},
-                                                    "id": 16625,
-                                                    "api_id": "8BD58CF3D78A4CCD8C3A86D05E45954B"
+                                                    "id": 16774,
+                                                    "api_id": "017CAB8275784A8CB012ADC712D97602"
                                                 }
                                             },
                                             "update": {
@@ -5281,11 +5281,11 @@
                                                     "statistic": [],
                                                     "api_method": "put",
                                                     "api_scope": "private",
-                                                    "url": "/ui/76180A4092F24DE0A109C5D2B22FBD0F",
-                                                    "remote_url": "/ui/76180A4092F24DE0A109C5D2B22FBD0F",
+                                                    "url": "/ui/4D4EF130913841F8BC8F06962DF0E4FE",
+                                                    "remote_url": "/ui/4D4EF130913841F8BC8F06962DF0E4FE",
                                                     "create_by": {},
-                                                    "id": 16622,
-                                                    "api_id": "76180A4092F24DE0A109C5D2B22FBD0F"
+                                                    "id": 16771,
+                                                    "api_id": "4D4EF130913841F8BC8F06962DF0E4FE"
                                                 }
                                             },
                                             "delete": {
@@ -5337,11 +5337,11 @@
                                                     "statistic": [],
                                                     "api_method": "delete",
                                                     "api_scope": "private",
-                                                    "url": "/ui/65D565090EC6487A9BC6B8F0AE9E9C5C",
-                                                    "remote_url": "/ui/65D565090EC6487A9BC6B8F0AE9E9C5C",
+                                                    "url": "/ui/D3B042A58F8D48F091AC812C95F757C5",
+                                                    "remote_url": "/ui/D3B042A58F8D48F091AC812C95F757C5",
                                                     "create_by": {},
-                                                    "id": 16623,
-                                                    "api_id": "65D565090EC6487A9BC6B8F0AE9E9C5C"
+                                                    "id": 16772,
+                                                    "api_id": "D3B042A58F8D48F091AC812C95F757C5"
                                                 }
                                             },
                                             "detail": {
@@ -5393,11 +5393,11 @@
                                                     "statistic": [],
                                                     "api_method": "get",
                                                     "api_scope": "private",
-                                                    "url": "/d/6B5389A7F1C24F95AC8F487BC5C6A351",
-                                                    "remote_url": "/d/6B5389A7F1C24F95AC8F487BC5C6A351",
+                                                    "url": "/d/A57461DDA4CE43D49E4DF52CFC561D5D",
+                                                    "remote_url": "/d/A57461DDA4CE43D49E4DF52CFC561D5D",
                                                     "create_by": {},
-                                                    "id": 16627,
-                                                    "api_id": "6B5389A7F1C24F95AC8F487BC5C6A351"
+                                                    "id": 16776,
+                                                    "api_id": "A57461DDA4CE43D49E4DF52CFC561D5D"
                                                 }
                                             },
                                             "approve": {
@@ -7199,11 +7199,11 @@
                                         "statistic": [],
                                         "api_method": "get",
                                         "api_scope": "private",
-                                        "url": "/api/5C7BE394ABF34FA5B6E55FDA3D1171C7",
-                                        "remote_url": "/api/5C7BE394ABF34FA5B6E55FDA3D1171C7",
+                                        "url": "/api/B8BD6432C48E41D3BF7114EDE8861721",
+                                        "remote_url": "/api/B8BD6432C48E41D3BF7114EDE8861721",
                                         "create_by": {},
-                                        "id": 16628,
-                                        "api_id": "5C7BE394ABF34FA5B6E55FDA3D1171C7"
+                                        "id": 16777,
+                                        "api_id": "B8BD6432C48E41D3BF7114EDE8861721"
                                     },
                                     "search": {
                                         "api_name": "SEARCH API for UI SẢN PHẨM",
@@ -7229,11 +7229,11 @@
                                         ],
                                         "api_method": "post",
                                         "api_scope": "private",
-                                        "url": "/search/20C9B182971245558BEA55C0D39295E5",
-                                        "remote_url": "/search/20C9B182971245558BEA55C0D39295E5",
+                                        "url": "/search/C306BAB0CD6D4BEB87D6750B38023604",
+                                        "remote_url": "/search/C306BAB0CD6D4BEB87D6750B38023604",
                                         "create_by": {},
-                                        "id": 16632,
-                                        "api_id": "20C9B182971245558BEA55C0D39295E5"
+                                        "id": 16781,
+                                        "api_id": "C306BAB0CD6D4BEB87D6750B38023604"
                                     }
                                 },
                                 "buttons": {
@@ -7316,11 +7316,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/ui/58B4474EC2BB4BC59A5A44F20425FAD8",
-                                            "remote_url": "/ui/58B4474EC2BB4BC59A5A44F20425FAD8",
+                                            "url": "/ui/48EB940D9DED4B808490BC4F8858AAA4",
+                                            "remote_url": "/ui/48EB940D9DED4B808490BC4F8858AAA4",
                                             "create_by": {},
-                                            "id": 16629,
-                                            "api_id": "58B4474EC2BB4BC59A5A44F20425FAD8"
+                                            "id": 16778,
+                                            "api_id": "48EB940D9DED4B808490BC4F8858AAA4"
                                         }
                                     },
                                     "import": {
@@ -7356,11 +7356,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/import/C8BD9C7EA7904604811ED5D3640CEE03",
-                                            "remote_url": "/import/C8BD9C7EA7904604811ED5D3640CEE03",
+                                            "url": "/import/3B4DEBA177C04A6D90ECE521C715ACAC",
+                                            "remote_url": "/import/3B4DEBA177C04A6D90ECE521C715ACAC",
                                             "create_by": {},
-                                            "id": 16634,
-                                            "api_id": "C8BD9C7EA7904604811ED5D3640CEE03"
+                                            "id": 16783,
+                                            "api_id": "3B4DEBA177C04A6D90ECE521C715ACAC"
                                         }
                                     },
                                     "export": {
@@ -7442,11 +7442,11 @@
                                             ],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/export/631F9C034292450AB81760E01E08CC67",
-                                            "remote_url": "/export/631F9C034292450AB81760E01E08CC67",
+                                            "url": "/export/32439B949135447982358F5F80BFCB67",
+                                            "remote_url": "/export/32439B949135447982358F5F80BFCB67",
                                             "create_by": {},
-                                            "id": 16633,
-                                            "api_id": "631F9C034292450AB81760E01E08CC67"
+                                            "id": 16782,
+                                            "api_id": "32439B949135447982358F5F80BFCB67"
                                         }
                                     },
                                     "update": {
@@ -7529,11 +7529,11 @@
                                             "statistic": [],
                                             "api_method": "put",
                                             "api_scope": "private",
-                                            "url": "/ui/BB3E6F5A74C84951BC7D9B4B0C2947AD",
-                                            "remote_url": "/ui/BB3E6F5A74C84951BC7D9B4B0C2947AD",
+                                            "url": "/ui/531173E583CF43EA9DB345D0E57DC75B",
+                                            "remote_url": "/ui/531173E583CF43EA9DB345D0E57DC75B",
                                             "create_by": {},
-                                            "id": 16630,
-                                            "api_id": "BB3E6F5A74C84951BC7D9B4B0C2947AD"
+                                            "id": 16779,
+                                            "api_id": "531173E583CF43EA9DB345D0E57DC75B"
                                         }
                                     },
                                     "delete": {
@@ -7609,11 +7609,11 @@
                                             "statistic": [],
                                             "api_method": "delete",
                                             "api_scope": "private",
-                                            "url": "/ui/6D26480434624E18B6777995A1C3756F",
-                                            "remote_url": "/ui/6D26480434624E18B6777995A1C3756F",
+                                            "url": "/ui/7979AC6D76CB405B8D6646EB1531D74C",
+                                            "remote_url": "/ui/7979AC6D76CB405B8D6646EB1531D74C",
                                             "create_by": {},
-                                            "id": 16631,
-                                            "api_id": "6D26480434624E18B6777995A1C3756F"
+                                            "id": 16780,
+                                            "api_id": "7979AC6D76CB405B8D6646EB1531D74C"
                                         }
                                     },
                                     "detail": {
@@ -7696,11 +7696,11 @@
                                             "statistic": [],
                                             "api_method": "get",
                                             "api_scope": "private",
-                                            "url": "/d/5DF0F50546D746B1AD4157EB0F4D32C7",
-                                            "remote_url": "/d/5DF0F50546D746B1AD4157EB0F4D32C7",
+                                            "url": "/d/904EF931455A4404B4106B9A9DBD1AE4",
+                                            "remote_url": "/d/904EF931455A4404B4106B9A9DBD1AE4",
                                             "create_by": {},
-                                            "id": 16635,
-                                            "api_id": "5DF0F50546D746B1AD4157EB0F4D32C7"
+                                            "id": 16784,
+                                            "api_id": "904EF931455A4404B4106B9A9DBD1AE4"
                                         }
                                     },
                                     "approve": {
@@ -9325,11 +9325,11 @@
                                         "statistic": [],
                                         "api_method": "get",
                                         "api_scope": "private",
-                                        "url": "/api/3CE9ADA1575449A8A4AD6AEB1743DB42",
-                                        "remote_url": "/api/3CE9ADA1575449A8A4AD6AEB1743DB42",
+                                        "url": "/api/FEF667D1EB074E59BB63161B371D6947",
+                                        "remote_url": "/api/FEF667D1EB074E59BB63161B371D6947",
                                         "create_by": {},
-                                        "id": 16636,
-                                        "api_id": "3CE9ADA1575449A8A4AD6AEB1743DB42"
+                                        "id": 16785,
+                                        "api_id": "FEF667D1EB074E59BB63161B371D6947"
                                     },
                                     "search": {
                                         "state": true,
@@ -9359,11 +9359,11 @@
                                         ],
                                         "api_method": "post",
                                         "api_scope": "private",
-                                        "url": "/search/6B75B1A760684DCA84317A59033115E5",
-                                        "remote_url": "/search/6B75B1A760684DCA84317A59033115E5",
+                                        "url": "/search/6753ECFF64E74346B43DCF8EA48D5F65",
+                                        "remote_url": "/search/6753ECFF64E74346B43DCF8EA48D5F65",
                                         "create_by": {},
-                                        "id": 16640,
-                                        "api_id": "6B75B1A760684DCA84317A59033115E5"
+                                        "id": 16789,
+                                        "api_id": "6753ECFF64E74346B43DCF8EA48D5F65"
                                     }
                                 },
                                 "buttons": {
@@ -9443,11 +9443,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/ui/A7CBDC57B481490D8CD8CF33A2022409",
-                                            "remote_url": "/ui/A7CBDC57B481490D8CD8CF33A2022409",
+                                            "url": "/ui/6035008C29864B9B98CD44A3CA63969D",
+                                            "remote_url": "/ui/6035008C29864B9B98CD44A3CA63969D",
                                             "create_by": {},
-                                            "id": 16637,
-                                            "api_id": "A7CBDC57B481490D8CD8CF33A2022409"
+                                            "id": 16786,
+                                            "api_id": "6035008C29864B9B98CD44A3CA63969D"
                                         }
                                     },
                                     "import": {
@@ -9470,11 +9470,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/import/8A11B7F727264883B20134CDC6634DC8",
-                                            "remote_url": "/import/8A11B7F727264883B20134CDC6634DC8",
+                                            "url": "/import/5118F426E0FF46F9A825F9C6CA799534",
+                                            "remote_url": "/import/5118F426E0FF46F9A825F9C6CA799534",
                                             "create_by": {},
-                                            "id": 16642,
-                                            "api_id": "8A11B7F727264883B20134CDC6634DC8"
+                                            "id": 16791,
+                                            "api_id": "5118F426E0FF46F9A825F9C6CA799534"
                                         }
                                     },
                                     "export": {
@@ -9553,11 +9553,11 @@
                                             ],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/export/3DF56F0AE6744BA3A50EEF44A82DABE4",
-                                            "remote_url": "/export/3DF56F0AE6744BA3A50EEF44A82DABE4",
+                                            "url": "/export/0C9404DEE6294F189DCEF048C46F9D07",
+                                            "remote_url": "/export/0C9404DEE6294F189DCEF048C46F9D07",
                                             "create_by": {},
-                                            "id": 16641,
-                                            "api_id": "3DF56F0AE6744BA3A50EEF44A82DABE4"
+                                            "id": 16790,
+                                            "api_id": "0C9404DEE6294F189DCEF048C46F9D07"
                                         }
                                     },
                                     "update": {
@@ -9637,11 +9637,11 @@
                                             "statistic": [],
                                             "api_method": "put",
                                             "api_scope": "private",
-                                            "url": "/ui/04DE5DBBEE9F4A3FA5EB4D9FE79CB77E",
-                                            "remote_url": "/ui/04DE5DBBEE9F4A3FA5EB4D9FE79CB77E",
+                                            "url": "/ui/F78BFBB601734EE7A472721DDC4AD491",
+                                            "remote_url": "/ui/F78BFBB601734EE7A472721DDC4AD491",
                                             "create_by": {},
-                                            "id": 16638,
-                                            "api_id": "04DE5DBBEE9F4A3FA5EB4D9FE79CB77E"
+                                            "id": 16787,
+                                            "api_id": "F78BFBB601734EE7A472721DDC4AD491"
                                         }
                                     },
                                     "delete": {
@@ -9729,11 +9729,11 @@
                                             "statistic": [],
                                             "api_method": "delete",
                                             "api_scope": "private",
-                                            "url": "/ui/DB1EC9100B20487EB16D74C13F0035A8",
-                                            "remote_url": "/ui/DB1EC9100B20487EB16D74C13F0035A8",
+                                            "url": "/ui/25B2702DC532499BB75FDD4FFCD88196",
+                                            "remote_url": "/ui/25B2702DC532499BB75FDD4FFCD88196",
                                             "create_by": {},
-                                            "id": 16639,
-                                            "api_id": "DB1EC9100B20487EB16D74C13F0035A8"
+                                            "id": 16788,
+                                            "api_id": "25B2702DC532499BB75FDD4FFCD88196"
                                         }
                                     },
                                     "detail": {
@@ -9813,11 +9813,11 @@
                                             "statistic": [],
                                             "api_method": "get",
                                             "api_scope": "private",
-                                            "url": "/d/BB37494178E54905B90A3D83409E5424",
-                                            "remote_url": "/d/BB37494178E54905B90A3D83409E5424",
+                                            "url": "/d/8BBDA35974EC4CFB88A0330A24904299",
+                                            "remote_url": "/d/8BBDA35974EC4CFB88A0330A24904299",
                                             "create_by": {},
-                                            "id": 16643,
-                                            "api_id": "BB37494178E54905B90A3D83409E5424"
+                                            "id": 16792,
+                                            "api_id": "8BBDA35974EC4CFB88A0330A24904299"
                                         }
                                     },
                                     "approve": {
@@ -10467,15 +10467,16 @@
                                 "statistic": [],
                                 "api_method": "get",
                                 "api_scope": "private",
-                                "url": "/api/C4ADAB992BD24B0CA341396487C71751",
-                                "remote_url": "/api/C4ADAB992BD24B0CA341396487C71751",
+                                "url": "/api/24B233691CFA4781B2AFB30BA120C182",
+                                "remote_url": "/api/24B233691CFA4781B2AFB30BA120C182",
                                 "create_by": {},
-                                "id": 16644,
-                                "api_id": "C4ADAB992BD24B0CA341396487C71751"
+                                "id": 16793,
+                                "api_id": "24B233691CFA4781B2AFB30BA120C182"
                             },
                             "search": {
                                 "api_name": "SEARCH API for UI LỊCH SẢN XUẤT",
                                 "status": true,
+                                "state": true, 
                                 "description": "Hidden API for UI only, do not modify for any reason",
                                 "body": [
                                     4228,
@@ -10495,11 +10496,11 @@
                                 ],
                                 "api_method": "post",
                                 "api_scope": "private",
-                                "url": "/search/8A1603E6AA80477B8BA92F2B8212C0FE",
-                                "remote_url": "/search/8A1603E6AA80477B8BA92F2B8212C0FE",
+                                "url": "/search/519D2512CD4F4CCC8D551C91EBF902BE",
+                                "remote_url": "/search/519D2512CD4F4CCC8D551C91EBF902BE",
                                 "create_by": {},
-                                "id": 16648,
-                                "api_id": "8A1603E6AA80477B8BA92F2B8212C0FE"
+                                "id": 16797,
+                                "api_id": "519D2512CD4F4CCC8D551C91EBF902BE"
                             }
                         },
                         "buttons": {
@@ -10564,11 +10565,11 @@
                                     "statistic": [],
                                     "api_method": "post",
                                     "api_scope": "private",
-                                    "url": "/ui/88138931DFAA450F87CBB1F033DE40D5",
-                                    "remote_url": "/ui/88138931DFAA450F87CBB1F033DE40D5",
+                                    "url": "/ui/6DF1840903E04812A3F8372BBD1C4A8C",
+                                    "remote_url": "/ui/6DF1840903E04812A3F8372BBD1C4A8C",
                                     "create_by": {},
-                                    "id": 16645,
-                                    "api_id": "88138931DFAA450F87CBB1F033DE40D5"
+                                    "id": 16794,
+                                    "api_id": "6DF1840903E04812A3F8372BBD1C4A8C"
                                 }
                             },
                             "import": {
@@ -10596,11 +10597,11 @@
                                     "statistic": [],
                                     "api_method": "post",
                                     "api_scope": "private",
-                                    "url": "/import/3BC81A026D94421DBC49CA3943A1F760",
-                                    "remote_url": "/import/3BC81A026D94421DBC49CA3943A1F760",
+                                    "url": "/import/6121686117A64AE9AB17DFF3549D8997",
+                                    "remote_url": "/import/6121686117A64AE9AB17DFF3549D8997",
                                     "create_by": {},
-                                    "id": 16650,
-                                    "api_id": "3BC81A026D94421DBC49CA3943A1F760"
+                                    "id": 16799,
+                                    "api_id": "6121686117A64AE9AB17DFF3549D8997"
                                 }
                             },
                             "export": {
@@ -10664,11 +10665,11 @@
                                     ],
                                     "api_method": "post",
                                     "api_scope": "private",
-                                    "url": "/export/D5E3F5FEB73C47D8AB14B722D333EDA1",
-                                    "remote_url": "/export/D5E3F5FEB73C47D8AB14B722D333EDA1",
+                                    "url": "/export/AD9209340D9846CC8886D11FF210C131",
+                                    "remote_url": "/export/AD9209340D9846CC8886D11FF210C131",
                                     "create_by": {},
-                                    "id": 16649,
-                                    "api_id": "D5E3F5FEB73C47D8AB14B722D333EDA1"
+                                    "id": 16798,
+                                    "api_id": "AD9209340D9846CC8886D11FF210C131"
                                 }
                             },
                             "update": {
@@ -10733,11 +10734,11 @@
                                     "statistic": [],
                                     "api_method": "put",
                                     "api_scope": "private",
-                                    "url": "/ui/AEC267109CA34A62BA33E8A045B3AA36",
-                                    "remote_url": "/ui/AEC267109CA34A62BA33E8A045B3AA36",
+                                    "url": "/ui/934924882FFD4830AF35A69616823A19",
+                                    "remote_url": "/ui/934924882FFD4830AF35A69616823A19",
                                     "create_by": {},
-                                    "id": 16646,
-                                    "api_id": "AEC267109CA34A62BA33E8A045B3AA36"
+                                    "id": 16795,
+                                    "api_id": "934924882FFD4830AF35A69616823A19"
                                 }
                             },
                             "delete": {
@@ -10801,11 +10802,11 @@
                                     "statistic": [],
                                     "api_method": "delete",
                                     "api_scope": "private",
-                                    "url": "/ui/610FFF976E024CD0993D1D205816036D",
-                                    "remote_url": "/ui/610FFF976E024CD0993D1D205816036D",
+                                    "url": "/ui/A424CE10B9B84ED6B133D04E521E1BDA",
+                                    "remote_url": "/ui/A424CE10B9B84ED6B133D04E521E1BDA",
                                     "create_by": {},
-                                    "id": 16647,
-                                    "api_id": "610FFF976E024CD0993D1D205816036D"
+                                    "id": 16796,
+                                    "api_id": "A424CE10B9B84ED6B133D04E521E1BDA"
                                 }
                             },
                             "detail": {
@@ -10870,11 +10871,11 @@
                                     "statistic": [],
                                     "api_method": "get",
                                     "api_scope": "private",
-                                    "url": "/d/4A1F904C269F4D28B6B0C8EB47BCE222",
-                                    "remote_url": "/d/4A1F904C269F4D28B6B0C8EB47BCE222",
+                                    "url": "/d/EAC5C11A0B7B4E9F993B91A038F117DA",
+                                    "remote_url": "/d/EAC5C11A0B7B4E9F993B91A038F117DA",
                                     "create_by": {},
-                                    "id": 16651,
-                                    "api_id": "4A1F904C269F4D28B6B0C8EB47BCE222"
+                                    "id": 16800,
+                                    "api_id": "EAC5C11A0B7B4E9F993B91A038F117DA"
                                 }
                             },
                             "approve": {
@@ -10944,11 +10945,11 @@
                                     "statistic": [],
                                     "api_method": "put",
                                     "api_scope": "private",
-                                    "url": "/ui/76C031F36D624727935EB05394140A66",
-                                    "remote_url": "/ui/76C031F36D624727935EB05394140A66",
+                                    "url": "/ui/BC5203BE177E48B386AFA0E8DB84B40F",
+                                    "remote_url": "/ui/BC5203BE177E48B386AFA0E8DB84B40F",
                                     "create_by": {},
-                                    "id": 16652,
-                                    "api_id": "76C031F36D624727935EB05394140A66"
+                                    "id": 16801,
+                                    "api_id": "BC5203BE177E48B386AFA0E8DB84B40F"
                                 }
                             },
                             "unapprove": {
@@ -11018,11 +11019,11 @@
                                     "statistic": [],
                                     "api_method": "put",
                                     "api_scope": "private",
-                                    "url": "/ui/DAF6448471CD471BB76A69BA30AE1201",
-                                    "remote_url": "/ui/DAF6448471CD471BB76A69BA30AE1201",
+                                    "url": "/ui/DC3B0472A3F349659E7FB7D294652485",
+                                    "remote_url": "/ui/DC3B0472A3F349659E7FB7D294652485",
                                     "create_by": {},
-                                    "id": 16653,
-                                    "api_id": "DAF6448471CD471BB76A69BA30AE1201"
+                                    "id": 16802,
+                                    "api_id": "DC3B0472A3F349659E7FB7D294652485"
                                 }
                             },
                             "navigator": {
@@ -11038,6 +11039,519 @@
                     },
                     "children": [],
                     "id": "CB74922EA0EB411887A785AA228CAB56"
+                },
+                {
+                    "name": "chart_1",
+                    "children": [],
+                    "props": {
+                        "tables": [
+                            {
+                                "id": 4227,
+                                "table_alias": "3LSX",
+                                "table_name": "Lịch sản xuất",
+                                "primary_key": [
+                                    4228
+                                ],
+                                "foreign_keys": [
+                                    {
+                                        "field_id": 4229,
+                                        "table_id": 4169,
+                                        "ref_field_id": 4170,
+                                        "cascade": false
+                                    },
+                                    {
+                                        "field_id": 12178,
+                                        "table_id": 4210,
+                                        "ref_field_id": 4211,
+                                        "cascade": false
+                                    }
+                                ],
+                                "create_at": "2024-01-10T02:19:58.069Z",
+                                "create_by": {
+                                    "username": "administrator",
+                                    "fullname": "Administrator"
+                                },
+                                "show": "",
+                                "fields": [
+                                    {
+                                        "id": 4228,
+                                        "field_name": "Mã lịch sản xuất",
+                                        "fomular_alias": "8MLSX",
+                                        "create_by": {
+                                            "username": "administrator",
+                                            "fullname": "Administrator"
+                                        },
+                                        "create_at": "2024-01-10T02:19:58.161Z",
+                                        "props": {
+                                            "DATATYPE": "INT UNSIGNED",
+                                            "NULL": false,
+                                            "LENGTH": 65535,
+                                            "AUTO_INCREMENT": true,
+                                            "MIN": "0",
+                                            "MAX": "4294967295",
+                                            "FORMAT": "",
+                                            "PATTERN": "LSX-[YYYY][MM][DD]-[NNNNNN]",
+                                            "DECIMAL_PLACE": "",
+                                            "DEFAULT": "",
+                                            "DEFAULT_TRUE": "",
+                                            "DEFAULT_FALSE": ""
+                                        },
+                                        "field_alias": "8MLSX",
+                                        "table_id": 4227,
+                                        "DATATYPE": "INT UNSIGNED",
+                                        "NULL": false,
+                                        "LENGTH": 65535,
+                                        "AUTO_INCREMENT": true,
+                                        "MIN": "0",
+                                        "MAX": "4294967295",
+                                        "FORMAT": "",
+                                        "PATTERN": "LSX-[YYYY][MM][DD]-[NNNNNN]",
+                                        "DECIMAL_PLACE": "",
+                                        "DEFAULT": "",
+                                        "DEFAULT_TRUE": "",
+                                        "DEFAULT_FALSE": ""
+                                    },
+                                    {
+                                        "id": 4229,
+                                        "field_name": "Khu vực",
+                                        "fomular_alias": "7KV",
+                                        "create_by": {
+                                            "username": "administrator",
+                                            "fullname": "Administrator"
+                                        },
+                                        "create_at": "2024-01-10T02:19:58.161Z",
+                                        "props": {
+                                            "DATATYPE": "TEXT",
+                                            "NULL": false,
+                                            "LENGTH": 65535,
+                                            "AUTO_INCREMENT": true,
+                                            "MIN": "",
+                                            "MAX": "",
+                                            "FORMAT": "",
+                                            "DECIMAL_PLACE": "",
+                                            "DEFAULT": "",
+                                            "DEFAULT_TRUE": "",
+                                            "DEFAULT_FALSE": ""
+                                        },
+                                        "field_alias": "7KV",
+                                        "table_id": 4227,
+                                        "DATATYPE": "TEXT",
+                                        "NULL": false,
+                                        "LENGTH": 65535,
+                                        "AUTO_INCREMENT": true,
+                                        "MIN": "",
+                                        "MAX": "",
+                                        "FORMAT": "",
+                                        "DECIMAL_PLACE": "",
+                                        "DEFAULT": "",
+                                        "DEFAULT_TRUE": "",
+                                        "DEFAULT_FALSE": ""
+                                    },
+                                    {
+                                        "id": 4230,
+                                        "field_name": "Số lượng mã vạch",
+                                        "fomular_alias": "3SLMV",
+                                        "create_by": {
+                                            "username": "administrator",
+                                            "fullname": "Administrator"
+                                        },
+                                        "create_at": "2024-01-10T02:19:58.161Z",
+                                        "props": {
+                                            "DATATYPE": "INT UNSIGNED",
+                                            "NULL": false,
+                                            "LENGTH": 66535,
+                                            "AUTO_INCREMENT": false,
+                                            "MIN": "0",
+                                            "MAX": "4294967295",
+                                            "FORMAT": "",
+                                            "DECIMAL_PLACE": "",
+                                            "DEFAULT": "",
+                                            "DEFAULT_TRUE": "",
+                                            "DEFAULT_FALSE": ""
+                                        },
+                                        "field_alias": "3SLMV",
+                                        "table_id": 4227,
+                                        "DATATYPE": "INT UNSIGNED",
+                                        "NULL": false,
+                                        "LENGTH": 66535,
+                                        "AUTO_INCREMENT": false,
+                                        "MIN": "0",
+                                        "MAX": "4294967295",
+                                        "FORMAT": "",
+                                        "DECIMAL_PLACE": "",
+                                        "DEFAULT": "",
+                                        "DEFAULT_TRUE": "",
+                                        "DEFAULT_FALSE": ""
+                                    },
+                                    {
+                                        "id": 4231,
+                                        "field_name": "Số lô",
+                                        "fomular_alias": "6SL",
+                                        "create_by": {
+                                            "username": "administrator",
+                                            "fullname": "Administrator"
+                                        },
+                                        "create_at": "2024-01-10T02:19:58.161Z",
+                                        "props": {
+                                            "DATATYPE": "TEXT",
+                                            "NULL": false,
+                                            "LENGTH": 66535,
+                                            "AUTO_INCREMENT": false,
+                                            "MIN": "0",
+                                            "MAX": "4294967295",
+                                            "FORMAT": "",
+                                            "DECIMAL_PLACE": "",
+                                            "DEFAULT": "",
+                                            "DEFAULT_TRUE": "",
+                                            "DEFAULT_FALSE": ""
+                                        },
+                                        "field_alias": "6SL",
+                                        "table_id": 4227,
+                                        "DATATYPE": "TEXT",
+                                        "NULL": false,
+                                        "LENGTH": 66535,
+                                        "AUTO_INCREMENT": false,
+                                        "MIN": "0",
+                                        "MAX": "4294967295",
+                                        "FORMAT": "",
+                                        "DECIMAL_PLACE": "",
+                                        "DEFAULT": "",
+                                        "DEFAULT_TRUE": "",
+                                        "DEFAULT_FALSE": ""
+                                    },
+                                    {
+                                        "id": 4232,
+                                        "field_name": "Ngày sản xuất",
+                                        "fomular_alias": "11NSX",
+                                        "create_by": {
+                                            "username": "administrator",
+                                            "fullname": "Administrator"
+                                        },
+                                        "create_at": "2024-01-10T02:19:58.161Z",
+                                        "props": {
+                                            "DATATYPE": "DATE",
+                                            "NULL": false,
+                                            "LENGTH": 66535,
+                                            "AUTO_INCREMENT": true,
+                                            "MIN": "",
+                                            "MAX": "",
+                                            "FORMAT": "dd/MM/yyyy",
+                                            "DECIMAL_PLACE": "",
+                                            "DEFAULT": "",
+                                            "DEFAULT_TRUE": "",
+                                            "DEFAULT_FALSE": ""
+                                        },
+                                        "field_alias": "11NSX",
+                                        "table_id": 4227,
+                                        "DATATYPE": "DATE",
+                                        "NULL": false,
+                                        "LENGTH": 66535,
+                                        "AUTO_INCREMENT": true,
+                                        "MIN": "",
+                                        "MAX": "",
+                                        "FORMAT": "dd/MM/yyyy",
+                                        "DECIMAL_PLACE": "",
+                                        "DEFAULT": "",
+                                        "DEFAULT_TRUE": "",
+                                        "DEFAULT_FALSE": ""
+                                    },
+                                    {
+                                        "id": 4233,
+                                        "field_name": "Thời hạn sử dụng",
+                                        "fomular_alias": "1THSD",
+                                        "create_by": {
+                                            "username": "administrator",
+                                            "fullname": "Administrator"
+                                        },
+                                        "create_at": "2024-01-10T02:19:58.161Z",
+                                        "props": {
+                                            "DATATYPE": "DATE",
+                                            "NULL": false,
+                                            "LENGTH": 66535,
+                                            "AUTO_INCREMENT": true,
+                                            "MIN": "",
+                                            "MAX": "",
+                                            "FORMAT": "dd/MM/yyyy",
+                                            "DECIMAL_PLACE": "",
+                                            "DEFAULT": "",
+                                            "DEFAULT_TRUE": "",
+                                            "DEFAULT_FALSE": ""
+                                        },
+                                        "field_alias": "1THSD",
+                                        "table_id": 4227,
+                                        "DATATYPE": "DATE",
+                                        "NULL": false,
+                                        "LENGTH": 66535,
+                                        "AUTO_INCREMENT": true,
+                                        "MIN": "",
+                                        "MAX": "",
+                                        "FORMAT": "dd/MM/yyyy",
+                                        "DECIMAL_PLACE": "",
+                                        "DEFAULT": "",
+                                        "DEFAULT_TRUE": "",
+                                        "DEFAULT_FALSE": ""
+                                    },
+                                    {
+                                        "id": 4305,
+                                        "field_name": "Trạng thái",
+                                        "fomular_alias": "33TT",
+                                        "create_by": {
+                                            "username": "administrator",
+                                            "fullname": "Administrator"
+                                        },
+                                        "create_at": "2024-01-10T04:21:52.715Z",
+                                        "props": {
+                                            "DATATYPE": "BOOL",
+                                            "NULL": false,
+                                            "LENGTH": 65535,
+                                            "AUTO_INCREMENT": true,
+                                            "MIN": "0",
+                                            "MAX": "1",
+                                            "FORMAT": "",
+                                            "DECIMAL_PLACE": "",
+                                            "DEFAULT": "",
+                                            "DEFAULT_TRUE": "Mới tạo",
+                                            "DEFAULT_FALSE": "Đã duyệt"
+                                        },
+                                        "field_alias": "33TT",
+                                        "table_id": 4227,
+                                        "DATATYPE": "BOOL",
+                                        "NULL": false,
+                                        "LENGTH": 65535,
+                                        "AUTO_INCREMENT": true,
+                                        "MIN": "0",
+                                        "MAX": "1",
+                                        "FORMAT": "",
+                                        "DECIMAL_PLACE": "",
+                                        "DEFAULT": "",
+                                        "DEFAULT_TRUE": "Mới tạo",
+                                        "DEFAULT_FALSE": "Đã duyệt"
+                                    },
+                                    {
+                                        "id": 12178,
+                                        "field_name": "Mã sản phẩm",
+                                        "fomular_alias": "23MSP",
+                                        "create_by": {
+                                            "username": "administrator",
+                                            "fullname": "Administrator"
+                                        },
+                                        "create_at": "2024-01-18T04:43:38.121Z",
+                                        "props": {
+                                            "DATATYPE": "INT UNSIGNED",
+                                            "NULL": false,
+                                            "LENGTH": 65535,
+                                            "AUTO_INCREMENT": true,
+                                            "MIN": "1",
+                                            "MAX": "4294967295",
+                                            "FORMAT": "",
+                                            "PATTERN": "SP-[YYYY][MM][DD]-[NNNNNNN]",
+                                            "DECIMAL_PLACE": "",
+                                            "DEFAULT": "",
+                                            "DEFAULT_TRUE": "",
+                                            "DEFAULT_FALSE": ""
+                                        },
+                                        "field_alias": "23MSP",
+                                        "table_id": 4227,
+                                        "DATATYPE": "INT UNSIGNED",
+                                        "NULL": false,
+                                        "LENGTH": 65535,
+                                        "AUTO_INCREMENT": true,
+                                        "MIN": "1",
+                                        "MAX": "4294967295",
+                                        "FORMAT": "",
+                                        "PATTERN": "SP-[YYYY][MM][DD]-[NNNNNNN]",
+                                        "DECIMAL_PLACE": "",
+                                        "DEFAULT": "",
+                                        "DEFAULT_TRUE": "",
+                                        "DEFAULT_FALSE": ""
+                                    }
+                                ]
+                            }
+                        ],
+                        "field": {
+                            "id": 4230,
+                            "field_name": "Số lượng mã vạch",
+                            "fomular_alias": "3SLMV",
+                            "create_by": {
+                                "username": "administrator",
+                                "fullname": "Administrator"
+                            },
+                            "create_at": "2024-01-10T02:19:58.161Z",
+                            "props": {
+                                "DATATYPE": "INT UNSIGNED",
+                                "NULL": false,
+                                "LENGTH": 66535,
+                                "AUTO_INCREMENT": false,
+                                "MIN": "0",
+                                "MAX": "4294967295",
+                                "FORMAT": "",
+                                "DECIMAL_PLACE": "",
+                                "DEFAULT": "",
+                                "DEFAULT_TRUE": "",
+                                "DEFAULT_FALSE": ""
+                            },
+                            "field_alias": "3SLMV",
+                            "table_id": 4227,
+                            "DATATYPE": "INT UNSIGNED",
+                            "NULL": false,
+                            "LENGTH": 66535,
+                            "AUTO_INCREMENT": false,
+                            "MIN": "0",
+                            "MAX": "4294967295",
+                            "FORMAT": "",
+                            "DECIMAL_PLACE": "",
+                            "DEFAULT": "",
+                            "DEFAULT_TRUE": "",
+                            "DEFAULT_FALSE": ""
+                        },
+                        "api": {
+                            "api_name": "STATIS API for chart_1",
+                            "status": true,
+                            "description": "Hidden API for UI only, do not modify for any reason",
+                            "fields": [],
+                            "field": {
+                                "id": 4230,
+                                "field_name": "Số lượng mã vạch",
+                                "fomular_alias": "3SLMV",
+                                "create_by": {
+                                    "username": "administrator",
+                                    "fullname": "Administrator"
+                                },
+                                "create_at": "2024-01-10T02:19:58.161Z",
+                                "props": {
+                                    "DATATYPE": "INT UNSIGNED",
+                                    "NULL": false,
+                                    "LENGTH": 66535,
+                                    "AUTO_INCREMENT": false,
+                                    "MIN": "0",
+                                    "MAX": "4294967295",
+                                    "FORMAT": "",
+                                    "DECIMAL_PLACE": "",
+                                    "DEFAULT": "",
+                                    "DEFAULT_TRUE": "",
+                                    "DEFAULT_FALSE": ""
+                                },
+                                "field_alias": "3SLMV",
+                                "table_id": 4227,
+                                "DATATYPE": "INT UNSIGNED",
+                                "NULL": false,
+                                "LENGTH": 66535,
+                                "AUTO_INCREMENT": false,
+                                "MIN": "0",
+                                "MAX": "4294967295",
+                                "FORMAT": "",
+                                "DECIMAL_PLACE": "",
+                                "DEFAULT": "",
+                                "DEFAULT_TRUE": "",
+                                "DEFAULT_FALSE": ""
+                            },
+                            "body": [],
+                            "params": [],
+                            "tables": [
+                                4227
+                            ],
+                            "fomular": "AVERAGE",
+                            "group_by": [
+                                {
+                                    "id": 12178,
+                                    "field_name": "Mã sản phẩm",
+                                    "fomular_alias": "23MSP",
+                                    "create_by": {
+                                        "username": "administrator",
+                                        "fullname": "Administrator"
+                                    },
+                                    "create_at": "2024-01-18T04:43:38.121Z",
+                                    "props": {
+                                        "DATATYPE": "INT UNSIGNED",
+                                        "NULL": false,
+                                        "LENGTH": 65535,
+                                        "AUTO_INCREMENT": true,
+                                        "MIN": "1",
+                                        "MAX": "4294967295",
+                                        "FORMAT": "",
+                                        "PATTERN": "SP-[YYYY][MM][DD]-[NNNNNNN]",
+                                        "DECIMAL_PLACE": "",
+                                        "DEFAULT": "",
+                                        "DEFAULT_TRUE": "",
+                                        "DEFAULT_FALSE": ""
+                                    },
+                                    "field_alias": "23MSP",
+                                    "table_id": 4227,
+                                    "DATATYPE": "INT UNSIGNED",
+                                    "NULL": false,
+                                    "LENGTH": 65535,
+                                    "AUTO_INCREMENT": true,
+                                    "MIN": "1",
+                                    "MAX": "4294967295",
+                                    "FORMAT": "",
+                                    "PATTERN": "SP-[YYYY][MM][DD]-[NNNNNNN]",
+                                    "DECIMAL_PLACE": "",
+                                    "DEFAULT": "",
+                                    "DEFAULT_TRUE": "",
+                                    "DEFAULT_FALSE": ""
+                                }
+                            ],
+                            "criterias": "",
+                            "calculates": [],
+                            "statistic": [],
+                            "api_method": "get",
+                            "api_scope": "private",
+                            "url": "/statis/6A8E03C66A3F413BAAAC658385577DC6",
+                            "remote_url": "/statis/6A8E03C66A3F413BAAAC658385577DC6",
+                            "create_by": {},
+                            "id": 16803,
+                            "api_id": "6A8E03C66A3F413BAAAC658385577DC6"
+                        },
+                        "fomular": "AVERAGE",
+                        "criterias": "",
+                        "group_by": [
+                            {
+                                "id": 12178,
+                                "field_name": "Mã sản phẩm",
+                                "fomular_alias": "23MSP",
+                                "create_by": {
+                                    "username": "administrator",
+                                    "fullname": "Administrator"
+                                },
+                                "create_at": "2024-01-18T04:43:38.121Z",
+                                "props": {
+                                    "DATATYPE": "INT UNSIGNED",
+                                    "NULL": false,
+                                    "LENGTH": 65535,
+                                    "AUTO_INCREMENT": true,
+                                    "MIN": "1",
+                                    "MAX": "4294967295",
+                                    "FORMAT": "",
+                                    "PATTERN": "SP-[YYYY][MM][DD]-[NNNNNNN]",
+                                    "DECIMAL_PLACE": "",
+                                    "DEFAULT": "",
+                                    "DEFAULT_TRUE": "",
+                                    "DEFAULT_FALSE": ""
+                                },
+                                "field_alias": "23MSP",
+                                "table_id": 4227,
+                                "DATATYPE": "INT UNSIGNED",
+                                "NULL": false,
+                                "LENGTH": 65535,
+                                "AUTO_INCREMENT": true,
+                                "MIN": "1",
+                                "MAX": "4294967295",
+                                "FORMAT": "",
+                                "PATTERN": "SP-[YYYY][MM][DD]-[NNNNNNN]",
+                                "DECIMAL_PLACE": "",
+                                "DEFAULT": "",
+                                "DEFAULT_TRUE": "",
+                                "DEFAULT_FALSE": ""
+                            }
+                        ],
+                        "content": "Sample Text",
+                        "style": {
+                            "margin": "0px 0px 0px 0px",
+                            "padding": "6px 12px 6px 12px",
+                            "width": "100%"
+                        }
+                    },
+                    "id": "6C2CA91EB78245FE86B30F8833E7EB48"
                 }
             ]
         },
@@ -11670,11 +12184,11 @@
                                         "statistic": [],
                                         "api_method": "get",
                                         "api_scope": "private",
-                                        "url": "/api/1D292768D96840528B2460DF8021B946",
-                                        "remote_url": "/api/1D292768D96840528B2460DF8021B946",
+                                        "url": "/api/340D5875C40645AEA4603EF9CFC2CA61",
+                                        "remote_url": "/api/340D5875C40645AEA4603EF9CFC2CA61",
                                         "create_by": {},
-                                        "id": 16654,
-                                        "api_id": "1D292768D96840528B2460DF8021B946"
+                                        "id": 16804,
+                                        "api_id": "340D5875C40645AEA4603EF9CFC2CA61"
                                     },
                                     "search": {
                                         "api_name": "SEARCH API for UI KHO",
@@ -11698,11 +12212,11 @@
                                         ],
                                         "api_method": "post",
                                         "api_scope": "private",
-                                        "url": "/search/1E616991C3944273BA138D6C2AF900EC",
-                                        "remote_url": "/search/1E616991C3944273BA138D6C2AF900EC",
+                                        "url": "/search/BA43ED2EA98C4EC4BF16396EAAC66408",
+                                        "remote_url": "/search/BA43ED2EA98C4EC4BF16396EAAC66408",
                                         "create_by": {},
-                                        "id": 16658,
-                                        "api_id": "1E616991C3944273BA138D6C2AF900EC"
+                                        "id": 16808,
+                                        "api_id": "BA43ED2EA98C4EC4BF16396EAAC66408"
                                     }
                                 },
                                 "buttons": {
@@ -11766,11 +12280,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/ui/A67D698D74AA4AEEB06B6472A022A968",
-                                            "remote_url": "/ui/A67D698D74AA4AEEB06B6472A022A968",
+                                            "url": "/ui/F46F04C060D545DAA48B9F24E08C2963",
+                                            "remote_url": "/ui/F46F04C060D545DAA48B9F24E08C2963",
                                             "create_by": {},
-                                            "id": 16655,
-                                            "api_id": "A67D698D74AA4AEEB06B6472A022A968"
+                                            "id": 16805,
+                                            "api_id": "F46F04C060D545DAA48B9F24E08C2963"
                                         }
                                     },
                                     "import": {
@@ -11797,11 +12311,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/import/12B90B284E5A41FB8F3806753BFBF77E",
-                                            "remote_url": "/import/12B90B284E5A41FB8F3806753BFBF77E",
+                                            "url": "/import/41005370C5A64AA780AFCC3612C0BC07",
+                                            "remote_url": "/import/41005370C5A64AA780AFCC3612C0BC07",
                                             "create_by": {},
-                                            "id": 16660,
-                                            "api_id": "12B90B284E5A41FB8F3806753BFBF77E"
+                                            "id": 16810,
+                                            "api_id": "41005370C5A64AA780AFCC3612C0BC07"
                                         }
                                     },
                                     "export": {
@@ -11864,11 +12378,11 @@
                                             ],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/export/39A7418E7A6D4832857C73407697C41B",
-                                            "remote_url": "/export/39A7418E7A6D4832857C73407697C41B",
+                                            "url": "/export/8BBFA7CF9E1B4C85B126166466C1AFDF",
+                                            "remote_url": "/export/8BBFA7CF9E1B4C85B126166466C1AFDF",
                                             "create_by": {},
-                                            "id": 16659,
-                                            "api_id": "39A7418E7A6D4832857C73407697C41B"
+                                            "id": 16809,
+                                            "api_id": "8BBFA7CF9E1B4C85B126166466C1AFDF"
                                         }
                                     },
                                     "update": {
@@ -11932,11 +12446,11 @@
                                             "statistic": [],
                                             "api_method": "put",
                                             "api_scope": "private",
-                                            "url": "/ui/FB7C1C6401E9476BB3F6C5586A557849",
-                                            "remote_url": "/ui/FB7C1C6401E9476BB3F6C5586A557849",
+                                            "url": "/ui/54450CCCECE34A98B56797DD4983D4AA",
+                                            "remote_url": "/ui/54450CCCECE34A98B56797DD4983D4AA",
                                             "create_by": {},
-                                            "id": 16656,
-                                            "api_id": "FB7C1C6401E9476BB3F6C5586A557849"
+                                            "id": 16806,
+                                            "api_id": "54450CCCECE34A98B56797DD4983D4AA"
                                         }
                                     },
                                     "delete": {
@@ -12000,11 +12514,11 @@
                                             "statistic": [],
                                             "api_method": "delete",
                                             "api_scope": "private",
-                                            "url": "/ui/CB0BC6F0BF4043A58CF9F393313A8F54",
-                                            "remote_url": "/ui/CB0BC6F0BF4043A58CF9F393313A8F54",
+                                            "url": "/ui/1DFE0167EE2E438C96025BC524394C51",
+                                            "remote_url": "/ui/1DFE0167EE2E438C96025BC524394C51",
                                             "create_by": {},
-                                            "id": 16657,
-                                            "api_id": "CB0BC6F0BF4043A58CF9F393313A8F54"
+                                            "id": 16807,
+                                            "api_id": "1DFE0167EE2E438C96025BC524394C51"
                                         }
                                     },
                                     "detail": {
@@ -12068,11 +12582,11 @@
                                             "statistic": [],
                                             "api_method": "get",
                                             "api_scope": "private",
-                                            "url": "/d/884FF4A1CAD843529CB9D0BB147005F0",
-                                            "remote_url": "/d/884FF4A1CAD843529CB9D0BB147005F0",
+                                            "url": "/d/2C12BBAB648142CF96829AFBC76DFF38",
+                                            "remote_url": "/d/2C12BBAB648142CF96829AFBC76DFF38",
                                             "create_by": {},
-                                            "id": 16661,
-                                            "api_id": "884FF4A1CAD843529CB9D0BB147005F0"
+                                            "id": 16811,
+                                            "api_id": "2C12BBAB648142CF96829AFBC76DFF38"
                                         }
                                     },
                                     "approve": {
@@ -12963,11 +13477,11 @@
                                         "statistic": [],
                                         "api_method": "get",
                                         "api_scope": "private",
-                                        "url": "/api/F8D531FBEAC24F748DD7BA53A81CDD76",
-                                        "remote_url": "/api/F8D531FBEAC24F748DD7BA53A81CDD76",
+                                        "url": "/api/E782313ADEEA475F82C1F5FB521FD5E6",
+                                        "remote_url": "/api/E782313ADEEA475F82C1F5FB521FD5E6",
                                         "create_by": {},
-                                        "id": 16662,
-                                        "api_id": "F8D531FBEAC24F748DD7BA53A81CDD76"
+                                        "id": 16812,
+                                        "api_id": "E782313ADEEA475F82C1F5FB521FD5E6"
                                     },
                                     "search": {
                                         "api_name": "SEARCH API for UI NHẬP KHO",
@@ -12993,11 +13507,11 @@
                                         ],
                                         "api_method": "post",
                                         "api_scope": "private",
-                                        "url": "/search/D1E012311768439CAD62A5F4F9AF7F62",
-                                        "remote_url": "/search/D1E012311768439CAD62A5F4F9AF7F62",
+                                        "url": "/search/42A29A6DC86F48D8BE8A6961F026763E",
+                                        "remote_url": "/search/42A29A6DC86F48D8BE8A6961F026763E",
                                         "create_by": {},
-                                        "id": 16666,
-                                        "api_id": "D1E012311768439CAD62A5F4F9AF7F62"
+                                        "id": 16816,
+                                        "api_id": "42A29A6DC86F48D8BE8A6961F026763E"
                                     }
                                 },
                                 "buttons": {
@@ -13075,11 +13589,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/ui/F34B40BDC1694DEEB24AECBA7923E372",
-                                            "remote_url": "/ui/F34B40BDC1694DEEB24AECBA7923E372",
+                                            "url": "/ui/87A2691B7CD4406394705E1DBC97C836",
+                                            "remote_url": "/ui/87A2691B7CD4406394705E1DBC97C836",
                                             "create_by": {},
-                                            "id": 16663,
-                                            "api_id": "F34B40BDC1694DEEB24AECBA7923E372"
+                                            "id": 16813,
+                                            "api_id": "87A2691B7CD4406394705E1DBC97C836"
                                         }
                                     },
                                     "import": {
@@ -13110,11 +13624,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/import/09C91486F6674C3CBD8B1885FFCE3691",
-                                            "remote_url": "/import/09C91486F6674C3CBD8B1885FFCE3691",
+                                            "url": "/import/1B3CBE4481FD40F99BFF4F8A30C27D80",
+                                            "remote_url": "/import/1B3CBE4481FD40F99BFF4F8A30C27D80",
                                             "create_by": {},
-                                            "id": 16668,
-                                            "api_id": "09C91486F6674C3CBD8B1885FFCE3691"
+                                            "id": 16818,
+                                            "api_id": "1B3CBE4481FD40F99BFF4F8A30C27D80"
                                         }
                                     },
                                     "export": {
@@ -13191,11 +13705,11 @@
                                             ],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/export/A94DA2B6D7194D11A3ACB0A3DB1558EA",
-                                            "remote_url": "/export/A94DA2B6D7194D11A3ACB0A3DB1558EA",
+                                            "url": "/export/263EE15AABD847B3B72D966855D26F3F",
+                                            "remote_url": "/export/263EE15AABD847B3B72D966855D26F3F",
                                             "create_by": {},
-                                            "id": 16667,
-                                            "api_id": "A94DA2B6D7194D11A3ACB0A3DB1558EA"
+                                            "id": 16817,
+                                            "api_id": "263EE15AABD847B3B72D966855D26F3F"
                                         }
                                     },
                                     "update": {
@@ -13273,11 +13787,11 @@
                                             "statistic": [],
                                             "api_method": "put",
                                             "api_scope": "private",
-                                            "url": "/ui/C804A389DCA9477DA0B2713C4610E105",
-                                            "remote_url": "/ui/C804A389DCA9477DA0B2713C4610E105",
+                                            "url": "/ui/E6DA84B39D0C46298F948F9B18588C39",
+                                            "remote_url": "/ui/E6DA84B39D0C46298F948F9B18588C39",
                                             "create_by": {},
-                                            "id": 16664,
-                                            "api_id": "C804A389DCA9477DA0B2713C4610E105"
+                                            "id": 16814,
+                                            "api_id": "E6DA84B39D0C46298F948F9B18588C39"
                                         }
                                     },
                                     "delete": {
@@ -13353,11 +13867,11 @@
                                             "statistic": [],
                                             "api_method": "delete",
                                             "api_scope": "private",
-                                            "url": "/ui/CD7E381058AC48F0A1077AE6FEF90324",
-                                            "remote_url": "/ui/CD7E381058AC48F0A1077AE6FEF90324",
+                                            "url": "/ui/3493245525F84D31A1709F727FABEBC9",
+                                            "remote_url": "/ui/3493245525F84D31A1709F727FABEBC9",
                                             "create_by": {},
-                                            "id": 16665,
-                                            "api_id": "CD7E381058AC48F0A1077AE6FEF90324"
+                                            "id": 16815,
+                                            "api_id": "3493245525F84D31A1709F727FABEBC9"
                                         }
                                     },
                                     "detail": {
@@ -13435,11 +13949,11 @@
                                             "statistic": [],
                                             "api_method": "get",
                                             "api_scope": "private",
-                                            "url": "/d/89AA7BB2CDE040D189CCF5F168DBF494",
-                                            "remote_url": "/d/89AA7BB2CDE040D189CCF5F168DBF494",
+                                            "url": "/d/EBAA713CDBEB49F6B576A2AD6B50CAFB",
+                                            "remote_url": "/d/EBAA713CDBEB49F6B576A2AD6B50CAFB",
                                             "create_by": {},
-                                            "id": 16669,
-                                            "api_id": "89AA7BB2CDE040D189CCF5F168DBF494"
+                                            "id": 16819,
+                                            "api_id": "EBAA713CDBEB49F6B576A2AD6B50CAFB"
                                         }
                                     },
                                     "approve": {
@@ -14458,11 +14972,11 @@
                                         "statistic": [],
                                         "api_method": "get",
                                         "api_scope": "private",
-                                        "url": "/api/60D3181F131444DA9431CE5C68DDE66D",
-                                        "remote_url": "/api/60D3181F131444DA9431CE5C68DDE66D",
+                                        "url": "/api/16E8858F956E40A6B0A25FDA02101991",
+                                        "remote_url": "/api/16E8858F956E40A6B0A25FDA02101991",
                                         "create_by": {},
-                                        "id": 16670,
-                                        "api_id": "60D3181F131444DA9431CE5C68DDE66D"
+                                        "id": 16820,
+                                        "api_id": "16E8858F956E40A6B0A25FDA02101991"
                                     },
                                     "search": {
                                         "api_name": "SEARCH API for UI XUẤT KHO",
@@ -14488,11 +15002,11 @@
                                         ],
                                         "api_method": "post",
                                         "api_scope": "private",
-                                        "url": "/search/0B69F92B9AD0470DA51A1E529C10E588",
-                                        "remote_url": "/search/0B69F92B9AD0470DA51A1E529C10E588",
+                                        "url": "/search/4E749E59F67D4F17891697D874FEAA90",
+                                        "remote_url": "/search/4E749E59F67D4F17891697D874FEAA90",
                                         "create_by": {},
-                                        "id": 16674,
-                                        "api_id": "0B69F92B9AD0470DA51A1E529C10E588"
+                                        "id": 16824,
+                                        "api_id": "4E749E59F67D4F17891697D874FEAA90"
                                     }
                                 },
                                 "buttons": {
@@ -14570,11 +15084,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/ui/556AB7159EE04506A67379F6F8222FA5",
-                                            "remote_url": "/ui/556AB7159EE04506A67379F6F8222FA5",
+                                            "url": "/ui/05AE25FB105943CEBCC534B95BED9553",
+                                            "remote_url": "/ui/05AE25FB105943CEBCC534B95BED9553",
                                             "create_by": {},
-                                            "id": 16671,
-                                            "api_id": "556AB7159EE04506A67379F6F8222FA5"
+                                            "id": 16821,
+                                            "api_id": "05AE25FB105943CEBCC534B95BED9553"
                                         }
                                     },
                                     "import": {
@@ -14605,11 +15119,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/import/883308137D1D459A8F20DAA1D97402DC",
-                                            "remote_url": "/import/883308137D1D459A8F20DAA1D97402DC",
+                                            "url": "/import/1AC08729B6AB45C5ACD4D6F02CBA7180",
+                                            "remote_url": "/import/1AC08729B6AB45C5ACD4D6F02CBA7180",
                                             "create_by": {},
-                                            "id": 16676,
-                                            "api_id": "883308137D1D459A8F20DAA1D97402DC"
+                                            "id": 16826,
+                                            "api_id": "1AC08729B6AB45C5ACD4D6F02CBA7180"
                                         }
                                     },
                                     "export": {
@@ -14686,11 +15200,11 @@
                                             ],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/export/0106D8D03BB9477193ABDC2BB13CB42A",
-                                            "remote_url": "/export/0106D8D03BB9477193ABDC2BB13CB42A",
+                                            "url": "/export/BFCDC480FA6645CD85417EFCF4930735",
+                                            "remote_url": "/export/BFCDC480FA6645CD85417EFCF4930735",
                                             "create_by": {},
-                                            "id": 16675,
-                                            "api_id": "0106D8D03BB9477193ABDC2BB13CB42A"
+                                            "id": 16825,
+                                            "api_id": "BFCDC480FA6645CD85417EFCF4930735"
                                         }
                                     },
                                     "update": {
@@ -14768,11 +15282,11 @@
                                             "statistic": [],
                                             "api_method": "put",
                                             "api_scope": "private",
-                                            "url": "/ui/FBF5692A0B9446EE86B2387B09536DD9",
-                                            "remote_url": "/ui/FBF5692A0B9446EE86B2387B09536DD9",
+                                            "url": "/ui/18AB88EC47A7448A93DCD9ABC2186322",
+                                            "remote_url": "/ui/18AB88EC47A7448A93DCD9ABC2186322",
                                             "create_by": {},
-                                            "id": 16672,
-                                            "api_id": "FBF5692A0B9446EE86B2387B09536DD9"
+                                            "id": 16822,
+                                            "api_id": "18AB88EC47A7448A93DCD9ABC2186322"
                                         }
                                     },
                                     "delete": {
@@ -14848,11 +15362,11 @@
                                             "statistic": [],
                                             "api_method": "delete",
                                             "api_scope": "private",
-                                            "url": "/ui/5B95B0626B454050A03612AB61C639CC",
-                                            "remote_url": "/ui/5B95B0626B454050A03612AB61C639CC",
+                                            "url": "/ui/97AD7984204943389A152E820984EF30",
+                                            "remote_url": "/ui/97AD7984204943389A152E820984EF30",
                                             "create_by": {},
-                                            "id": 16673,
-                                            "api_id": "5B95B0626B454050A03612AB61C639CC"
+                                            "id": 16823,
+                                            "api_id": "97AD7984204943389A152E820984EF30"
                                         }
                                     },
                                     "detail": {
@@ -14930,11 +15444,11 @@
                                             "statistic": [],
                                             "api_method": "get",
                                             "api_scope": "private",
-                                            "url": "/d/976BE19D3B7C4101BD012CF5479AEF65",
-                                            "remote_url": "/d/976BE19D3B7C4101BD012CF5479AEF65",
+                                            "url": "/d/E23D481896414D77A17850C6C895FF45",
+                                            "remote_url": "/d/E23D481896414D77A17850C6C895FF45",
                                             "create_by": {},
-                                            "id": 16677,
-                                            "api_id": "976BE19D3B7C4101BD012CF5479AEF65"
+                                            "id": 16827,
+                                            "api_id": "E23D481896414D77A17850C6C895FF45"
                                         }
                                     },
                                     "approve": {
@@ -16363,11 +16877,11 @@
                                     "statistic": [],
                                     "api_method": "get",
                                     "api_scope": "private",
-                                    "url": "/statis/ABED122FFE9F4DFBB0CA75882A2CC40C",
-                                    "remote_url": "/statis/ABED122FFE9F4DFBB0CA75882A2CC40C",
+                                    "url": "/statis/51B03E8AE1BE41BAABFF459C6BF40B15",
+                                    "remote_url": "/statis/51B03E8AE1BE41BAABFF459C6BF40B15",
                                     "create_by": {},
-                                    "id": 16678,
-                                    "api_id": "ABED122FFE9F4DFBB0CA75882A2CC40C"
+                                    "id": 16828,
+                                    "api_id": "51B03E8AE1BE41BAABFF459C6BF40B15"
                                 },
                                 "fomular": "COUNT",
                                 "criterias": "NOW - 1THSD > 0",
@@ -17678,11 +18192,11 @@
                                     "statistic": [],
                                     "api_method": "get",
                                     "api_scope": "private",
-                                    "url": "/statis/09884CB2206045FAB43E4C7746B85A7E",
-                                    "remote_url": "/statis/09884CB2206045FAB43E4C7746B85A7E",
+                                    "url": "/statis/95BD7305BCBE43C29F1A1C71BACFC1CE",
+                                    "remote_url": "/statis/95BD7305BCBE43C29F1A1C71BACFC1CE",
                                     "create_by": {},
-                                    "id": 16679,
-                                    "api_id": "09884CB2206045FAB43E4C7746B85A7E"
+                                    "id": 16829,
+                                    "api_id": "95BD7305BCBE43C29F1A1C71BACFC1CE"
                                 },
                                 "fomular": "COUNT",
                                 "criterias": "1SNCBTKHH - ( (1THSD - NOW) / 86400000 ) > 0 AND 1THSD - NOW > 0  ",
@@ -17974,11 +18488,11 @@
                                     "statistic": [],
                                     "api_method": "get",
                                     "api_scope": "private",
-                                    "url": "/statis/9ACE836E416C4A3D9BA236AA7F8DC5F0",
-                                    "remote_url": "/statis/9ACE836E416C4A3D9BA236AA7F8DC5F0",
+                                    "url": "/statis/430575D4777C4376975799F7392EF7E3",
+                                    "remote_url": "/statis/430575D4777C4376975799F7392EF7E3",
                                     "create_by": {},
-                                    "id": 16680,
-                                    "api_id": "9ACE836E416C4A3D9BA236AA7F8DC5F0"
+                                    "id": 16830,
+                                    "api_id": "430575D4777C4376975799F7392EF7E3"
                                 },
                                 "fomular": "COUNT",
                                 "criterias": "",
@@ -18442,11 +18956,11 @@
                                 "statistic": [],
                                 "api_method": "get",
                                 "api_scope": "private",
-                                "url": "/api/461CFF8CC28643B2BFBEBE82513D39FF",
-                                "remote_url": "/api/461CFF8CC28643B2BFBEBE82513D39FF",
+                                "url": "/api/F651506B4C5A49F8A85FDDCA1B1D99C0",
+                                "remote_url": "/api/F651506B4C5A49F8A85FDDCA1B1D99C0",
                                 "create_by": {},
-                                "id": 16681,
-                                "api_id": "461CFF8CC28643B2BFBEBE82513D39FF"
+                                "id": 16831,
+                                "api_id": "F651506B4C5A49F8A85FDDCA1B1D99C0"
                             },
                             "search": {
                                 "api_name": "SEARCH API for UI KHU VỰC",
@@ -18468,11 +18982,11 @@
                                 ],
                                 "api_method": "post",
                                 "api_scope": "private",
-                                "url": "/search/290DBD24E9714548B97FD676FC18F04C",
-                                "remote_url": "/search/290DBD24E9714548B97FD676FC18F04C",
+                                "url": "/search/D41BF5C333114C3EBC89DE43C12D6A79",
+                                "remote_url": "/search/D41BF5C333114C3EBC89DE43C12D6A79",
                                 "create_by": {},
-                                "id": 16685,
-                                "api_id": "290DBD24E9714548B97FD676FC18F04C"
+                                "id": 16835,
+                                "api_id": "D41BF5C333114C3EBC89DE43C12D6A79"
                             }
                         },
                         "buttons": {
@@ -18524,11 +19038,11 @@
                                     "statistic": [],
                                     "api_method": "post",
                                     "api_scope": "private",
-                                    "url": "/ui/848FF28B578A443F81FBA7E8748FC991",
-                                    "remote_url": "/ui/848FF28B578A443F81FBA7E8748FC991",
+                                    "url": "/ui/4F453EDB74ED4221BF5A4581CD8E8B65",
+                                    "remote_url": "/ui/4F453EDB74ED4221BF5A4581CD8E8B65",
                                     "create_by": {},
-                                    "id": 16682,
-                                    "api_id": "848FF28B578A443F81FBA7E8748FC991"
+                                    "id": 16832,
+                                    "api_id": "4F453EDB74ED4221BF5A4581CD8E8B65"
                                 }
                             },
                             "import": {
@@ -18553,11 +19067,11 @@
                                     "statistic": [],
                                     "api_method": "post",
                                     "api_scope": "private",
-                                    "url": "/import/2C26732AB494444890FA42735F8FB088",
-                                    "remote_url": "/import/2C26732AB494444890FA42735F8FB088",
+                                    "url": "/import/FB63D9DA544B4D8F8E48C4945FF40391",
+                                    "remote_url": "/import/FB63D9DA544B4D8F8E48C4945FF40391",
                                     "create_by": {},
-                                    "id": 16687,
-                                    "api_id": "2C26732AB494444890FA42735F8FB088"
+                                    "id": 16837,
+                                    "api_id": "FB63D9DA544B4D8F8E48C4945FF40391"
                                 }
                             },
                             "export": {
@@ -18608,11 +19122,11 @@
                                     ],
                                     "api_method": "post",
                                     "api_scope": "private",
-                                    "url": "/export/9F3E6FA378EB49929721BF11758E37BD",
-                                    "remote_url": "/export/9F3E6FA378EB49929721BF11758E37BD",
+                                    "url": "/export/421701B7437349E7A7131DB41A55EEDB",
+                                    "remote_url": "/export/421701B7437349E7A7131DB41A55EEDB",
                                     "create_by": {},
-                                    "id": 16686,
-                                    "api_id": "9F3E6FA378EB49929721BF11758E37BD"
+                                    "id": 16836,
+                                    "api_id": "421701B7437349E7A7131DB41A55EEDB"
                                 }
                             },
                             "update": {
@@ -18664,11 +19178,11 @@
                                     "statistic": [],
                                     "api_method": "put",
                                     "api_scope": "private",
-                                    "url": "/ui/85EEDEBDDB7B43D79AE6C508728DB9C0",
-                                    "remote_url": "/ui/85EEDEBDDB7B43D79AE6C508728DB9C0",
+                                    "url": "/ui/DBCE2D1FB8B84BAF86C5DCF080F9ACF5",
+                                    "remote_url": "/ui/DBCE2D1FB8B84BAF86C5DCF080F9ACF5",
                                     "create_by": {},
-                                    "id": 16683,
-                                    "api_id": "85EEDEBDDB7B43D79AE6C508728DB9C0"
+                                    "id": 16833,
+                                    "api_id": "DBCE2D1FB8B84BAF86C5DCF080F9ACF5"
                                 }
                             },
                             "delete": {
@@ -18720,11 +19234,11 @@
                                     "statistic": [],
                                     "api_method": "delete",
                                     "api_scope": "private",
-                                    "url": "/ui/10A1C08DC27140349143912B4D9F1110",
-                                    "remote_url": "/ui/10A1C08DC27140349143912B4D9F1110",
+                                    "url": "/ui/F7E0345AE0E0492D8D69475B7B4272BF",
+                                    "remote_url": "/ui/F7E0345AE0E0492D8D69475B7B4272BF",
                                     "create_by": {},
-                                    "id": 16684,
-                                    "api_id": "10A1C08DC27140349143912B4D9F1110"
+                                    "id": 16834,
+                                    "api_id": "F7E0345AE0E0492D8D69475B7B4272BF"
                                 }
                             },
                             "detail": {
@@ -18776,11 +19290,11 @@
                                     "statistic": [],
                                     "api_method": "get",
                                     "api_scope": "private",
-                                    "url": "/d/42FABA6339D4441382431255EA7A810F",
-                                    "remote_url": "/d/42FABA6339D4441382431255EA7A810F",
+                                    "url": "/d/FF821160AAFB409C806F9E532B3ACB18",
+                                    "remote_url": "/d/FF821160AAFB409C806F9E532B3ACB18",
                                     "create_by": {},
-                                    "id": 16688,
-                                    "api_id": "42FABA6339D4441382431255EA7A810F"
+                                    "id": 16838,
+                                    "api_id": "FF821160AAFB409C806F9E532B3ACB18"
                                 }
                             },
                             "approve": {
@@ -19115,11 +19629,11 @@
                                         "statistic": [],
                                         "api_method": "get",
                                         "api_scope": "private",
-                                        "url": "/api/C4B0A86D84ED4A73B8F4C1B2354D0077",
-                                        "remote_url": "/api/C4B0A86D84ED4A73B8F4C1B2354D0077",
+                                        "url": "/api/E7089B47EF1D49BB84B2125972F23821",
+                                        "remote_url": "/api/E7089B47EF1D49BB84B2125972F23821",
                                         "create_by": {},
-                                        "id": 16689,
-                                        "api_id": "C4B0A86D84ED4A73B8F4C1B2354D0077"
+                                        "id": 16839,
+                                        "api_id": "E7089B47EF1D49BB84B2125972F23821"
                                     },
                                     "search": {
                                         "api_name": "SEARCH API for UI LOẠI KHO",
@@ -19139,11 +19653,11 @@
                                         ],
                                         "api_method": "post",
                                         "api_scope": "private",
-                                        "url": "/search/5F78BFCB93A8431291ADC559924D7B77",
-                                        "remote_url": "/search/5F78BFCB93A8431291ADC559924D7B77",
+                                        "url": "/search/09D63A8B5C2144CBA06EA0FD1FBFB2D0",
+                                        "remote_url": "/search/09D63A8B5C2144CBA06EA0FD1FBFB2D0",
                                         "create_by": {},
-                                        "id": 16693,
-                                        "api_id": "5F78BFCB93A8431291ADC559924D7B77"
+                                        "id": 16843,
+                                        "api_id": "09D63A8B5C2144CBA06EA0FD1FBFB2D0"
                                     }
                                 },
                                 "buttons": {
@@ -19183,11 +19697,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/ui/0E70A324B69D4313BF3092B8A6FC131F",
-                                            "remote_url": "/ui/0E70A324B69D4313BF3092B8A6FC131F",
+                                            "url": "/ui/1A71C7D08ADE4363B047E5AAD1CE1D0A",
+                                            "remote_url": "/ui/1A71C7D08ADE4363B047E5AAD1CE1D0A",
                                             "create_by": {},
-                                            "id": 16690,
-                                            "api_id": "0E70A324B69D4313BF3092B8A6FC131F"
+                                            "id": 16840,
+                                            "api_id": "1A71C7D08ADE4363B047E5AAD1CE1D0A"
                                         }
                                     },
                                     "import": {
@@ -19210,11 +19724,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/import/93B76822D851438AB421FADCC60216B9",
-                                            "remote_url": "/import/93B76822D851438AB421FADCC60216B9",
+                                            "url": "/import/2710674B92D34632B68C443AD85D403C",
+                                            "remote_url": "/import/2710674B92D34632B68C443AD85D403C",
                                             "create_by": {},
-                                            "id": 16695,
-                                            "api_id": "93B76822D851438AB421FADCC60216B9"
+                                            "id": 16845,
+                                            "api_id": "2710674B92D34632B68C443AD85D403C"
                                         }
                                     },
                                     "export": {
@@ -19253,11 +19767,11 @@
                                             ],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/export/E6347D8D2C4D43E09B9092D56475C2F3",
-                                            "remote_url": "/export/E6347D8D2C4D43E09B9092D56475C2F3",
+                                            "url": "/export/278218D13C0D467D91D4A583A6A555E0",
+                                            "remote_url": "/export/278218D13C0D467D91D4A583A6A555E0",
                                             "create_by": {},
-                                            "id": 16694,
-                                            "api_id": "E6347D8D2C4D43E09B9092D56475C2F3"
+                                            "id": 16844,
+                                            "api_id": "278218D13C0D467D91D4A583A6A555E0"
                                         }
                                     },
                                     "update": {
@@ -19297,11 +19811,11 @@
                                             "statistic": [],
                                             "api_method": "put",
                                             "api_scope": "private",
-                                            "url": "/ui/BB8AA6A386BD4819B82A9148518C62C8",
-                                            "remote_url": "/ui/BB8AA6A386BD4819B82A9148518C62C8",
+                                            "url": "/ui/45620A79B36541988ECA9566BB535458",
+                                            "remote_url": "/ui/45620A79B36541988ECA9566BB535458",
                                             "create_by": {},
-                                            "id": 16691,
-                                            "api_id": "BB8AA6A386BD4819B82A9148518C62C8"
+                                            "id": 16841,
+                                            "api_id": "45620A79B36541988ECA9566BB535458"
                                         }
                                     },
                                     "delete": {
@@ -19341,11 +19855,11 @@
                                             "statistic": [],
                                             "api_method": "delete",
                                             "api_scope": "private",
-                                            "url": "/ui/81CD7EB3C52343C49C3D7DE56758E826",
-                                            "remote_url": "/ui/81CD7EB3C52343C49C3D7DE56758E826",
+                                            "url": "/ui/0C6EE2DF45624F2FB8B7D30D1C0A6024",
+                                            "remote_url": "/ui/0C6EE2DF45624F2FB8B7D30D1C0A6024",
                                             "create_by": {},
-                                            "id": 16692,
-                                            "api_id": "81CD7EB3C52343C49C3D7DE56758E826"
+                                            "id": 16842,
+                                            "api_id": "0C6EE2DF45624F2FB8B7D30D1C0A6024"
                                         }
                                     },
                                     "detail": {
@@ -19385,11 +19899,11 @@
                                             "statistic": [],
                                             "api_method": "get",
                                             "api_scope": "private",
-                                            "url": "/d/A7F550E24FEB424A96C8BCA32E6CD5AB",
-                                            "remote_url": "/d/A7F550E24FEB424A96C8BCA32E6CD5AB",
+                                            "url": "/d/9D91BE815D2E45C4B2A627972A088A43",
+                                            "remote_url": "/d/9D91BE815D2E45C4B2A627972A088A43",
                                             "create_by": {},
-                                            "id": 16696,
-                                            "api_id": "A7F550E24FEB424A96C8BCA32E6CD5AB"
+                                            "id": 16846,
+                                            "api_id": "9D91BE815D2E45C4B2A627972A088A43"
                                         }
                                     },
                                     "approve": {
@@ -19717,11 +20231,11 @@
                                         "statistic": [],
                                         "api_method": "get",
                                         "api_scope": "private",
-                                        "url": "/api/3927BCA92899457F90D0315D1AF0BF4B",
-                                        "remote_url": "/api/3927BCA92899457F90D0315D1AF0BF4B",
+                                        "url": "/api/F1213C4C8FFE4CA1BE755864FD50CBC7",
+                                        "remote_url": "/api/F1213C4C8FFE4CA1BE755864FD50CBC7",
                                         "create_by": {},
-                                        "id": 16697,
-                                        "api_id": "3927BCA92899457F90D0315D1AF0BF4B"
+                                        "id": 16847,
+                                        "api_id": "F1213C4C8FFE4CA1BE755864FD50CBC7"
                                     },
                                     "search": {
                                         "api_name": "SEARCH API for UI LOẠI NHẬP KHO",
@@ -19741,11 +20255,11 @@
                                         ],
                                         "api_method": "post",
                                         "api_scope": "private",
-                                        "url": "/search/0DFD95AE6CBF43B1A946B7A33F7E5B50",
-                                        "remote_url": "/search/0DFD95AE6CBF43B1A946B7A33F7E5B50",
+                                        "url": "/search/BD15D7557E904C609D7FFA3B6E4BEBDD",
+                                        "remote_url": "/search/BD15D7557E904C609D7FFA3B6E4BEBDD",
                                         "create_by": {},
-                                        "id": 16701,
-                                        "api_id": "0DFD95AE6CBF43B1A946B7A33F7E5B50"
+                                        "id": 16851,
+                                        "api_id": "BD15D7557E904C609D7FFA3B6E4BEBDD"
                                     }
                                 },
                                 "buttons": {
@@ -19785,11 +20299,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/ui/8B1EE9F793684A3793B6506BA9C9F280",
-                                            "remote_url": "/ui/8B1EE9F793684A3793B6506BA9C9F280",
+                                            "url": "/ui/5255B66FA44646509324C458221210CC",
+                                            "remote_url": "/ui/5255B66FA44646509324C458221210CC",
                                             "create_by": {},
-                                            "id": 16698,
-                                            "api_id": "8B1EE9F793684A3793B6506BA9C9F280"
+                                            "id": 16848,
+                                            "api_id": "5255B66FA44646509324C458221210CC"
                                         }
                                     },
                                     "import": {
@@ -19812,11 +20326,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/import/75C8B8D7288E499A9A1E0BF6C92D9874",
-                                            "remote_url": "/import/75C8B8D7288E499A9A1E0BF6C92D9874",
+                                            "url": "/import/FE8984CDC3D54F699F4C79716EA2251B",
+                                            "remote_url": "/import/FE8984CDC3D54F699F4C79716EA2251B",
                                             "create_by": {},
-                                            "id": 16703,
-                                            "api_id": "75C8B8D7288E499A9A1E0BF6C92D9874"
+                                            "id": 16853,
+                                            "api_id": "FE8984CDC3D54F699F4C79716EA2251B"
                                         }
                                     },
                                     "export": {
@@ -19855,11 +20369,11 @@
                                             ],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/export/F4798E33FE0A4D4F8D4FC7DF701CE1C1",
-                                            "remote_url": "/export/F4798E33FE0A4D4F8D4FC7DF701CE1C1",
+                                            "url": "/export/D6A041AD63294D80BB3A0E3D50BC7705",
+                                            "remote_url": "/export/D6A041AD63294D80BB3A0E3D50BC7705",
                                             "create_by": {},
-                                            "id": 16702,
-                                            "api_id": "F4798E33FE0A4D4F8D4FC7DF701CE1C1"
+                                            "id": 16852,
+                                            "api_id": "D6A041AD63294D80BB3A0E3D50BC7705"
                                         }
                                     },
                                     "update": {
@@ -19899,11 +20413,11 @@
                                             "statistic": [],
                                             "api_method": "put",
                                             "api_scope": "private",
-                                            "url": "/ui/70A6C23BC0BD46F185A0C4BD378AE4D2",
-                                            "remote_url": "/ui/70A6C23BC0BD46F185A0C4BD378AE4D2",
+                                            "url": "/ui/F65F5C2A5A924808917A0DDF41280AEA",
+                                            "remote_url": "/ui/F65F5C2A5A924808917A0DDF41280AEA",
                                             "create_by": {},
-                                            "id": 16699,
-                                            "api_id": "70A6C23BC0BD46F185A0C4BD378AE4D2"
+                                            "id": 16849,
+                                            "api_id": "F65F5C2A5A924808917A0DDF41280AEA"
                                         }
                                     },
                                     "delete": {
@@ -19943,11 +20457,11 @@
                                             "statistic": [],
                                             "api_method": "delete",
                                             "api_scope": "private",
-                                            "url": "/ui/6927048A22FE4D82A53FDD69561860A0",
-                                            "remote_url": "/ui/6927048A22FE4D82A53FDD69561860A0",
+                                            "url": "/ui/66707375DFD44C0180C4D4A66561C3CB",
+                                            "remote_url": "/ui/66707375DFD44C0180C4D4A66561C3CB",
                                             "create_by": {},
-                                            "id": 16700,
-                                            "api_id": "6927048A22FE4D82A53FDD69561860A0"
+                                            "id": 16850,
+                                            "api_id": "66707375DFD44C0180C4D4A66561C3CB"
                                         }
                                     },
                                     "detail": {
@@ -19987,11 +20501,11 @@
                                             "statistic": [],
                                             "api_method": "get",
                                             "api_scope": "private",
-                                            "url": "/d/B7C00F33E0AF43B59C50E83CAE86920E",
-                                            "remote_url": "/d/B7C00F33E0AF43B59C50E83CAE86920E",
+                                            "url": "/d/A6372389080F4CF9A992A1213C0AB2A9",
+                                            "remote_url": "/d/A6372389080F4CF9A992A1213C0AB2A9",
                                             "create_by": {},
-                                            "id": 16704,
-                                            "api_id": "B7C00F33E0AF43B59C50E83CAE86920E"
+                                            "id": 16854,
+                                            "api_id": "A6372389080F4CF9A992A1213C0AB2A9"
                                         }
                                     },
                                     "approve": {
@@ -20319,11 +20833,11 @@
                                         "statistic": [],
                                         "api_method": "get",
                                         "api_scope": "private",
-                                        "url": "/api/E4938059E3174E4A8E4E8D3F907B985B",
-                                        "remote_url": "/api/E4938059E3174E4A8E4E8D3F907B985B",
+                                        "url": "/api/0FC77B51C3304588839BE0E625732C20",
+                                        "remote_url": "/api/0FC77B51C3304588839BE0E625732C20",
                                         "create_by": {},
-                                        "id": 16705,
-                                        "api_id": "E4938059E3174E4A8E4E8D3F907B985B"
+                                        "id": 16855,
+                                        "api_id": "0FC77B51C3304588839BE0E625732C20"
                                     },
                                     "search": {
                                         "api_name": "SEARCH API for UI TRẠNG THÁI CHUNG",
@@ -20343,11 +20857,11 @@
                                         ],
                                         "api_method": "post",
                                         "api_scope": "private",
-                                        "url": "/search/FD8EB8F4C37D45BB91FC140DBA2A2DE4",
-                                        "remote_url": "/search/FD8EB8F4C37D45BB91FC140DBA2A2DE4",
+                                        "url": "/search/4C241F33F4464CA88D65A505B7734BA5",
+                                        "remote_url": "/search/4C241F33F4464CA88D65A505B7734BA5",
                                         "create_by": {},
-                                        "id": 16709,
-                                        "api_id": "FD8EB8F4C37D45BB91FC140DBA2A2DE4"
+                                        "id": 16859,
+                                        "api_id": "4C241F33F4464CA88D65A505B7734BA5"
                                     }
                                 },
                                 "buttons": {
@@ -20387,11 +20901,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/ui/C13B906109484B0AAF7B69685D6E0D63",
-                                            "remote_url": "/ui/C13B906109484B0AAF7B69685D6E0D63",
+                                            "url": "/ui/2C06A214689B48BD9E58C2CC0F2F0A5F",
+                                            "remote_url": "/ui/2C06A214689B48BD9E58C2CC0F2F0A5F",
                                             "create_by": {},
-                                            "id": 16706,
-                                            "api_id": "C13B906109484B0AAF7B69685D6E0D63"
+                                            "id": 16856,
+                                            "api_id": "2C06A214689B48BD9E58C2CC0F2F0A5F"
                                         }
                                     },
                                     "import": {
@@ -20414,11 +20928,11 @@
                                             "statistic": [],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/import/8D20C29F3D5543BC95A2985293DDE686",
-                                            "remote_url": "/import/8D20C29F3D5543BC95A2985293DDE686",
+                                            "url": "/import/B705360882174A71A43F16F922F11D75",
+                                            "remote_url": "/import/B705360882174A71A43F16F922F11D75",
                                             "create_by": {},
-                                            "id": 16711,
-                                            "api_id": "8D20C29F3D5543BC95A2985293DDE686"
+                                            "id": 16861,
+                                            "api_id": "B705360882174A71A43F16F922F11D75"
                                         }
                                     },
                                     "export": {
@@ -20457,11 +20971,11 @@
                                             ],
                                             "api_method": "post",
                                             "api_scope": "private",
-                                            "url": "/export/24AF9518D47049F78D9B8C35CB680CB2",
-                                            "remote_url": "/export/24AF9518D47049F78D9B8C35CB680CB2",
+                                            "url": "/export/E9B2C03E69B242A59D961DC87B1F7F6B",
+                                            "remote_url": "/export/E9B2C03E69B242A59D961DC87B1F7F6B",
                                             "create_by": {},
-                                            "id": 16710,
-                                            "api_id": "24AF9518D47049F78D9B8C35CB680CB2"
+                                            "id": 16860,
+                                            "api_id": "E9B2C03E69B242A59D961DC87B1F7F6B"
                                         }
                                     },
                                     "update": {
@@ -20501,11 +21015,11 @@
                                             "statistic": [],
                                             "api_method": "put",
                                             "api_scope": "private",
-                                            "url": "/ui/58C439513B63490BA752B38AD347A8A8",
-                                            "remote_url": "/ui/58C439513B63490BA752B38AD347A8A8",
+                                            "url": "/ui/E57D93E5107F4C79AC6F68604C51D918",
+                                            "remote_url": "/ui/E57D93E5107F4C79AC6F68604C51D918",
                                             "create_by": {},
-                                            "id": 16707,
-                                            "api_id": "58C439513B63490BA752B38AD347A8A8"
+                                            "id": 16857,
+                                            "api_id": "E57D93E5107F4C79AC6F68604C51D918"
                                         }
                                     },
                                     "delete": {
@@ -20545,11 +21059,11 @@
                                             "statistic": [],
                                             "api_method": "delete",
                                             "api_scope": "private",
-                                            "url": "/ui/E691F744D25E4E188DA57DDDAF38A285",
-                                            "remote_url": "/ui/E691F744D25E4E188DA57DDDAF38A285",
+                                            "url": "/ui/AA3F843C79B0470D91FB671103D9E4D9",
+                                            "remote_url": "/ui/AA3F843C79B0470D91FB671103D9E4D9",
                                             "create_by": {},
-                                            "id": 16708,
-                                            "api_id": "E691F744D25E4E188DA57DDDAF38A285"
+                                            "id": 16858,
+                                            "api_id": "AA3F843C79B0470D91FB671103D9E4D9"
                                         }
                                     },
                                     "detail": {
@@ -20589,11 +21103,11 @@
                                             "statistic": [],
                                             "api_method": "get",
                                             "api_scope": "private",
-                                            "url": "/d/2A37B7C3FD064E1D87B0692B2202EC34",
-                                            "remote_url": "/d/2A37B7C3FD064E1D87B0692B2202EC34",
+                                            "url": "/d/50E6CAB2F0BD466DA24835D121B0BB87",
+                                            "remote_url": "/d/50E6CAB2F0BD466DA24835D121B0BB87",
                                             "create_by": {},
-                                            "id": 16712,
-                                            "api_id": "2A37B7C3FD064E1D87B0692B2202EC34"
+                                            "id": 16862,
+                                            "api_id": "50E6CAB2F0BD466DA24835D121B0BB87"
                                         }
                                     },
                                     "approve": {
@@ -21638,11 +22152,11 @@
                                 "statistic": [],
                                 "api_method": "get",
                                 "api_scope": "private",
-                                "url": "/api/577810F51FC440A5B5F49952FD629309",
-                                "remote_url": "/api/577810F51FC440A5B5F49952FD629309",
+                                "url": "/api/C058B2A2BF3A43D384C858309646B2F2",
+                                "remote_url": "/api/C058B2A2BF3A43D384C858309646B2F2",
                                 "create_by": {},
-                                "id": 16713,
-                                "api_id": "577810F51FC440A5B5F49952FD629309"
+                                "id": 16863,
+                                "api_id": "C058B2A2BF3A43D384C858309646B2F2"
                             },
                             "search": {
                                 "state": true,
@@ -21668,11 +22182,11 @@
                                 ],
                                 "api_method": "post",
                                 "api_scope": "private",
-                                "url": "/search/D67FF7C2E9974028AC0A8DDF60B805BA",
-                                "remote_url": "/search/D67FF7C2E9974028AC0A8DDF60B805BA",
+                                "url": "/search/68B71C6FA552415CA99502CC15B9AC94",
+                                "remote_url": "/search/68B71C6FA552415CA99502CC15B9AC94",
                                 "create_by": {},
-                                "id": 16717,
-                                "api_id": "D67FF7C2E9974028AC0A8DDF60B805BA"
+                                "id": 16867,
+                                "api_id": "68B71C6FA552415CA99502CC15B9AC94"
                             }
                         },
                         "buttons": {
@@ -21736,11 +22250,11 @@
                                     "statistic": [],
                                     "api_method": "post",
                                     "api_scope": "private",
-                                    "url": "/ui/9402284E548E470C8D952CF5ECE99912",
-                                    "remote_url": "/ui/9402284E548E470C8D952CF5ECE99912",
+                                    "url": "/ui/6E72A6A17A8A42D9A8B6F9F299ED5E1A",
+                                    "remote_url": "/ui/6E72A6A17A8A42D9A8B6F9F299ED5E1A",
                                     "create_by": {},
-                                    "id": 16714,
-                                    "api_id": "9402284E548E470C8D952CF5ECE99912"
+                                    "id": 16864,
+                                    "api_id": "6E72A6A17A8A42D9A8B6F9F299ED5E1A"
                                 }
                             },
                             "import": {
@@ -21767,11 +22281,11 @@
                                     "statistic": [],
                                     "api_method": "post",
                                     "api_scope": "private",
-                                    "url": "/import/1C49351C50FF413A8F073973E0098AEA",
-                                    "remote_url": "/import/1C49351C50FF413A8F073973E0098AEA",
+                                    "url": "/import/04F8A23A07314E3DA64BFE2F24B26F19",
+                                    "remote_url": "/import/04F8A23A07314E3DA64BFE2F24B26F19",
                                     "create_by": {},
-                                    "id": 16719,
-                                    "api_id": "1C49351C50FF413A8F073973E0098AEA"
+                                    "id": 16869,
+                                    "api_id": "04F8A23A07314E3DA64BFE2F24B26F19"
                                 }
                             },
                             "export": {
@@ -21834,11 +22348,11 @@
                                     ],
                                     "api_method": "post",
                                     "api_scope": "private",
-                                    "url": "/export/A29139BE68784AB7ADF41748616A5FAF",
-                                    "remote_url": "/export/A29139BE68784AB7ADF41748616A5FAF",
+                                    "url": "/export/720D0E52A7B14B2B8E27F7B9340FE2AF",
+                                    "remote_url": "/export/720D0E52A7B14B2B8E27F7B9340FE2AF",
                                     "create_by": {},
-                                    "id": 16718,
-                                    "api_id": "A29139BE68784AB7ADF41748616A5FAF"
+                                    "id": 16868,
+                                    "api_id": "720D0E52A7B14B2B8E27F7B9340FE2AF"
                                 }
                             },
                             "update": {
@@ -21902,11 +22416,11 @@
                                     "statistic": [],
                                     "api_method": "put",
                                     "api_scope": "private",
-                                    "url": "/ui/9840C73040C04B6492D79DE4E4D6F014",
-                                    "remote_url": "/ui/9840C73040C04B6492D79DE4E4D6F014",
+                                    "url": "/ui/33CFB9ED96B3454181E8BCBCF5552DD6",
+                                    "remote_url": "/ui/33CFB9ED96B3454181E8BCBCF5552DD6",
                                     "create_by": {},
-                                    "id": 16715,
-                                    "api_id": "9840C73040C04B6492D79DE4E4D6F014"
+                                    "id": 16865,
+                                    "api_id": "33CFB9ED96B3454181E8BCBCF5552DD6"
                                 }
                             },
                             "delete": {
@@ -21970,11 +22484,11 @@
                                     "statistic": [],
                                     "api_method": "delete",
                                     "api_scope": "private",
-                                    "url": "/ui/D64267E8F1B94A8CB537AE71A79ACB58",
-                                    "remote_url": "/ui/D64267E8F1B94A8CB537AE71A79ACB58",
+                                    "url": "/ui/CF291AEEE8E14404BEED78D6A1AFFB4D",
+                                    "remote_url": "/ui/CF291AEEE8E14404BEED78D6A1AFFB4D",
                                     "create_by": {},
-                                    "id": 16716,
-                                    "api_id": "D64267E8F1B94A8CB537AE71A79ACB58"
+                                    "id": 16866,
+                                    "api_id": "CF291AEEE8E14404BEED78D6A1AFFB4D"
                                 }
                             },
                             "detail": {
@@ -22038,11 +22552,11 @@
                                     "statistic": [],
                                     "api_method": "get",
                                     "api_scope": "private",
-                                    "url": "/d/E7F1DB27B1194108B9136BEBFEDBCAFE",
-                                    "remote_url": "/d/E7F1DB27B1194108B9136BEBFEDBCAFE",
+                                    "url": "/d/FE8E012F6F3246ECBF87651D42C8B355",
+                                    "remote_url": "/d/FE8E012F6F3246ECBF87651D42C8B355",
                                     "create_by": {},
-                                    "id": 16720,
-                                    "api_id": "E7F1DB27B1194108B9136BEBFEDBCAFE"
+                                    "id": 16870,
+                                    "api_id": "FE8E012F6F3246ECBF87651D42C8B355"
                                 }
                             },
                             "approve": {
@@ -23089,11 +23603,11 @@
                                 "statistic": [],
                                 "api_method": "get",
                                 "api_scope": "private",
-                                "url": "/api/FD1F543B674F4523A3B4815D02E11C54",
-                                "remote_url": "/api/FD1F543B674F4523A3B4815D02E11C54",
+                                "url": "/api/E8814D4F849B4F3C9871A7237D0809F1",
+                                "remote_url": "/api/E8814D4F849B4F3C9871A7237D0809F1",
                                 "create_by": {},
-                                "id": 16721,
-                                "api_id": "FD1F543B674F4523A3B4815D02E11C54"
+                                "id": 16871,
+                                "api_id": "E8814D4F849B4F3C9871A7237D0809F1"
                             },
                             "search": {
                                 "state": true,
@@ -23117,11 +23631,11 @@
                                 ],
                                 "api_method": "post",
                                 "api_scope": "private",
-                                "url": "/search/1F37837C215043B0BD7A13613423D0C9",
-                                "remote_url": "/search/1F37837C215043B0BD7A13613423D0C9",
+                                "url": "/search/487D870194514CEABB35F97AA3F785FF",
+                                "remote_url": "/search/487D870194514CEABB35F97AA3F785FF",
                                 "create_by": {},
-                                "id": 16725,
-                                "api_id": "1F37837C215043B0BD7A13613423D0C9"
+                                "id": 16875,
+                                "api_id": "487D870194514CEABB35F97AA3F785FF"
                             }
                         },
                         "buttons": {
@@ -23183,11 +23697,11 @@
                                     "statistic": [],
                                     "api_method": "post",
                                     "api_scope": "private",
-                                    "url": "/ui/5A32D14E9196448EA62013A71342118D",
-                                    "remote_url": "/ui/5A32D14E9196448EA62013A71342118D",
+                                    "url": "/ui/8D53E40966AC45F89F52E188589E03FC",
+                                    "remote_url": "/ui/8D53E40966AC45F89F52E188589E03FC",
                                     "create_by": {},
-                                    "id": 16722,
-                                    "api_id": "5A32D14E9196448EA62013A71342118D"
+                                    "id": 16872,
+                                    "api_id": "8D53E40966AC45F89F52E188589E03FC"
                                 }
                             },
                             "import": {
@@ -23222,11 +23736,11 @@
                                     "statistic": [],
                                     "api_method": "post",
                                     "api_scope": "private",
-                                    "url": "/import/CD95C5A292034721BCD0784607BDB276",
-                                    "remote_url": "/import/CD95C5A292034721BCD0784607BDB276",
+                                    "url": "/import/88D9AE3CBE284447B8CDE91CB7170C95",
+                                    "remote_url": "/import/88D9AE3CBE284447B8CDE91CB7170C95",
                                     "create_by": {},
-                                    "id": 16727,
-                                    "api_id": "CD95C5A292034721BCD0784607BDB276"
+                                    "id": 16877,
+                                    "api_id": "88D9AE3CBE284447B8CDE91CB7170C95"
                                 }
                             },
                             "export": {
@@ -23287,11 +23801,11 @@
                                     ],
                                     "api_method": "post",
                                     "api_scope": "private",
-                                    "url": "/export/3767D3A071A242CF86F14785E57BBD11",
-                                    "remote_url": "/export/3767D3A071A242CF86F14785E57BBD11",
+                                    "url": "/export/89EEB415C8924C9BBEC7A6BDE29A3D23",
+                                    "remote_url": "/export/89EEB415C8924C9BBEC7A6BDE29A3D23",
                                     "create_by": {},
-                                    "id": 16726,
-                                    "api_id": "3767D3A071A242CF86F14785E57BBD11"
+                                    "id": 16876,
+                                    "api_id": "89EEB415C8924C9BBEC7A6BDE29A3D23"
                                 }
                             },
                             "update": {
@@ -23353,11 +23867,11 @@
                                     "statistic": [],
                                     "api_method": "put",
                                     "api_scope": "private",
-                                    "url": "/ui/DC6FCCDBA1B7439A91F33D793D8BC813",
-                                    "remote_url": "/ui/DC6FCCDBA1B7439A91F33D793D8BC813",
+                                    "url": "/ui/F427FB4DAD0845FFB4D1360B89126827",
+                                    "remote_url": "/ui/F427FB4DAD0845FFB4D1360B89126827",
                                     "create_by": {},
-                                    "id": 16723,
-                                    "api_id": "DC6FCCDBA1B7439A91F33D793D8BC813"
+                                    "id": 16873,
+                                    "api_id": "F427FB4DAD0845FFB4D1360B89126827"
                                 }
                             },
                             "delete": {
@@ -23409,11 +23923,11 @@
                                     "statistic": [],
                                     "api_method": "delete",
                                     "api_scope": "private",
-                                    "url": "/ui/31AA87910CBC43FD8FF93ADE3543E786",
-                                    "remote_url": "/ui/31AA87910CBC43FD8FF93ADE3543E786",
+                                    "url": "/ui/B74E198A00EE44F090F435BBCC9E3625",
+                                    "remote_url": "/ui/B74E198A00EE44F090F435BBCC9E3625",
                                     "create_by": {},
-                                    "id": 16724,
-                                    "api_id": "31AA87910CBC43FD8FF93ADE3543E786"
+                                    "id": 16874,
+                                    "api_id": "B74E198A00EE44F090F435BBCC9E3625"
                                 }
                             },
                             "detail": {
@@ -23475,11 +23989,11 @@
                                     "statistic": [],
                                     "api_method": "get",
                                     "api_scope": "private",
-                                    "url": "/d/C10B04817A6C4345A48C6D0DA0670671",
-                                    "remote_url": "/d/C10B04817A6C4345A48C6D0DA0670671",
+                                    "url": "/d/548E2C0C97604F7A866058558F7B8B82",
+                                    "remote_url": "/d/548E2C0C97604F7A866058558F7B8B82",
                                     "create_by": {},
-                                    "id": 16728,
-                                    "api_id": "C10B04817A6C4345A48C6D0DA0670671"
+                                    "id": 16878,
+                                    "api_id": "548E2C0C97604F7A866058558F7B8B82"
                                 }
                             },
                             "approve": {

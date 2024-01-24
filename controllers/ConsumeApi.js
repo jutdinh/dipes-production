@@ -4144,6 +4144,7 @@ class ConsumeApi extends Controller {
         } 
 
         let statistics = {}
+        let averageCache = {}
 
         for( let i = 0 ; i <  periods.length; i++ ){
             const period = periods[i]
@@ -4170,7 +4171,7 @@ class ConsumeApi extends Controller {
                     }
     
                     const currentValue = this.getPropByPath( statistics, groupByStrings )
-                    
+                        
     
                     switch(fomular){
                         case "SUM":
@@ -4183,25 +4184,16 @@ class ConsumeApi extends Controller {
                         case "AVERAGE":
                             // Not tested yet
                             if( currentValue ){
-                                const { total, value } = currentValue;
-    
+                                const total  = this.getPropByPath( averageCache, groupByStrings );
+                                let value = currentValue;
                                 const newValue = ( total * value + record[field.fomular_alias] ) / ( total + 1 )
-    
-                                const newAvg = {
-                                    total: total + 1,
-                                    value: newValue
-                                }
-                                statistics = this.setPropByPath( statistics, groupByStrings, newAvg )
+                                statistics = this.setPropByPath( statistics, groupByStrings, newValue )
+                                averageCache = this.setPropByPath( averageCache, groupByStrings, total + 1 )
     
                             }else{
-                                const newAvg = {
-                                    total: 1,
-                                    value: record[field.fomular_alias]
-                                }
-    
-                                statistics = this.setPropByPath( statistics, groupByStrings, newAvg )
-                            }
-    
+                                statistics = this.setPropByPath( statistics, groupByStrings, record[field.fomular_alias] )
+                                averageCache = this.setPropByPath( averageCache, groupByStrings, 1 )
+                            }    
                             break;
                         case "COUNT":
                             if( currentValue ){
@@ -4213,10 +4205,7 @@ class ConsumeApi extends Controller {
                     }
                 }
             }
-
-
-        }
-
+        }      
         this.res.status(200).send({ success: true, content: "Succeed", statistics })
     }
 
@@ -4251,6 +4240,8 @@ class ConsumeApi extends Controller {
                 qr[`${key}`] = { $regex: query[key] }
                 formatedQuery["$and"].push(qr)
             })
+
+            console.log( formatedQuery )
 
             const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)
 
@@ -4302,8 +4293,10 @@ class ConsumeApi extends Controller {
 
         const isAtLeastOneCriteriaIsNotNull = keys.filter(key => {
             const value = query[key];
-            return value
+            return value != undefined
         })
+
+        console.log(isAtLeastOneCriteriaIsNotNull)
 
         if (isAtLeastOneCriteriaIsNotNull.length > 0) {
 
