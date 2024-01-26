@@ -101,7 +101,7 @@ class ConsumeApi extends Controller {
 
         this.writeReq(req)
         const start = new Date()
-    
+
         const { url, method } = req;
 /*(1)*/ this.url = decodeURI(url);
         this.req = req;
@@ -450,7 +450,7 @@ class ConsumeApi extends Controller {
          * 
          */
 
-        const field = this.fields.find(f => f.fomular_alias == fieldAlias )
+        const field = this.fields.find(f => f.fomular_alias == fieldAlias)
         return field
     }
 
@@ -704,7 +704,7 @@ class ConsumeApi extends Controller {
     }
 
 
-    parseCriteriasToStrings = ( criterias="" ) => {
+    parseCriteriasToStrings = (criterias = "") => {
         const regex = /(\s*AND\s*|\s*OR\s*|\s*NOT\s*)/i;
         const parts = criterias.split(regex);
 
@@ -732,7 +732,7 @@ class ConsumeApi extends Controller {
         return result;
     }
 
-    getPropByPath = ( object, path ) => {
+    getPropByPath = (object, path) => {
         /**
          *  Đệ quy liên tục cho đến khi path chỉ còn một phần tử thì trả về kết quả,
          * 
@@ -747,9 +747,9 @@ class ConsumeApi extends Controller {
 
         const value = object[path[0]]
         if (path.length > 0 && value != undefined) {
-            return this.getPropByPath(value, path.slice(1, path.length) )
+            return this.getPropByPath(value, path.slice(1, path.length))
         } else {
-            if ( path.length == 0 ) {
+            if (path.length == 0) {
                 return object
             }
             return value
@@ -770,9 +770,9 @@ class ConsumeApi extends Controller {
          */
 
 
-        if (path.length <= 1) {            
+        if (path.length <= 1) {
             object = { ...object, [path[0]]: value }
-        } else {            
+        } else {
             object[path[0]] = this.setPropByPath(object[path[0]], path.slice(1, path.length), value)
         }
         return object
@@ -842,7 +842,7 @@ class ConsumeApi extends Controller {
          *      g. Nếu số lượng phần tử còn thiếu <= 0 thì kết thúc vòng lập
          * 
          * 
-         */     
+         */
 
 
 /*(1)*/ const partitions = this.periods;
@@ -947,11 +947,11 @@ class ConsumeApi extends Controller {
             sortedTables.map(tb => { foreignKeys.push(...tb.foreign_keys) })        // b
 
             for (let i = 0; i < foreignKeys.length; i++) {                          // c
-                const { table_id } = foreignKeys[i] 
-                const targetTable = remainingTables.find(tb => tb.id == table_id) 
+                const { table_id } = foreignKeys[i]
+                const targetTable = remainingTables.find(tb => tb.id == table_id)
                 if (targetTable) {
-                    sortedTables.push(targetTable) 
-                    remainingTables = remainingTables.filter(tb => tb.id != table_id) 
+                    sortedTables.push(targetTable)
+                    remainingTables = remainingTables.filter(tb => tb.id != table_id)
                 }
             }
         }
@@ -1040,7 +1040,8 @@ class ConsumeApi extends Controller {
 /*(4)*/ if (remain_items.length > RECORD_AMOUNT) {
             precisedTargetPartition["data"] = remain_items.slice(0, RECORD_AMOUNT)
             finalePartitions.push(precisedTargetPartition)
-/*(5)*/ } else {
+            /*(5)*/
+} else {
             precisedTargetPartition["data"] = remain_items.slice(0, RECORD_AMOUNT)
             finalePartitions.push(precisedTargetPartition)
             let result_counter = precisedTargetPartition["data"].length
@@ -1155,9 +1156,9 @@ class ConsumeApi extends Controller {
         const datafrom = intValidate(this.req.header("start-at")) ? parseInt(this.req.header("start-at")) : 0
         let dataPerBreak = intValidate(this.req.header("data-amount")) ? parseInt(this.req.header("data-amount")) : RESULT_PER_SEARCH_PAGE
         let tmpDataFrom = datafrom
-        
-        
-        
+
+
+
         if (dataPerBreak > 100_000) {
             this.res.status(200).send({
                 success: false,
@@ -1191,7 +1192,7 @@ class ConsumeApi extends Controller {
                 }
             }
 
-            
+
 
             const foreignKeys = []
             tables.map(tb => {
@@ -1236,10 +1237,10 @@ class ConsumeApi extends Controller {
                         tmpDataFrom -= currentDataLength
 
                         if (tmpDataFrom < 0 && !found) {
-                            
+
                             const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { position: partitions[i].position, ...sideQueries })
                             const data = redundantPartitionData.slice(redundantPartitionData.length + tmpDataFrom, redundantPartitionData.length)
-                            
+
                             redundantPartitions.push({
                                 position: partitions[i].position,
                                 total: data.length,
@@ -1251,18 +1252,18 @@ class ConsumeApi extends Controller {
                         }
 
                         if (finale_raw_data_counter < dataPerBreak && found) {
-                       
+
                             const redundantPartitionData = await Database.selectAll(mainTable.table_alias, { position: partitions[i].position, ...sideQueries })
-                          
+
                             redundantPartitions.push({
                                 position: partitions[i].position,
                                 total: redundantPartitionData.length,
                                 data: redundantPartitionData,
                             })
                             finale_raw_data_counter += redundantPartitionData.length
-                         
+
                             if (finale_raw_data_counter >= dataPerBreak) {
-                               
+
                                 break;
                             }
                         }
@@ -3652,7 +3653,7 @@ class ConsumeApi extends Controller {
     }
 
     generateRemoteURL = () => {
-        const { proxy_server } = this.project ? this.project : { proxy_server: "http://127.0.0.1" };       
+        const { proxy_server } = this.project ? this.project : { proxy_server: "http://127.0.0.1" };
 
         const url = this.req.url;
         const api_id = this.API.api_id.value()
@@ -3660,11 +3661,11 @@ class ConsumeApi extends Controller {
         const splitByAPIID = url.split(api_id)
         const paramPart = splitByAPIID[1] ? splitByAPIID[1] : ""
         const paramValues = paramPart.split('/').slice(1, 100000)
-        
-        
+
+
 
         const remote_url = this.API.remote_url.value()
-        return `${ proxy_server }${ remote_url }${ paramValues.join() }`
+        return `${proxy_server}${remote_url}${paramValues.join()}`
     }
 
     REMOTE_GET = async () => {
@@ -3681,16 +3682,16 @@ class ConsumeApi extends Controller {
                 headers: {
                     Authorization: this.req.header("Authorization")
                 }
-            }).then(res => res.json()).then(res => {   
-                          
+            }).then(res => res.json()).then(res => {
+
                 resolve(res)
-            }).catch(err => {                
+            }).catch(err => {
                 resolve({ error: err.toString() })
             })
-        })        
+        })
 
         const statistic = this.API.statistic.valueOrNot()
-        const statistics = []        
+        const statistics = []
         statistic.map(statis => {
             const { display_name, fomular_alias, fomular, group_by } = statis;
             const statisRecord = { display_name }
@@ -3733,14 +3734,14 @@ class ConsumeApi extends Controller {
     }
 
 
-    setPropertyByPath = ( data, path, value ) => {
-        if( data == undefined ){
+    setPropertyByPath = (data, path, value) => {
+        if (data == undefined) {
             data = {}
         }
-        if( path.length == 1 ){
-            data[ path[0] ] = value             
-        }else{
-            data[ path[0] ] = this.setPropertyByPath(  data[ path[0] ] , path.slice(1, path.length), value )
+        if (path.length == 1) {
+            data[path[0]] = value
+        } else {
+            data[path[0]] = this.setPropertyByPath(data[path[0]], path.slice(1, path.length), value)
         }
         return data
     }
@@ -3753,16 +3754,16 @@ class ConsumeApi extends Controller {
         const apiBody = this.API.body.valueOrNot()
         const apiExternalBody = this.API.external_body.valueOrNot()
 
-        
 
-        for( let i = 0 ; i < apiExternalBody.length ; i++ ){
+
+        for (let i = 0; i < apiExternalBody.length; i++) {
             const field = apiExternalBody[i];
             // console.log(field)
             const { fomular_alias, default_value } = field;
-            body = this.setPropertyByPath( body, fomular_alias.split('.'), default_value )
+            body = this.setPropertyByPath(body, fomular_alias.split('.'), default_value)
         }
-        
-        
+
+
 
         const response = await new Promise((resolve, reject) => {
             fetch(remoteURL, {
@@ -3773,7 +3774,7 @@ class ConsumeApi extends Controller {
                 body: JSON.stringify(requestBody)
             }).then(res => res.json()).then(res => {
                 resolve(res)
-            }).catch( err => {                
+            }).catch(err => {
                 resolve({ success: false, error: err.toString(), content: "Remote server error" })
             })
         })
@@ -3786,11 +3787,11 @@ class ConsumeApi extends Controller {
         })
 
 
-        
+
 
 
         const statistic = this.API.statistic.valueOrNot()
-        const statistics = []        
+        const statistics = []
         statistic.map(statis => {
             const { display_name, fomular_alias, fomular, group_by } = statis;
             const statisRecord = { display_name }
@@ -3821,7 +3822,7 @@ class ConsumeApi extends Controller {
         response.statistic = statistics
         response.remote_server = this.project?.proxy_server
         response.fields = [...fields, ...calculateDisplay]
-        
+
         this.res.status(200).send(response)
     }
 
@@ -3940,7 +3941,7 @@ class ConsumeApi extends Controller {
                 return table
             });
 
-            
+
 
             const { export_type } = req.body;
 
@@ -3991,14 +3992,14 @@ class ConsumeApi extends Controller {
     }
 
 
-    consumeStatis = async ( req, res, api_id ) => {
+    consumeStatis = async (req, res, api_id) => {
         this.writeReq(req)
 
         const { url, method } = req;
         this.url = decodeURI(url);
         const [api, projects, tables, fields] = await Promise.all([this.#__apis.find({ api_id }), this.#__projects.findAll(), this.#__tables.findAll(), this.#__fields.findAll()])
-        // if (api && api.status && api.api_method == method.toLowerCase() ) {
-        if (api && api.status) {
+        if (api && api.status && api.api_method == method.toLowerCase() ) {
+        // if (api && api.status) {
             const Api = new ApisRecord(api)
             const project = projects[0]
             this.project = project;
@@ -4014,13 +4015,13 @@ class ConsumeApi extends Controller {
             });
 
             this.STATIS()
-            
+
         } else {
             res.status(200).send({ success: false, content: "No API Found" })
         }
     }
 
-    validRecordOfDataByCriterias = ( record, criterias = [] ) => {
+    validRecordOfDataByCriterias = (record, criterias = []) => {
         /**
          * Phân tích danh sách điều kiện từ trái sang phải, hiện tại chưa có ngoặc ưu tiên hay nhiều phân cấp
          * Phần tử đầu tiên kể như là điều kiện khởi đầu:
@@ -4032,91 +4033,91 @@ class ConsumeApi extends Controller {
 
 
         const firstCriteria = criterias[0]
-        
-        if( firstCriteria ){           
+
+        if (firstCriteria) {
             let fomular = firstCriteria.fomular;
             const NOW = new Date()
 
-            const keys = Object.keys( record )
+            const keys = Object.keys(record)
             keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
 
-            for( let i = 0; i < keys.length; i++ ){
+            for (let i = 0; i < keys.length; i++) {
                 const key = keys[i]
 
                 const field = this.getFieldByAlias(key)
-                
-                if( field && ["DATE", "DATETIME"].indexOf(field.DATATYPE) != -1 ){
-                    const time = new Date( record[key] )
-                    
-                    fomular = fomular.replaceAll( key, time.getTime() )
-                }else{
-                    fomular = fomular.replaceAll( key, record[key] )
+
+                if (field && ["DATE", "DATETIME"].indexOf(field.DATATYPE) != -1) {
+                    const time = new Date(record[key])
+
+                    fomular = fomular.replaceAll(key, time.getTime())
+                } else {
+                    fomular = fomular.replaceAll(key, record[key])
                 }
-            }            
-            const result = eval( fomular )
+            }
+            const result = eval(fomular)
             // console.log( fomular, result )
 
-            if( result ){
+            if (result) {
                 criterias[0].value = true
 
                 const remainCriterias = criterias.slice(1, criterias.length)
-                for( let i = 0 ; i < remainCriterias.length; i++ ){
+                for (let i = 0; i < remainCriterias.length; i++) {
                     const criteria = remainCriterias[i]
 
                     const { operator } = criteria;
 
                     let fomular = criteria.fomular;
 
-                    for( let j = 0; j < keys.length; j++ ){
+                    for (let j = 0; j < keys.length; j++) {
                         const key = keys[j]
-                        
+
                         const field = this.getFieldByAlias(key)
 
-                        if( field && ["DATE", "DATETIME"].indexOf(field.DATATYPE) != -1 ){
-                            const time = new Date( record[key] )
-                            
-                            fomular = fomular.replaceAll( key, time.getTime() )
-                        }else{
-                            fomular = fomular.replaceAll( key, record[key] )
+                        if (field && ["DATE", "DATETIME"].indexOf(field.DATATYPE) != -1) {
+                            const time = new Date(record[key])
+
+                            fomular = fomular.replaceAll(key, time.getTime())
+                        } else {
+                            fomular = fomular.replaceAll(key, record[key])
                         }
 
                     }
 
-                    const nextResult = eval( fomular )
-                    criterias[ i + 1 ].value = nextResult
+                    const nextResult = eval(fomular)
+                    criterias[i + 1].value = nextResult
                 }
 
                 let final = result;
 
-                for( let i = 1 ; i < criterias.length; i++ ){
+                for (let i = 1; i < criterias.length; i++) {
                     const { operator, value } = criterias[i]
-                    if( final ){
-                        if( operator == "AND" ){                        
-                            if( value && final ){
+                    if (final) {
+                        if (operator == "AND") {
+                            if (value && final) {
 
-                            }else{
+                            } else {
                                 final = false
                             }
                         }
 
-                        if( operator == "OR" ){
-                            if( final || value ){
+                        if (operator == "OR") {
+                            if (final || value) {
                                 final = false
-                            }else{
-                                if( !final && !value ){
+                            } else {
+                                if (!final && !value) {
                                     final = false
                                 }
                             }
                         }
-                    }else{
+                    } else {
                         break
                     }
                 }
                 return final
-            }else{
+            } else {
                 return false
             }
-        }else{
+        } else {
             return true
         }
     }
@@ -4130,87 +4131,139 @@ class ConsumeApi extends Controller {
         const api = await this.API.get()
 
         const { criterias, group_by, fomular, field } = api;
-        
+
         const fields = []
-        tables.map( tb => {
-            fields.push( ...tb.fields )
+        tables.map(tb => {
+            fields.push(...tb.fields)
         })
 
-        
+        const query = this.req.body.criterias ? this.req.body.criterias : []
 
-        const parsedCriterias = this.parseCriteriasToStrings( criterias )
+        const formatedQuery = { $and: [] }
+        const keys = Object.keys(query)
 
-        let partitions = [];        
+        keys.map(key => {
+            const qr = {}
+
+            const [field] = this.getFieldsByAlias([key])
+
+            if (field) {
+
+                const { DATATYPE, AUTO_INCREMENT } = field;
+                if (Fields.stringFamily.indexOf(DATATYPE) != -1 || (Fields.intFamily.indexOf(DATATYPE) != -1 && AUTO_INCREMENT)) {
+
+                    /**
+                     * 
+                     * This regex is restricted for string datatype
+                     * 
+                     * An Int-family field with AUTO INCREMENT = true counts as a string field
+                     * 
+                     */
+
+                    qr[`${key}`] = { $regex: query[key] } //approximate
+                    // qr[`${key}`] = query[key] // exact
+
+                } else {
+
+                    if (DATATYPE == "DATE" || DATATYPE == "DATETIME") {
+                        const date = new Date(query[key])
+
+                        qr[`${key}`] = date;
+
+                        if (DATATYPE == "DATE") {  // Mấy cái này sao này banh xác r tính
+                            // const day = date.getDate()
+                            // const month = date.getMonth() + 1
+                            // const year = date.getFullYear()                               
+                        }
+
+                        if (DATATYPE == "DATETIME") {
+
+                        }
+                    } else {
+                        qr[`${key}`] = query[key]
+                    }
+                }
+
+                formatedQuery["$and"].push(qr)
+            }
+
+        })
+
+        console.log( 4192, formatedQuery )
+
+        const parsedCriterias = this.parseCriteriasToStrings(criterias)
+
+        let partitions = [];
 
         const stringifiedPeriods = await Cache.getData(`${tables[0].table_alias}-periods`)
         const periods = stringifiedPeriods?.value
         if (stringifiedPeriods && periods.length > 0) {
-           partitions = periods
-        } 
+            partitions = periods
+        }
 
         let statistics = {}
         let averageCache = {}
 
-        for( let i = 0 ; i <  periods.length; i++ ){
+        for (let i = 0; i < periods.length; i++) {
             const period = periods[i]
 
             const { position } = period;
 
-            const data = await Database.select(table.table_alias, { position })            
+            const data = await Database.selectAll(table.table_alias, { $and: [ ...formatedQuery["$and"], { position } ] })
 
-            for( let k = 0; k < data.length; k++ ){
+            for (let k = 0; k < data.length; k++) {
                 const record = data[k]
                 const groupByStrings = []
-                
-                const isRecordValid = this.validRecordOfDataByCriterias( record, parsedCriterias )
 
-                if(isRecordValid){
-                    
-                    for( let h = 0; h < group_by.length; h++ ){
+                const isRecordValid = this.validRecordOfDataByCriterias(record, parsedCriterias)
+
+                if (isRecordValid) {
+
+                    for (let h = 0; h < group_by.length; h++) {
                         const { fomular_alias } = group_by[h]
-                        groupByStrings.push( record[fomular_alias] )
+                        groupByStrings.push(record[fomular_alias])
                     }
 
-                    if( groupByStrings.length == 0 ){
-                        groupByStrings.push( field.field_name )
+                    if (groupByStrings.length == 0) {
+                        groupByStrings.push(field.field_name)
                     }
-    
-                    const currentValue = this.getPropByPath( statistics, groupByStrings )
-                        
-    
-                    switch(fomular){
+
+                    const currentValue = this.getPropByPath(statistics, groupByStrings)
+
+
+                    switch (fomular) {
                         case "SUM":
-                            if( currentValue ){
-                                statistics = this.setPropByPath( statistics, groupByStrings, currentValue + record[field.fomular_alias] )
-                            }else{
-                                statistics = this.setPropByPath( statistics, groupByStrings, record[field.fomular_alias] )
+                            if (currentValue) {
+                                statistics = this.setPropByPath(statistics, groupByStrings, currentValue + record[field.fomular_alias])
+                            } else {
+                                statistics = this.setPropByPath(statistics, groupByStrings, record[field.fomular_alias])
                             }
                             break;
                         case "AVERAGE":
                             // Not tested yet
-                            if( currentValue ){
-                                const total  = this.getPropByPath( averageCache, groupByStrings );
+                            if (currentValue) {
+                                const total = this.getPropByPath(averageCache, groupByStrings);
                                 let value = currentValue;
-                                const newValue = ( total * value + record[field.fomular_alias] ) / ( total + 1 )
-                                statistics = this.setPropByPath( statistics, groupByStrings, newValue )
-                                averageCache = this.setPropByPath( averageCache, groupByStrings, total + 1 )
-    
-                            }else{
-                                statistics = this.setPropByPath( statistics, groupByStrings, record[field.fomular_alias] )
-                                averageCache = this.setPropByPath( averageCache, groupByStrings, 1 )
-                            }    
+                                const newValue = (total * value + record[field.fomular_alias]) / (total + 1)
+                                statistics = this.setPropByPath(statistics, groupByStrings, newValue)
+                                averageCache = this.setPropByPath(averageCache, groupByStrings, total + 1)
+
+                            } else {
+                                statistics = this.setPropByPath(statistics, groupByStrings, record[field.fomular_alias])
+                                averageCache = this.setPropByPath(averageCache, groupByStrings, 1)
+                            }
                             break;
                         case "COUNT":
-                            if( currentValue ){
-                                statistics = this.setPropByPath( statistics, groupByStrings, currentValue + 1 )
-                            }else{
-                                statistics = this.setPropByPath( statistics, groupByStrings, 1 )
+                            if (currentValue) {
+                                statistics = this.setPropByPath(statistics, groupByStrings, currentValue + 1)
+                            } else {
+                                statistics = this.setPropByPath(statistics, groupByStrings, 1)
                             }
                             break;
                     }
                 }
             }
-        }      
+        }
         this.res.status(200).send({ success: true, content: "Succeed", statistics })
     }
 
@@ -4246,7 +4299,7 @@ class ConsumeApi extends Controller {
                 formatedQuery["$and"].push(qr)
             })
 
-            
+
 
             const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)
 
@@ -4329,21 +4382,21 @@ class ConsumeApi extends Controller {
 
                     } else {
 
-                        if( DATATYPE == "DATE" || DATATYPE == "DATETIME" ){                            
-                            const date = new Date( query[key] )
+                        if (DATATYPE == "DATE" || DATATYPE == "DATETIME") {
+                            const date = new Date(query[key])
 
                             qr[`${key}`] = date;
-                            
-                            if(DATATYPE == "DATE"){  // Mấy cái này sao này banh xác r tính
+
+                            if (DATATYPE == "DATE") {  // Mấy cái này sao này banh xác r tính
                                 // const day = date.getDate()
                                 // const month = date.getMonth() + 1
                                 // const year = date.getFullYear()                               
                             }
 
-                            if( DATATYPE == "DATETIME" ){
+                            if (DATATYPE == "DATETIME") {
 
                             }
-                        }else{
+                        } else {
                             qr[`${key}`] = query[key]
                         }
                     }
