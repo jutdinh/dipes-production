@@ -3940,6 +3940,8 @@ class ConsumeApi extends Controller {
                 return table
             });
 
+            
+
             const { export_type } = req.body;
 
             if (export_type == "excel") {
@@ -4134,6 +4136,8 @@ class ConsumeApi extends Controller {
             fields.push( ...tb.fields )
         })
 
+        
+
         const parsedCriterias = this.parseCriteriasToStrings( criterias )
 
         let partitions = [];        
@@ -4242,7 +4246,7 @@ class ConsumeApi extends Controller {
                 formatedQuery["$and"].push(qr)
             })
 
-            console.log( formatedQuery )
+            
 
             const data = await Database.selectFrom(table.table_alias, formatedQuery, start, end)
 
