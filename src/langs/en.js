@@ -419,7 +419,7 @@ export default {
      "Only image, video, PDF, and Excel files are accepted": "Only image, video, PDF, and Excel files are accepted",
     "Please upload an image file.": "Please upload an image file.",
     "Notification": "Notification",
-    "expired": "Session expired. Please log back in to continue.",
+    "expired": "Your session has expired, please log in again!",
     "withdraw": "Information can only be updated within 24 hours of submission.",
     "Drag and drop images here and click": "Drag and drop here or click to select images",
     "case image": "Case image",
@@ -434,7 +434,8 @@ export default {
     "success.update": "Update successful",
     "no privileges": "No permission",
     "username not available": "The username is not available",
-    "log.login": "Login history"
+    "log.login": "Login history",
+    "account disabled": "Your account has been disabled"
 }
 
 

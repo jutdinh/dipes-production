@@ -19,7 +19,7 @@ import { Logs } from './logs';
 import { Tables, Field, UpdateField } from './tables';
 import { Diagram } from './diagram';
 import Active_Key from "./active_key/active";
-import { Fetch, InputPost, InputPut, ImportData, Detail } from './page';
+import { Fetch, InputPost, InputPut, ImportData, Detail,Fecth_Table_Param } from './page';
 import { Active_Helpdesk, Table_Key, Chart_HelpDesk } from "./page/step"
 import "../css/index.scss";
 import { SiteMap } from './site-map';
@@ -29,7 +29,7 @@ function App() {
 
   const dispatch = useDispatch()
   const __token = localStorage.getItem("_token");
-  const [ _token, setToken ] = useState( __token )
+  const [_token, setToken] = useState(__token)
 
   const { lang, proxy, auth, pages, socket, functions } = useSelector(state => state);
 
@@ -41,50 +41,50 @@ function App() {
     phone: "",
     avatar: ""
   }
-// console.log(_token)
+  // console.log(_token)
   async function updateToken() {
     try {
       // console.log(46, _token)
-        const newToken = await functions.refreshToken(proxy(), _token);
-        if (newToken) {
-            // Lưu trữ token mới
-            // localStorage.removeItem('_token')
-            setToken(newToken)
-            localStorage.setItem('_token', JSON.stringify(newToken));
-          
-            // console.log(50, newToken);
-            // Cập nhật state hoặc context nếu cần
-            // updateTokenState(newToken);
+      const newToken = await functions.refreshToken(proxy(), _token);
+      if (newToken) {
+        // Lưu trữ token mới
+        // localStorage.removeItem('_token')
+        setToken(newToken)
+        localStorage.setItem('_token', newToken);
 
-            // Optional: Kiểm tra ngày hết hạn của token mới
-            const expirationDate = functions.getTokenExpirationDate(newToken);
-            // console.log('Ngày hết hạn của token mới:', expirationDate);
-        } else {
-            // console.error("Không nhận được token mới");
-        }
+        // console.log(50, newToken);
+        // Cập nhật state hoặc context nếu cần
+        // updateTokenState(newToken);
+
+        // Optional: Kiểm tra ngày hết hạn của token mới
+        const expirationDate = functions.getTokenExpirationDate(newToken);
+        console.log('Ngày hết hạn của token mới:', expirationDate);
+      } else {
+        // console.error("Không nhận được token mới");
+      }
     } catch (error) {
-        // console.error("Error refreshing token:", error);
+      // console.error("Error refreshing token:", error);
     }
-}
+  }
 
 
 
-// useEffect(() => {
-//   // Kiểm tra và làm mới token mỗi 30 phút
-//   const intervalId = setInterval(updateToken, 5000); // 1800000 ms = 30 phút
-//   // return () => clearInterval(intervalId);
+  useEffect(() => {
+    // Kiểm tra và làm mới token mỗi 30 phút
+    const intervalId = setInterval(updateToken, 1800000); // 1800000 ms = 30 phút
+    // return () => clearInterval(intervalId);
 
-// }, [_token]);
+  }, [_token]);
 
 
 
-// useEffect(() => {
-//   const token = localStorage.getItem("_token") ? localStorage.getItem("_token") : ""
-//   console.log("TOKEN CHANGE: ", token.slice(token.length - 20, token.length))
-// }, [_token])
-  
-const expirationDate = functions.getTokenExpirationDate(_token);
-// console.log('Ngày hết hạn của token (hiện tại):', expirationDate);
+  // useEffect(() => {
+  //   const token = localStorage.getItem("_token") ? localStorage.getItem("_token") : ""
+  //   console.log("TOKEN CHANGE: ", token.slice(token.length - 20, token.length))
+  // }, [_token])
+
+  const expirationDate = functions.getTokenExpirationDate(_token);
+  // console.log('Ngày hết hạn của token (hiện tại):', expirationDate);
 
   useEffect(() => {
     const specialURLs = ["/login", "/signup", "/signout"]
@@ -177,55 +177,93 @@ const expirationDate = functions.getTokenExpirationDate(_token);
 
   useEffect(() => {
     if (window.location.pathname === '/login') {
-      
+
       return;
     }
-  
-    let isTokenValid = true; 
+
+    let isTokenValid = true;
     const checkTokenExpiration = () => {
       const _token = localStorage.getItem("_token");
       // console.log(185, _token);
-  
-      if (!_token || !isTokenValid) {
-        window.location = '/login';
-        return; 
-      }
-  
-      fetch(`${proxy()}/auth/token/check`, {
-        headers: {
-          Authorization: _token
-        }
-      })
-        .then(res => res.json())
-        .then(resp => {
-          const { success } = resp;
-          if (!success) {
-            isTokenValid = false; 
-            localStorage.removeItem("_token");
-  
-             Swal.fire({
-                title: lang["Notification"],
-                text: lang["expired"],
-                icon: "warning",
-                showConfirmButton: true,
-                confirmButtonText: lang["confirm"],
-                allowOutsideClick: false,
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location = '/signout';
-                }
-            });
+
+      // if (!_token || !isTokenValid) {
+      //   window.location = '/login';
+      //   return; 
+      // }
+      const now = Math.floor(Date.now() / 1000);
+      const expirationDate = functions.getTokenExpirationDate(_token);
+
+      console.log(expirationDate - now)
+      if (expirationDate - now > 0) {
+        fetch(`${proxy()}/auth/token/check`, {
+          headers: {
+            Authorization: _token
           }
-        });
+        })
+          .then(res => res.json())
+          .then(resp => {
+            const { success } = resp;
+            if (!success) {
+              isTokenValid = false;
+              localStorage.removeItem("_token");
+
+              //  Swal.fire({
+              //     title: lang["Notification"],
+              //     text: lang["expired"],
+              //     icon: "warning",
+              //     showConfirmButton: true,
+              //     confirmButtonText: lang["confirm"],
+              //     allowOutsideClick: false,
+              // }).then((result) => {
+              //     if (result.isConfirmed) {
+              //         window.location = '/signout';
+              //     }
+              // });
+            }
+          });
+      } else {
+        window.location = `/signout?ex=${"1"}`;
+      }
+
     };
-  
-    const tokenCheckInterval = setInterval(checkTokenExpiration, 86400000);
-  
+
+    const tokenCheckInterval = setInterval(checkTokenExpiration, 60000);
+
     return () => {
       clearInterval(tokenCheckInterval);
     };
   }, []);
-  
+
+
+  // useEffect(() => {
+    
+  //   const _token = localStorage.getItem("_token");
+   
+  //   const now = Math.floor(Date.now() / 1000);
+  //   const expirationDate = functions.getTokenExpirationDate(_token);
+
+  //   console.log(expirationDate - now)
+  //   if (expirationDate - now > 0) {
+  //     fetch(`${proxy()}/auth/token/check`, {
+  //       headers: {
+  //         Authorization: _token
+  //       }
+  //     })
+  //       .then(res => res.json())
+  //       .then(resp => {
+  //         const { success } = resp;
+  //         if (!success) {
+      
+  //           localStorage.removeItem("_token");
+  //         }
+  //       });
+  //   } else {
+  //     // window.location = `/signout?ex=${"1"}`;
+  //   }
+   
+
+   
+  // }, []);
 
   return (
     <Router>
@@ -255,7 +293,8 @@ const expirationDate = functions.getTokenExpirationDate(_token);
         <Route exac path="/page/:url/apis/api/:id_str/input_info" element={< Navigation Child={InputPost} />} />
         <Route path="/page/:url/put/api/:id_str/*" element={< Navigation Child={InputPut} />} />
         <Route path="/page/:url/detail/:id_str/*" element={< Navigation Child={Detail} />} />
-        <Route path="/page/:url" element={< Navigation Child={Fetch} />} />
+        <Route path="/page/:url/*" element={< Navigation Child={Fetch} />} />
+        {/* <Route path="/page/:url/:param/*" element={< Navigation Child={Fecth_Table_Param} />} /> */}
         <Route exac path="/page/:url/import/:id" element={< Navigation Child={ImportData} />} />
 
         <Route exac path="/technical" element={< Navigation Child={FeedBack} />} />

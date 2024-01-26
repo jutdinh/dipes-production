@@ -1,19 +1,20 @@
 import React from 'react';
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSquarePlus, faFileImport, faFileExport, faUpload, faMagnifyingGlass, faDownload } from '@fortawesome/free-solid-svg-icons';
 import Chart from 'react-apexcharts'
 import Swal from 'sweetalert2';
-const RenderComponent = ({ component, apiData, redirectToInput, redirectToInputPUT, handleDelete, handleSearchClick, exportToCSV, handleViewDetail, exportFile, redirectToImportData }) => {
+const RenderComponent = ({ page, component, apiData, redirectToInput, redirectToInputPUT, handleDelete, handleSearchClick, exportToCSV, handleViewDetail, exportFile, redirectToImportData }) => {
 
-    const { lang, proxy, auth, functions } = useSelector(state => state);
+    const { lang, proxy, auth, functions, pages } = useSelector(state => state);
 
     // Hàm chính để xác định loại component cần render
-    const renderByType = (type, props, flex, id) => {
+    const renderByType = (cpn, props, flex, id) => {
 
-
-
+        console.log(page.params)
+        const type = cpn.name
         const hasFlexData = (flex) => {
             return flex && flex.props && flex.props.style;
         };
@@ -49,7 +50,48 @@ const RenderComponent = ({ component, apiData, redirectToInput, redirectToInputP
                             {props.name}
                             {extraButtons && <div class="ml-auto mb-1">{extraButtons}</div>}
                         </div>
-                        <RenderTable apiData={apiData} props={props} buttons={props.buttons} handleSearchClick={handleSearchClick} redirectToInputPUT={redirectToInputPUT} handleDelete={handleDelete} handleViewDetail={handleViewDetail} />
+                        <RenderTable
+                            page={page}
+                            component={cpn}
+                            type={type}
+                            apiData={apiData}
+                            props={props}
+                            buttons={props.buttons}
+                            handleSearchClick={handleSearchClick}
+                            redirectToInputPUT={redirectToInputPUT}
+                            handleDelete={handleDelete}
+                            handleViewDetail={handleViewDetail} />
+                    </div>
+                );
+
+            case 'table_param':
+                // const extraButtons = hasFlexData(flex) ? renderExtraButtons(foundChild.props.buttons, props, lang) : renderExtraButtons(props.buttons, props);
+                const extraButtons_Param = <ExtraButtons
+                    buttons={hasFlexData(flex) ? foundChild.props.buttons : props.buttons}
+                    props={props}
+                    lang={lang}
+                    redirectToInput={redirectToInput}
+                    redirectToImportData={redirectToImportData}
+                    exportToCSV={exportToCSV}
+                    exportFile={exportFile}
+                />;
+                return (
+                    <div>
+                        <div class="d-flex align-items-center mt-2">
+                            {props.name}
+                            {extraButtons_Param && <div class="ml-auto mb-1">{extraButtons_Param}</div>}
+                        </div>
+                        <RenderTable
+                            page={page}
+                            component={cpn}
+                            type={type}
+                            apiData={apiData}
+                            props={props}
+                            buttons={props.buttons}
+                            handleSearchClick={handleSearchClick}
+                            redirectToInputPUT={redirectToInputPUT}
+                            handleDelete={handleDelete}
+                            handleViewDetail={handleViewDetail} />
                     </div>
                 );
             case 'flex':
@@ -61,14 +103,14 @@ const RenderComponent = ({ component, apiData, redirectToInput, redirectToInputP
                         </div>
                     </>
                 );
-
             case 'chart_1':
-
                 return (
                     <>
                         <RenderChart props={props} />
                     </>
                 );
+
+
             default:
                 return <div>Unknown component type!</div>;
         }
@@ -101,10 +143,10 @@ const RenderComponent = ({ component, apiData, redirectToInput, redirectToInputP
                                                             }}>
                                                                 {comp.name === 'flex' ?
                                                                     <div class="">
-                                                                        {comp.children?.map((compflex) => <div key={compflex.id}>{renderByType(compflex.name, compflex.props, comp, compflex.id)} </div>)}
+                                                                        {comp.children?.map((compflex) => <div key={compflex.id}>{renderByType(compflex, compflex.props, comp, compflex.id)} </div>)}
                                                                     </div>
                                                                     :
-                                                                    renderByType(comp.name, comp.props)}
+                                                                    renderByType(comp, comp.props)}
                                                             </div>
                                                         ))}
                                                     </div>
@@ -141,8 +183,8 @@ const ExtraButtons = ({ buttons, props, redirectToInput, redirectToImportData, e
 
                 if (success && data.length > 0) {
                     const dataUser = data.find(item => item.username === _user.username);
-                    console.log(_user.username)
-                    console.log(dataUser)
+                    //console.log(_user.username)
+                    //console.log(dataUser)
                     setDataPrivileges(dataUser?.privileges)
                 }
             })
@@ -157,15 +199,11 @@ const ExtraButtons = ({ buttons, props, redirectToInput, redirectToImportData, e
     }
     const dataCheck = _user.role !== "uad" ? dataPrivileges.find(item => item.table_id === dataTable_id) : dataCheckAdministrator;
 
-    console.log(dataCheck)
-
-    // ////console.log(dataPrivileges)
     return Object.entries(buttons).map(([key, value]) => {
 
         if (!value.state) {
             return null;
         }
-
         switch (key) {
             case 'add':
                 return (
@@ -174,7 +212,6 @@ const ExtraButtons = ({ buttons, props, redirectToInput, redirectToImportData, e
                         :
                         null
                 );
-
             case 'import':
                 return (
                     // <FontAwesomeIcon icon={faFileImport} key={key} className="icon-import mr-2 pointer" />
@@ -195,7 +232,6 @@ const ExtraButtons = ({ buttons, props, redirectToInput, redirectToImportData, e
                                 </ul></>)
                                 : null
                         }
-
                     </>
                 );
             case 'export':
@@ -211,8 +247,13 @@ const ExtraButtons = ({ buttons, props, redirectToInput, redirectToImportData, e
     }).filter(Boolean);
 };
 const RenderTable = (props) => {
+
     console.log(328, props)
+
+    const { project_id, version_id, url } = useParams();
+    const params_Table = props.page.params
     const tableProps = props.props
+    const children = props.component.children
     const buttons = props.buttons
     const redirectToInputPUT = props.redirectToInputPUT
     const handleViewDetail = props.handleViewDetail
@@ -221,7 +262,8 @@ const RenderTable = (props) => {
     const _user = JSON.parse(stringifiedUser) || {}
     const dataTable_id = tableProps.source.tables[0].id
     const dispatch = useDispatch();
-
+    const typeTable = props.type
+    console.log(children)
     const data = props.apiData
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const checkState = useSelector(state => state.stateAprove);
@@ -233,9 +275,17 @@ const RenderTable = (props) => {
     // useEffect(() => {
     //     setApiData(data)
     // }, [data]);
-    ////console.log(342, apiData)
+    //////console.log(342, apiData)
     const { fields, search, get } = tableProps.source;
-    console.log(fields)
+    const currentURL = window.location.href;
+
+    const params = functions.getAllParamsAfterPageId(currentURL, url);
+
+
+
+
+
+    //console.log(fields)
     const { navigator } = tableProps.buttons;
     const visibility = tableProps.visibility;
     const [currentPage, setCurrentPage] = useState(1);
@@ -243,8 +293,10 @@ const RenderTable = (props) => {
     const [getUrl, setGetUrl] = useState('');
     const [loadingResult, setLoadingResult] = useState(false);
     const [sumerize, setSumerize] = useState(0)
-
     const [dataPrivileges, setDataPrivileges] = useState([]);
+
+
+    console.log(sumerize)
     useEffect(() => {
 
         fetch(`${proxy()}/privileges/accounts`, {
@@ -255,11 +307,11 @@ const RenderTable = (props) => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                console.log(251, resp)
+                //console.log(251, resp)
                 if (success && data.length > 0) {
                     const dataUser = data.find(item => item.username === _user.username);
-                    console.log(_user.username)
-                    console.log(dataUser)
+                    //console.log(_user.username)
+                    //console.log(dataUser)
                     setDataPrivileges(dataUser?.privileges)
                 }
             })
@@ -272,21 +324,12 @@ const RenderTable = (props) => {
         "purge": true,
     }
     const dataCheck = _user.role !== "uad" ? dataPrivileges.find(item => item.table_id === dataTable_id) : dataCheckAdministrator;
-
-    console.log(dataCheck)
-
-
-
-
-
-
-
     const handleSearchClick = () => {
         setCurrentPage(1);
         callApi(searchValues, searchUrl)
         // setSearching(true)
-        setCurrentPage(1);
-        callApiCount()
+
+        callApiCount(searchValues, searchUrl)
         // callApiStatistic()
         setApiData([])
         setSumerize(0)
@@ -294,10 +337,10 @@ const RenderTable = (props) => {
 
     // Hàm để xử lý thay đổi giá trị tìm kiếm
     const handleInputChange = (e, fieldAlias, value, searchData) => {
-       
+
         setSearchUrl(searchData.url)
         setSearchValues({ ...searchValues, [fieldAlias]: value });
-        console.log(29999,value)
+        //console.log(29999,value)
     };
 
     // Hàm xử lý sự kiện nhấn phím, ví dụ nhấn Enter để tìm kiếm
@@ -307,8 +350,6 @@ const RenderTable = (props) => {
         }
     };
 
-
-    ////console.log(search.url)
     const hasInlineButtons = Object.keys(buttons).some(key =>
         buttons[key].state && !['add', 'import', 'export'].includes(key));
 
@@ -324,7 +365,7 @@ const RenderTable = (props) => {
     const indexOfFirst = indexOfLast - rowsPerPage;
 
     const currentData = apiData;
-    ////console.log(396, currentData)
+    //////console.log(396, currentData)
 
     const paginate = (pageNumber) => {
         const startAt = (pageNumber - 1) * rowsPerPage;
@@ -338,7 +379,7 @@ const RenderTable = (props) => {
     };
 
     const renderSourceButtons = (source, lang) => {
-        ////console.log(244, source)
+        //////console.log(244, source)
         return Object.entries(source).map(([key, value]) => {
             if (!value.state) {
                 return null;
@@ -355,32 +396,45 @@ const RenderTable = (props) => {
     };
 
     const callApiView = (url, startAt = 0, amount = rowsPerPage) => {
-        ////console.log(url)
+        if (typeTable === "table_param") {
+            const url = tableProps.source.search.url
+
+
+            const result = params_Table?.reduce((acc, item, index) => {
+                if (index < params.length) {
+                    acc[item.fomular_alias] = params[index];
+                }
+                return acc;
+            }, {});
+
+            console.log(415415, result);
+            setSearchValues(result)
+
+            console.log(apiData);
+            setCurrentPage(1);
+            callApi(result, url)
+            callApiCount(result, url)
+            setApiData([])
+            setSumerize(0)
+            return;
+        }
         const headerApi = {
             Authorization: _token,
             'start-at': startAt,
             'data-amount': amount
         }
-
-        ////console.log(55, headerApi)
         fetch(`${proxy()}${url}`, {
             headers: headerApi
         })
-
             .then(res => res.json())
             .then(res => {
                 const { success, content, data, count, fields, limit, statistic } = res;
-                ////console.log(123456, res)
                 setApiData([])
                 if (data && data.length > 0) {
                     setApiData(data.filter(record => record != undefined));
                     setSumerize(count)
-                    // setLimit(limit)
-                    // setApiViewData(data)
-                    // setApiViewFields(fields)
                 }
             });
-
     }
     useEffect(() => {
         setGetUrl(get.url)
@@ -401,7 +455,7 @@ const RenderTable = (props) => {
         })
 
     }, [checkState]);
-    ////console.log(308,checkState)
+    //////console.log(308,checkState)
 
     const callApi = (data, dataUrl, startIndex = currentPage - 1) => {
         const startTime = new Date().getTime();
@@ -414,7 +468,7 @@ const RenderTable = (props) => {
             require_count: false,
             require_statistic: false,
         }
-        ////console.log("ĐÂY LÀ BODY:", searchBody)
+        //////console.log("ĐÂY LÀ BODY:", searchBody)
         if (dataUrl) {
 
             fetch(`${proxy()}${dataUrl}`, {
@@ -431,7 +485,7 @@ const RenderTable = (props) => {
                 .then(res => {
                     const { success, content, data, result, total, fields, count, sumerize } = res;
                     const statisticValues = res.statistic;
-                    ////console.log(74, res)
+                    //////console.log(74, res)
                     if (success) {
                         setApiData(data.filter(record => record != undefined));
 
@@ -454,7 +508,7 @@ const RenderTable = (props) => {
                     clearTimeout(loadingTimeoutSearch);// Clear the timeout
                     // setLoadingSearch(false);
                     // setLoading(false)
-                    // //////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                    // ////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
                 });
         }
 
@@ -471,7 +525,7 @@ const RenderTable = (props) => {
             require_count: false,
             require_statistic: false,
         }
-        ////console.log("ĐÂY LÀ BODY:", searchBody)
+        //////console.log("ĐÂY LÀ BODY:", searchBody)
         if (searchUrl) {
 
             fetch(`${proxy()}${searchUrl}`, {
@@ -488,7 +542,7 @@ const RenderTable = (props) => {
                 .then(res => {
                     const { success, content, data, result, total, fields, count, sumerize } = res;
                     const statisticValues = res.statistic;
-                    ////console.log(74, res)
+                    //////console.log(74, res)
                     if (success) {
                         setApiData(data.filter(record => record != undefined));
 
@@ -511,13 +565,13 @@ const RenderTable = (props) => {
                     clearTimeout(loadingTimeoutSearch);// Clear the timeout
                     // setLoadingSearch(false);
                     // setLoading(false)
-                    // //////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                    // ////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
                 });
         }
 
     };
 
-    const callApiCount = (requireCount = false) => {
+    const callApiCount = (data, url, requireCount = false) => {
 
         const startTime = new Date().getTime();
         let loadingTimeout;
@@ -540,15 +594,20 @@ const RenderTable = (props) => {
         const searchBody = {
             // table_id: dataTable_id,
             start_index: currentPage - 1,
-            criteria: searchValues,
+            criteria: data,
             require_count: true,
             require_statistic: false,
             // api_id: page.components?.[0]?.api_get.split('/')[2]
             // exact: true
         }
-
-        ////console.log(447, searchBody)
-        fetch(`${proxy()}${searchUrl}`, {
+        // let urlGetCount;
+        // if (typeTable === "table_param") {
+        //     urlGetCount = url
+        // } else {
+        //     urlGetCount = searchUrl
+        // }
+        //////console.log(447, searchBody)
+        fetch(`${proxy()}${url}`, {
             method: "POST",
             headers: {
                 "content-type": "application/json",
@@ -561,16 +620,16 @@ const RenderTable = (props) => {
             .then(res => res.json())
             .then(res => {
 
-                const { success, content, data, result, total, fields, count, sumerize } = res;
+                const { success, content, data, result, total, fields, count } = res;
                 const statisticValues = res.statistic;
-                ////console.log(74, res)
+                //////console.log(74, res)
                 if (success) {
                     // setApiData(data.filter(record => record != undefined));
                     // setApiDataName(fields);
                     // setDataStatis(statisticValues);
                     // setLoaded(true);
-
-                    if (count !== undefined && requireCount) {
+              
+                    if (count !== undefined) {
                         setCurrentCount(count);
                         setSumerize(count);
                     } else if (sumerize !== undefined) {
@@ -591,7 +650,7 @@ const RenderTable = (props) => {
                 setLoadingResult(false)
                 // setLoadingSearch(false);
                 // setLoading(false)
-                // ////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                // //////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
             });
     };
 
@@ -627,7 +686,6 @@ const RenderTable = (props) => {
                                     {functions.renderInput(field, handleInputChange, searchValues, search, handleKeyDown)}
                                 </th>
                             ))}
-
                             <th class="align-center"> {renderSourceButtons(tableProps.source)}</th>
                         </tr>
                         {currentData && currentData.length > 0 ?
@@ -644,9 +702,9 @@ const RenderTable = (props) => {
                                                     {hasInlineButtons && (
                                                         <td class="align-center">
                                                             {/* {renderInlineButtonsForRow(buttons, row)} */}
-                                                            <div class="icon-table">
-                                                                < RenderInlineButtonsForRow {...props} tableProps={tableProps} row={row} redirectToInputPUT={redirectToInputPUT} handleViewDetail={handleViewDetail} handleDelete={handleDelete} dataPrivileges={dataPrivileges} />
-                                                            </div>
+
+                                                            < RenderInlineButtonsForRow data={currentData} children={children} {...props} tableProps={tableProps} row={row} redirectToInputPUT={redirectToInputPUT} handleViewDetail={handleViewDetail} handleDelete={handleDelete} dataPrivileges={dataPrivileges} />
+
                                                         </td>
                                                     )}
                                                 </tr>)
@@ -736,18 +794,20 @@ const RenderTable = (props) => {
 };
 
 
-
 const RenderInlineButtonsForRow = (props) => {
     console.log(420123, props)
     const { lang, proxy, auth, functions } = useSelector(state => state);
-    const { buttons, row, handleViewDetail, redirectToInputPUT, handleDelete } = props
+    const { openTab, renderDateTimeByFormat } = functions
+    const { children, buttons, row, handleViewDetail, redirectToInputPUT, handleDelete } = props
     const orderedKeys = ['approve', 'unapprove', 'detail', 'update', 'delete']; // Thứ tự mong muốn
     const dispatch = useDispatch();
-
+    const { project_id, version_id, id_str, url } = useParams();
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
     const _token = localStorage.getItem("_token");
     const [dataPrivileges, setDataPrivileges] = useState([]);
+    console.log(children)
+
     useEffect(() => {
 
         fetch(`${proxy()}/privileges/accounts`, {
@@ -761,24 +821,26 @@ const RenderInlineButtonsForRow = (props) => {
 
                 if (success && data.length > 0) {
                     const dataUser = data.find(item => item.username === _user.username);
-                    console.log(760, _user)
-                    console.log(dataUser)
+                    //console.log(760, _user)
+                    //console.log(dataUser)
                     setDataPrivileges(dataUser?.privileges)
                 }
             })
 
     }, [])
+
     const dataTable_id = props.props.source.tables[0].id
+
     const dataCheckAdministrator = {
         "read": true,
         "write": true,
         "modify": true,
         "purge": true,
     }
+
     const dataCheck = _user.role !== "uad" ? dataPrivileges.find(item => item.table_id === dataTable_id) : dataCheckAdministrator;
 
-    console.log(dataCheck)
-
+    //console.log(dataCheck)
 
     const handleApprove = async (record, dataApi) => {
         const urlApprove = dataApi.api.url;
@@ -797,7 +859,7 @@ const RenderInlineButtonsForRow = (props) => {
                     .then(res => res.json())
                     .then(res => {
                         const { data, success, content } = res;
-                        ////console.log(res)
+                        //////console.log(res)
                         if (success) {
 
 
@@ -806,20 +868,20 @@ const RenderInlineButtonsForRow = (props) => {
                     })
             })
             const { success, data } = response;
-            ////console.log(54, response)
+            //////console.log(54, response)
             if (success) {
                 const { params } = data;
                 const stringifiedParams = params.map(param => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                ////console.log(962, stringifiedParams)
+                //////console.log(962, stringifiedParams)
 
 
                 const bodyApprove = {
                     [fomular_approve]: true
                 }
-                ////console.log(bodyApprove)
+                //////console.log(bodyApprove)
                 fetch(`${proxy()}${urlApprove}/${stringifiedParams}`, {
                     method: "PUT",
                     headers: {
@@ -830,7 +892,7 @@ const RenderInlineButtonsForRow = (props) => {
                 })
                     .then(res => res.json())
                     .then(res => {
-                        ////console.log(res)
+                        //////console.log(res)
                         const { success } = res
                         if (success) {
                             dispatch({
@@ -860,7 +922,7 @@ const RenderInlineButtonsForRow = (props) => {
     const handleUnApprove = async (record, dataApi) => {
         const urlUnApprove = dataApi.api.url;
         const fomular_unapprove = dataApi.field.fomular_alias
-        ////console.log(fomular_unapprove)
+        //////console.log(fomular_unapprove)
         if (urlUnApprove != undefined) {
 
             const id_str = urlUnApprove.split('/')[2]
@@ -873,24 +935,24 @@ const RenderInlineButtonsForRow = (props) => {
                     .then(res => res.json())
                     .then(res => {
                         const { data, success, content } = res;
-                        ////console.log(res)
+                        //////console.log(res)
                         if (success) { }
                         resolve(res)
                     })
             })
             const { success, data } = response;
-            ////console.log(54, response)
+            //////console.log(54, response)
             if (success) {
                 const { params } = data;
                 const stringifiedParams = params.map(param => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                ////console.log(962, stringifiedParams)
+                //////console.log(962, stringifiedParams)
                 const bodyUnApprove = {
                     [fomular_unapprove]: false
                 }
-                ////console.log(bodyUnApprove)
+                //////console.log(bodyUnApprove)
                 fetch(`${proxy()}${urlUnApprove}/${stringifiedParams}`, {
                     method: "PUT",
                     headers: {
@@ -901,7 +963,7 @@ const RenderInlineButtonsForRow = (props) => {
                 })
                     .then(res => res.json())
                     .then(res => {
-                        ////console.log(res)
+                        //////console.log(res)
                         if (success) {
 
                             dispatch({
@@ -927,6 +989,57 @@ const RenderInlineButtonsForRow = (props) => {
         } else {
         }
     }
+
+    const handleTable_Param = async (row, pageId, params) => {
+        console.log(row)
+        console.log(pageId)
+        console.log(params)
+        const fomularAlias = params.map(item => item.fomular_alias);
+        const values = fomularAlias.map((alias) => row[alias]);
+
+        openTab(`/page/${pageId}/${values}`)
+
+    }
+
+    const renderAdditionalButton = (children) => {
+
+
+
+        // Đây là nút bổ sung bạn muốn thêm
+        return (
+
+            <div class="icon-table-line">
+                <i className="fa fa-link size-24 mr-1  pointer icon-view" onClick={() => handleTable_Param(row, props)} title={lang["viewdetail"]}></i>
+            </div>
+
+        );
+    };
+    const mappedButtons = children.map((child) => {
+        const { id, props: buttonProps } = child;
+
+        // Trích xuất các thuộc tính của nút từ buttonProps
+        const { to, icon, style } = buttonProps;
+
+        // Trích xuất các thuộc tính của `to` từ `to` object
+        const { page_id, page_title, params } = to;
+
+        // Trích xuất màu sắc từ `style` object
+        const { color, backgroundColor } = style;
+
+        return (
+            <>
+
+                <div class="icon-table-line">
+                    <i className="fa fa-link size-24 mr-1  pointer icon-link" key={id} onClick={() => handleTable_Param(row, page_id, params)} title={lang["viewdetail"]}></i>
+                </div>
+            </>
+
+        );
+    });
+
+
+    // mappedButtons sẽ là một mảng các phần tử JSX của nút
+
     const fomularAlias = props.buttons.approve.field.fomular_alias;
     const shouldHideIconApprove = (row) => {
         // Kiểm tra điều kiện và trả về true nếu cần ẩn icon
@@ -937,69 +1050,80 @@ const RenderInlineButtonsForRow = (props) => {
         // Kiểm tra điều kiện và trả về true nếu cần ẩn icon
         return fomularAlias && row[fomularAlias] === false;
     };
-    return orderedKeys.filter(key => buttons[key] && buttons[key].state).map(key => {
-        switch (key) {
-            case 'approve':
-                return <div class="icon-table-line">
+
+    return (
+        <div class="icon-table">
+            {mappedButtons}
+
+            {orderedKeys.filter(key => buttons[key] && buttons[key].state && buttons[key].api !== null).map(key => {
+
+                switch (key) {
+                    case 'approve':
+                        return <div class="icon-table-line">
+
+                            {shouldHideIconApprove(row) ?
+                                <i className="fa fa-check-circle-o size-24 pointer icon-check icon-disable" key={key}></i>
+                                : (
+                                    <i
+                                        className="fa fa-check-circle-o size-24 pointer icon-check"
+                                        onClick={() => handleApprove(row, props.buttons.approve)}
+                                        title={lang["updatestatus"]}
+                                    ></i>
+                                )}
+                        </div>
+                    case 'unapprove':
+                        return (
+                            <div className="icon-table-line">
+                                {shouldHideIconUnApprove(row) ?
+                                    <i className="fa fa-times-circle-o size-24 pointer icon-close icon-disable" key={key}></i>
+                                    : (
+                                        <i className="fa fa-times-circle-o size-24 pointer icon-close" key={key} onClick={() => handleUnApprove(row, props.buttons.unapprove)} title={lang["updatestatus"]}></i>
+                                    )
+                                }
+                            </div>
+                        );
+
+                    case 'detail':
+                        return <div class="icon-table-line">
+                            <i className="fa fa-eye size-24 mr-1  pointer icon-view" key={key} onClick={() => handleViewDetail(row, props.buttons.detail.api.url)} title={lang["viewdetail"]}></i>
 
 
-                    {shouldHideIconApprove(row) ?
-                        <i className="fa fa-check-circle-o size-24 pointer icon-check icon-disable" key={key}></i>
-                        : (
-                            <i
-                                className="fa fa-check-circle-o size-24 pointer icon-check"
-                                onClick={() => handleApprove(row, props.buttons.approve)}
-                                title={lang["updatestatus"]}
-                            ></i>
-                        )}
-                </div>
-            case 'unapprove':
-                return (
-                    <div className="icon-table-line">
-                        {shouldHideIconUnApprove(row) ?
-                            <i className="fa fa-times-circle-o size-24 pointer icon-close icon-disable" key={key}></i>
-                            : (
-                                <i className="fa fa-times-circle-o size-24 pointer icon-close" key={key} onClick={() => handleUnApprove(row, props.buttons.unapprove)} title={lang["updatestatus"]}></i>
-                            )
-                        }
-                    </div>
-                );
+                        </div>
 
 
-            case 'detail':
-                return <div class="icon-table-line">
-                    <i className="fa fa-eye size-24 mr-1  pointer icon-view" key={key} onClick={() => handleViewDetail(row, props.buttons.detail.api.url)} title={lang["viewdetail"]}></i>
-                </div>
 
-            case 'update':
-                return (
-                    dataCheck && dataCheck.modify ? <div class="icon-table-line">
-                        <i className="fa fa-edit size-24 pointer  icon-edit" key={key} onClick={() => redirectToInputPUT(row, props.buttons.update.api.url)} title={lang["edit"]}></i>
-                    </div> : null
-                )
+                    case 'update':
+                        return (
+                            dataCheck && dataCheck.modify ? <div class="icon-table-line">
+                                <i className="fa fa-edit size-24 pointer  icon-edit" key={key} onClick={() => redirectToInputPUT(row, props.buttons.update.api.url)} title={lang["edit"]}></i>
+                            </div> : null
+                        )
 
-            case 'delete':
-                return (
-                    dataCheck && dataCheck.purge ? <div class="icon-table-line">
-                        <i className="fa fa-trash-o size-24 pointer icon-delete" key={key} onClick={() => handleDelete(row, props.buttons.delete.api.url)} title={lang["delete"]}></i>
-                    </div> : null
-                )
+                    case 'delete':
+                        return (
+                            dataCheck && dataCheck.purge ? <div class="icon-table-line">
+                                <i className="fa fa-trash-o size-24 pointer icon-delete" key={key} onClick={() => handleDelete(row, props.buttons.delete.api.url)} title={lang["delete"]}></i>
+                            </div> : null
+                        )
 
-            default:
-                return <button key={key}>{key}</button>;
-        }
-    });
+                    default:
+                        return <button key={key}>{key}</button>;
+                }
+            })}
+        </div>
+    )
+
 };
 
 const RenderChart = (props) => {
-    ////console.log(730, props.props)
+    //////console.log(730, props.props)
     const url = props.props.api
-    ////console.log(url.url)
+    //////console.log(url.url)
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const _token = localStorage.getItem("_token");
     const [apiDataStatis, setApiDataStatis] = useState({})
     const [height, setHeight] = useState(350)
-    ////console.log(675, height)
+    //////console.log(675, height)
     useEffect(() => {
         callApiStatistic()
 
@@ -1019,7 +1143,7 @@ const RenderChart = (props) => {
             .then((res) => res.json())
             .then((res) => {
                 const { success, content, statistics } = res;
-                ////console.log(res)
+                //////console.log(res)
                 if (success) {
                     setApiDataStatis(statistics)
 
@@ -1027,7 +1151,7 @@ const RenderChart = (props) => {
             });
     };
 
-    ////console.log(apiDataStatis)
+    //////console.log(apiDataStatis)
 
     const state = {
         series: [{
@@ -1042,7 +1166,7 @@ const RenderChart = (props) => {
                 },
                 events: {
                     click: function (chart, w, e) {
-                        // ////console.log(chart, w, e)
+                        // //////console.log(chart, w, e)
                     }
                 }
             },
@@ -1053,7 +1177,7 @@ const RenderChart = (props) => {
                     columnWidth: '24px',
                     barHeight: "24px",
                     distributed: true,
-                    
+
                 }
             },
             dataLabels: {
@@ -1140,7 +1264,7 @@ const RenderChart = (props) => {
     const chartData = useMemo(() => transformDataForChart(apiDataStatis), [apiDataStatis]);
 
 
-    ////console.log(chartData)
+    //////console.log(chartData)
 
     return (
         <div>

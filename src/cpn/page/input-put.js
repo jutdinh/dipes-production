@@ -33,7 +33,8 @@ console.log(fields)
     const myParam = urlParams.get('myParam');
 
     const goToHomePage = () => {
-        navigate(`/page/${url}`);
+        // navigate(`/page/${url}`);
+        navigate(-1)
     };
 
 

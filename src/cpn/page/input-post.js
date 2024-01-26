@@ -28,7 +28,8 @@ export default () => {
 
     console.log(id_str); 
     const goToHomePage = () => {
-        navigate(`/page/${url}`);
+        // navigate(`/page/${url}`);
+        navigate(-1)
     };
     const inputs = document.querySelectorAll('input[type="number"], input[type="text"], textarea');
     inputs.forEach(input => {

@@ -224,9 +224,7 @@ export default () => {
                            <span>{lang["log.title"]}</span>
                         </NavLink>
                      </li>
-
                   </>
-
                ) : null}
                {user.role !== "uad" ? (
                   <>

@@ -1591,7 +1591,9 @@ table tr {
     display: flex;
     justify-content: center;
 }
-
+.rdw-option-active {
+    box-shadow: 1px 1px 1px 1px #5F5254 inset !important;
+}
 select:required:invalid {
     color: #666;
   }
@@ -1687,6 +1689,10 @@ select:required:invalid {
 
 .icon-view {
     color: #34a83e
+}
+
+.icon-link {
+    color: #31cce0
 }
 
 .icon-delete {

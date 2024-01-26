@@ -451,6 +451,15 @@ const dateGenerator = (dateString) => {
     return `${formatDateNumber(date.getDate())}/${formatDateNumber(date.getMonth() + 1)}/${date.getFullYear()} lúc ${formatDateNumber(date.getHours())}:${formatDateNumber(date.getMinutes())}`
 }
 
+function getAllParamsAfterPageId(currentURL, pageId) {
+    const parts = currentURL.split('/');
+    const pageIdIndex = parts.indexOf(pageId); // Tìm vị trí của "page_Id" trong mảng
+    if (pageIdIndex !== -1 && pageIdIndex < parts.length - 1) {
+        const params = parts.slice(pageIdIndex + 1); // Lấy tất cả các phần tử sau "page_Id"
+        return params;
+    }
+    return [];
+}
 
 function getTokenExpirationDate(token) {
     if (typeof token !== 'string' || !token.trim()) {
@@ -466,7 +475,7 @@ function getTokenExpirationDate(token) {
 
         const date = new Date(0);
         date.setUTCSeconds(decoded.exp);
-        return date;
+        return decoded.exp;
     } catch (error) {
         // console.error('Lỗi khi giải mã token:', error);
         return null;
@@ -1174,7 +1183,7 @@ export default {
     uid, isTokenExpired, refreshToken, getTokenExpirationDate, removeDuplicate, titleCase, openTab, dateGenerator,
     renderDateTimeByFormat, showApiResponseMessage, formatNumberWithCommas, formatNumber, generateUniqueColors,
     formatDate, formatDateCase, formatDateMessage, translateDateToVietnamese, translateDateTimeToVietnamese,
-    isEmpty, isImageFormat, isVideoFormat, removeFileExtension, resizeImage,
+    isEmpty, isImageFormat, isVideoFormat, removeFileExtension, resizeImage, getAllParamsAfterPageId,
     resizeImageToFit, renameDuplicateFiles, arraysAreEqual, getBrowser, detectBrowser, shortenFileName,
     isPdfFormat, isExcelFormat, determineFileType, isZipFormat, renderData, findGetApi, findPostApi, findPageById, findPutApi, findRowsPerPage,
     getNamePage, findDeleteApi, extractValuesFromData, findSearchApi, findExportApi, findDetailApi, findComponentWithDeleteApiUrl, findPropsNameAddByUrl,

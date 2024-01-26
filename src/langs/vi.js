@@ -424,7 +424,7 @@ export default {
     "Only image, video, PDF, and Excel files are accepted": "Chỉ chấp nhận các tệp hình ảnh, video, Pdf và Excel",
     "Please upload an image file.": "Vui lòng tải lên một tệp hình ảnh.",
     "Notification": "Thông báo",
-    "expired": "Phiên hết hạn. Vui lòng đăng nhập lại để tiếp tục.",
+    "expired": "Phiên đăng nhập của bạn hết hạn, vui lòng đăng nhập lại!",
     "withdraw": "Thông tin chỉ có thể được cập nhật trong vòng 24 giờ kể từ khi gửi.",
     "Drag and drop images here and click": "Kéo thả ảnh vào đây hoặc bấm để chọn ảnh",
     "case image": "Hình ảnh",
@@ -441,6 +441,7 @@ export default {
     "success.update": "Cập nhật thành công",
     "no privileges": "Không có quyền",
     "username not available": "Tên đăng nhập không khả dụng",
-    "log.login": "Lịch sử đăng nhập"
+    "log.login": "Lịch sử đăng nhập",
+    "account disabled": "Tài khoản của bạn đã bị vô hiệu"
     
 }

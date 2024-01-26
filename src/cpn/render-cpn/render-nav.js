@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHome, faIcons, faLemon, faLocation, faMagnifyingGlass, faPaperPlane, faPlane, faRocket, faSeedling, faStar, faUser } from "@fortawesome/free-solid-svg-icons"
 
 const NavbarItem = ({ item, level }) => {
-    // //console.log(item)
+    // ////console.log(item)
 
     if (item.is_hidden) {
         return null;

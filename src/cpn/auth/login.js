@@ -1,13 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from "react-redux"
 import Swal from 'sweetalert2';
+import label from '../inputs/label';
 
 export default () => {
     const { lang, proxy, socket, pages } = useSelector(state => state);
     const [auth, setAuth] = useState({})
     const [rememberMe, setRememberMe] = useState(false);
     const [authError, setAuthError] = useState(null);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const myParam = urlParams.get('ex');
+
+    console.log(myParam)
     const md5 = require('md5');
+    const [lable, setLable] = useState(false);
     // const password = '123@#123';
     // const hashedPassword = md5(password);
     // console.log(`Password MD5: ${hashedPassword}`);
@@ -16,7 +23,7 @@ export default () => {
             submit(e)
         }
     }
-   
+
     const check = pages[0]?.page_id
     const [statusActive, setStatusActive] = useState(false);
 
@@ -33,8 +40,35 @@ export default () => {
         }
     }, []);
 
+    const [hasCheckedToken, setHasCheckedToken] = useState(false); // Sử dụng biến trạng thái để kiểm tra đã kiểm tra token hay chưa
+
+    useEffect(() => {
+        const _token = localStorage.getItem("_token");
+        console.log(_token)
+        if (_token !== null && !hasCheckedToken) { // Kiểm tra token và biến trạng thái
+            fetch(`${proxy()}/auth/token/check`, {
+                headers: {
+                    Authorization: _token
+                }
+            })
+                .then(res => res.json())
+                .then(resp => {
+                    const { success } = resp;
+                    console.log(resp)
+                    if (!success) {
+                        setLable(true)
+                    }
+                });
+
+            // Đánh dấu rằng đã kiểm tra token
+            setHasCheckedToken(true);
+        }
+        else { setLable(false) }
+    }, [hasCheckedToken]);
+
     const submit = (e) => {
         e.preventDefault()
+        setLable(false)
         const hashedPassword = md5(auth.password || '');
         const requestBody = {
             account: {
@@ -114,8 +148,10 @@ export default () => {
                 // setAuthError(content);
                 if (content === "Wrong customer account.") {
                     setAuthError(lang["wrong account"])
-                }else if (content === "Một số trường có dữ liệu không hợp lệ") {
+                } else if (content === "Một số trường có dữ liệu không hợp lệ") {
                     setAuthError(lang["wrong info"])
+                }else if (content === "Tài khoản của bạn đã bị vô hiệu"){
+                    setAuthError(lang["account disabled"])
                 }
                 else {
                     setAuthError(content);
@@ -143,6 +179,7 @@ export default () => {
                                                 </div>
                                                 <div class="col-md-8" style={{ height: "25px" }}>
                                                     {authError && <span class="error-message error-login">{authError}</span>}
+                                                    {!authError && lable && myParam !== null && <span style={{ fontSize: "14px", fontFamily: "sans-serif" }} class="error-message error-login">{lang["expired"]}</span>}
                                                 </div>
                                             </div>
                                         </div>

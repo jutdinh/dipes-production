@@ -28,10 +28,16 @@ export default () => {
     const _user = JSON.parse(stringifiedUser) || {}
     //console.log(29, pages)
     const { formatNumberWithCommas } = functions
+    const urlParams = new URLSearchParams(window.location.search);
 
     const { openTab, renderDateTimeByFormat } = functions
     const _token = localStorage.getItem("_token");
-    const { project_id, version_id, url } = useParams();
+    const { project_id, version_id, url, param } = useParams();
+    
+    const currentURL = window.location.href;
+
+    const params = functions.getAllParamsAfterPageId(currentURL, url);
+    console.log(params);
     let navigate = useNavigate();
     const [dataTables, setDataTables] = useState([]);
     const [dataTable_id, setDataTableID] = useState(null);
@@ -46,10 +52,6 @@ export default () => {
     const [loadingResult, setLoadingResult] = useState(false);
     const [uploadedJson, setUploadedJson] = useState(null);
     ////console.log(46, apiData)
-    const currentURL = window.location.href;
-
-    const params = functions.getAllParamsAfterPageId(currentURL, url);
-    console.log(params);
 
     const [apiDataName, setApiDataName] = useState([])
     const [dataStatis, setDataStatis] = useState([])
@@ -144,7 +146,7 @@ export default () => {
         if (pages && pages.length > 0) {
             const result = functions.findPageById(pages, `${url}`);
 
-            console.log(141, result)
+            ////console.log(141, result)
             if (result.component.length > 0) {
                 setDataUi(result.component);
                 setPage(result);
@@ -875,55 +877,6 @@ export default () => {
             })
         }
     }
-
-
-
-    const handleTable_Param = async (record, dataUrl) => {
-        console.log(dataUrl)
-        const api_detail = functions.findDetailApi(page)
-        if (api_detail != undefined) {
-            const id_str = dataUrl.split('/')[2]
-
-            const response = await new Promise((resolve, reject) => {
-                fetch(`${proxy()}/apis/api/${id_str}/input_info`, {
-                    headers: {
-                        Authorization: _token
-                    }
-                })
-                    .then(res => res.json())
-                    .then(res => {
-                        const { data, success, content } = res;
-                        if (success) {
-                            // ////console.log("succcess", data)
-                            setDataTables(data.tables)
-                            setDataFields(data.body)
-                        }
-                        resolve(res)
-                    })
-            })
-            const { success, data } = response;
-            if (success) {
-                const { params } = data;
-                const stringifiedParams = params.map(param => {
-                    const { fomular_alias } = param
-                    return record[fomular_alias]
-                }).join('/')
-
-                openTab(`/page/${url}/detail/${id_str}/${stringifiedParams}`)
-
-            }
-        } else {
-            Swal.fire({
-                title: lang["faild"],
-                text: lang["not found"],
-                icon: "error",
-                showConfirmButton: false,
-                timer: 2000,
-            })
-        }
-    }
-
-
     const deleteData = (data) => {
         let rawParams = page.apis.delete;
         // const keys = Object.keys(data);
@@ -2453,7 +2406,6 @@ export default () => {
                     } */}
                 </div>
                 < RenderUI
-                    page={page}
                     component={dataUi}
                     apiData={apiData}
                     redirectToInput={redirectToInput}
@@ -2462,7 +2414,6 @@ export default () => {
                     handleSearchClick={handleSearchClick}
                     exportToCSV={exportToCSV}
                     handleViewDetail={handleViewDetail}
-                    handleTable_Param={handleTable_Param}
                     exportFile={exportFile}
                     redirectToImportData={redirectToImportData}
                     dataCheck={dataCheck}

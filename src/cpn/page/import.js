@@ -72,7 +72,8 @@ export default () => {
     const location = useLocation();
 
     const goToHomePage = () => {
-        navigate(`/page/${url}`);
+        // navigate(`/page/${url}`);
+        navigate(-1)
     };
     console.log(id)
     useEffect(() => {
