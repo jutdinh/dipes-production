@@ -844,6 +844,19 @@ img[class="scaled-hover-target"] {
 .margin-bottom-0 {
     margin-bottom: 0;
 }
+.btn-search-statis{
+    color: #e9e1e1;
+    background-color: #1e75cb;
+
+}
+.block-statis {
+    background-color:#dbdbdb ;
+    border-radius: 4px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 10px 20px 10px 20px
+}
+
 
 .add-case {
     padding-left: 15px;

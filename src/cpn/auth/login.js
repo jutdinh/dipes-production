@@ -25,6 +25,7 @@ export default () => {
     }
 
     const check = pages[0]?.page_id
+    console.log(pages)
     const [statusActive, setStatusActive] = useState(false);
 
     useEffect(() => {

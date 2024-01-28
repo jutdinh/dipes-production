@@ -138,14 +138,14 @@ export default () => {
 
 
     const yourComponentArray = data_cpn.data[1]?.children.length > 0 ? data_cpn.data[1]?.children[0]?.component : data_cpn.data[1]?.component
-    ////console.log(yourComponentArray)
+    console.log(pages)
 
     useEffect(() => {
         if (pages && pages.length > 0) {
             const result = functions.findPageById(pages, `${url}`);
 
             console.log(141, result)
-            if (result.component.length > 0) {
+            if (result && result.component.length > 0) {
                 setDataUi(result.component);
                 setPage(result);
             } else {
@@ -2452,21 +2452,25 @@ export default () => {
                     )
                     } */}
                 </div>
-                < RenderUI
-                    page={page}
-                    component={dataUi}
-                    apiData={apiData}
-                    redirectToInput={redirectToInput}
-                    redirectToInputPUT={redirectToInputPUT}
-                    handleDelete={handleDelete}
-                    handleSearchClick={handleSearchClick}
-                    exportToCSV={exportToCSV}
-                    handleViewDetail={handleViewDetail}
-                    handleTable_Param={handleTable_Param}
-                    exportFile={exportFile}
-                    redirectToImportData={redirectToImportData}
-                    dataCheck={dataCheck}
-                />
+                
+              
+                    < RenderUI
+                        page={page}
+                        component={dataUi}
+                        apiData={apiData}
+                        redirectToInput={redirectToInput}
+                        redirectToInputPUT={redirectToInputPUT}
+                        handleDelete={handleDelete}
+                        handleSearchClick={handleSearchClick}
+                        exportToCSV={exportToCSV}
+                        handleViewDetail={handleViewDetail}
+                        handleTable_Param={handleTable_Param}
+                        exportFile={exportFile}
+                        redirectToImportData={redirectToImportData}
+                        dataCheck={dataCheck}
+                    />
+                
+
             </div >
         </div >
     )

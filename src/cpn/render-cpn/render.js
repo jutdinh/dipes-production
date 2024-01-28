@@ -109,6 +109,13 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
                         <RenderChart props={props} />
                     </>
                 );
+            case 'c_chart':
+                return (
+                    <>
+                        <RenderChart props={props} />
+                    </>
+                );
+
 
 
             default:
@@ -122,10 +129,10 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
             <div class="col-md-12" >
                 <div class="white_shd full">
                     <div class="full graph_head_cus d-flex">
-                        {component?.map((comp) => (
+                        {/* {component?.map((comp) => (
                             <div key={comp.id}>
                             </div>
-                        ))}
+                        ))} */}
                     </div>
                     <div class="full inner_elements">
                         <div class="row" >
@@ -628,7 +635,7 @@ const RenderTable = (props) => {
                     // setApiDataName(fields);
                     // setDataStatis(statisticValues);
                     // setLoaded(true);
-              
+
                     if (count !== undefined) {
                         setCurrentCount(count);
                         setSumerize(count);
@@ -1116,34 +1123,48 @@ const RenderInlineButtonsForRow = (props) => {
 };
 
 const RenderChart = (props) => {
-    //////console.log(730, props.props)
+    console.log(730, props.props)
     const url = props.props.api
-    //////console.log(url.url)
+    const paramsSearch = props.props.params
+    console.log(paramsSearch)
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const _token = localStorage.getItem("_token");
     const [apiDataStatis, setApiDataStatis] = useState({})
     const [height, setHeight] = useState(350)
-    //////console.log(675, height)
+    console.log(apiDataStatis)
     useEffect(() => {
         callApiStatistic()
 
     }, []);
 
+///search data
+const [parentFormData, setParentFormData] = useState({});
+console.log("data", parentFormData)
+const handleFormDataChange = (newFormData) => {
+    setParentFormData(newFormData);
+};
 
-
+const handleSubmitSearch = (newFormData) => {
+    console.log("Đã nhấn nút sêarc")
+    callApiStatistic()
+};
 
     const callApiStatistic = () => {
+        const statisBody = {
+            criteria: parentFormData
+        }
         fetch(`${proxy()}${url.url}`, {
-            method: "GET",
+            method: "POST",
             headers: {
                 "content-type": "application/json",
                 Authorization: _token,
             },
+            body: JSON.stringify(statisBody)
         })
             .then((res) => res.json())
             .then((res) => {
                 const { success, content, statistics } = res;
-                //////console.log(res)
+                console.log(1163,res)
                 if (success) {
                     setApiDataStatis(statistics)
 
@@ -1185,7 +1206,7 @@ const RenderChart = (props) => {
                 fontSize: '10px',
             },
             legend: {
-                show: false, // Hiển thị chú thích
+                show: true, // Hiển thị chú thích
                 position: 'bottom', // Vị trí của chú thích (có thể là 'top', 'bottom', 'right', 'left')
                 horizontalAlign: 'center', // Canh lề ngang của chú thích (có thể là 'left', 'center', 'right')
                 fontSize: '10px', // Kích thước font chữ
@@ -1262,19 +1283,76 @@ const RenderChart = (props) => {
         }
     };
     const chartData = useMemo(() => transformDataForChart(apiDataStatis), [apiDataStatis]);
-
-
     //////console.log(chartData)
 
     return (
         <div>
+            <h5>{props.props.content}</h5>
 
-
+            {paramsSearch && paramsSearch.length > 0 &&  <DynamicForm  data={paramsSearch} onFormDataChange={handleFormDataChange} onFormSubmit={handleSubmitSearch}/> }
             <div id="chart" style={{ width: '100%' }}>
                 <Chart options={chartData.options} series={chartData.series} type="bar" height={height} />
             </div>
         </div>
     );
 };
+
+
+
+const DynamicForm = ({ data, onFormDataChange, onFormSubmit  }) => {
+
+
+    const [formData, setFormData] = useState({});
+console.log(formData)
+    const handleInputChange = (fieldAlias, value) => {
+        const newFormData = { ...formData, [fieldAlias]: value };
+        setFormData(newFormData);
+        onFormDataChange(newFormData); 
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        console.log(formData); // Xử lý dữ liệu form ở đây
+        onFormSubmit(formData)
+    };
+
+    const renderInput = (field) => {
+        switch (field.DATATYPE) {
+            case 'TEXT':
+                return <input type="text" className="form-control" placeholder={field.field_name} onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
+            case 'INT UNSIGNED':
+                return <input type="number" className="form-control" placeholder={field.field_name} min="0" onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
+            case 'BOOL':
+                return (
+                    <input
+                        type={ 'checkbox'}
+                        className="form-control"
+                        placeholder={field.field_name}
+                        onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)}
+                    />
+                );
+            default:
+                return <input type="text" className="form-control" />;
+        }
+    };
+    
+    return (
+        <div className="row block-statis">
+            {data.map((field, index) => (
+                <div className="col-md-4" key={index}>
+                    <div className="form-group">
+                        <label class="font-weight-bold">{field.field_name}</label>
+                        {renderInput(field)}
+                    </div>
+                </div>
+            ))}
+            <div className="col-md-12 text-right">
+                <button onClick={handleSubmit} className="btn btn-search-statis mr-3"><i class="fa fa-search mr-1 icon-search" />Tìm Kiếm</button>
+            </div>
+        </div>
+    );
+};
+
+
 
 export default RenderComponent;
