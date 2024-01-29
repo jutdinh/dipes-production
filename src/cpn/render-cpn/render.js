@@ -1122,19 +1122,28 @@ const RenderChart = (props) => {
 
     ///search data
     const [parentFormData, setParentFormData] = useState({});
-    //console.log("data", parentFormData)
+    console.log("data", parentFormData)
     const handleFormDataChange = (newFormData) => {
         setParentFormData(newFormData);
     };
 
     const handleSubmitSearch = (newFormData) => {
+        console.log(1131, newFormData)
         //console.log("Đã nhấn nút sêarc")
         callApiStatistic()
     };
 
-    const callApiStatistic = () => {
+    const handleResetSearchValue = (newFormData) => {
+        console.log(1137, newFormData)
+        setParentFormData({})
+        callApiStatistic({})
+    };
+
+
+
+    const callApiStatistic = (formData = parentFormData) => {
         const statisBody = {
-            criteria: parentFormData
+            criterias: formData
         }
         fetch(`${proxy()}${url.url}`, {
             method: "POST",
@@ -1209,31 +1218,31 @@ const RenderChart = (props) => {
                 enabled: true,
                 theme: 'light', // hoặc 'light'
                 style: {
-                  fontSize: '12px',
-                  fontFamily: 'UTM avo, sans-serif',
+                    fontSize: '12px',
+                    fontFamily: 'UTM avo, sans-serif',
                 },
                 x: {
-                  show: true,
-                  format: 'dd MMM', // Định dạng ngày tháng nếu dữ liệu của bạn có ngày tháng
+                    show: true,
+                    format: 'dd MMM', // Định dạng ngày tháng nếu dữ liệu của bạn có ngày tháng
                 },
                 y: {
                     formatter: (value) => value.toString(), // Thêm đơn vị vào giá trị
                 },
                 marker: {
-                  show: true, // Hiển thị marker trên tooltip
+                    show: true, // Hiển thị marker trên tooltip
                 },
-                custom: function({ series, seriesIndex, dataPointIndex, w }) {
+                custom: function ({ series, seriesIndex, dataPointIndex, w }) {
                     // Lấy nhãn và giá trị cho điểm dữ liệu hiện tại
                     const label = w.globals.labels[dataPointIndex][0];
                     const value = series[seriesIndex][dataPointIndex];
-                
+
                     // Tạo tooltip mà không có dấu phẩy sau mã
                     return `<div class="custom-tooltip-chart">
                       <span>${label}: ${value}</span>
                     </div>`;
-                  }
-              },
-              
+                }
+            },
+
             // xaxis: {
             //     categories: [
             //         [''],
@@ -1246,8 +1255,8 @@ const RenderChart = (props) => {
             //         }
             //     }
             // }
-            
-        
+
+
         },
     };
 
@@ -1299,26 +1308,52 @@ const RenderChart = (props) => {
         <div>
             <h5>{props.props.content}</h5>
 
-            {paramsSearch && paramsSearch.length > 0 && <DynamicForm data={paramsSearch} onFormDataChange={handleFormDataChange} onFormSubmit={handleSubmitSearch} />}
+            {paramsSearch && paramsSearch.length > 0 && <DynamicForm data={paramsSearch} onFormDataChange={handleFormDataChange} onFormSubmit={handleSubmitSearch} onFormReset={handleResetSearchValue} />}
             <div id="chart" style={{ width: '100%' }}>
                 <Chart options={chartData.options} series={chartData.series} type="bar" height={height} />
             </div>
+            <Dropdown />
         </div>
     );
 };
-
-
-
-const DynamicForm = ({ data, onFormDataChange, onFormSubmit }) => {
-    //console.log(data)
+function Dropdown() {
+    const [isOpen, setIsOpen] = useState(false);
+  
+    const toggleDropdown = () => {
+      setIsOpen(!isOpen);
+    };
+  
+    return (
+      <div className={`dropdown ${isOpen ? 'open' : ''}`}>
+        <button className="dropdown-btn" onClick={toggleDropdown}>Toggle Dropdown</button>
+        <ul className="dropdown-menu">
+          <li>Item 1</li>
+          <li>Item 2</li>
+          <li>Item 3</li>
+        </ul>
+      </div>
+    );
+  }
+const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
+    console.log(data)
 
     const [formData, setFormData] = useState({});
     //console.log(formData)
+
     const handleInputChange = (fieldAlias, value) => {
-        const newFormData = { ...formData, [fieldAlias]: value };
+        let processedValue;
+        if (value === "true") {
+            processedValue = true;
+        } else if (value === "false") {
+            processedValue = false;
+        } else {
+            processedValue = value;
+        }
+        const newFormData = { ...formData, [fieldAlias]: processedValue };
         setFormData(newFormData);
         onFormDataChange(newFormData);
     };
+
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -1327,15 +1362,19 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit }) => {
     };
 
     const handleResetSearchValue = (event) => {
+        event.preventDefault();
         const newFormData = {};
         setFormData(newFormData);
         onFormDataChange(newFormData);
+        onFormReset(newFormData)
+
     };
 
     const renderInput = (field) => {
-
+        console.log(field)
         const inputValue = formData[field.fomular_alias] || "";
-
+        console.log(inputValue)
+        console.log(inputValue.toString())
         const valueBool = [
             {
                 id: 0,
@@ -1348,22 +1387,23 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit }) => {
                 value: false
             },
         ]
+        console.log(valueBool)
         switch (field.DATATYPE) {
 
             case 'TEXT':
-                return <input type="text" className="form-control" placeholder={field.field_name} value={inputValue } onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
+                return <input type="text" className="form-control" placeholder={field.field_name} value={inputValue} onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
 
-            case 'INT UNSIGNED' || 'BIG INT' || 'INT UNSIGNED' || 'BIG INT UNSIGNED' :
-                return <input type="number" className="form-control" placeholder={field.field_name} value={inputValue } min="0" onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
+            case 'INT UNSIGNED' || 'BIG INT' || 'INT UNSIGNED' || 'BIG INT UNSIGNED':
+                return <input type="number" className="form-control" placeholder={field.field_name} value={inputValue} min="0" onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
 
             case 'BOOL':
                 return (
                     <select
-                    value={inputValue }
-                        onChange={(e) => handleInputChange(field.fomular_alias, e.target.value === "true")}
+                        value={inputValue === true ? 'true' :  'false' }
+                        onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)}
                         className="form-control"
                     >
-                        <option value="" disabled selected>Choose</option>
+                        <option value="" disabled>Choose</option>
                         {valueBool.map((val, index) => (
                             <option key={index} value={val.value.toString()}>{val.label}</option>
                         ))}
@@ -1371,7 +1411,7 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit }) => {
                 );
 
             default:
-                return <input type="text" value={inputValue } className="form-control" onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)}  />;
+                return <input type="text" value={inputValue} className="form-control" onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
         }
     };
 
@@ -1386,7 +1426,7 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit }) => {
                 </div>
             ))}
             <div className="col-md-12 text-right">
-            <button onClick={handleResetSearchValue} className="btn btn-secondary mr-3"><i class="fa fa-history mr-1 icon-search" />Làm mới</button>
+                <button onClick={handleResetSearchValue} className="btn btn-secondary mr-3"><i class="fa fa-history mr-1 icon-search" />Làm mới</button>
                 <button onClick={handleSubmit} className="btn btn-primary mr-3"><i class="fa fa-search mr-1 icon-search" />Tìm Kiếm</button>
             </div>
         </div>

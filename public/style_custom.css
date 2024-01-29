@@ -2171,7 +2171,7 @@ select:required:invalid {
 }
 
 .size-18 {
-    font-size: 18px;
+    font-size: 18px !important;
 }
 
 .size-24 {

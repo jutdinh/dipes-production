@@ -1361,6 +1361,7 @@ export default () => {
 
     const Export = () => {
         const selectFields = [...selectedFields, ...selectedStats]
+        console.log(selectFields)
         const exportBody = {
             export_fields: selectFields,
             criteria: {},

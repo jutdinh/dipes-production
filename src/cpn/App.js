@@ -227,7 +227,7 @@ function App() {
 
     };
 
-    const tokenCheckInterval = setInterval(checkTokenExpiration, 60000);
+    const tokenCheckInterval = setInterval(checkTokenExpiration, 3600000);
 
     return () => {
       clearInterval(tokenCheckInterval);

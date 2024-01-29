@@ -44,19 +44,21 @@ const NavbarItem = ({ item, isChild = false, level, expandedItems, setExpandedIt
         <li className={`navbar-item ${isChild ? 'child-item' : ''}`} >
             {hasChildren ? (
                 <>
+                
                     <a
                         href={`#page_${item.page_id}`}
                         onClick={toggleMenu}
                         aria-expanded={isExpanded}
-                        className={`dropdown-toggle ${isChild ? 'child-link' : ''}`}style={{ marginLeft }}
+                        className={`dropdown-toggle  ${isChild ? 'child-link' : ''}`}style={{ marginLeft }}
                     >
+                        <i className={`fa size-18 ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'} ${isChild ? 'child-icon' : ''}`}></i>
                         {!hasChildren && item.icon && ( // Kiểm tra nếu không có con thì hiển thị icon
                             <FontAwesomeIcon icon={icons[item.icon].icon} className="mr-2" />
                         )}
                         <span>{item.page_title}</span>
-                        <i className={`fa ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'} ${isChild ? 'child-icon' : ''}`}></i>
+                        
                     </a>
-                    <ul className={`collapse list-unstyled ${isExpanded ? 'show' : ''} ${isChild ? 'child-list' : ''}`} id={`page_${item.page_id}`}>
+                    <ul className={`collapse list-unstyled ${isExpanded ? 'show ' : ''} ${isChild ? 'child-list' : ''}`} id={`page_${item.page_id}`}>
                         {item.children.map(child => (
                             <NavbarItem
                                 key={child.page_id}
@@ -68,6 +70,7 @@ const NavbarItem = ({ item, isChild = false, level, expandedItems, setExpandedIt
                             />
                         ))}
                     </ul>
+                    
                 </>
             ) : (
 
@@ -116,6 +119,8 @@ const Navbar = ({ data }) => {
         </>
     );
 };
+
+
 
 export default Navbar;
 
