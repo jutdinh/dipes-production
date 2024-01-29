@@ -698,9 +698,28 @@
 }
 
 #sidebar ul.components ul {
-    background: #214162;
+    /* background: #214162; */
+    background-color: #274452;
     /* padding: 10px 0; */
 }
+
+
+
+
+#sidebar ul.components ul li a {
+    /* font-size: 13px; */
+    /* color: rgba(255, 255, 255, .7); */
+    /* padding: 7px 35px; */
+    /* padding: 15px 25px;
+    display: block;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 300; */
+}
+
+
+
+
 
 .pie-container {
     display: flex;
@@ -1622,6 +1641,37 @@ select:required:invalid {
     background-color: rgb(214, 206, 206)
 }
 
+#sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Chiều cao toàn màn hình */
+    overflow: hidden; /* Ngăn chặn scrollbar xuất hiện ở ngoài cùng */
+}
+
+/* Định nghĩa cho phần đầu trang và thông tin người dùng */
+.sidebar_blog_1, .sidebar_user_info_custom {
+    flex-shrink: 0; /* Đảm bảo rằng các phần này không bị thu nhỏ */
+    /* Thêm bất kỳ styles cố định nào bạn muốn ở đây */
+}
+
+/* Định nghĩa cho phần có thể scroll */
+.block-nav {
+    flex-grow: 1; /* Cho phép phần này chiếm dụng không gian còn lại */
+    overflow-y: auto; /* Cho phép scroll theo chiều dọc */
+    max-height: calc(100vh - 100px); 
+}
+
+
+.scrollable-nav {
+    max-height: 100%; /* Đặt chiều cao tối đa là 100% của phần tử cha */
+    /* Thêm các styles cho phần scrollable ở đây nếu cần */
+}
+
+/* Định nghĩa cho footer */
+.footer-custom {
+    flex-shrink: 0; /* Đảm bảo rằng footer không bị thu nhỏ */
+    /* Thêm bất kỳ styles cố định nào bạn muốn ở đây */
+}
 
 
 .custom-tooltip {

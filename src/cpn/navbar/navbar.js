@@ -16,6 +16,8 @@ export default () => {
    const [isOpen, setIsOpen] = useState(false);
    const sideBar = sidebar ? sidebar.sidebar : null;
    const [isExpanded, setIsExpanded] = useState(true);
+
+
    // console.log(isExpanded)
    // console.log(sideBar)
    useEffect(() => {
@@ -62,8 +64,9 @@ export default () => {
                </div>
             </div>
          </div>
-         <div class="sidebar_blog_2">
-            {/* <h4>{lang["general"]}</h4> */}
+         <div class ="block-nav">
+            <div class="sidebar_blog_2">
+         
             <ul class="list-unstyled components">
                {/* <li className="navbar-item">
                   <NavLink to="/" activeClassName="nav-active">
@@ -128,9 +131,7 @@ export default () => {
                         ))}
                      </ul>
                   </li>
-
                ) : null}
-
 
 
                < Navbar_Render data ={pages} />
@@ -249,8 +250,10 @@ export default () => {
                ) : null} */}
             </ul>
          </div>
+         </div>
+         
          <div class="footer-custom">
-            {/* <p>&copy; 2023 - Designed by Mylan Group </p> */}
+            <p>&copy; 2023 - Designed by Mylan Group </p>
          </div>
       </nav>
    )

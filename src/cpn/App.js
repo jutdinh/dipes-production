@@ -290,7 +290,7 @@ function App() {
         <Route path="/sitemap" element={<Navigation Child={SiteMap} />} />
         <Route path="/logs" element={<Navigation Child={Logs} />} />
 
-        <Route exac path="/page/:url/apis/api/:id_str/input_info" element={< Navigation Child={InputPost} />} />
+        <Route  path="/page/:url/apis/api/:id_str/input_info" element={< Navigation Child={InputPost} />} />
         <Route path="/page/:url/put/api/:id_str/*" element={< Navigation Child={InputPut} />} />
         <Route path="/page/:url/detail/:id_str/*" element={< Navigation Child={Detail} />} />
         <Route path="/page/:url/*" element={< Navigation Child={Fetch} />} />

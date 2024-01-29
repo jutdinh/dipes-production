@@ -13,7 +13,7 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
     // Hàm chính để xác định loại component cần render
     const renderByType = (cpn, props, flex, id) => {
 
-        console.log(page.params)
+        //console.log(page.params)
         const type = cpn.name
         const hasFlexData = (flex) => {
             return flex && flex.props && flex.props.style;
@@ -171,6 +171,7 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
     );
 };
 const ExtraButtons = ({ buttons, props, redirectToInput, redirectToImportData, exportToCSV, exportFile }) => {
+    //console.log(174,buttons)
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
@@ -190,8 +191,8 @@ const ExtraButtons = ({ buttons, props, redirectToInput, redirectToImportData, e
 
                 if (success && data.length > 0) {
                     const dataUser = data.find(item => item.username === _user.username);
-                    //console.log(_user.username)
-                    //console.log(dataUser)
+                    ////console.log(_user.username)
+                    ////console.log(dataUser)
                     setDataPrivileges(dataUser?.privileges)
                 }
             })
@@ -255,7 +256,7 @@ const ExtraButtons = ({ buttons, props, redirectToInput, redirectToImportData, e
 };
 const RenderTable = (props) => {
 
-    console.log(328, props)
+    //console.log(328, props)
 
     const { project_id, version_id, url } = useParams();
     const params_Table = props.page.params
@@ -270,7 +271,7 @@ const RenderTable = (props) => {
     const dataTable_id = tableProps.source.tables[0].id
     const dispatch = useDispatch();
     const typeTable = props.type
-    console.log(children)
+    //console.log(children)
     const data = props.apiData
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const checkState = useSelector(state => state.stateAprove);
@@ -282,7 +283,7 @@ const RenderTable = (props) => {
     // useEffect(() => {
     //     setApiData(data)
     // }, [data]);
-    //////console.log(342, apiData)
+    ////////console.log(342, apiData)
     const { fields, search, get } = tableProps.source;
     const currentURL = window.location.href;
 
@@ -292,7 +293,7 @@ const RenderTable = (props) => {
 
 
 
-    //console.log(fields)
+    ////console.log(fields)
     const { navigator } = tableProps.buttons;
     const visibility = tableProps.visibility;
     const [currentPage, setCurrentPage] = useState(1);
@@ -303,7 +304,7 @@ const RenderTable = (props) => {
     const [dataPrivileges, setDataPrivileges] = useState([]);
 
 
-    console.log(sumerize)
+    //console.log(sumerize)
     useEffect(() => {
 
         fetch(`${proxy()}/privileges/accounts`, {
@@ -314,11 +315,11 @@ const RenderTable = (props) => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                //console.log(251, resp)
+                ////console.log(251, resp)
                 if (success && data.length > 0) {
                     const dataUser = data.find(item => item.username === _user.username);
-                    //console.log(_user.username)
-                    //console.log(dataUser)
+                    ////console.log(_user.username)
+                    ////console.log(dataUser)
                     setDataPrivileges(dataUser?.privileges)
                 }
             })
@@ -347,7 +348,7 @@ const RenderTable = (props) => {
 
         setSearchUrl(searchData.url)
         setSearchValues({ ...searchValues, [fieldAlias]: value });
-        //console.log(29999,value)
+        ////console.log(29999,value)
     };
 
     // Hàm xử lý sự kiện nhấn phím, ví dụ nhấn Enter để tìm kiếm
@@ -372,7 +373,7 @@ const RenderTable = (props) => {
     const indexOfFirst = indexOfLast - rowsPerPage;
 
     const currentData = apiData;
-    //////console.log(396, currentData)
+    ////////console.log(396, currentData)
 
     const paginate = (pageNumber) => {
         const startAt = (pageNumber - 1) * rowsPerPage;
@@ -386,7 +387,7 @@ const RenderTable = (props) => {
     };
 
     const renderSourceButtons = (source, lang) => {
-        //////console.log(244, source)
+        ////////console.log(244, source)
         return Object.entries(source).map(([key, value]) => {
             if (!value.state) {
                 return null;
@@ -414,10 +415,10 @@ const RenderTable = (props) => {
                 return acc;
             }, {});
 
-            console.log(415415, result);
+            //console.log(415415, result);
             setSearchValues(result)
 
-            console.log(apiData);
+            //console.log(apiData);
             setCurrentPage(1);
             callApi(result, url)
             callApiCount(result, url)
@@ -462,7 +463,7 @@ const RenderTable = (props) => {
         })
 
     }, [checkState]);
-    //////console.log(308,checkState)
+    ////////console.log(308,checkState)
 
     const callApi = (data, dataUrl, startIndex = currentPage - 1) => {
         const startTime = new Date().getTime();
@@ -475,7 +476,7 @@ const RenderTable = (props) => {
             require_count: false,
             require_statistic: false,
         }
-        //////console.log("ĐÂY LÀ BODY:", searchBody)
+        ////////console.log("ĐÂY LÀ BODY:", searchBody)
         if (dataUrl) {
 
             fetch(`${proxy()}${dataUrl}`, {
@@ -492,7 +493,7 @@ const RenderTable = (props) => {
                 .then(res => {
                     const { success, content, data, result, total, fields, count, sumerize } = res;
                     const statisticValues = res.statistic;
-                    //////console.log(74, res)
+                    ////////console.log(74, res)
                     if (success) {
                         setApiData(data.filter(record => record != undefined));
 
@@ -515,7 +516,7 @@ const RenderTable = (props) => {
                     clearTimeout(loadingTimeoutSearch);// Clear the timeout
                     // setLoadingSearch(false);
                     // setLoading(false)
-                    // ////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                    // //////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
                 });
         }
 
@@ -532,7 +533,7 @@ const RenderTable = (props) => {
             require_count: false,
             require_statistic: false,
         }
-        //////console.log("ĐÂY LÀ BODY:", searchBody)
+        ////////console.log("ĐÂY LÀ BODY:", searchBody)
         if (searchUrl) {
 
             fetch(`${proxy()}${searchUrl}`, {
@@ -549,7 +550,7 @@ const RenderTable = (props) => {
                 .then(res => {
                     const { success, content, data, result, total, fields, count, sumerize } = res;
                     const statisticValues = res.statistic;
-                    //////console.log(74, res)
+                    ////////console.log(74, res)
                     if (success) {
                         setApiData(data.filter(record => record != undefined));
 
@@ -572,7 +573,7 @@ const RenderTable = (props) => {
                     clearTimeout(loadingTimeoutSearch);// Clear the timeout
                     // setLoadingSearch(false);
                     // setLoading(false)
-                    // ////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                    // //////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
                 });
         }
 
@@ -613,7 +614,7 @@ const RenderTable = (props) => {
         // } else {
         //     urlGetCount = searchUrl
         // }
-        //////console.log(447, searchBody)
+        ////////console.log(447, searchBody)
         fetch(`${proxy()}${url}`, {
             method: "POST",
             headers: {
@@ -629,7 +630,7 @@ const RenderTable = (props) => {
 
                 const { success, content, data, result, total, fields, count } = res;
                 const statisticValues = res.statistic;
-                //////console.log(74, res)
+                ////////console.log(74, res)
                 if (success) {
                     // setApiData(data.filter(record => record != undefined));
                     // setApiDataName(fields);
@@ -657,7 +658,7 @@ const RenderTable = (props) => {
                 setLoadingResult(false)
                 // setLoadingSearch(false);
                 // setLoading(false)
-                // //////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                // ////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
             });
     };
 
@@ -802,7 +803,7 @@ const RenderTable = (props) => {
 
 
 const RenderInlineButtonsForRow = (props) => {
-    console.log(420123, props)
+    //console.log(420123, props)
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const { openTab, renderDateTimeByFormat } = functions
     const { children, buttons, row, handleViewDetail, redirectToInputPUT, handleDelete } = props
@@ -813,7 +814,7 @@ const RenderInlineButtonsForRow = (props) => {
     const _user = JSON.parse(stringifiedUser) || {}
     const _token = localStorage.getItem("_token");
     const [dataPrivileges, setDataPrivileges] = useState([]);
-    console.log(children)
+    //console.log(children)
 
     useEffect(() => {
 
@@ -828,8 +829,8 @@ const RenderInlineButtonsForRow = (props) => {
 
                 if (success && data.length > 0) {
                     const dataUser = data.find(item => item.username === _user.username);
-                    //console.log(760, _user)
-                    //console.log(dataUser)
+                    ////console.log(760, _user)
+                    ////console.log(dataUser)
                     setDataPrivileges(dataUser?.privileges)
                 }
             })
@@ -847,7 +848,7 @@ const RenderInlineButtonsForRow = (props) => {
 
     const dataCheck = _user.role !== "uad" ? dataPrivileges.find(item => item.table_id === dataTable_id) : dataCheckAdministrator;
 
-    //console.log(dataCheck)
+    ////console.log(dataCheck)
 
     const handleApprove = async (record, dataApi) => {
         const urlApprove = dataApi.api.url;
@@ -866,7 +867,7 @@ const RenderInlineButtonsForRow = (props) => {
                     .then(res => res.json())
                     .then(res => {
                         const { data, success, content } = res;
-                        //////console.log(res)
+                        ////////console.log(res)
                         if (success) {
 
 
@@ -875,20 +876,20 @@ const RenderInlineButtonsForRow = (props) => {
                     })
             })
             const { success, data } = response;
-            //////console.log(54, response)
+            ////////console.log(54, response)
             if (success) {
                 const { params } = data;
                 const stringifiedParams = params.map(param => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                //////console.log(962, stringifiedParams)
+                ////////console.log(962, stringifiedParams)
 
 
                 const bodyApprove = {
                     [fomular_approve]: true
                 }
-                //////console.log(bodyApprove)
+                ////////console.log(bodyApprove)
                 fetch(`${proxy()}${urlApprove}/${stringifiedParams}`, {
                     method: "PUT",
                     headers: {
@@ -899,7 +900,7 @@ const RenderInlineButtonsForRow = (props) => {
                 })
                     .then(res => res.json())
                     .then(res => {
-                        //////console.log(res)
+                        ////////console.log(res)
                         const { success } = res
                         if (success) {
                             dispatch({
@@ -929,7 +930,7 @@ const RenderInlineButtonsForRow = (props) => {
     const handleUnApprove = async (record, dataApi) => {
         const urlUnApprove = dataApi.api.url;
         const fomular_unapprove = dataApi.field.fomular_alias
-        //////console.log(fomular_unapprove)
+        ////////console.log(fomular_unapprove)
         if (urlUnApprove != undefined) {
 
             const id_str = urlUnApprove.split('/')[2]
@@ -942,24 +943,24 @@ const RenderInlineButtonsForRow = (props) => {
                     .then(res => res.json())
                     .then(res => {
                         const { data, success, content } = res;
-                        //////console.log(res)
+                        ////////console.log(res)
                         if (success) { }
                         resolve(res)
                     })
             })
             const { success, data } = response;
-            //////console.log(54, response)
+            ////////console.log(54, response)
             if (success) {
                 const { params } = data;
                 const stringifiedParams = params.map(param => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                //////console.log(962, stringifiedParams)
+                ////////console.log(962, stringifiedParams)
                 const bodyUnApprove = {
                     [fomular_unapprove]: false
                 }
-                //////console.log(bodyUnApprove)
+                ////////console.log(bodyUnApprove)
                 fetch(`${proxy()}${urlUnApprove}/${stringifiedParams}`, {
                     method: "PUT",
                     headers: {
@@ -970,7 +971,7 @@ const RenderInlineButtonsForRow = (props) => {
                 })
                     .then(res => res.json())
                     .then(res => {
-                        //////console.log(res)
+                        ////////console.log(res)
                         if (success) {
 
                             dispatch({
@@ -998,29 +999,11 @@ const RenderInlineButtonsForRow = (props) => {
     }
 
     const handleTable_Param = async (row, pageId, params) => {
-        console.log(row)
-        console.log(pageId)
-        console.log(params)
         const fomularAlias = params.map(item => item.fomular_alias);
         const values = fomularAlias.map((alias) => row[alias]);
-
         openTab(`/page/${pageId}/${values}`)
-
     }
 
-    const renderAdditionalButton = (children) => {
-
-
-
-        // Đây là nút bổ sung bạn muốn thêm
-        return (
-
-            <div class="icon-table-line">
-                <i className="fa fa-link size-24 mr-1  pointer icon-view" onClick={() => handleTable_Param(row, props)} title={lang["viewdetail"]}></i>
-            </div>
-
-        );
-    };
     const mappedButtons = children.map((child) => {
         const { id, props: buttonProps } = child;
 
@@ -1123,31 +1106,31 @@ const RenderInlineButtonsForRow = (props) => {
 };
 
 const RenderChart = (props) => {
-    console.log(730, props.props)
+    //console.log(730, props.props)
     const url = props.props.api
     const paramsSearch = props.props.params
-    console.log(paramsSearch)
+    //console.log(paramsSearch)
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const _token = localStorage.getItem("_token");
     const [apiDataStatis, setApiDataStatis] = useState({})
     const [height, setHeight] = useState(350)
-    console.log(apiDataStatis)
+    //console.log(apiDataStatis)
     useEffect(() => {
         callApiStatistic()
 
     }, []);
 
-///search data
-const [parentFormData, setParentFormData] = useState({});
-console.log("data", parentFormData)
-const handleFormDataChange = (newFormData) => {
-    setParentFormData(newFormData);
-};
+    ///search data
+    const [parentFormData, setParentFormData] = useState({});
+    //console.log("data", parentFormData)
+    const handleFormDataChange = (newFormData) => {
+        setParentFormData(newFormData);
+    };
 
-const handleSubmitSearch = (newFormData) => {
-    console.log("Đã nhấn nút sêarc")
-    callApiStatistic()
-};
+    const handleSubmitSearch = (newFormData) => {
+        //console.log("Đã nhấn nút sêarc")
+        callApiStatistic()
+    };
 
     const callApiStatistic = () => {
         const statisBody = {
@@ -1164,7 +1147,7 @@ const handleSubmitSearch = (newFormData) => {
             .then((res) => res.json())
             .then((res) => {
                 const { success, content, statistics } = res;
-                console.log(1163,res)
+                //console.log(1163, res)
                 if (success) {
                     setApiDataStatis(statistics)
 
@@ -1172,7 +1155,7 @@ const handleSubmitSearch = (newFormData) => {
             });
     };
 
-    //////console.log(apiDataStatis)
+    ////////console.log(apiDataStatis)
 
     const state = {
         series: [{
@@ -1187,7 +1170,7 @@ const handleSubmitSearch = (newFormData) => {
                 },
                 events: {
                     click: function (chart, w, e) {
-                        // //////console.log(chart, w, e)
+                        // ////////console.log(chart, w, e)
                     }
                 }
             },
@@ -1211,7 +1194,7 @@ const handleSubmitSearch = (newFormData) => {
                 horizontalAlign: 'center', // Canh lề ngang của chú thích (có thể là 'left', 'center', 'right')
                 fontSize: '10px', // Kích thước font chữ
                 onItemClick: {
-                    toggleDataSeries: true // Ngăn chặn việc ẩn/mở các dòng dữ liệu khi nhấp vào chú thích
+                    toggleDataSeries: false // Ngăn chặn việc ẩn/mở các dòng dữ liệu khi nhấp vào chú thích
                 },
                 onItemHover: {
                     highlightDataSeries: false // Ngăn chặn việc tô đậm các dòng dữ liệu khi di chuột qua chú thích
@@ -1223,9 +1206,34 @@ const handleSubmitSearch = (newFormData) => {
                 },
             },
             tooltip: {
-                enabled: true, // Kích hoạt tooltip
-
-            },
+                enabled: true,
+                theme: 'light', // hoặc 'light'
+                style: {
+                  fontSize: '12px',
+                  fontFamily: 'UTM avo, sans-serif',
+                },
+                x: {
+                  show: true,
+                  format: 'dd MMM', // Định dạng ngày tháng nếu dữ liệu của bạn có ngày tháng
+                },
+                y: {
+                    formatter: (value) => value.toString(), // Thêm đơn vị vào giá trị
+                },
+                marker: {
+                  show: true, // Hiển thị marker trên tooltip
+                },
+                custom: function({ series, seriesIndex, dataPointIndex, w }) {
+                    // Lấy nhãn và giá trị cho điểm dữ liệu hiện tại
+                    const label = w.globals.labels[dataPointIndex][0];
+                    const value = series[seriesIndex][dataPointIndex];
+                
+                    // Tạo tooltip mà không có dấu phẩy sau mã
+                    return `<div class="custom-tooltip-chart">
+                      <span>${label}: ${value}</span>
+                    </div>`;
+                  }
+              },
+              
             // xaxis: {
             //     categories: [
             //         [''],
@@ -1238,6 +1246,8 @@ const handleSubmitSearch = (newFormData) => {
             //         }
             //     }
             // }
+            
+        
         },
     };
 
@@ -1283,13 +1293,13 @@ const handleSubmitSearch = (newFormData) => {
         }
     };
     const chartData = useMemo(() => transformDataForChart(apiDataStatis), [apiDataStatis]);
-    //////console.log(chartData)
+    ////////console.log(chartData)
 
     return (
         <div>
             <h5>{props.props.content}</h5>
 
-            {paramsSearch && paramsSearch.length > 0 &&  <DynamicForm  data={paramsSearch} onFormDataChange={handleFormDataChange} onFormSubmit={handleSubmitSearch}/> }
+            {paramsSearch && paramsSearch.length > 0 && <DynamicForm data={paramsSearch} onFormDataChange={handleFormDataChange} onFormSubmit={handleSubmitSearch} />}
             <div id="chart" style={{ width: '100%' }}>
                 <Chart options={chartData.options} series={chartData.series} type="bar" height={height} />
             </div>
@@ -1299,43 +1309,72 @@ const handleSubmitSearch = (newFormData) => {
 
 
 
-const DynamicForm = ({ data, onFormDataChange, onFormSubmit  }) => {
-
+const DynamicForm = ({ data, onFormDataChange, onFormSubmit }) => {
+    //console.log(data)
 
     const [formData, setFormData] = useState({});
-console.log(formData)
+    //console.log(formData)
     const handleInputChange = (fieldAlias, value) => {
         const newFormData = { ...formData, [fieldAlias]: value };
         setFormData(newFormData);
-        onFormDataChange(newFormData); 
+        onFormDataChange(newFormData);
     };
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log(formData); // Xử lý dữ liệu form ở đây
+        //console.log(formData); 
         onFormSubmit(formData)
     };
 
+    const handleResetSearchValue = (event) => {
+        const newFormData = {};
+        setFormData(newFormData);
+        onFormDataChange(newFormData);
+    };
+
     const renderInput = (field) => {
+
+        const inputValue = formData[field.fomular_alias] || "";
+
+        const valueBool = [
+            {
+                id: 0,
+                label: field.DEFAULT_TRUE,
+                value: true
+            },
+            {
+                id: 1,
+                label: field.DEFAULT_FALSE,
+                value: false
+            },
+        ]
         switch (field.DATATYPE) {
+
             case 'TEXT':
-                return <input type="text" className="form-control" placeholder={field.field_name} onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
-            case 'INT UNSIGNED':
-                return <input type="number" className="form-control" placeholder={field.field_name} min="0" onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
+                return <input type="text" className="form-control" placeholder={field.field_name} value={inputValue } onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
+
+            case 'INT UNSIGNED' || 'BIG INT' || 'INT UNSIGNED' || 'BIG INT UNSIGNED' :
+                return <input type="number" className="form-control" placeholder={field.field_name} value={inputValue } min="0" onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
+
             case 'BOOL':
                 return (
-                    <input
-                        type={ 'checkbox'}
+                    <select
+                    value={inputValue }
+                        onChange={(e) => handleInputChange(field.fomular_alias, e.target.value === "true")}
                         className="form-control"
-                        placeholder={field.field_name}
-                        onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)}
-                    />
+                    >
+                        <option value="" disabled selected>Choose</option>
+                        {valueBool.map((val, index) => (
+                            <option key={index} value={val.value.toString()}>{val.label}</option>
+                        ))}
+                    </select>
                 );
+
             default:
-                return <input type="text" className="form-control" />;
+                return <input type="text" value={inputValue } className="form-control" onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)}  />;
         }
     };
-    
+
     return (
         <div className="row block-statis">
             {data.map((field, index) => (
@@ -1347,7 +1386,8 @@ console.log(formData)
                 </div>
             ))}
             <div className="col-md-12 text-right">
-                <button onClick={handleSubmit} className="btn btn-search-statis mr-3"><i class="fa fa-search mr-1 icon-search" />Tìm Kiếm</button>
+            <button onClick={handleResetSearchValue} className="btn btn-secondary mr-3"><i class="fa fa-history mr-1 icon-search" />Làm mới</button>
+                <button onClick={handleSubmit} className="btn btn-primary mr-3"><i class="fa fa-search mr-1 icon-search" />Tìm Kiếm</button>
             </div>
         </div>
     );

@@ -840,6 +840,62 @@ img[class="scaled-hover-target"] {
 .icon-add-production {
     color: #0971b8
 }
+.arrow_box{
+
+    color: black;
+    height: 25px;
+    padding: 0 5px 0 5px  ;
+    margin-top: 5px;
+}
+
+.custom-tooltip-chart {
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    padding: 10px;
+    border-bottom: none;
+}
+
+#sidebar ul li a {
+    padding: 15px 25px 15px 10px;
+    display: block;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 300;
+}
+#sidebar ul.components ul li a {
+    font-size: 13px;
+    color: rgba(255, 255, 255, .7);
+    padding: 7px 25px;
+}
+
+.child-item {
+    /* Style cho các mục con */
+    padding-left: 0px; /* Tăng đệm bên trái để tạo thụt lề cho mục con */
+    background-color: #4f5861; /* Màu nền khác biệt cho mục con */
+}
+
+.child-link {
+    /* Style cho các liên kết mục con */
+    font-size: 0.9em; /* Phông chữ nhỏ hơn */
+}
+
+.child-icon {
+    /* Style cho biểu tượng mục con */
+}
+
+.child-list {
+    /* Style cho danh sách mục con */
+    margin-top: 5px; /* Khoảng cách giữa các mục con */
+    border-left: 2px solid #6c747c; /* Thanh biên bên trái */
+}
+
+
+
+
+
+
+
+
 
 .margin-bottom-0 {
     margin-bottom: 0;
