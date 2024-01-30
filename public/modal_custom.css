@@ -865,10 +865,16 @@ img[class="scaled-hover-target"] {
     color: rgba(255, 255, 255, 0.9);
     font-weight: 300;
 }
+
 #sidebar ul.components ul li a {
     font-size: 13px;
     color: rgba(255, 255, 255, .7);
     padding: 7px 25px;
+}
+
+
+#sidebar ul.components ul li a:hover{
+    padding: 7px 25px !important;
 }
 
 .child-item {
@@ -892,25 +898,16 @@ img[class="scaled-hover-target"] {
     border-left: 2px solid #6c747c; 
 }
 
-
-
-
-
-
-
-
-
-
-
-
 .margin-bottom-0 {
     margin-bottom: 0;
 }
+
 .btn-search-statis{
     color: #e9e1e1;
     background-color: #1e75cb;
 
 }
+
 .block-statis {
     background-color:#dbdbdb ;
     border-radius: 4px;
@@ -919,14 +916,11 @@ img[class="scaled-hover-target"] {
     padding: 10px 20px 10px 20px
 }
 
-
 .add-case {
     padding-left: 15px;
     padding-bottom: 15px;
     padding-top: 0px;
     padding-right: 15px;
-    
-
     overflow-y: auto;
     overflow-x: hidden;
 }

@@ -22,7 +22,7 @@ export default () => {
     let langItem = localStorage.getItem("lang") ? localStorage.getItem("lang") : "Vi";
 
     const languages = langItem.toLowerCase();
-    // console.log(_token)
+    // //console.log(_token)
     const handleCloseModal = () => {
         setShowModal(false);
     };
@@ -42,7 +42,7 @@ export default () => {
             // window.location = "/404-notfound"
         }
     }, [])
-console.log(_user.username)
+    //console.log(_user.username)
     useEffect(() => {
 
         fetch(`${proxy()}/logs/${languages}`, {
@@ -53,10 +53,10 @@ console.log(_user.username)
             .then(res => res.json())
             .then(resp => {
                 const { success, data, status, content } = resp;
-                // console.log(resp)
+                // //console.log(resp)
                 if (success) {
                     if (data != undefined && data.length > 0) {
-                      
+
 
                         const dataFilter = _user.username !== "administrator" ? data.filter(item => item.create_user === _user.username) : data;
                         setLogs(dataFilter)
@@ -72,7 +72,7 @@ console.log(_user.username)
     const [logDetail, setLogDetail] = useState([]);
 
     const detailLogs = async (logid) => {
-        // console.log(logid)
+        // //console.log(logid)
         setLogDetail(logid)
     };
 
@@ -94,7 +94,7 @@ console.log(_user.username)
             .then((resp) => {
                 if (resp) {
                     const { success, content, data, status } = resp;
-                    // console.log(resp)
+                    // //console.log(resp)
                     if (success) {
 
                         setView(data)
@@ -114,7 +114,7 @@ console.log(_user.username)
             })
     };
     const [currentPageLogs, setCurrentPageLogs] = useState(1);
-    const rowsPerPageLogs = 12;
+    const rowsPerPageLogs = 16;
     const indexOfLastMemberLogs = currentPageLogs * rowsPerPageLogs;
     const indexOfFirstMemberLogs = indexOfLastMemberLogs - rowsPerPageLogs;
     const currentMembersLogs = view.slice(indexOfFirstMemberLogs, indexOfLastMemberLogs);
@@ -129,9 +129,7 @@ console.log(_user.username)
     }
 
 
-    console.log(view)
 
-    console.log(logs)
 
     return (
         <div class="midde_cont">
@@ -211,13 +209,13 @@ console.log(_user.username)
                                                 <table class="table table-striped">
                                                     <thead>
                                                         <tr>
-                                                            <th scope="col">{lang["log.no"]}</th>
+                                                            <th >{lang["log.no"]}</th>
 
-                                                            <th scope="col" class="align-center">{lang["log.type"]}</th>
-                                                            <th scope="col">{lang["log.listtitle"]}</th>
-                                                            <th scope="col">{lang["description"]}</th>
-                                                            <th scope="col">{lang["time"]}</th>
-                                                            <th scope="col" class="align-center">{lang["log.action"]}</th>
+                                                            <th  class="align-center">{lang["log.type"]}</th>
+                                                            <th >{lang["log.listtitle"]}</th>
+                                                            <th >{lang["description"]}</th>
+                                                            <th >{lang["time"]}</th>
+                                                            <th  class="align-center">{lang["log.action"]}</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -227,21 +225,19 @@ console.log(_user.username)
 
                                                             return (
                                                                 <tr key={log.id}>
-                                                                    <td scope="row">{indexOfFirstMemberLogs + index + 1}</td>
+                                                                    <td style={{ width: "50px" }}>{indexOfFirstMemberLogs + index + 1}</td>
 
-                                                                    <td class="align-center">
-                                                                        {/* Kiểm tra xem có tìm thấy sự kiện không, nếu có thì hiển thị nhãn và icon */}
+                                                                    <td class="align-center" style={{ width: "50px" }}>
                                                                         {event && <>
-
                                                                             <i class={`${event.icon}`} style={{ color: event.color }} title={event.label}></i>
                                                                         </>}
                                                                     </td>
                                                                     <td style={{ width: "160px" }}>{log.event_title}</td>
-                                                                    <td>
+                                                                    <td class="cell-log">
                                                                         {log.event_description}
                                                                     </td>
 
-                                                                    <td class="align-center" style={{ width: "120px" }}>{log.create_at}</td>
+                                                                    <td class="align-center" style={{ width: "180px" }}>{log.create_at}</td>
                                                                     <td class="align-center" style={{ width: "80px" }}>
                                                                         <i class="fa fa-eye size pointer icon-margin size-24 icon-view" onClick={() => detailLogs(log)} data-toggle="modal" data-target="#viewLog" style={{ color: "green" }} title={lang["btn.viewdetail"]}></i>
 

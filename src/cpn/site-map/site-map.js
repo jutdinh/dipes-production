@@ -8,7 +8,7 @@ export default () => {
     const _token = localStorage.getItem("_token");
     const [isLoaded, setLoaded] = useState(false)
     const [statusActive, setStatusActive] = useState(false);
-    // console.log(auth)
+    console.log(pages)
     useEffect(() => {
 
         fetch(`${proxy()}/auth/activation/check`, {
@@ -60,6 +60,7 @@ export default () => {
                 //     { leaf: lang["create account"], link: "/users?action=create" }
                 // ]
             },
+            { leaf: lang["privileges manager"], link: "/privileges", },
             { leaf: lang["diagram"], link: "/diagram_db", },
             { leaf: "Site map", link: "/sitemap", }
             // { leaf: "Report", link: "/report", },
@@ -148,18 +149,20 @@ export default () => {
                     vine: "blue",
                     children: []
                 }
-                pages.map(ui => {
-                    const child = {
-                        leaf: ui.title,
-                        link: `/page${ui.url}`,
-                        // children: [
-                        //     { leaf: lang["create"], link: `/page/apis${ui.components[0]?.api_post}/input_info` },
-                        //     // { leaf: "Sửa", link: `/projects/${ project.versions[0]?.version_id }/apis` },
-                        //     // { leaf: "UI", link: `/projects/${ project.versions[0]?.version_id }/uis` },
-                        // ]
-                    }
-                    branch.children.push(child)
-                })
+                
+                // pages.map(ui => {
+                //     const child = {
+                //         leaf: ui.title,
+                //         link: `/page${ui.url}`,
+                //         // children: [
+                //         //     { leaf: lang["create"], link: `/page/apis${ui.components[0]?.api_post}/input_info` },
+                //         //     // { leaf: "Sửa", link: `/projects/${ project.versions[0]?.version_id }/apis` },
+                //         //     // { leaf: "UI", link: `/projects/${ project.versions[0]?.version_id }/uis` },
+                //         // ]
+                //     }
+                //     branch.children.push(child)
+                // })
+
                 const newTree = tree;
                 if( auth.role == "ad" || auth.role === "uad" ){
                     

@@ -406,7 +406,16 @@
 .upload-button:hover {
     background-color: #0056b3;
 }
+.icon-list {
+    color: #384041;
+}
 
+.cell-log {
+    max-width: 380px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 .icon {
     font-size: 50px;
     margin-right: 20px;

@@ -50,7 +50,7 @@ export default () => {
 
     const params = functions.getAllParamsAfterPageId(currentURL, url);
     //console.log(params);
-
+    const [valueExport, setaValueExport] = useState({});
     const [apiDataName, setApiDataName] = useState([])
     const [dataStatis, setDataStatis] = useState([])
     const [statusActive, setStatusActive] = useState(false);
@@ -964,7 +964,7 @@ export default () => {
         if (typeof data === 'object' || data !== undefined) {
 
             const extractedValues = functions.extractValuesFromData(functions.findComponentWithDeleteApiUrl(page, dataUrl), data);
-//console.log(extractedValues)
+            //console.log(extractedValues)
             let api_delete = dataUrl;
 
             // let primaryKeys = dataTables && dataTables[0] && dataTables[0].primary_key ? dataTables[0].primary_key : null;
@@ -1111,7 +1111,15 @@ export default () => {
             return IF_FALSE ? IF_FALSE : "false"
         }
     }
-
+    const formatIfDate = (value) => {
+        // Kiểm tra xem giá trị có phải là chuỗi ngày giờ ISO không
+        if (/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z/.test(value)) {
+            // Định dạng ngày giờ theo yêu cầu của bạn (ví dụ: dd/mm/yyyy)
+            const date = new Date(value);
+            return date.toLocaleDateString('vi-VN');
+        }
+        return value; // Nếu không phải ngày, trả về giá trị như cũ
+    };
     const renderData = (field, data) => {
         if (data) {
             switch (field.DATATYPE) {
@@ -1194,7 +1202,7 @@ export default () => {
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
     const current = apiData
-    ////console.log(1175,current)
+    console.log(1175, current)
     const paginate = (pageNumber) => {
         const startAt = (pageNumber - 1) * rowsPerPage;
         if (Object.keys(searchValues).length === 0) {
@@ -1213,7 +1221,7 @@ export default () => {
     const [selectedFields, setSelectedFields] = useState([]);/// fields
     const [selectedStats, setSelectedStats] = useState([]);
     const [exportType, setExportType] = useState("excel");
-
+    console.log(selectedFields)
     // statis fields
     const handleStatsChange = (event) => {
         const { value } = event.target;
@@ -1364,7 +1372,7 @@ export default () => {
         console.log(selectFields)
         const exportBody = {
             export_fields: selectFields,
-            criteria: {},
+            criteria: valueExport,
             export_type: exportType
         };
         setLoadingExportFile(true)
@@ -1414,6 +1422,8 @@ export default () => {
             });
     };
 
+
+
     const callApiDataModalExport = (url, startAt = 0, amount = 15) => {
         const headerApi = {
             // Authorization: _token,
@@ -1442,12 +1452,64 @@ export default () => {
 
     }
 
+    const callApiDataModalExport_PK = (data, dataUrl, startIndex = currentPage - 1) => {
+
+        const searchBody = {
+            start_index: startIndex,
+            criteria: data,
+            require_count: false,
+            require_statistic: false,
+        }
+        if (dataUrl) {
+
+            fetch(`${proxy()}${dataUrl}`, {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                    Authorization: _token,
+                    fromIndex: currentPage - 1,
+                    "data-amount": rowsPerPage
+                },
+                body: JSON.stringify(searchBody)
+            })
+                .then(res => res.json())
+                .then(res => {
+                    const { success, content, data, result, total, fields, count, sumerize } = res;
+                    const statisticValues = res.statistic;
+                    console.log(74, res)
+                    if (success) {
+                        setApiData(data.filter(record => record != undefined));
+
+                    } else { }
+                });
+        }
+
+    };
+
+
+
+
     const exportFile = (dataField, dataUrlGet, dataUrl) => {
         setApiDataName(dataField)
         setDataUrlExport(dataUrl)
-        ////console.log(1388, dataUrl)
-        ////console.log(1388, dataUrlGet)
+        // console.log(1388, dataField)
+        // console.log(1388, dataUrlGet)
+        // console.log(1388, dataUrl)
         callApiDataModalExport(dataUrlGet)
+    }
+
+    const exportFile_PK = (dataField, dataUrlPreview, dataUrl, fomularAlias_PK, data) => {
+        setApiDataName(dataField)
+        setDataUrlExport(dataUrl)
+
+        const extractValueByKey = (data, key) => {
+            return { [key]: data[key] };
+        };
+        // Sử dụng hàm
+        const result = extractValueByKey(data, fomularAlias_PK);
+
+        setaValueExport(result)
+        callApiDataModalExport_PK(result, dataUrlPreview)
     }
 
     // Loading Export
@@ -1458,7 +1520,6 @@ export default () => {
             setIsInitialRender(false);
             return;
         }
-
         if (loadingExportFile) {
             Swal.fire({
                 title: lang["loading"],
@@ -1610,6 +1671,9 @@ export default () => {
                                                 null
                                             )
                                         } */}
+
+
+
                                         <h5 class="mt-4 mb-2">{lang["select export type"]}:</h5>
                                         <div className="ml-4">
                                             <label>
@@ -1631,6 +1695,8 @@ export default () => {
                                                 <span className="ml-2">CSV</span>
                                             </label>
                                         </div>
+
+
                                         <h5 class="mt-4 mb-2">{lang["preview data"]}: </h5>
                                         {selectedFields && selectedFields.length > 0 || selectedStats.length > 0 ?
                                             (
@@ -1657,8 +1723,154 @@ export default () => {
                                                         {current.slice(0, 5).map((row, rowIndex) => (
                                                             <tr key={rowIndex}>
                                                                 {selectedFields.map((field) => (
-                                                                    // <td key={field}>{functions.renderData(field, row)}</td>
-                                                                    <td key={field}>{row[field]}</td>
+                                                                    <td key={field}>{formatIfDate(row[field])}</td>
+                                                                ))}
+                                                            </tr>
+                                                        ))}
+                                                        {dataStatis && dataStatis.length > 0 ? (
+                                                            <tr >
+                                                                {selectedStats.map((statAlias, index) => {
+                                                                    const stat = dataStatis.find(
+                                                                        (stat) => stat.fomular_alias === statAlias
+                                                                    );
+                                                                    return (
+                                                                        <td key={index} class="font-weight-bold" colspan={`${selectedFields.length + 1}`} style={{ textAlign: 'right' }}>
+                                                                            {stat ? `${stat.display_name}: ${stat.result}` : ''}
+                                                                        </td>
+                                                                    );
+                                                                })}
+                                                            </tr>
+                                                        ) : null
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        ) : null}
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" onClick={() => {
+                                        if (selectedFields.length === 0) {
+                                            Swal.fire({
+                                                title: lang["faild"],
+                                                text: lang["export.content.error"],
+                                                icon: "error",
+                                                showConfirmButton: true,
+                                                customClass: {
+                                                    confirmButton: 'swal2-confirm my-confirm-button-class'
+                                                }
+                                            })
+                                        } else {
+                                            Export(apiData);
+                                        }
+                                    }} class="btn btn-success " data-dismiss="modal">{lang["export"]} </button>
+                                    <button type="button" data-dismiss="modal" onClick={handleCloseModal} class="btn btn-danger" >{lang["btn.close"]}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    {/* modal export excel*/}
+                    <div class={`modal `} id="exportExcel_PK">
+                        <div class="modal-dialog modal-dialog-center">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title">{lang["export"]}</h4>
+                                    <button type="button" class="close" onClick={handleCloseModal} data-dismiss="modal">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <h5 class="mt-2 mb-2">{lang["select fields"]}:</h5>
+                                        <div className="checkboxes-grid ml-4">
+                                            <div className="select-all-checkbox">
+                                                <label class="pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectAll}
+                                                        onChange={handleSelectAllChange}
+                                                    />
+                                                    <span className="ml-2 font-weight-bold">{lang["selectall"]}</span>
+                                                </label>
+                                            </div>
+
+                                            {apiDataName.map((header, index) => (
+                                                <label class="pointer" key={index} >
+                                                    <input
+                                                        type="checkbox"
+                                                        value={header.fomular_alias}
+                                                        checked={selectedFields.includes(header.fomular_alias)}
+                                                        onChange={handleFieldChange}
+                                                    />
+                                                    <span className="ml-2">{header.display_name || header.field_name}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+
+                                        {/* {
+                                            dataStatis && dataStatis.length > 0 ? (
+                                                <>
+                                                    <h5 class="mt-4 mb-2">{lang["select statistic fields "]}:</h5>
+                                                    <div className="ml-4">
+                                                        {
+                                                            current && current.length > 0 ? (
+                                                                <div className="checkboxes-grid">
+                                                                    {dataStatis.map((stat, index) => (
+                                                                        <label key={index}>
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                value={stat.fomular_alias}
+                                                                                checked={selectedStats.includes(stat.fomular_alias)}
+                                                                                onChange={handleStatsChange}
+                                                                            />
+                                                                            <span className="ml-2">{stat.display_name}</span>
+                                                                        </label>
+                                                                    ))}
+                                                                </div>
+                                                            ) : (
+                                                                <div class="list_cont ">
+                                                                    <p>Not found</p>
+                                                                </div>
+                                                            )
+                                                        }
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                null
+                                            )
+                                        } */}
+
+
+
+
+
+                                        <h5 class="mt-4 mb-2">{lang["preview data"]}: </h5>
+                                        {selectedFields && selectedFields.length > 0 || selectedStats.length > 0 ?
+                                            (
+                                                <>
+                                                </>
+                                            ) :
+                                            <>
+                                                {lang["preview.content"]}
+                                            </>
+                                        }
+
+                                        {selectedFields && selectedFields.length > 0 || current & current.length > 0 || dataStatis && dataStatis.length > 0 ? (
+                                            <div class="table-responsive">
+                                                <table class="table table-striped excel-preview">
+                                                    <thead>
+                                                        {selectedFields.map((field) => {
+                                                            const header = apiDataName.find(
+                                                                (header) => header.fomular_alias === field
+                                                            );
+                                                            return <th key={field}>{header ? header.field_name || header.display_name : field}</th>;
+                                                        })}
+                                                    </thead>
+                                                    <tbody>
+                                                        {current.slice(0, 5).map((row, rowIndex) => (
+                                                            <tr key={rowIndex}>
+                                                                {selectedFields.map((field) => (
+                                                                    <td key={field}>{formatIfDate(row[field])}</td>
                                                                 ))}
                                                             </tr>
                                                         ))}
@@ -2416,24 +2628,25 @@ export default () => {
                     )
                     } */}
                 </div>
-                
-              
-                    < RenderUI
-                        page={page}
-                        component={dataUi}
-                        apiData={apiData}
-                        redirectToInput={redirectToInput}
-                        redirectToInputPUT={redirectToInputPUT}
-                        handleDelete={handleDelete}
-                        handleSearchClick={handleSearchClick}
-                        exportToCSV={exportToCSV}
-                        handleViewDetail={handleViewDetail}
-                        handleTable_Param={handleTable_Param}
-                        exportFile={exportFile}
-                        redirectToImportData={redirectToImportData}
-                        dataCheck={dataCheck}
-                    />
-                
+
+
+                < RenderUI
+                    page={page}
+                    component={dataUi}
+                    apiData={apiData}
+                    redirectToInput={redirectToInput}
+                    redirectToInputPUT={redirectToInputPUT}
+                    handleDelete={handleDelete}
+                    handleSearchClick={handleSearchClick}
+                    exportToCSV={exportToCSV}
+                    handleViewDetail={handleViewDetail}
+                    handleTable_Param={handleTable_Param}
+                    exportFile={exportFile}
+                    exportFile_PK={exportFile_PK}
+                    redirectToImportData={redirectToImportData}
+                    dataCheck={dataCheck}
+                />
+
 
             </div >
         </div >

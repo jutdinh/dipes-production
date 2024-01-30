@@ -38,23 +38,24 @@ const NavbarItem = ({ item, isChild = false, level, expandedItems, setExpandedIt
         return null;
     }
     const marginLeft = `${level > 2 && level * 5}px`;
+    const paddingLeft = `${level > 2 && level * 15}px`;
     //console.log(marginLeft)
     //console.log(level)
     return (
         <li className={`navbar-item ${isChild ? 'child-item' : ''}`} >
             {hasChildren ? (
                 <>
-                
                     <a
                         href={`#page_${item.page_id}`}
                         onClick={toggleMenu}
                         aria-expanded={isExpanded}
-                        className={`dropdown-toggle  ${isChild ? 'child-link' : ''}`}style={{ marginLeft }}
+                        className={`dropdown-toggle  ${isChild ? 'child-link' : ''}`}style={{ paddingLeft }}
                     >
-                        <i className={`fa size-18 ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'} ${isChild ? 'child-icon' : ''}`}></i>
+                        {/* <i className={`fa size-18 ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'} ${isChild ? 'child-icon' : ''}`}></i>
                         {!hasChildren && item.icon && ( // Kiểm tra nếu không có con thì hiển thị icon
                             <FontAwesomeIcon icon={icons[item.icon].icon} className="mr-2" />
-                        )}
+                        )} */}
+                         <FontAwesomeIcon icon={icons[item.icon].icon} className="mr-4" />
                         <span>{item.page_title}</span>
                         
                     </a>
@@ -84,7 +85,7 @@ const NavbarItem = ({ item, isChild = false, level, expandedItems, setExpandedIt
                     }}
                     activeClassName="nav-active"
                     className={isChild ? 'child-link' : ''}
-                    style={{ marginLeft }}
+                    style={{ paddingLeft }}
                 >
                     {item.icon && (
 
@@ -97,10 +98,8 @@ const NavbarItem = ({ item, isChild = false, level, expandedItems, setExpandedIt
     );
 };
 
-
 const Navbar = ({ data }) => {
     const [expandedItems, setExpandedItems] = useState([]);
-
     useEffect(() => {
         // Lấy trạng thái từ localStorage khi component khởi chạy
         const storedExpandedItems = localStorage.getItem('expandedItems');
@@ -108,35 +107,21 @@ const Navbar = ({ data }) => {
             setExpandedItems(JSON.parse(storedExpandedItems));
         }
     }, []);
-
     return (
         <>
-
             {data?.map(item => (
                 <NavbarItem key={item.page_id} item={item} level={1} expandedItems={expandedItems} setExpandedItems={setExpandedItems} />
             ))}
-
         </>
     );
 };
-
-
-
 export default Navbar;
-
-
-
-
-
-
-
 
 // const NavbarItem = ({ item, level }) => {
 //     if (item.is_hidden) {
 //         return null;
 //     }
 //     const hasChildren = item.children && item.children.length > 0;
-
 //     // Nếu là level 1 và có children, hiển thị với dropdown
 //     if (level === 1 && hasChildren) {
 //         return (
@@ -170,7 +155,6 @@ export default Navbar;
 //         );
 //     }
 // };
-
 // const Navbar = ({ data }) => {
 //     return (
 //         <nav>
@@ -182,7 +166,6 @@ export default Navbar;
 //         </nav>
 //     );
 // };
-
 // export default Navbar;
 
 

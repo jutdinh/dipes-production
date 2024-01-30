@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSquarePlus, faFileImport, faFileExport, faUpload, faMagnifyingGlass, faDownload } from '@fortawesome/free-solid-svg-icons';
 import Chart from 'react-apexcharts'
 import Swal from 'sweetalert2';
-const RenderComponent = ({ page, component, apiData, redirectToInput, redirectToInputPUT, handleDelete, handleSearchClick, exportToCSV, handleViewDetail, exportFile, redirectToImportData }) => {
+const RenderComponent = ({ page, component, apiData, redirectToInput, redirectToInputPUT, handleDelete, handleSearchClick, exportToCSV, handleViewDetail, exportFile, redirectToImportData, exportFile_PK }) => {
 
     const { lang, proxy, auth, functions, pages } = useSelector(state => state);
 
@@ -60,7 +60,9 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
                             handleSearchClick={handleSearchClick}
                             redirectToInputPUT={redirectToInputPUT}
                             handleDelete={handleDelete}
-                            handleViewDetail={handleViewDetail} />
+                            handleViewDetail={handleViewDetail}
+                            exportFile={exportFile}
+                            exportFile_PK={exportFile_PK} />
                     </div>
                 );
 
@@ -91,7 +93,8 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
                             handleSearchClick={handleSearchClick}
                             redirectToInputPUT={redirectToInputPUT}
                             handleDelete={handleDelete}
-                            handleViewDetail={handleViewDetail} />
+                            handleViewDetail={handleViewDetail}
+                            exportFile={exportFile} />
                     </div>
                 );
             case 'flex':
@@ -263,6 +266,8 @@ const RenderTable = (props) => {
     const tableProps = props.props
     const children = props.component.children
     const buttons = props.buttons
+    const exportFile = props.exportFile
+    const exportFile_PK = props.exportFile_PK
     const redirectToInputPUT = props.redirectToInputPUT
     const handleViewDetail = props.handleViewDetail
     const handleDelete = props.handleDelete
@@ -331,7 +336,9 @@ const RenderTable = (props) => {
         "modify": true,
         "purge": true,
     }
+
     const dataCheck = _user.role !== "uad" ? dataPrivileges.find(item => item.table_id === dataTable_id) : dataCheckAdministrator;
+    
     const handleSearchClick = () => {
         setCurrentPage(1);
         callApi(searchValues, searchUrl)
@@ -343,14 +350,26 @@ const RenderTable = (props) => {
         setSumerize(0)
     }
 
+
     // Hàm để xử lý thay đổi giá trị tìm kiếm
     const handleInputChange = (e, fieldAlias, value, searchData) => {
-
-        setSearchUrl(searchData.url)
-        setSearchValues({ ...searchValues, [fieldAlias]: value });
-        ////console.log(29999,value)
+        // Loại bỏ khoảng trắng ở hai đầu của chuỗi
+        const trimmedValue = value.trim();
+    
+        // Cập nhật searchUrl
+        setSearchUrl(searchData.url);
+    
+        // Chỉ cập nhật searchValues với giá trị không phải là chuỗi rỗng
+        if (trimmedValue) {
+            setSearchValues({ ...searchValues, [fieldAlias]: trimmedValue });
+        } else {
+            // Nếu giá trị sau khi trim là chuỗi rỗng, loại bỏ khóa đó khỏi searchValues
+            const {[fieldAlias]: _, ...rest} = searchValues;
+            setSearchValues(rest);
+        }
+        ////console.log(29999, trimmedValue);
     };
-
+    
     // Hàm xử lý sự kiện nhấn phím, ví dụ nhấn Enter để tìm kiếm
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
@@ -362,6 +381,7 @@ const RenderTable = (props) => {
         buttons[key].state && !['add', 'import', 'export'].includes(key));
 
     const [totalPages, setTotalPages] = useState(0);
+    
     const rowsPerPage = functions.findRowsPerPage(tableProps)
 
 
@@ -372,7 +392,7 @@ const RenderTable = (props) => {
     const indexOfLast = currentPage * rowsPerPage;
     const indexOfFirst = indexOfLast - rowsPerPage;
 
-    const currentData = apiData;
+    const  currentData = apiData;
     ////////console.log(396, currentData)
 
     const paginate = (pageNumber) => {
@@ -711,7 +731,7 @@ const RenderTable = (props) => {
                                                         <td class="align-center">
                                                             {/* {renderInlineButtonsForRow(buttons, row)} */}
 
-                                                            < RenderInlineButtonsForRow data={currentData} children={children} {...props} tableProps={tableProps} row={row} redirectToInputPUT={redirectToInputPUT} handleViewDetail={handleViewDetail} handleDelete={handleDelete} dataPrivileges={dataPrivileges} />
+                                                            < RenderInlineButtonsForRow data={currentData} children={children} {...props} tableProps={tableProps} row={row} redirectToInputPUT={redirectToInputPUT} handleViewDetail={handleViewDetail} handleDelete={handleDelete} dataPrivileges={dataPrivileges} exportFile={exportFile} exportFile_PK={exportFile_PK} />
 
                                                         </td>
                                                     )}
@@ -803,10 +823,11 @@ const RenderTable = (props) => {
 
 
 const RenderInlineButtonsForRow = (props) => {
-    //console.log(420123, props)
+    console.log(420123, props)
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const { openTab, renderDateTimeByFormat } = functions
-    const { children, buttons, row, handleViewDetail, redirectToInputPUT, handleDelete } = props
+    const { children, buttons, row, handleViewDetail, redirectToInputPUT, handleDelete, exportFile, exportFile_PK } = props
+    const dataTable = props.props.source.tables
     const orderedKeys = ['approve', 'unapprove', 'detail', 'update', 'delete']; // Thứ tự mong muốn
     const dispatch = useDispatch();
     const { project_id, version_id, id_str, url } = useParams();
@@ -814,7 +835,7 @@ const RenderInlineButtonsForRow = (props) => {
     const _user = JSON.parse(stringifiedUser) || {}
     const _token = localStorage.getItem("_token");
     const [dataPrivileges, setDataPrivileges] = useState([]);
-    //console.log(children)
+
 
     useEffect(() => {
 
@@ -1004,27 +1025,46 @@ const RenderInlineButtonsForRow = (props) => {
         openTab(`/page/${pageId}/${values}`)
     }
 
+    const handleTableExportButton = async (row, pageId, params) => {
+        const fomularAlias = params.map(item => item.fomular_alias);
+        const values = fomularAlias.map((alias) => row[alias]);
+        openTab(`/page/${pageId}/${values}`)
+    }
+
     const mappedButtons = children.map((child) => {
-        const { id, props: buttonProps } = child;
 
-        // Trích xuất các thuộc tính của nút từ buttonProps
-        const { to, icon, style } = buttonProps;
-
-        // Trích xuất các thuộc tính của `to` từ `to` object
-        const { page_id, page_title, params } = to;
-
-        // Trích xuất màu sắc từ `style` object
+        const { id, props: buttonProps, name } = child;
+        const { to, icon, style, fields, api, preview_api } = buttonProps;
         const { color, backgroundColor } = style;
 
-        return (
-            <>
+        const primaryKeys = dataTable[0].primary_key;
 
-                <div class="icon-table-line">
-                    <i className="fa fa-link size-24 mr-1  pointer icon-link" key={id} onClick={() => handleTable_Param(row, page_id, params)} title={lang["viewdetail"]}></i>
-                </div>
-            </>
+        // Tìm trường có id trùng với primary_key
+        
 
-        );
+        const fomular = children[0]?.props?.primary_key?.fomular_alias;
+     console.log(fomular)
+        switch (name) {
+            case 'redirect_button':
+                return (
+                    <>
+                        <div class="icon-table-line">
+                            <i className="fa fa-link size-24 mr-1  pointer icon-link" key={id} onClick={() => handleTable_Param(row, to.page_id, to.params)} title={lang["viewdetail"]}></i>
+                        </div>
+                    </>
+                )
+            case 'table_export_button':
+                return (
+                    <>
+                        <div class="icon-table-line">
+                            <i className="fa fa fa-list-ul size-24 mr-1  pointer icon-list" key={id} onClick={() => exportFile_PK(fields, preview_api.url, api.url, fomular, row)} data-toggle="modal" data-target="#exportExcel_PK" title={lang["viewdetail"]}></i>
+                        </div>
+                    </>
+                )
+
+            default:
+
+        }
     });
 
 
@@ -1044,13 +1084,10 @@ const RenderInlineButtonsForRow = (props) => {
     return (
         <div class="icon-table">
             {mappedButtons}
-
             {orderedKeys.filter(key => buttons[key] && buttons[key].state && buttons[key].api !== null).map(key => {
-
                 switch (key) {
                     case 'approve':
                         return <div class="icon-table-line">
-
                             {shouldHideIconApprove(row) ?
                                 <i className="fa fa-check-circle-o size-24 pointer icon-check icon-disable" key={key}></i>
                                 : (
@@ -1076,33 +1113,25 @@ const RenderInlineButtonsForRow = (props) => {
                     case 'detail':
                         return <div class="icon-table-line">
                             <i className="fa fa-eye size-24 mr-1  pointer icon-view" key={key} onClick={() => handleViewDetail(row, props.buttons.detail.api.url)} title={lang["viewdetail"]}></i>
-
-
                         </div>
-
-
-
                     case 'update':
                         return (
                             dataCheck && dataCheck.modify ? <div class="icon-table-line">
                                 <i className="fa fa-edit size-24 pointer  icon-edit" key={key} onClick={() => redirectToInputPUT(row, props.buttons.update.api.url)} title={lang["edit"]}></i>
                             </div> : null
                         )
-
                     case 'delete':
                         return (
                             dataCheck && dataCheck.purge ? <div class="icon-table-line">
                                 <i className="fa fa-trash-o size-24 pointer icon-delete" key={key} onClick={() => handleDelete(row, props.buttons.delete.api.url)} title={lang["delete"]}></i>
                             </div> : null
                         )
-
                     default:
                         return <button key={key}>{key}</button>;
                 }
             })}
         </div>
     )
-
 };
 
 const RenderChart = (props) => {
@@ -1312,28 +1341,11 @@ const RenderChart = (props) => {
             <div id="chart" style={{ width: '100%' }}>
                 <Chart options={chartData.options} series={chartData.series} type="bar" height={height} />
             </div>
-            <Dropdown />
+
         </div>
     );
 };
-function Dropdown() {
-    const [isOpen, setIsOpen] = useState(false);
-  
-    const toggleDropdown = () => {
-      setIsOpen(!isOpen);
-    };
-  
-    return (
-      <div className={`dropdown ${isOpen ? 'open' : ''}`}>
-        <button className="dropdown-btn" onClick={toggleDropdown}>Toggle Dropdown</button>
-        <ul className="dropdown-menu">
-          <li>Item 1</li>
-          <li>Item 2</li>
-          <li>Item 3</li>
-        </ul>
-      </div>
-    );
-  }
+
 const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
     console.log(data)
 
@@ -1395,11 +1407,14 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
 
             case 'INT UNSIGNED' || 'BIG INT' || 'INT UNSIGNED' || 'BIG INT UNSIGNED':
                 return <input type="number" className="form-control" placeholder={field.field_name} value={inputValue} min="0" onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
-
+            case 'DATE':
+                return <input type="date" className="form-control" placeholder={field.field_name} value={inputValue} onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
+            case 'DATETIME':
+                return <input type="datetime-local" className="form-control" placeholder={field.field_name} value={inputValue} onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
             case 'BOOL':
                 return (
                     <select
-                        value={inputValue === true ? 'true' :  'false' }
+                        value={inputValue === true ? 'true' : 'false'}
                         onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)}
                         className="form-control"
                     >
