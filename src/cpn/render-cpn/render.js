@@ -6,14 +6,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSquarePlus, faFileImport, faFileExport, faUpload, faMagnifyingGlass, faDownload } from '@fortawesome/free-solid-svg-icons';
 import Chart from 'react-apexcharts'
 import Swal from 'sweetalert2';
-const RenderComponent = ({ page, component, apiData, redirectToInput, redirectToInputPUT, handleDelete, handleSearchClick, exportToCSV, handleViewDetail, exportFile, redirectToImportData, exportFile_PK }) => {
+import { Table } from "react-bootstrap";
+import icons from './icon';
 
+
+const RenderComponent = ({ page, component, apiData, redirectToInput, redirectToInputPUT, handleDelete, handleSearchClick, exportToCSV, handleViewDetail, exportFile, redirectToImportData, exportFile_PK,  submitButton_Custom }) => {
+console.log(component)
     const { lang, proxy, auth, functions, pages } = useSelector(state => state);
 
     // Hàm chính để xác định loại component cần render
     const renderByType = (cpn, props, flex, id) => {
 
-        //console.log(page.params)
+        ////console.log(page.params)
         const type = cpn.name
         const hasFlexData = (flex) => {
             return flex && flex.props && flex.props.style;
@@ -62,7 +66,8 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
                             handleDelete={handleDelete}
                             handleViewDetail={handleViewDetail}
                             exportFile={exportFile}
-                            exportFile_PK={exportFile_PK} />
+                            exportFile_PK={exportFile_PK}
+                            submitButton_Custom={submitButton_Custom} />
                     </div>
                 );
 
@@ -94,7 +99,9 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
                             redirectToInputPUT={redirectToInputPUT}
                             handleDelete={handleDelete}
                             handleViewDetail={handleViewDetail}
-                            exportFile={exportFile} />
+                            exportFile={exportFile}
+                            exportFile_PK={exportFile_PK} 
+                            submitButton_Custom={submitButton_Custom}/>
                     </div>
                 );
             case 'flex':
@@ -132,16 +139,16 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
             <div class="col-md-12" >
                 <div class="white_shd full">
                     <div class="full graph_head_cus d-flex">
-                        {/* {component?.map((comp) => (
+                        {component?.map((comp) => (
                             <div key={comp.id}>
                             </div>
-                        ))} */}
+                        ))}
                     </div>
                     <div class="full inner_elements">
                         <div class="row" >
                             <div class="col-md-12">
                                 <div class="tab_style2 ">
-                                    <div class="tabbar padding_infor_info">
+                                    <div class="tabbar padding_infor_info_p-d-5">
                                         <div class="tab-content" id="nav-tabContent">
                                             <div class={`tab-pane fade ${'nav-home_s2' ? 'show active' : ''}`} id="nav-home_s2" role="tabpanel" aria-labelledby="nav-home-tab">
                                                 <div class="table_section">
@@ -174,7 +181,7 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
     );
 };
 const ExtraButtons = ({ buttons, props, redirectToInput, redirectToImportData, exportToCSV, exportFile }) => {
-    //console.log(174,buttons)
+    ////console.log(174,buttons)
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
@@ -194,8 +201,8 @@ const ExtraButtons = ({ buttons, props, redirectToInput, redirectToImportData, e
 
                 if (success && data.length > 0) {
                     const dataUser = data.find(item => item.username === _user.username);
-                    ////console.log(_user.username)
-                    ////console.log(dataUser)
+                    //////console.log(_user.username)
+                    //////console.log(dataUser)
                     setDataPrivileges(dataUser?.privileges)
                 }
             })
@@ -208,7 +215,7 @@ const ExtraButtons = ({ buttons, props, redirectToInput, redirectToImportData, e
         "modify": true,
         "purge": true,
     }
-    const dataCheck = _user.role !== "uad" ? dataPrivileges.find(item => item.table_id === dataTable_id) : dataCheckAdministrator;
+    const dataCheck = _user.role !== "uad" ? dataPrivileges?.find(item => item.table_id === dataTable_id) : dataCheckAdministrator;
 
     return Object.entries(buttons).map(([key, value]) => {
 
@@ -269,6 +276,7 @@ const RenderTable = (props) => {
     const exportFile = props.exportFile
     const exportFile_PK = props.exportFile_PK
     const redirectToInputPUT = props.redirectToInputPUT
+    const submitButton_Custom= props.submitButton_Custom
     const handleViewDetail = props.handleViewDetail
     const handleDelete = props.handleDelete
     const stringifiedUser = localStorage.getItem("user");
@@ -276,7 +284,7 @@ const RenderTable = (props) => {
     const dataTable_id = tableProps.source.tables[0].id
     const dispatch = useDispatch();
     const typeTable = props.type
-    //console.log(children)
+    ////console.log(children)
     const data = props.apiData
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const checkState = useSelector(state => state.stateAprove);
@@ -285,20 +293,11 @@ const RenderTable = (props) => {
     const [apiData, setApiData] = useState([])
     const [previousSearchValues, setPreviousSearchValues] = useState({});
     const [currentCount, setCurrentCount] = useState(null);
-    // useEffect(() => {
-    //     setApiData(data)
-    // }, [data]);
-    ////////console.log(342, apiData)
+
     const { fields, search, get } = tableProps.source;
     const currentURL = window.location.href;
 
-    const params = functions.getAllParamsAfterPageId(currentURL, url);
-
-
-
-
-
-    ////console.log(fields)
+    const params = functions.getAllParamsAfterPageId(currentURL, url)
     const { navigator } = tableProps.buttons;
     const visibility = tableProps.visibility;
     const [currentPage, setCurrentPage] = useState(1);
@@ -307,9 +306,28 @@ const RenderTable = (props) => {
     const [loadingResult, setLoadingResult] = useState(false);
     const [sumerize, setSumerize] = useState(0)
     const [dataPrivileges, setDataPrivileges] = useState([]);
+    const [tableMaxHeight, setTableMaxHeight] = useState('50vh');
+    //console.log(tableMaxHeight)
 
+    useEffect(() => {
+        function updateTableHeight() {
 
-    //console.log(sumerize)
+            const newHeight = window.innerHeight - 280;
+            setTableMaxHeight(`${newHeight}px`);
+        }
+
+        window.addEventListener('resize', updateTableHeight);
+
+        // Gọi ngay khi component được mount
+        updateTableHeight();
+
+        // Cleanup listener
+        return () => {
+            window.removeEventListener('resize', updateTableHeight);
+        };
+    }, []);
+
+    ////console.log(sumerize)
     useEffect(() => {
 
         fetch(`${proxy()}/privileges/accounts`, {
@@ -320,11 +338,11 @@ const RenderTable = (props) => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, activated, status, content } = resp;
-                ////console.log(251, resp)
+                //////console.log(251, resp)
                 if (success && data.length > 0) {
                     const dataUser = data.find(item => item.username === _user.username);
-                    ////console.log(_user.username)
-                    ////console.log(dataUser)
+                    //////console.log(_user.username)
+                    //////console.log(dataUser)
                     setDataPrivileges(dataUser?.privileges)
                 }
             })
@@ -337,13 +355,17 @@ const RenderTable = (props) => {
         "purge": true,
     }
 
-    const dataCheck = _user.role !== "uad" ? dataPrivileges.find(item => item.table_id === dataTable_id) : dataCheckAdministrator;
-    
-    const handleSearchClick = () => {
+    const dataCheck = _user.role !== "uad" ? dataPrivileges?.find(item => item.table_id === dataTable_id) : dataCheckAdministrator;
+
+    const handleSearchClick = (data, url) => {
+        //console.log(3555, data)
+        //console.log(3555, url)
+
+        setSearchUrl(url)
+        setSearchValues(data)
         setCurrentPage(1);
         callApi(searchValues, searchUrl)
         // setSearching(true)
-
         callApiCount(searchValues, searchUrl)
         // callApiStatistic()
         setApiData([])
@@ -355,25 +377,26 @@ const RenderTable = (props) => {
     const handleInputChange = (e, fieldAlias, value, searchData) => {
         // Loại bỏ khoảng trắng ở hai đầu của chuỗi
         const trimmedValue = value.trim();
-    
+
+        // Kiểm tra nếu chuỗi chỉ chứa khoảng trắng và không có ký tự khác
+        if (/^\s*$/.test(trimmedValue)) {
+            // Nếu là chuỗi trắng, gán giá trị rỗng ("") cho trường fieldAlias
+            setSearchValues({ ...searchValues, [fieldAlias]: "" });
+        } else {
+            // Nếu không phải là chuỗi trắng, cập nhật searchValues với giá trị đã trim
+            setSearchValues({ ...searchValues, [fieldAlias]: trimmedValue });
+        }
+
         // Cập nhật searchUrl
         setSearchUrl(searchData.url);
-    
-        // Chỉ cập nhật searchValues với giá trị không phải là chuỗi rỗng
-        if (trimmedValue) {
-            setSearchValues({ ...searchValues, [fieldAlias]: trimmedValue });
-        } else {
-            // Nếu giá trị sau khi trim là chuỗi rỗng, loại bỏ khóa đó khỏi searchValues
-            const {[fieldAlias]: _, ...rest} = searchValues;
-            setSearchValues(rest);
-        }
-        ////console.log(29999, trimmedValue);
     };
-    
+
+
+
     // Hàm xử lý sự kiện nhấn phím, ví dụ nhấn Enter để tìm kiếm
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
-            handleSearchClick();
+            handleSearchClick(searchValues, searchUrl);
         }
     };
 
@@ -381,19 +404,20 @@ const RenderTable = (props) => {
         buttons[key].state && !['add', 'import', 'export'].includes(key));
 
     const [totalPages, setTotalPages] = useState(0);
-    
+
     const rowsPerPage = functions.findRowsPerPage(tableProps)
 
-
     const accurateTotalPages = Math.ceil(sumerize / rowsPerPage);
+
     if (totalPages !== accurateTotalPages) {
         setTotalPages(accurateTotalPages);
     }
     const indexOfLast = currentPage * rowsPerPage;
+
     const indexOfFirst = indexOfLast - rowsPerPage;
 
-    const  currentData = apiData;
-    ////////console.log(396, currentData)
+    const currentData = apiData;
+    //////////console.log(396, currentData)
 
     const paginate = (pageNumber) => {
         const startAt = (pageNumber - 1) * rowsPerPage;
@@ -407,7 +431,7 @@ const RenderTable = (props) => {
     };
 
     const renderSourceButtons = (source, lang) => {
-        ////////console.log(244, source)
+        ////console.log(244, source)
         return Object.entries(source).map(([key, value]) => {
             if (!value.state) {
                 return null;
@@ -435,10 +459,10 @@ const RenderTable = (props) => {
                 return acc;
             }, {});
 
-            //console.log(415415, result);
+            ////console.log(415415, result);
             setSearchValues(result)
 
-            //console.log(apiData);
+            ////console.log(apiData);
             setCurrentPage(1);
             callApi(result, url)
             callApiCount(result, url)
@@ -483,7 +507,7 @@ const RenderTable = (props) => {
         })
 
     }, [checkState]);
-    ////////console.log(308,checkState)
+    //////////console.log(308,checkState)
 
     const callApi = (data, dataUrl, startIndex = currentPage - 1) => {
         const startTime = new Date().getTime();
@@ -496,7 +520,7 @@ const RenderTable = (props) => {
             require_count: false,
             require_statistic: false,
         }
-        ////////console.log("ĐÂY LÀ BODY:", searchBody)
+        //////////console.log("ĐÂY LÀ BODY:", searchBody)
         if (dataUrl) {
 
             fetch(`${proxy()}${dataUrl}`, {
@@ -513,7 +537,7 @@ const RenderTable = (props) => {
                 .then(res => {
                     const { success, content, data, result, total, fields, count, sumerize } = res;
                     const statisticValues = res.statistic;
-                    ////////console.log(74, res)
+                    //////////console.log(74, res)
                     if (success) {
                         setApiData(data.filter(record => record != undefined));
 
@@ -536,7 +560,7 @@ const RenderTable = (props) => {
                     clearTimeout(loadingTimeoutSearch);// Clear the timeout
                     // setLoadingSearch(false);
                     // setLoading(false)
-                    // //////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                    // ////////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
                 });
         }
 
@@ -553,7 +577,7 @@ const RenderTable = (props) => {
             require_count: false,
             require_statistic: false,
         }
-        ////////console.log("ĐÂY LÀ BODY:", searchBody)
+        //////////console.log("ĐÂY LÀ BODY:", searchBody)
         if (searchUrl) {
 
             fetch(`${proxy()}${searchUrl}`, {
@@ -570,7 +594,7 @@ const RenderTable = (props) => {
                 .then(res => {
                     const { success, content, data, result, total, fields, count, sumerize } = res;
                     const statisticValues = res.statistic;
-                    ////////console.log(74, res)
+                    //////////console.log(74, res)
                     if (success) {
                         setApiData(data.filter(record => record != undefined));
 
@@ -593,7 +617,7 @@ const RenderTable = (props) => {
                     clearTimeout(loadingTimeoutSearch);// Clear the timeout
                     // setLoadingSearch(false);
                     // setLoading(false)
-                    // //////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                    // ////////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
                 });
         }
 
@@ -634,7 +658,7 @@ const RenderTable = (props) => {
         // } else {
         //     urlGetCount = searchUrl
         // }
-        ////////console.log(447, searchBody)
+        //////////console.log(447, searchBody)
         fetch(`${proxy()}${url}`, {
             method: "POST",
             headers: {
@@ -650,7 +674,7 @@ const RenderTable = (props) => {
 
                 const { success, content, data, result, total, fields, count } = res;
                 const statisticValues = res.statistic;
-                ////////console.log(74, res)
+                //////////console.log(74, res)
                 if (success) {
                     // setApiData(data.filter(record => record != undefined));
                     // setApiDataName(fields);
@@ -678,27 +702,33 @@ const RenderTable = (props) => {
                 setLoadingResult(false)
                 // setLoadingSearch(false);
                 // setLoading(false)
-                // ////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                // //////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
             });
     };
 
     return (
         <div>
             <div class="table-responsive table-custom mb-2">
-                <table class="table " style={tableProps.style}>
-                    <thead>
-                        <tr>
-                            {visibility.indexing && <td class="">#</td>}
-                            {fields.map(field => (
-                                <td key={field.id}>{field.field_name}</td>
-                            ))}
-                            {hasInlineButtons && <td class="align-center">Actions</td>}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            {visibility.indexing && <td></td>}
-                            {/* {fields.map((field, index) => (
+                <div style={{
+                    maxHeight: tableMaxHeight,
+                    overflowY: "auto"
+                }}>
+                    <Table striped bordered >
+                        {/* <table class="table" style={tableProps.style}> */}
+                        <thead class="sticky-header">
+
+                            <tr>
+                                {visibility.indexing && <td class="">#</td>}
+                                {fields.map(field => (
+                                    <td key={field.id}>{field.field_name}</td>
+                                ))}
+                                {hasInlineButtons && <td class="align-center">Actions</td>}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {visibility.indexing && <td></td>}
+                                {/* {fields.map((field, index) => (
                                 <th key={index} className="header-cell" style={{ minWidth: "200px" }}>
                                     <input
                                         type="search"
@@ -709,49 +739,51 @@ const RenderTable = (props) => {
                                     />
                                 </th>
                             ))} */}
-                            {fields.map((field, index) => (
-                                <th key={index} className="header-cell" style={{ minWidth: "200px" }}>
-                                    {functions.renderInput(field, handleInputChange, searchValues, search, handleKeyDown)}
-                                </th>
-                            ))}
-                            <th class="align-center"> {renderSourceButtons(tableProps.source)}</th>
-                        </tr>
-                        {currentData && currentData.length > 0 ?
-                            <>
-                                {dataCheck && dataCheck?.read ? (
-                                    currentData.map((row, index) => {
-                                        if (row) {
-                                            return (
-                                                <tr key={index}>
-                                                    <td class="align-center" scope="row" style={{ minWidth: "50px" }} className="cell">{indexOfFirst + index + 1}</td>
-                                                    {fields?.map((header) => (
-                                                        <td key={header.fomular_alias} className="cell">{functions.renderData(header, row)}</td>
-                                                    ))}
-                                                    {hasInlineButtons && (
-                                                        <td class="align-center">
-                                                            {/* {renderInlineButtonsForRow(buttons, row)} */}
-
-                                                            < RenderInlineButtonsForRow data={currentData} children={children} {...props} tableProps={tableProps} row={row} redirectToInputPUT={redirectToInputPUT} handleViewDetail={handleViewDetail} handleDelete={handleDelete} dataPrivileges={dataPrivileges} exportFile={exportFile} exportFile_PK={exportFile_PK} />
-
-                                                        </td>
-                                                    )}
-                                                </tr>)
-                                        } else {
-                                            return null
-                                        }
-                                    })
-                                ) :
-                                    <tr>
-                                        <td class="font-weight-bold cell" colspan={`${fields.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["no privileges"]}</div></td>
-                                    </tr>
-                                }
-                            </> :
-                            <tr>
-                                <td class="font-weight-bold cell" colspan={`${fields.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
+                                {fields.map((field, index) => (
+                                    <th key={index} className="header-cell" style={{ minWidth: "200px" }}>
+                                        {functions.renderInput(field, handleInputChange, searchValues, search, handleKeyDown)}
+                                    </th>
+                                ))}
+                                <th class="align-center"> {renderSourceButtons(tableProps.source, tableProps.source.search.url)}</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                            {currentData && currentData.length > 0 ?
+                                <>
+                                    {dataCheck && dataCheck?.read ? (
+                                        currentData.map((row, index) => {
+                                            if (row) {
+                                                return (
+                                                    <tr key={index}>
+                                                        <td class="align-center" scope="row" style={{ minWidth: "50px" }} className="cell">{indexOfFirst + index + 1}</td>
+                                                        {fields?.map((header) => (
+                                                            <td key={header.fomular_alias} className="cell">{functions.renderData(header, row)}</td>
+                                                        ))}
+                                                        {hasInlineButtons && (
+                                                            <td class="align-center">
+                                                                {/* {renderInlineButtonsForRow(buttons, row)} */}
+
+                                                                < RenderInlineButtonsForRow data={currentData} children={children} {...props} tableProps={tableProps} row={row} redirectToInputPUT={redirectToInputPUT} handleViewDetail={handleViewDetail} handleDelete={handleDelete} dataPrivileges={dataPrivileges} exportFile={exportFile} exportFile_PK={exportFile_PK} submitButton_Custom={submitButton_Custom} />
+
+                                                            </td>
+                                                        )}
+                                                    </tr>)
+                                            } else {
+                                                return null
+                                            }
+                                        })
+                                    ) :
+                                        <tr>
+                                            <td class="font-weight-bold cell" colspan={`${fields.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["no privileges"]}</div></td>
+                                        </tr>
+                                    }
+                                </> :
+                                <tr>
+                                    <td class="font-weight-bold cell" colspan={`${fields.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
+                                </tr>
+                            }
+                        </tbody>
+                        {/* </table> */}
+                    </Table>
+                </div>
             </div>
             {
                 currentData && currentData.length > 0 &&
@@ -823,10 +855,10 @@ const RenderTable = (props) => {
 
 
 const RenderInlineButtonsForRow = (props) => {
-    console.log(420123, props)
+    //console.log(420123, props)
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const { openTab, renderDateTimeByFormat } = functions
-    const { children, buttons, row, handleViewDetail, redirectToInputPUT, handleDelete, exportFile, exportFile_PK } = props
+    const { children, buttons, row, handleViewDetail, redirectToInputPUT, handleDelete, exportFile, exportFile_PK , submitButton_Custom} = props
     const dataTable = props.props.source.tables
     const orderedKeys = ['approve', 'unapprove', 'detail', 'update', 'delete']; // Thứ tự mong muốn
     const dispatch = useDispatch();
@@ -850,8 +882,8 @@ const RenderInlineButtonsForRow = (props) => {
 
                 if (success && data.length > 0) {
                     const dataUser = data.find(item => item.username === _user.username);
-                    ////console.log(760, _user)
-                    ////console.log(dataUser)
+                    //////console.log(760, _user)
+                    //////console.log(dataUser)
                     setDataPrivileges(dataUser?.privileges)
                 }
             })
@@ -869,7 +901,7 @@ const RenderInlineButtonsForRow = (props) => {
 
     const dataCheck = _user.role !== "uad" ? dataPrivileges.find(item => item.table_id === dataTable_id) : dataCheckAdministrator;
 
-    ////console.log(dataCheck)
+    //////console.log(dataCheck)
 
     const handleApprove = async (record, dataApi) => {
         const urlApprove = dataApi.api.url;
@@ -888,7 +920,7 @@ const RenderInlineButtonsForRow = (props) => {
                     .then(res => res.json())
                     .then(res => {
                         const { data, success, content } = res;
-                        ////////console.log(res)
+                        //////////console.log(res)
                         if (success) {
 
 
@@ -897,20 +929,20 @@ const RenderInlineButtonsForRow = (props) => {
                     })
             })
             const { success, data } = response;
-            ////////console.log(54, response)
+            //////////console.log(54, response)
             if (success) {
                 const { params } = data;
                 const stringifiedParams = params.map(param => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                ////////console.log(962, stringifiedParams)
+                //////////console.log(962, stringifiedParams)
 
 
                 const bodyApprove = {
                     [fomular_approve]: true
                 }
-                ////////console.log(bodyApprove)
+                //////////console.log(bodyApprove)
                 fetch(`${proxy()}${urlApprove}/${stringifiedParams}`, {
                     method: "PUT",
                     headers: {
@@ -921,7 +953,7 @@ const RenderInlineButtonsForRow = (props) => {
                 })
                     .then(res => res.json())
                     .then(res => {
-                        ////////console.log(res)
+                        //////////console.log(res)
                         const { success } = res
                         if (success) {
                             dispatch({
@@ -951,7 +983,7 @@ const RenderInlineButtonsForRow = (props) => {
     const handleUnApprove = async (record, dataApi) => {
         const urlUnApprove = dataApi.api.url;
         const fomular_unapprove = dataApi.field.fomular_alias
-        ////////console.log(fomular_unapprove)
+        //////////console.log(fomular_unapprove)
         if (urlUnApprove != undefined) {
 
             const id_str = urlUnApprove.split('/')[2]
@@ -964,24 +996,24 @@ const RenderInlineButtonsForRow = (props) => {
                     .then(res => res.json())
                     .then(res => {
                         const { data, success, content } = res;
-                        ////////console.log(res)
+                        //////////console.log(res)
                         if (success) { }
                         resolve(res)
                     })
             })
             const { success, data } = response;
-            ////////console.log(54, response)
+            //////////console.log(54, response)
             if (success) {
                 const { params } = data;
                 const stringifiedParams = params.map(param => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                ////////console.log(962, stringifiedParams)
+                //////////console.log(962, stringifiedParams)
                 const bodyUnApprove = {
                     [fomular_unapprove]: false
                 }
-                ////////console.log(bodyUnApprove)
+                //////////console.log(bodyUnApprove)
                 fetch(`${proxy()}${urlUnApprove}/${stringifiedParams}`, {
                     method: "PUT",
                     headers: {
@@ -992,7 +1024,7 @@ const RenderInlineButtonsForRow = (props) => {
                 })
                     .then(res => res.json())
                     .then(res => {
-                        ////////console.log(res)
+                        //////////console.log(res)
                         if (success) {
 
                             dispatch({
@@ -1034,21 +1066,21 @@ const RenderInlineButtonsForRow = (props) => {
     const mappedButtons = children.map((child) => {
 
         const { id, props: buttonProps, name } = child;
-        const { to, icon, style, fields, api, preview_api } = buttonProps;
+        const { to, icon, style, fields, api, preview_api, primary_key, value } = buttonProps;
         const { color, backgroundColor } = style;
 
-        const primaryKeys = dataTable[0].primary_key;
+        const primaryKeys = primary_key?.[0]?.fomular_alias;
 
         // Tìm trường có id trùng với primary_key
-        
+//console.log(1075, primaryKeys)
 
         const fomular = children[0]?.props?.primary_key?.fomular_alias;
-     console.log(fomular)
+        //console.log(fomular)
         switch (name) {
             case 'redirect_button':
                 return (
                     <>
-                        <div class="icon-table-line">
+                        <div class="icon-table-line" style={{color: color, backgroundColor: backgroundColor}} >
                             <i className="fa fa-link size-24 mr-1  pointer icon-link" key={id} onClick={() => handleTable_Param(row, to.page_id, to.params)} title={lang["viewdetail"]}></i>
                         </div>
                     </>
@@ -1056,8 +1088,17 @@ const RenderInlineButtonsForRow = (props) => {
             case 'table_export_button':
                 return (
                     <>
-                        <div class="icon-table-line">
-                            <i className="fa fa fa-list-ul size-24 mr-1  pointer icon-list" key={id} onClick={() => exportFile_PK(fields, preview_api.url, api.url, fomular, row)} data-toggle="modal" data-target="#exportExcel_PK" title={lang["viewdetail"]}></i>
+                        <div class="icon-table-line" style={{color: color, backgroundColor: backgroundColor}}>
+                            <i className="fa fa fa-list-ul size-24 mr-1  pointer icon-list"   key={id} onClick={() => exportFile_PK(fields, preview_api.url, api.url, fomular, row)} data-toggle="modal" data-target="#exportExcel_PK" title={lang["viewdetail"]}></i>
+                        </div>
+                    </>
+                )
+            case 'custom_button':
+                return (
+                    <>
+                        <div class="icon-table-line" style={{color: color, backgroundColor: backgroundColor}} >
+                        <FontAwesomeIcon  key={id} icon={icons[icon].icon} onClick={() => submitButton_Custom( api.params,api.url,  primaryKeys, value, row)} />
+                            {/* <i className="fa fa fa-list-ul size-24 mr-1  pointer icon-list" key={id} onClick={() => exportFile_PK(fields, preview_api.url, api.url, fomular, row)} data-toggle="modal" data-target="#exportExcel_PK" title={lang["viewdetail"]}></i> */}
                         </div>
                     </>
                 )
@@ -1135,15 +1176,15 @@ const RenderInlineButtonsForRow = (props) => {
 };
 
 const RenderChart = (props) => {
-    //console.log(730, props.props)
+    ////console.log(730, props.props)
     const url = props.props.api
     const paramsSearch = props.props.params
-    //console.log(paramsSearch)
+    ////console.log(paramsSearch)
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const _token = localStorage.getItem("_token");
     const [apiDataStatis, setApiDataStatis] = useState({})
     const [height, setHeight] = useState(350)
-    //console.log(apiDataStatis)
+    ////console.log(apiDataStatis)
     useEffect(() => {
         callApiStatistic()
 
@@ -1151,19 +1192,19 @@ const RenderChart = (props) => {
 
     ///search data
     const [parentFormData, setParentFormData] = useState({});
-    console.log("data", parentFormData)
+    //console.log("data", parentFormData)
     const handleFormDataChange = (newFormData) => {
         setParentFormData(newFormData);
     };
 
     const handleSubmitSearch = (newFormData) => {
-        console.log(1131, newFormData)
-        //console.log("Đã nhấn nút sêarc")
+        //console.log(1131, newFormData)
+        ////console.log("Đã nhấn nút sêarc")
         callApiStatistic()
     };
 
     const handleResetSearchValue = (newFormData) => {
-        console.log(1137, newFormData)
+        //console.log(1137, newFormData)
         setParentFormData({})
         callApiStatistic({})
     };
@@ -1185,7 +1226,7 @@ const RenderChart = (props) => {
             .then((res) => res.json())
             .then((res) => {
                 const { success, content, statistics } = res;
-                //console.log(1163, res)
+                ////console.log(1163, res)
                 if (success) {
                     setApiDataStatis(statistics)
 
@@ -1193,7 +1234,7 @@ const RenderChart = (props) => {
             });
     };
 
-    ////////console.log(apiDataStatis)
+    //////////console.log(apiDataStatis)
 
     const state = {
         series: [{
@@ -1208,7 +1249,7 @@ const RenderChart = (props) => {
                 },
                 events: {
                     click: function (chart, w, e) {
-                        // ////////console.log(chart, w, e)
+                        // //////////console.log(chart, w, e)
                     }
                 }
             },
@@ -1331,11 +1372,11 @@ const RenderChart = (props) => {
         }
     };
     const chartData = useMemo(() => transformDataForChart(apiDataStatis), [apiDataStatis]);
-    ////////console.log(chartData)
+    //////////console.log(chartData)
 
     return (
-        <div>
-            <h5>{props.props.content}</h5>
+        <div className='col-md-12'>
+            <h5 style={props.props.style} >{props.props.content}</h5>
 
             {paramsSearch && paramsSearch.length > 0 && <DynamicForm data={paramsSearch} onFormDataChange={handleFormDataChange} onFormSubmit={handleSubmitSearch} onFormReset={handleResetSearchValue} />}
             <div id="chart" style={{ width: '100%' }}>
@@ -1347,10 +1388,10 @@ const RenderChart = (props) => {
 };
 
 const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
-    console.log(data)
+    //console.log(data)
 
     const [formData, setFormData] = useState({});
-    //console.log(formData)
+    ////console.log(formData)
 
     const handleInputChange = (fieldAlias, value) => {
         let processedValue;
@@ -1369,7 +1410,7 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        //console.log(formData); 
+        ////console.log(formData); 
         onFormSubmit(formData)
     };
 
@@ -1383,10 +1424,10 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
     };
 
     const renderInput = (field) => {
-        console.log(field)
+        //console.log(field)
         const inputValue = formData[field.fomular_alias] || "";
-        console.log(inputValue)
-        console.log(inputValue.toString())
+        //console.log(inputValue)
+        //console.log(inputValue.toString())
         const valueBool = [
             {
                 id: 0,
@@ -1399,7 +1440,7 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
                 value: false
             },
         ]
-        console.log(valueBool)
+        //console.log(valueBool)
         switch (field.DATATYPE) {
 
             case 'TEXT':

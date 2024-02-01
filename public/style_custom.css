@@ -1646,9 +1646,22 @@ select:required:invalid {
     margin: 0 2px;
     border-radius: 3px;
 }
-.icon-table :hover {
+/* .icon-table :hover {
     background-color: rgb(214, 206, 206)
+} */
+.icon-table-line:hover{
+    background-color: rgb(214, 206, 206)
+
 }
+
+.padding_infor_info_p-d-5 {
+    padding: 5px 10px 5px 10px;
+    float: left;
+    width: 100%;
+    min-height: 560px;
+}
+
+
 
 #sidebar {
     display: flex;
@@ -1711,6 +1724,53 @@ select:required:invalid {
 .nav .nav-tabs .h5 {
     color: white;
 }
+
+
+.padding_infor_info_user {
+    padding: 5px 5px 5px 5px;
+    float: left;
+    width: 100%;
+    min-height: 560px;
+}
+.sticky-header {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    /* box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); */
+    /* box-shadow: 0 -41px 14px 38px black; */
+    box-shadow: 0 -5px 6px -5px rgba(0, 0, 0, 1), 0 6px 11px -7px rgba(0, 0, 0, 0.5);
+    z-index: 10; 
+}
+
+
+
+
+.cell_user{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.offline_animation {
+    width: 12px;
+    height: 12px;
+    background: #ca1414;
+    border-radius: 100%;
+    margin-top: 0;
+    position: relative;
+    top: 1px;
+    /* -webkit-animation: online 2s infinite;
+    animation: online 2s infinite; */
+}
+
+.table-scrollable {
+    display: block;
+    max-height: 400px; /* Hoặc chiều cao khác tùy thuộc vào nhu cầu của bạn */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+
 
 .tab_style2 .tabbar nav div.nav-tabs .nav-link.active {
     background: #d4e0ec;

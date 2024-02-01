@@ -4,6 +4,7 @@ import icons from './icon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const NavbarItem = ({ item, isChild = false, level, expandedItems, setExpandedItems }) => {
+    console.log(item)
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedItems.includes(item.page_id);
 

@@ -4,6 +4,7 @@ import $ from 'jquery';
 import Swal from 'sweetalert2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExport, faFileImport, faDownload, faSquarePlus, faCirclePlus } from '@fortawesome/free-solid-svg-icons';
+// import TableScroll from "../table-scroll/table-scroll"
 export default (props) => {
     const { lang, proxy, auth, functions } = useSelector(state => state);
 
@@ -335,6 +336,7 @@ export default (props) => {
     const indexOfLastUser = currentPage * rowsPerPage;
     const indexOfFirstUser = indexOfLastUser - rowsPerPage;
     const currentUser = data.slice(indexOfFirstUser, indexOfLastUser);
+   
     // console.log(currentUser)
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const totalPages = Math.ceil(profiles.length / rowsPerPage);
@@ -375,7 +377,7 @@ export default (props) => {
                             </div> */}
 
                             {/* List user */}
-                            <div class="full price_table padding_infor_info">
+                            <div class="full price_table padding_infor_info_user">
                                 <div class="col-md-12">
                                     {data && data.length > 0 ?
                                         <>
@@ -406,10 +408,14 @@ export default (props) => {
                                                                                 <div class="profile_contacts_list_user ">
                                                                                     <img class="img-responsive circle-image_list_user" src={proxy() + profile.avatar} alt="#" />
                                                                                 </div>}</td>
-                                                                            <td class="align-center">
-                                                                                {/* <i class="fa fa-edit icon-edit pointer size-24" onClick={() => handleUpdateUser(profile)} data-toggle="modal" data-target="#myEditmodal"></i>
-                                                                        <i class="fa fa-trash-o icon-delete pointer  size-24 ml-2" onClick={() => handleDeleteUser(profile)}></i> */}
-                                                                                <button style={{marginTop: 0}} class="btn btn-primary" onClick={() => redirectTo(profile)}>{lang["viewdetail"]}</button>
+                                                                            
+                                                                            <td>
+                                                                                <div class="icon-table">
+                                                                                    <div className="icon-table-line">
+                                                                                        <i class="fa fa-edit icon-edit pointer size-24" onClick={() => redirectTo(profile)}></i>
+                                                                                    </div>
+                                                                                    
+                                                                                </div>
                                                                             </td>
                                                                         </tr>
                                                                     ))}
@@ -423,6 +429,7 @@ export default (props) => {
                                                     )
                                                 }
                                             </div>
+                                    
                                             <div className="d-flex justify-content-between align-items-center mb-2">
                                                 <p>
                                                     {lang["show"]} {indexOfFirstUser + 1}-{Math.min(indexOfLastUser, profiles.length)} {lang["of"]} {profiles.length} {lang["results"]}
@@ -471,22 +478,22 @@ export default (props) => {
                                                     </ul>
                                                 </nav>
                                             </div></>
-                                         : 
+                                        :
                                         //<div class="d-flex justify-content-center align-items-center w-100 responsive-div">
-                                            <div>
-                                                {lang["not found user"]}
-                                            </div>
+                                        <div>
+                                            {lang["not found user"]}
+                                        </div>
 
                                     }
 
-                                        </div>
+                                </div>
 
 
-                            </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            )
+        </div>
+    )
 }

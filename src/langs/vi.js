@@ -442,6 +442,10 @@ export default {
     "no privileges": "Không có quyền",
     "username not available": "Tên đăng nhập không khả dụng",
     "log.login": "Lịch sử đăng nhập",
-    "account disabled": "Tài khoản của bạn đã bị vô hiệu"
+    "account disabled": "Tài khoản của bạn đã bị vô hiệu",
+    "account status": "Trạng thái",
+    "Active": "Đang hoạt động",
+    "Inactive": "Không hoạt động",
+    "manage version": "Quản lý phiên bản"
     
 }

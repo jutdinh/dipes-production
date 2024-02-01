@@ -23,9 +23,9 @@ export default (props) => {
     ]
 
     const status = [
-        { id: 0, label: "Đang hoạt động", value: true },
-        { id: 1, label: "Không hoạt động", value: false },
-      
+        { id: 0, label: "Active", value: true },
+        { id: 1, label: "Inactive", value: false },
+
     ]
 
     const [user, setUser] = useState({});
@@ -319,6 +319,19 @@ export default (props) => {
     const implementers = profiles.filter(profile => profile.role === 'pd');
     const projectFollowers = profiles.filter(profile => profile.role === 'ps');
 
+
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const rowsPerPage = 15;
+
+    const indexOfLastUser = currentPage * rowsPerPage;
+    const indexOfFirstUser = indexOfLastUser - rowsPerPage;
+    const currentUser = profiles.slice(indexOfFirstUser, indexOfLastUser);
+    console.log(currentUser)
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    const totalPages = Math.ceil(profiles.length / rowsPerPage);
+
+
     return (
         <div class="midde_cont">
             <div class="container-fluid">
@@ -502,12 +515,11 @@ export default (props) => {
                                                     </div>
 
                                                     <div class="form-group col-lg-6">
-                                                        <label class="font-weight-bold text-small" htmlFor="sel1">{lang["permission"]} <span className='red_star'>*</span></label>
+                                                        <label class="font-weight-bold text-small" htmlFor="sel1">{lang["account status"]} <span className='red_star'>*</span></label>
                                                         <select className="form-control" name="role" value={editUser.status} onChange={(e) => setEditUser({ ...editUser, status: e.target.value === "true" })}>
                                                             {status.map(sta => (
-                                                                <option key={sta.id} value={sta.value}>{sta.label}</option>
+                                                                <option key={sta.id} value={sta.value}>{lang[`${sta.label}`]}</option>
                                                             ))}
-
                                                         </select>
                                                         {errorMessagesedit.role && <span class="error-message">{errorMessagesedit.role}</span>}
                                                     </div>
@@ -539,8 +551,8 @@ export default (props) => {
                                 </div>
                             </div>
                             {/* List user */}
-                            <div class="full price_table padding_infor_info">
-                                {
+                            <div class="full price_table padding_infor_info_user">
+                                {/* {
                                     statusActive ? (
                                         <>
                                             {profiles && profiles.length > 0 ? (<>
@@ -564,7 +576,7 @@ export default (props) => {
                                                                                 <ul class="list-unstyled">
                                                                                     <li><i class="fa fa-envelope-o"></i> {item.email}</li>
                                                                                     <li><i class="fa fa-phone"></i> {item.phone}</li>
-                                                                                    {/* <li>{lang["createby"]}: {item.create_by}</li> */}
+                                                                                    
                                                                                     <li>
                                                                                         {lang["time"]}: {
                                                                                             lang["time"] === "Time" ?
@@ -580,7 +592,7 @@ export default (props) => {
                                                                                     <img class="img-responsive" width={100} src={proxy() + item.avatar} alt="#" />
                                                                                 </div>
                                                                             </div>
-                                                                            {/* {item.username !== auth.username && item.role !== auth.role && ( */}
+                                                                       
                                                                             <div class="bottom_list">
                                                                                 <div class="right_button">
                                                                                     <button type="button" class="btn btn-primary" onClick={() => handleUpdateUser(item)} data-toggle="modal" data-target="#myEditmodal">
@@ -591,7 +603,7 @@ export default (props) => {
                                                                                     </button>
                                                                                 </div>
                                                                             </div>
-                                                                            {/* )} */}
+                                                                          
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -618,7 +630,7 @@ export default (props) => {
                                                                                     <li><i class="fa fa-envelope-o"></i> {item.email}</li>
                                                                                     <li><i class="fa fa-phone"></i> {item.phone}</li>
                                                                                     <li>{lang["address"]}: {item.address}</li>
-                                                                                    {/* <li>{lang["createby"]}: {item.create_by}</li> */}
+                                                                                   
                                                                                     <li>
                                                                                         {lang["time"]}: {
                                                                                             lang["time"] === "Time" ?
@@ -669,7 +681,7 @@ export default (props) => {
                                                                                     <li><i class="fa fa-envelope-o"></i> {item.email}</li>
                                                                                     <li><i class="fa fa-phone"></i> {item.phone}</li>
                                                                                     <li>{lang["address"]}: {item.address}</li>
-                                                                                    {/* <li>{lang["createby"]}: {item.create_by}</li> */}
+                                                                                  
                                                                                     <li>
                                                                                         {lang["time"]}: {
                                                                                             lang["time"] === "Time" ?
@@ -702,59 +714,132 @@ export default (props) => {
                                                             ))}
                                                         </div>
                                                     )}
-                                                    {/* {projectFollowers.length > 0 && (
-                                        <div class="row group">
-                                            <h4 class="col-lg-12">{lang["monitor"]}</h4>
-                                            {projectFollowers.map((item) => (
-                                                <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12 profile_details margin_bottom_30">
-                                                    <div class="contact_blog">
-                                                        <div class="contact_inner">
-                                                            <div class="left-cus">
-                                                                <h4>{item.fullname}</h4>
-                                                                <p><strong>Tài khoản: {item.username} </strong></p>
-                                                                <p><strong>Quyền: </strong>
-                                                                {item.role === "ad" ? "Adminstrator" :
-                                                                        item.role === "pm" ? "Operator" :
-                                                                            item.role === "pd" ? "Normal" :
-                                                                             
-                                                                                    item.role}</p>
-                                                                <ul class="list-unstyled">
-                                                                    <li><i class="fa fa-envelope-o"></i> {item.email}</li>
-                                                                    <li><i class="fa fa-phone"></i> {item.phone}</li>
-                                                                    <li>{lang["address"]}: {item.address}</li>
-                                                                    <li>Tạo bởi: {item.create_by}</li>
-                                                                    <li>Thời gian: {item.create_at}</li>
-                                                                </ul>
-                                                            </div>
-                                                            <div class="right">
-                                                                <div class="profile_contacts">
-                                                                    <img class="img-responsive" width={100} src={proxy + item.avatar} alt="#" />
-                                                                </div>
-                                                            </div>
-                                                            <div class="bottom_list">
-                                                                {item.username !== auth.username && item.role !== auth.role && (
-                                                                    <div class="right_button">
-                                                                        <button type="button" class="btn btn-primary" onClick={() => handleUpdateUser(item)} data-toggle="modal" data-target="#myEditmodal">
-                                                                            <i class="fa fa-edit"></i>
-                                                                        </button>
-                                                                        <button type="button" class="btn btn-danger" onClick={() => handleDeleteUser(item)}>
-                                                                            <i class="fa fa-trash-o"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )} */}
+                                                    
                                                 </div>
                                             </>
                                             ) : <div>{lang["not found user"]}</div>}
                                         </>
                                     ) : null
-                                }
+                                } */}
+
+                                <div class="col-md-12">
+
+                                    <div class="table-responsive">
+                                        {
+                                            currentUser && currentUser.length > 0 ? (
+                                                <>
+                                                    <table class="table table ">
+                                                        <thead>
+                                                            <tr class="color-tr">
+                                                                {/* <th class="font-weight-bold" style={{ width: "30px" }} scope="col">#</th> */}
+                                                                <th class="font-weight-bold" scope="col">{lang["username"]}</th>
+                                                                <th class="font-weight-bold" style={{ width: "300px" }} scope="col">{lang["fullname"]}</th>
+                                                                <th class="font-weight-bold" style={{ width: "120px" }} scope="col">{lang["permission"]}</th>
+                                                                <th class="font-weight-bold" style={{ width: "300px" }} scope="col">{lang["email"]}</th>
+                                                                <th class="font-weight-bold" style={{ width: "130px" }} scope="col">{lang["phone"]}</th>
+                                                                <th class="font-weight-bold align-center" style={{ width: "120px" }} scope="col">{lang["avatar"]}</th>
+                                                                <th class="font-weight-bold" style={{ width: "130px" }} scope="col">{lang["account status"]}</th>
+                                                                {
+                                                                    ["pm", "ad", "uad"].indexOf(auth.role) != -1 &&
+                                                                    <th class="font-weight-bold align-center" style={{ width: "80px" }}>{lang["log.action"]}</th>
+                                                                }
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {currentUser.map((profile, index) => (
+                                                                <tr key={index}>
+                                                                    {/* <td>{indexOfFirstUser + index + 1}</td> */}
+                                                                    <td style={{ minWidth: "200px", maxWidth: "250px" }} class="cell_user" title={profile.username}>{profile.username}</td>
+                                                                    <td style={{ minWidth: "250px", maxWidth: "300px" }} class="cell_user" title={profile.fullname}>{profile.fullname}</td>
+                                                                    <td style={{ minWidth: "120px", maxWidth: "120px" }}> 
+                                                                        {profile.role === "ad" ? lang["administrator"] :
+                                                                            profile.role === "pm" ? lang["uprojectmanager"] :
+                                                                                profile.role === "pd" ? lang["normal"] :
+                                                                                    profile.role}</td>
+                                                                    <td style={{ minWidth: "120px", maxWidth: "120px" }} class="cell_user" title={profile.email}>{profile.email}</td>
+                                                                    <td title={profile.phone}>{profile.phone}</td>
+                                                                    <td style={{ minWidth: "150px", maxWidth: "150px" }} class="align-center">{
+                                                                        <div class="profile_contacts_list_user ">
+                                                                            <img class="img-responsive circle-image_list_user" src={proxy() + profile.avatar} alt="#" />
+                                                                        </div>}</td>
+
+                                                                    <td style={{ minWidth: "170px", maxWidth: "170px" }} title={lang[`${status.find(s => s.value === profile.status).label}`]}>
+                                                                        <span class={` ${profile.status ? "online_animation" : "offline_animation"} mr-1`}></span>
+                                                                        {lang[`${status.find(s => s.value === profile.status).label}`]}
+                                                                    </td>
+
+                                                                    <td>
+                                                                        <div class="icon-table">
+                                                                            <div className="icon-table-line">
+                                                                                <i class="fa fa-edit icon-edit pointer size-24" onClick={() => handleUpdateUser(profile)} data-toggle="modal" data-target="#myEditmodal"></i>
+                                                                            </div>
+                                                                            <div className="icon-table-line">
+                                                                                <i class="fa fa-trash-o icon-delete pointer size-24" onClick={() => handleDeleteUser(profile)}></i>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </>
+                                            ) : (
+                                                <div class="d-flex justify-content-center align-items-center w-100 responsive-div">
+                                                    {lang["not found user"]}
+                                                </div>
+                                            )
+                                        }
+                                    </div>
+
+                                    <div className="d-flex justify-content-between align-items-center mb-2 mt-2">
+                                        <p>
+                                            {lang["show"]} {indexOfFirstUser + 1}-{Math.min(indexOfLastUser, profiles.length)} {lang["of"]} {profiles.length} {lang["results"]}
+                                        </p>
+                                        <nav aria-label="Page navigation example">
+                                            <ul className="pagination mb-0">
+                                                {/* Nút đến trang đầu */}
+                                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                    <button className="page-link" onClick={() => paginate(1)}>
+                                                        &#8810;
+                                                    </button>
+                                                </li>
+                                                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                                                    <button className="page-link" onClick={() => paginate(Math.max(1, currentPage - 1))}>
+                                                        &laquo;
+                                                    </button>
+                                                </li>
+                                                {currentPage > 2 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                {Array(totalPages).fill().map((_, index) => {
+                                                    if (
+                                                        index + 1 === currentPage ||
+                                                        (index + 1 >= currentPage - 1 && index + 1 <= currentPage + 1)
+                                                    ) {
+                                                        return (
+                                                            <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                                                                <button className="page-link" onClick={() => paginate(index + 1)}>
+                                                                    {index + 1}
+                                                                </button>
+                                                            </li>
+                                                        );
+                                                    }
+                                                    return null;  // Đảm bảo trả về null nếu không có gì được hiển thị
+                                                })}
+                                                {currentPage < totalPages - 1 && <li className="page-item"><span className="page-link">...</span></li>}
+                                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                    <button className="page-link" onClick={() => paginate(Math.min(totalPages, currentPage + 1))}>
+                                                        &raquo;
+                                                    </button>
+                                                </li>
+                                                {/* Nút đến trang cuối */}
+                                                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                                                    <button className="page-link" onClick={() => paginate(totalPages)}>
+                                                        &#8811;
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
 
 
                             </div>

@@ -92,14 +92,14 @@ export default () => {
         setIsExpanded(prevState => !prevState);
         dispatch({
             type: "setSidebar",
-            payload: { sidebar: isExpanded}
+            payload: { sidebar: isExpanded }
         })
     }
-   
+
     useEffect(() => {
         dispatch({
             type: "setSidebar",
-            payload: { sidebar: isExpanded}
+            payload: { sidebar: isExpanded }
         })
     }, [isExpanded])
     return (
@@ -145,15 +145,14 @@ export default () => {
                             <ul class="user_profile_dd" title={auth.fullname}>
                                 <li>
                                     <a class="dropdown-toggle" data-toggle="dropdown">
-                                    
+
                                         {/* <span class="name_user"> {generateUserLastName()}</span> */}
                                         <span class="name_user">    <img class="img-responsive circle-image" src={(proxy()) + auth.avatar} alt="#" /> {auth.fullname}</span>
                                     </a>
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="/users/profile">{lang["my profile"]}</a>
                                         {/* <a class="dropdown-item" href="settings.html">{lang["settings"]}</a> */}
-                                        <a class="dropdown-item" href="/changepassword">{lang["change password"]}</a>
-
+                                        {user.role !== "uad" && <a class="dropdown-item" href="/changepassword">{lang["change password"]}</a>}
                                         <a class="dropdown-item" href="#" onClick={signOut}>{lang["signout"]}</a>
                                     </div>
                                 </li>
@@ -161,9 +160,9 @@ export default () => {
                         </div>
                     </div>
 
-                    
-                   
-              
+
+
+
                 </div>
             </nav>
         </div>

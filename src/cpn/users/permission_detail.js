@@ -227,8 +227,8 @@ export default (props) => {
                             <div class="white_shd full ">
                                 <div class="full graph_head">
                                     <div class="heading1 margin_0">
-                                        <h5><label class="pointer" onClick={() => goToHomePage()}>
-                                            <a title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 nav-item nav-link"></i></a>{lang["privileges"]}
+                                        <h5><label class="pointer" style={{margin: 0}}onClick={() => goToHomePage()}>
+                                            <a title={lang["back"]}><i class=" fa fa-chevron-circle-left mr-1 nav-item nav-link"></i></a>{lang["privileges"]} ({username})
                                         </label></h5>
                                     </div>
 
@@ -240,11 +240,11 @@ export default (props) => {
 
                             {/* List user */}
                             <div class="full price_table padding_infor_info">
-                                <div class="col-md-12 mt-1 mb-2 font-weight-bold ">
+                                {/* <div class="col-md-12 mt-1 mb-2 font-weight-bold ">
                                     {lang["privileges username"]}: {username}
-                                </div>
+                                </div> */}
                                 <div class="col-md-12">
-                                    <div class="table-responsive mb-2">
+                                    <div class="table-responsive mb-2 mt-2">
                                         {
                                             currentData && currentData.length > 0 ? (
                                                 <>

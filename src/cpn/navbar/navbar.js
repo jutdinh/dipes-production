@@ -220,9 +220,16 @@ export default () => {
                         </NavLink>
                      </li>
                      <li className="navbar-item">
+                        <NavLink to="/version" activeClassName="nav-active">
+                           
+                           <i class="fa fa-code-fork"></i>
+                           <span>{lang["version"]}</span>
+                        </NavLink>
+                     </li>
+                     <li className="navbar-item">
                         <NavLink to="/logs" activeClassName="nav-active">
-                           <i class=" fa fa-shield"></i>
-                           <span>{lang["log.title"]}</span>
+                        <i class=" fa fa-shield"></i>
+                           <span>{lang["log.login"]}</span>
                         </NavLink>
                      </li>
                   </>

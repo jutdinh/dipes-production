@@ -435,7 +435,11 @@ export default {
     "no privileges": "No permission",
     "username not available": "The username is not available",
     "log.login": "Login history",
-    "account disabled": "Your account has been disabled"
+    "account disabled": "Your account has been disabled",
+    "account status": "Status",
+    "Active": "Active",
+    "Inactive": "Inactive",
+    "manage version": "Version Management"
 }
 
 
