@@ -319,6 +319,45 @@ class VersionsController extends Controller {
         return masters
     }
 
+    fillPositionsToData = ( data = [] ) => {
+        const length = data.length;
+        const periodDelimiter = 10000
+        const total_partition = Math.ceil( length / periodDelimiter ) // default record per partition
+        for( let i = 0; i < length; i++ ){
+            const num = i
+            const multiples = Math.floor(num / periodDelimiter)
+            const start = multiples * periodDelimiter
+            const end = (multiples + 1) * periodDelimiter
+            data[i].position = `${start}-${end - 1}`
+        }
+
+        const periods = []
+        let leftBehind = length
+
+        for( let i = 0; i < total_partition; i++ ){
+
+            const start = i * periodDelimiter
+            const end = (i + 1) * periodDelimiter
+
+            const period = `${ start }-${ end - 1 }`
+            leftBehind -= 10000
+
+            let total = 0;
+            if( leftBehind > 0 ){
+                total = periodDelimiter
+            }else{
+                total = leftBehind + periodDelimiter
+            }            
+
+            periods.push({
+                position: period,
+                total: total
+            })
+        }
+
+        return { data, periods }
+    }
+
 
     importDatabase = async ( req, res ) => {
         const { data } = req.body;
@@ -329,9 +368,7 @@ class VersionsController extends Controller {
             const decryptedData =  Decipher.decrypt( data.database )
             const { database } = JSON.parse( decryptedData )
             const keys = await this.#__keys.findAll()
-            const key = keys[0]
-
-            
+            const key = keys[0]            
             
             if( key ){
                 // const project_id = this.getProjectIDFromKey( key )
@@ -374,6 +411,31 @@ class VersionsController extends Controller {
                                 return dbo.collection(`${table_alias}`).createIndex( indexing )
                             }))
 
+                            const { preimports } = database;
+                            const serializedImportData = Object.values( preimports )
+
+
+                            for(  let r = 0; r < serializedImportData.length; r++ ){
+                                const { table_alias, data } = serializedImportData[r]                                
+
+                                const serializedData = this.fillPositionsToData( data )
+
+                                const positionedData = serializedData.data;
+                                const periods = serializedData.periods
+
+                                data.unshift({
+                                    position: "sumerize",
+                                    total: data.length
+                                })
+
+                                await dbo.collection(`${table_alias}`).deleteMany({})
+                                await dbo.collection(`${table_alias}`).insertMany(data)
+
+                                await dbo.collection("CACHE_TABLE_NEVER_DIE").deleteOne({ key: `${ table_alias }-periods` })
+                                await dbo.collection("CACHE_TABLE_NEVER_DIE").insertOne({ key: `${ table_alias }-periods`, value: periods })
+                            }
+
+
                             /** check indexing and privileges */
 
                             
@@ -410,6 +472,10 @@ class VersionsController extends Controller {
                                 }
                                 await dbo.collection(`${table_alias}`).createIndex( { "position": 1 } )     
                                 
+
+                               
+                               
+
                                 
                                 accounts.map( account => {
                                     const isAdmin = account.role == "ad" ? true : false;
@@ -494,13 +560,13 @@ class VersionsController extends Controller {
             }    
             // console.log(911, splitted)        
             string = splitted.join('')
-            console.log(913, string)
+            // console.log(913, string)
 
             if( i == fomulars.length - 1 ){
                 let dateSplitted = string.split('new Date')
                 for( let k = 0 ; k < dateSplitted.length; k++ ){
                     const piece = dateSplitted[k]
-                    console.log(piece)
+                    // console.log(piece)
                     if( piece.length > 2 ){
                         let pieceCopy = ""
                         let loopBreak = false
@@ -536,8 +602,8 @@ class VersionsController extends Controller {
             const keys = fields.map( field => field.fomular_alias )
             keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
             const oldSumerize = await Database.select(table_alias, { position: "sumerize" })
-            console.log(api.api_name)  
-            console.log(statistic.length)
+            // console.log(api.api_name)  
+            // console.log(statistic.length)
             if( statistic.length > 0 ){
 
                 if( oldSumerize != undefined && oldSumerize.total > 0){
@@ -720,7 +786,7 @@ class VersionsController extends Controller {
             if( apis ){
                 await this.#__apis.deleteAll()
 
-                apis.map(  api => console.log(api) )
+                // apis.map(  api => console.log(api) )
                 
                 const syncAPIs = apis.filter( api => {
                     const { url, api_method } = api;

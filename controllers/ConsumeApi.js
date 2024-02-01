@@ -4823,6 +4823,7 @@ class ConsumeApi extends Controller {
 
         const start = new Date()
         const { criteria, export_fields } = this.req.body
+                
         const EXPORTER = "Khánh Chi Nè"
         const tables = this.tearTablesAndFieldsToObjects()
 
