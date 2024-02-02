@@ -7,7 +7,7 @@ class Versions extends Model{
         super("versions");
         this.__addField__( "version_id", Model.types.int, { auto: true } )
         this.__addField__( "version_name", Model.types.string, {required: true})
-        this.__addField__( "version_description", Model.types.string, { maxLength: Number.MAX_SAFE_INTEGER })        
+        this.__addField__( "version_description", Model.types.string, { maxLength: Number.MAX_SAFE_INTEGER, default: "" })        
         
         this.__addField__( "modified_at", Model.types.datetime );      
     
