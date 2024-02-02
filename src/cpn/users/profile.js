@@ -236,7 +236,7 @@ export default (props) => {
             setErrorMessagesedit(errors);
             return;
         }
-        // editUser.note = draftToHtml(convertToRaw(editorState.getCurrentContent()))
+        editUser.note = draftToHtml(convertToRaw(editorState.getCurrentContent()))
         const requestBody = {
 
             account: {
@@ -337,7 +337,7 @@ export default (props) => {
                                                             <div class="form-group col-lg-12">
                                                                 <label class="font-weight-bold text-small" for="projectdetail">{lang["note"]}</label>
 
-                                                                {/* <div class="col-lg-12"
+                                                                <div class="col-lg-12"
                                                                     style={{ border: "1px solid black", minHeight: "6em", cursor: "text" }} >
                                                                         
                                                                     <Editor
@@ -375,8 +375,9 @@ export default (props) => {
 
                                                                             },
                                                                         }}
+
                                                                     />
-                                                                </div> */}
+                                                                </div>
                                                                 <div class="col-md-12">
                                                                     <textarea maxlength="500" rows="5" type="text" class="form-control" value={editUser.note} onChange={
                                                                         (e) => { setEditUser({ ...editUser, note: e.target.value }) }

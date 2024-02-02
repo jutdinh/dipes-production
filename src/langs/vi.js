@@ -446,6 +446,17 @@ export default {
     "account status": "Trạng thái",
     "Active": "Đang hoạt động",
     "Inactive": "Không hoạt động",
-    "manage version": "Quản lý phiên bản"
+    "manage version": "Quản lý phiên bản",
+
+    "add version": "Thêm mới phiên bản",
+    "update version": "Cập nhật phiên bản",
+    "version name": "Tên phiên bản",
+    "time update": "Thời gian cập nhật",
+
+    "confirm delete": "Xác nhận xóa",
+    "title delete version": "Bạn có chắc chắn muốn xóa thông tin phiên bản này?",
+    
+
+
     
 }

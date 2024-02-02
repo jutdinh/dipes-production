@@ -114,7 +114,7 @@ export default () => {
             })
     };
     const [currentPageLogs, setCurrentPageLogs] = useState(1);
-    const rowsPerPageLogs = 16;
+    const rowsPerPageLogs = 17;
     const indexOfLastMemberLogs = currentPageLogs * rowsPerPageLogs;
     const indexOfFirstMemberLogs = indexOfLastMemberLogs - rowsPerPageLogs;
     const currentMembersLogs = view.slice(indexOfFirstMemberLogs, indexOfLastMemberLogs);
@@ -202,20 +202,20 @@ export default () => {
                                 </div>
                             </div>
                             <div class="table_section padding_infor_info">
-                                <div class="table-responsive">
+                                <div class="table-responsive table-custom">
                                     {
                                         view && view.length > 0 ? (
                                             <>
-                                                <table class="table table-striped">
+                                                <table class="table bordered">
                                                     <thead>
                                                         <tr>
-                                                            <th >{lang["log.no"]}</th>
+                                                            <td >{lang["log.no"]}</td>
 
-                                                            <th  class="align-center">{lang["log.type"]}</th>
-                                                            <th >{lang["log.listtitle"]}</th>
-                                                            <th >{lang["description"]}</th>
-                                                            <th >{lang["time"]}</th>
-                                                            <th  class="align-center">{lang["log.action"]}</th>
+                                                            <td  class="align-center">{lang["log.type"]}</td>
+                                                            <td >{lang["log.listtitle"]}</td>
+                                                            <td >{lang["description"]}</td>
+                                                            <td >{lang["time"]}</td>
+                                                            <td  class="align-center">{lang["log.action"]}</td>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -308,7 +308,7 @@ export default () => {
                     </div>
                 </div>
                 {/* View log */}
-                <div class={`modal ${showModal ? 'show' : ''}`} id="viewLog">
+                <div class={`modal no-select-modal ${showModal ? 'show' : ''}`} id="viewLog">
                     <div class="modal-dialog modal-dialog-center">
                         <div class="modal-content">
                             <div class="modal-header">

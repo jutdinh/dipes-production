@@ -366,7 +366,7 @@ export default (props) => {
                                 </div>
                             </div> */}
                             {/* Modal add */}
-                            <div class="modal fade" id="quoteForm" tabindex="-1" role="dialog" aria-labelledby="quoteForm" aria-hidden="true">
+                            <div class="modal no-select-modal fade" id="quoteForm" tabindex="-1" role="dialog" aria-labelledby="quoteForm" aria-hidden="true">
                                 <div class="modal-dialog modal-lg modal-dialog-center" role="document">
                                     <div class="modal-content p-md-3">
                                         <div class="modal-header">
@@ -464,7 +464,7 @@ export default (props) => {
                                 </div>
                             </div>
                             {/* Modal edit */}
-                            <div class="modal fade" tabindex="-1" role="dialog" id="myEditmodal" aria-labelledby="edit" aria-hidden="true">
+                            <div class="modal no-select-modal fade" tabindex="-1" role="dialog" id="myEditmodal" aria-labelledby="edit" aria-hidden="true">
                                 <div class="modal-dialog modal-lg modal-dialog-center" role="document">
                                     <div class="modal-content p-md-3">
                                         <div class="modal-header">
@@ -736,7 +736,7 @@ export default (props) => {
                                                                 <th class="font-weight-bold" style={{ width: "300px" }} scope="col">{lang["fullname"]}</th>
                                                                 <th class="font-weight-bold" style={{ width: "120px" }} scope="col">{lang["permission"]}</th>
                                                                 <th class="font-weight-bold" style={{ width: "300px" }} scope="col">{lang["email"]}</th>
-                                                                <th class="font-weight-bold" style={{ width: "130px" }} scope="col">{lang["phone"]}</th>
+                                                                <th class="font-weight-bold" style={{ width: "140px" }} scope="col">{lang["phone"]}</th>
                                                                 <th class="font-weight-bold align-center" style={{ width: "120px" }} scope="col">{lang["avatar"]}</th>
                                                                 <th class="font-weight-bold" style={{ width: "130px" }} scope="col">{lang["account status"]}</th>
                                                                 {

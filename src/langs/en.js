@@ -439,7 +439,15 @@ export default {
     "account status": "Status",
     "Active": "Active",
     "Inactive": "Inactive",
-    "manage version": "Version Management"
+    "manage version": "Version Management",
+    "add version": "Add new version",
+    "update version": "Update version",
+    "version name": "Version name",
+    "time update": "Time",
+
+    "confirm delete": "Confirm deletion",
+    "title delete version": "Are you sure you want to delete this version information?",
+
 }
 
 

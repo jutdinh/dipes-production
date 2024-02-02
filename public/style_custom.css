@@ -200,6 +200,11 @@
     background-color: #f0eaea;
 }
 
+
+
+
+
+
 .total-box {
     padding-top: 50px !important;
     padding-bottom: 50px !important;
@@ -410,8 +415,20 @@
     color: #384041;
 }
 
+
+b, strong {
+    font-weight: bold;
+}
+
 .cell-log {
     max-width: 380px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cell-ver {
+    /* max-width: 380px; */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -599,18 +616,34 @@
     font-size: 18px;
 }
 
-.header-cell,
-.cell {
-    min-width: 250px;
+
+
+th.header-cell, td {
+  padding: 8px 10px; /* Giảm padding để tạo thêm không gian */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
 }
 
 .cell {
+    /* min-width: 250px;  */
     max-width: 380px;
-
+    /* width: auto;  */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.header-cell {
+    /* min-width: 250px;  */
+    /* max-width: 380px; */
+    /* width: auto;  */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 
 .cell-key {
     max-width: 100%;
@@ -1742,8 +1775,17 @@ select:required:invalid {
     z-index: 10; 
 }
 
-
-
+.no-select-modal {
+    pointer-events: none;
+}
+.sticky-header-log{
+    position: sticky;
+    top: 0;
+    background-color: white;
+  
+    box-shadow: 0 -5px 6px -5px rgba(0, 0, 0, 1), 0 6px 11px -7px rgba(0, 0, 0, 0.5);
+    z-index: 10; 
+}
 
 .cell_user{
     white-space: nowrap;
@@ -2091,7 +2133,13 @@ select:required:invalid {
 
 }
 
+.padding_infor_info_ver {
+    padding: 5px 5px 5px 5px;
+    float: left;
+    width: 100%;
+    min-height: 560px;
 
+}
 .padding_infor_info {
     padding: 5px 35px 5px 35px;
     float: left;

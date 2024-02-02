@@ -1514,9 +1514,10 @@ export default () => {
 
 
 
-    const submitButton_Custom = (params, url, primary_key, value, row) => {
-        //console.log(params)
-        //console.log(url)
+    const submitButton_Custom = (params, url, primary_key, value, row, fields) => {
+        console.log(params)
+        const dataParam = fields.find(field => field.id === params[0]);
+        console.log(dataParam)
         //console.log(primary_key)
         //console.log(row)
 
@@ -1527,8 +1528,12 @@ export default () => {
         // Sử dụng hàm
         const result = extractValueByKey(value, primary_key);
         //console.log(result)
-
-        callApiForButtonCustom(url, params, result)
+        const extractValue = (data, key) => {
+            return  data[key];
+        };
+        const dataMap = extractValue(row, dataParam.fomular_alias);
+        console.log(dataMap)
+        callApiForButtonCustom(url, dataMap, result)
     }
 
     const callApiForButtonCustom = (url, param, result) => {
