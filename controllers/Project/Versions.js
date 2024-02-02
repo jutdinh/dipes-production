@@ -59,9 +59,6 @@ class VersionsController extends Controller {
          *      Authorization: <Token>    
          * }
          * 
-         * Request Params {
-         *      project_id
-         * } 
          * 
          */
         const context = {
@@ -77,28 +74,14 @@ class VersionsController extends Controller {
             const decodedToken = this.decodeToken( req.header("Authorization") );
             const { username } = decodedToken;
             const account = await this.#__accounts.find({ username });
-            if( account ){
+            if( account || this.isAdmin(decodedToken)){                
                 
-                const rawProjectId = req.params.project_id;
-                if( intValidate( rawProjectId ) ){
-                    const project_id = parseInt( rawProjectId );
-                    const project = await this.#__projects.find({ project_id })
-                    if( project ){  
-                        const versions = await this.#__versions.getAllProjectVersions( project_id ); 
-                        context.content = "Thành công"
-                        context.success = true;
-                        context.status = "0x4501166" 
-                        context.data = versions;
-                    }else{
-                        // not found
-                        context.content = "Khum tìm thấy dự án"
-                        context.status = "0x4501167"
-                    }
-                }else{
-                    // bad request
-                    context.content = "Request header khum hợp lệ"
-                    context.status = "0x4501168"
-                }
+                const versions = await this.#__versions.getAllProjectVersions(); 
+                context.content = "Thành công"
+                context.success = true;
+                context.status = "0x4501166" 
+                context.data = versions;                    
+
             }else{
                 // accoun un avail able
                 context.content = "Tài khoản của bạn khum khả dụng hoặc đã bị xóa"
@@ -108,6 +91,199 @@ class VersionsController extends Controller {
             context.content = "Token khum hợp lệ"
             context.status = "0x4501170"
         }
+        res.status(200).send(context);
+    }
+
+
+    newVersion = async (req, res) => {
+        /* SCOPE: PROJECT */
+        /**
+         * Request Headers {
+         *      Authorization: <Token>    
+         * }
+         * 
+         * Request Body {         
+         *      version_name: <String>,
+         *      version_description: <String>,
+         *      
+         *      
+         * } 
+         * 
+         */
+
+        const context = {
+            success: false,
+            content: "Sample response",
+            data: [],
+            status: 200
+        }       
+
+        const verified = await this.verifyToken( req );
+
+        if( verified ){
+            const decodedToken = this.decodeToken( req.header("Authorization") );
+            const { username } = decodedToken;
+            const account = await this.#__accounts.find({ username });
+            if( account || this.isAdmin( decodedToken ) ){
+        
+                const { version_name, version_description } = req.body
+                const NewVer = new VersionsRecord({
+                    version_name,
+                    version_description,
+                    modified_at: new Date()
+                })
+
+                await NewVer.save()
+                const data = NewVer.get()
+
+                context.content = "Tạo thành công nha quí vị"
+                context.success = true
+                context.data = data
+                
+            }else{
+                // accoun un avail able
+                context.content = "Tài khoản của bạn khum khả dụng hoặc đã bị xóa"
+                context.status = "0x4501169"
+            }
+        }else{
+            context.content = "Token khum hợp lệ"
+            context.status = "0x4501170"
+        }
+
+        res.status(200).send(context);
+    }
+
+
+    updateVersion = async (req, res) => {
+        /* SCOPE: PROJECT */
+        /**
+         * Request Headers {
+         *      Authorization: <Token>    
+         * }
+         * 
+         * Request Body {         
+         *      version_id: <Int>,
+         *      version_name: <String>,
+         *      version_description: <String>,
+         *      
+         *      
+         * } 
+         * 
+         */
+
+        const context = {
+            success: false,
+            content: "Sample response",
+            data: [],
+            status: 200
+        }       
+
+        const verified = await this.verifyToken( req );
+
+        if( verified ){
+            const decodedToken = this.decodeToken( req.header("Authorization") );
+            const { username } = decodedToken;
+            const account = await this.#__accounts.find({ username });
+            if( account || this.isAdmin( decodedToken ) ){
+        
+                const { version_id, version_name, version_description } = req.body
+                
+                const versions = await this.#__versions.findAll({ version_id })
+                if( versions.length > 0 ){
+                    const version = versions[0]
+
+                    const NewVer = new VersionsRecord({
+                        id: version.id, 
+                        version_id, 
+                        version_name, 
+                        version_description,
+                        modified_at: new Date()
+                    })
+
+                    await NewVer.save()
+                    const data = NewVer.get()
+    
+                    context.content = "Tạo thành công nha quí vị"
+                    context.success = true
+                    context.data = data
+
+                }else{
+                    context.content = "Version không tồn tại" 
+                }
+
+                
+            }else{
+                // accoun un avail able
+                context.content = "Tài khoản của bạn khum khả dụng hoặc đã bị xóa"
+                context.status = "0x4501169"
+            }
+        }else{
+            context.content = "Token khum hợp lệ"
+            context.status = "0x4501170"
+        }
+
+        res.status(200).send(context);
+    }
+
+    removeVersion = async  (req, res) => {
+/* SCOPE: PROJECT */
+        /**
+         * Request Headers {
+         *      Authorization: <Token>    
+         * }
+         * 
+         * Request Body {         
+         *      version_id: <Int>,
+         *      version_name: <String>,
+         *      version_description: <String>,
+         *      
+         *      
+         * } 
+         * 
+         */
+
+        const context = {
+            success: false,
+            content: "Sample response",
+            data: [],
+            status: 200
+        }       
+
+        const verified = await this.verifyToken( req );
+
+        if( verified ){
+            const decodedToken = this.decodeToken( req.header("Authorization") );
+            const { username } = decodedToken;
+            const account = await this.#__accounts.find({ username });
+            if( account || this.isAdmin( decodedToken ) ){
+        
+                const { version_id } = req.body
+                
+                const versions = await this.#__versions.findAll({ version_id })
+                if( versions.length > 0 ){
+                    const version = versions[0]
+                   
+                    const Ver = new VersionsRecord(version)
+                    await Ver.remove()
+
+                    context.content = "Xóa version thành công"
+                    context.success = true                    
+
+                }else{
+                    context.content = "Version không tồn tại"
+                }
+
+                
+            }else{
+                // accoun un avail able
+                context.content = "Tài khoản của bạn khum khả dụng hoặc đã bị xóa"
+                context.status = "0x4501169"
+            }
+        }else{
+            context.content = "Token khum hợp lệ"
+            context.status = "0x4501170"
+        }
+
         res.status(200).send(context);
     }
 
@@ -182,64 +358,6 @@ class VersionsController extends Controller {
          */
     }
 
-    updateVersion = async (req, res, privileges = ["ad", "pm"]) => {
-        /* SCOPE: PROJECT */
-        /**
-         * Request Headers {
-         *      Authorization: <Token>    
-         * }
-         * Request Body {
-         *     project_id <Int>,
-         *     version: {
-         *         version_id <Int>,
-         *         version_name <String>,
-         *         version_description <String>
-         *     }
-         *      
-         * }
-         * 
-         */
-
-        const verified = await this.verifyToken(req);
-
-        const context = {
-            success: false,
-            content: "Sample response",
-            data: [],
-            status: 200
-        }        
-           
-        res.status(200).send(context);
-    }
-    
-    removeVersion = async ( req, res, privileges = ["ad"] ) => {
-        /**
-         *  Request Headers: {
-         *      Authorization <Token>
-         *  }
-         * 
-         *  Request Body {         
-         *      version_id <Int>
-         *  }
-         */
-
-        const verified = await this.verifyToken( req );
-
-        const context = {
-            success: false,
-            content: "Sample response",
-            data: [],
-            status: 200
-        }
-
-        if( verified ){
-            /* No need to deploy this time */
-        }else{
-            context.content = "Token khum hợp lệ"
-            context.status = "0x4501182"
-        }
-        res.status(200).send(context);
-    }
 
 
     getProjectIDFromKey = ( key ) => {

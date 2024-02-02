@@ -8,6 +8,6 @@ const VersionsControllerClass = require('../../controllers/Project/Versions');
 
 const VersionsController = new VersionsControllerClass()
 
-router.put("/version/info", async (req, res) => { await VersionsController.updateVersion( req, res, [ permission.mgr, permission.spv ] ) })
+router.put("/version", async (req, res) => { await VersionsController.updateVersion( req, res, [ permission.mgr, permission.spv ] ) })
 
 module.exports = router;
