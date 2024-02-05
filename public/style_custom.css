@@ -419,7 +419,22 @@
 b, strong {
     font-weight: bold;
 }
+/* @font-face {
+    font-family: 'UTM Avo';
+    src: url(./fonts/UTMavo/UTMAvo.ttf) format('truetype');
+  } */
+  
 
+/* .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="utm-avo"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="utm-avo"]::before {
+  content: 'UTM Avo';
+  font-family: 'UTM Avo', sans-serif;
+}
+
+.ql-editor {
+  font-family: 'UTM Avo', sans-serif;
+} */
+  
 .cell-log {
     max-width: 380px;
     white-space: nowrap;
@@ -458,7 +473,76 @@ b, strong {
     cursor: pointer;
 }
 
+ol li a {
+    color: #2970f5 !important;
+}
+.ql-container {
+    border-bottom-left-radius: 0.5em;
+    border-bottom-right-radius: 0.5em;
+    background: #fefcfc;
+  }
+.ql-snow.ql-toolbar {
+    display: block;
+    background: #eaecec;
+    border-top-left-radius: 0.5em;
+    border-top-right-radius: 0.5em;
+  }
 
+
+.statistic-container{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    width: 100%;
+}
+
+  .statistic-container .statistic-title {
+    margin-right: 20px; 
+    display: flex;
+    align-items: center; 
+    font-size: 16px;
+  }
+
+
+  .statistic-container .statistic-value {
+   font-weight: 700;
+   font-size: 16px;
+
+   display: flex;
+   justify-content: center;
+   align-items: center;
+  }
+  
+  .statistic-container .faIcon {
+    margin-right: 5px; 
+  }
+  
+  .statistic-container span {
+    margin-left: 4px; 
+  }
+  
+
+  
+  @media (max-width: 768px) {
+    .statistic-container {
+      justify-content: flex-start; 
+    }
+    .statistic-container div {
+      flex-direction: column; 
+      align-items: flex-start; 
+    }
+  }
+
+
+
+
+
+  
+ /* p img {
+    width: 100px !important;
+ } */
 
 /* end step */
 .fixed-height {

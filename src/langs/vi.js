@@ -45,7 +45,6 @@ export default {
     //description
     "description": "Mô tả",
     "data management": "Quản lý dữ liệu",
-
     "project.info": "Thông tin dự án",
     "project.deploy": "Thông tin website triển khai",
     //Project
@@ -68,7 +67,6 @@ export default {
     "by": " bởi ",
     //add project
     "addproject": "Thêm mới dự án",
-
     "projectname": "Tên dự án",
     "p.projectname": "Nhập tên dự án",
     // "projectcode": "Mã dự án",
@@ -82,7 +80,6 @@ export default {
     // "projectmember": "Thành viên dự án",
     //update project
     "updateproject": "Cập nhật dự án",
-
     //Task  
     "tasklist": "Danh sách các yêu cầu",
     "detailtask": "Chi tiết yêu cầu",
@@ -98,8 +95,6 @@ export default {
     "delete": "Xóa",
     "edit": "Chỉnh sửa",
     "edittask": "Chỉnh sửa yêu cầu",
-
-
     //Managers
     "editmanager": "Chỉnh sửa quản lý dự án",
     //Members
@@ -109,7 +104,6 @@ export default {
     // error project
     "error.project_name": "Vui lòng nhập tên dự án",
     "error.project_status": "Vui lòng chọn trạng thái dự án",
-
     //Version
     "version": "Phiên bản",
     "versionupdate": "Cập nhật phiên bản",
@@ -154,7 +148,6 @@ export default {
     "p.address": "Nhập địa chỉ",
     "note": "Ghi chú",
     "p.note": "Nhập ghi chú",
-
     //Error user
     "error.fullname": "Vui lòng nhập đầy đủ họ tên",
     "error.username": "Vui lòng nhập tên đăng nhập",
@@ -169,7 +162,6 @@ export default {
     // button modal edit user
     "btn.update": "Lưu lại",
     "edituser.title": "Chỉnh sửa người dùng",
-
     // logs
     "log.information": "Thông tin",
     "log.warning": "Cảnh báo",
@@ -192,7 +184,6 @@ export default {
     "detaillog": "Chi tiết lịch sử",
     "log.create_user": "Người thực hiện",
     "log.create_at": "Ngày tạo",
-
     //page
     "show": "Hiển thị",
     "of": "của",
@@ -379,7 +370,6 @@ export default {
     "SUGGESTED SOLUTION": "Giải pháp đề xuất",
     "PRODUCT INFORMATION": "Thông tin sản phẩm",
     "ADD PRODUCT INFORMATION": "Thêm thông tin sản phẩm",
-
     "Type a message": "Nhập tin nhắn ...",
     "You have not rated the quality of support": "Bạn chưa đánh giá chất lượng của dịch vụ hỗ trợ",
     "rate now": "Đánh giá ngay",
@@ -428,13 +418,10 @@ export default {
     "withdraw": "Thông tin chỉ có thể được cập nhật trong vòng 24 giờ kể từ khi gửi.",
     "Drag and drop images here and click": "Kéo thả ảnh vào đây hoặc bấm để chọn ảnh",
     "case image": "Hình ảnh",
-
-
     "Warranty Claim": "Yêu cầu bảo hành",
     "Case Suggest": "Đề xuất",
     "Possible Feature": "Tính năng đề xuất",
     "maximum": "Tối đa",
-
     "add row": "Thêm hàng",
     "import file": "Nhập tệp tin",
     "sample file": "Tệp tin mẫu",
@@ -447,12 +434,10 @@ export default {
     "Active": "Đang hoạt động",
     "Inactive": "Không hoạt động",
     "manage version": "Quản lý phiên bản",
-
     "add version": "Thêm mới phiên bản",
     "update version": "Cập nhật phiên bản",
     "version name": "Tên phiên bản",
     "time update": "Thời gian cập nhật",
-
     "confirm delete": "Xác nhận xóa",
     "title delete version": "Bạn có chắc chắn muốn xóa thông tin phiên bản này?",
     

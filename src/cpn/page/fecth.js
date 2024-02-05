@@ -28,7 +28,7 @@ export default () => {
     const _user = JSON.parse(stringifiedUser) || {}
     //////console.log(29, pages)
     const { formatNumberWithCommas } = functions
-
+    const dispatch = useDispatch();
     const { openTab, renderDateTimeByFormat } = functions
     const _token = localStorage.getItem("_token");
     const { project_id, version_id, url } = useParams();
@@ -1529,7 +1529,7 @@ export default () => {
         const result = extractValueByKey(value, primary_key);
         //console.log(result)
         const extractValue = (data, key) => {
-            return  data[key];
+            return data[key];
         };
         const dataMap = extractValue(row, dataParam.fomular_alias);
         console.log(dataMap)
@@ -1557,7 +1557,13 @@ export default () => {
                 //console.log(9999, res)
                 if (success) {
 
-
+                    dispatch({
+                        branch: "ui",
+                        type: "checkState",
+                        payload: {
+                            success: true
+                        }
+                    })
                 } else { }
             });
 

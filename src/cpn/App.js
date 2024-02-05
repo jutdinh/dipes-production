@@ -26,6 +26,8 @@ import "../css/index.scss";
 import { SiteMap } from './site-map';
 import Layout_Detail from './page/layout/layout_detail'
 import FeedBack from './page/layout_feedback/feedback';
+
+
 function App() {
 
   const dispatch = useDispatch()

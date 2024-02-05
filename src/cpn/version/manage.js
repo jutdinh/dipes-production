@@ -6,17 +6,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import Swal from 'sweetalert2';
 import { Table } from "react-bootstrap";
 import $ from "jquery"
-
+import Editor from '../Editor/EditorWithQuill';
 import DOMPurify from 'dompurify';
+import EditorTest from './editor'
 
+// import { Editor } from 'react-draft-wysiwyg';
+// import { EditorState, convertToRaw, ContentState, Modifier } from 'draft-js';
+// import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
-import { Editor } from 'react-draft-wysiwyg';
-import { EditorState, convertToRaw, ContentState, Modifier } from 'draft-js';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-
-import draftToHtml from 'draftjs-to-html'
-import { convertFromHTML } from 'draft-js';
-import { convertFromRaw } from 'draft-js';
+// import draftToHtml from 'draftjs-to-html'
+// import { convertFromHTML } from 'draft-js';
+// import { convertFromRaw } from 'draft-js';
 
 
 import ReactQuill, { Quill } from 'react-quill';
@@ -27,7 +27,7 @@ import ImageResize from 'quill-image-resize-module-react';
 
 
 Quill.register('modules/imageResize', ImageResize);
-  
+
 
 export default () => {
 
@@ -44,13 +44,14 @@ export default () => {
     const [errorMessagesadd, setErrorMessagesadd] = useState({});
     const [version, setVersion] = useState({});
     const [updateVersion, setUpdateVersion] = useState({});
+    //console.log(view)
     const handleCloseModal = () => {
         setShowModal(false);
         setErrorMessagesadd({})
         setVersion({})
         setUpdateVersion({})
     };
-    //console.log(view)
+
 
     useEffect(() => {
         const stringifiedUser = localStorage.getItem("user");
@@ -62,7 +63,7 @@ export default () => {
             // window.location = "/404-notfound"
         }
     }, [])
-    //console.log(_user.username)
+
     useEffect(() => {
         callApi()
 
@@ -77,7 +78,7 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, status, content } = resp;
-                // //console.log(resp)
+                // ////console.log(resp)
                 if (success) {
                     if (data != undefined && data.length > 0) {
                         setVersions(data)
@@ -91,7 +92,6 @@ export default () => {
     const [verDetail, setVerDetail] = useState([]);
 
     const detailLogs = async (logid) => {
-        // //console.log(logid)
         setVerDetail(logid)
     };
 
@@ -101,7 +101,7 @@ export default () => {
         if (!version_name) {
             errors.version_name = lang["error.input"];
         }
-        console.log(errors)
+        //console.log(errors)
         if (Object.keys(errors).length > 0) {
             setErrorMessagesadd(errors);
             return;
@@ -119,7 +119,7 @@ export default () => {
             .then((resp) => {
                 if (resp) {
                     const { success, content, data, status } = resp;
-                    console.log(resp)
+                    //console.log(resp)
                     if (success) {
                         setShowModal(false);
                         setVersion({})
@@ -139,10 +139,7 @@ export default () => {
             })
     };
     const handleUpdateVersion = (row) => {
-        console.log(row)
         setUpdateVersion(row)
-
-
     }
 
 
@@ -184,8 +181,6 @@ export default () => {
                     });
             }
         });
-        // //console.log(requestBody)
-
     }
 
     const updateVer = () => {
@@ -197,12 +192,10 @@ export default () => {
         if (!version_name) {
             errors.version_description = lang["error.input"];
         }
-
         if (Object.keys(errors).length > 0) {
             setErrorMessagesadd(errors);
             return;
         }
-
         fetch(`${proxy()}/versions/version`, {
             method: "PUT",
             headers: {
@@ -215,7 +208,7 @@ export default () => {
             .then((resp) => {
                 if (resp) {
                     const { success, content, data, status } = resp;
-                    console.log(resp)
+                    //console.log(resp)
                     if (success) {
                         setShowModal(false);
                         callApi()
@@ -242,11 +235,9 @@ export default () => {
     const totalPagesVers = Math.ceil(view.length / rowsPerPageVers);
 
     function openModalWithContent(jsonContent) {
-        // Định dạng JSON để hiển thị đẹp hơn
         const formattedJson = JSON.stringify(jsonContent, null, 4);
-
-
     }
+
     const textareaRef = useRef(null);
 
     useLayoutEffect(() => {
@@ -254,7 +245,6 @@ export default () => {
             const element = textareaRef.current;
             element.style.minHeight = 'auto';
             element.style.overflowY = 'auto';
-
             const scrollHeight = element.scrollHeight;
             element.style.minHeight = scrollHeight + 'px';
         }
@@ -276,7 +266,6 @@ export default () => {
     }, []);
 
     const headerRefs = useRef([]);
-
     useLayoutEffect(() => {
         headerRefs.current.forEach((ref) => {
             if (ref) {
@@ -287,23 +276,30 @@ export default () => {
         });
     }, []);
 
-
     const [value, setValue] = useState('');
- 
+    //console.log(value)
     const modules = {
+
         toolbar: [
-          [{ 'header': [1, 2, false] }],
-          ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-          [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-          ['link', 'image'],
-          ['clean'],
-          [{ 'color': [] }, { 'background': [] }],
-          [{ 'font': [] }],
-          [{ 'align': [] }],
-         
+            //   [{ 'header': [1, 2, false] }],
+            ['bold', 'italic', 'underline', 'strike', /*'blockquote'*/],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+            ['link', /*'image'*/],
+            //   ['clean'],
+            [{ 'color': [] }, { 'background': [] }],
+            //   [{ 'font': ['UTM Avo', 'sans-serif', 'serif'] }], // Thêm UTM Avo vào đây
+            [{ 'align': [] }],
         ],
-       
-      };
+        clipboard: {
+            // toggle to add extra line breaks when pasting HTML:
+            matchVisual: false
+        },
+        imageResize: {
+            parchment: Quill.import('parchment'),
+            modules: ['Resize', 'DisplaySize']
+        }
+    };
+
 
     return (
         <div class="midde_cont">
@@ -352,18 +348,9 @@ export default () => {
                                                                         <td style={{ width: "50px" }}>{indexOfFirstVer + index + 1}</td>
                                                                         <td >{ver.version_name}</td>
                                                                         <td class="cell-ver">
-                                                                            {/* {<span dangerouslySetInnerHTML={{ __html: ver.version_description }} /> } */}
-                                                                            {/* <p dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(ver.version_description) }} /> */}
-
-                                                                            <div
-                                                                                contentEditable={true}
-                                                                                dangerouslySetInnerHTML={{ __html: ver.version_description }}
-                                                                                onInput={(e) => {
-                                                                                    setUpdateVersion({ ...updateVersion, version_description: e.currentTarget.innerHTML });
-                                                                                }}
-                                                                                style={{ paddingRight: '20px', paddingLeft: '20px'  }}
+                                                                            <div dangerouslySetInnerHTML={{ __html: ver.version_description }}
+                                                                                style={{ paddingRight: '20px', paddingLeft: '20px' }}
                                                                             />
-
                                                                         </td>
                                                                         <td class="align-center" style={{ width: "160px" }}>{ver.modified_at}</td>
                                                                         <td style={{ width: "80px" }}>
@@ -381,20 +368,16 @@ export default () => {
                                                             })}
                                                         </tbody>
                                                     </Table>
-
-
                                                 </>
                                             ) : (
                                                 <div class="list_cont ">
-                                                    <p>Chưa có versions</p>
+                                                    <p>{lang["not found"]}</p>
                                                 </div>
                                             )
                                         }
                                     </div>
                                     <div className="d-flex justify-content-between align-items-center mt-2">
-
                                         <p>{lang["show"]} {indexOfFirstVer + 1}-{Math.min(indexOfLastVer, versions.length)} {lang["of"]} {versions.length} {lang["results"]}</p>
-
                                         <nav aria-label="Page navigation example">
                                             <ul className="pagination mb-0">
                                                 <li className={`page-item ${currentPageVer === 1 ? 'disabled' : ''}`}>
@@ -441,7 +424,6 @@ export default () => {
                         </div>
                     </div>
                 </div>
-
                 {/* add version */}
                 <div class="modal no-select-modal fade" id="addVersion" tabindex="-1" role="dialog" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-center" role="document">
@@ -463,11 +445,16 @@ export default () => {
                                         <div class="form-group col-lg-12">
                                             <label class="font-weight-bold text-small" for="projectdetail">{lang["description"]}<span className='red_star ml-1'>*</span></label>
                                             {errorMessagesadd.version_description && <span class="error-message ml-1">{errorMessagesadd.version_description}</span>}
-                                            <ReactQuill
+                                            <EditorTest
                                                 value={value}
                                                 onChange={setValue}
                                                 modules={modules}
                                             />
+                                            {/* <EditorTest
+                                            type={"add"}
+                                                value={value}
+                                                setValue={setValue}
+                                            /> */}
                                         </div>
                                     </div>
                                 </form>
@@ -498,7 +485,6 @@ export default () => {
                                             } placeholder={lang["p.version"]} />
 
                                         </div>
-
                                         {/* <div class="form-group col-lg-12">
                                             <label class="font-weight-bold text-small" for="projectdetail">{lang["description"]}</label>
                                             <textarea maxlength="500" rows="5" type="text" class="form-control" value={updateVersion.version_description} onChange={
@@ -508,8 +494,6 @@ export default () => {
                                         <div class="form-group col-lg-12">
                                             <label class="font-weight-bold text-small" for="projectdetail">{lang["description"]}<span className='red_star ml-1'>*</span></label>
                                             {errorMessagesadd.version_description && <span class="error-message ml-1">{errorMessagesadd.version_description}</span>}
-
-
                                             <ReactQuill
                                                 value={updateVersion.version_description}
                                                 onChange={(content) => {
@@ -519,7 +503,14 @@ export default () => {
                                                     }));
                                                 }}
                                                 modules={modules}
+
                                             />
+                                            {/* <EditorTest
+                                              type={"update"}
+                                                versionDescription={updateVersion.version_description}
+                                                setUpdateVersion={setUpdateVersion}
+                                            /> */}
+
 
                                         </div>
                                     </div>

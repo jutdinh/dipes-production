@@ -1101,7 +1101,9 @@ function shortenFileName(fileName) {
 }
 
 function renderInput(field, handleInputChange, searchValues, search, handleKeyDown) {
+    console.log(field)
     const datatype = field.DATATYPE;
+    const auto_increment = field.AUTO_INCREMENT
     const value = searchValues[field.fomular_alias] || '';
     const valueBool = [
         {
@@ -1120,6 +1122,20 @@ function renderInput(field, handleInputChange, searchValues, search, handleKeyDo
             return (
                 <input
                     type="text"
+                    className="form-control"
+                    value={value}
+                    onChange={(e) => handleInputChange(e, field.fomular_alias, e.target.value, search)}
+                    onKeyDown={handleKeyDown}
+                />
+            );
+
+        case 'INT':
+        case 'INT UNSIGNED':
+        case 'BIGINT':
+        case 'BIGINT UNSIGNED':
+            return (
+                <input
+                    type={auto_increment ? "text": "number"}
                     className="form-control"
                     value={value}
                     onChange={(e) => handleInputChange(e, field.fomular_alias, e.target.value, search)}
@@ -1150,15 +1166,16 @@ function renderInput(field, handleInputChange, searchValues, search, handleKeyDo
         case 'BOOL':
             return (
                 <select
-                    onChange={(e) => handleInputChange(e, field.fomular_alias, e.target.value === "true", search)}
-                    placeholder='hihihih'
+                    value={value}
+                    onChange={(e) => handleInputChange(e, field.fomular_alias, e.target.value, search)}
                     className="form-control"
                     onKeyDown={handleKeyDown}
                 >
-                    <option value="" disabled selected>Choose</option>
+                    <option value="" disabled selected>Choose</option> 
                     {valueBool.map((val, index) => (
-                        <option key={index} value={val.value.toString()}>{val.label}</option>
+                        <option key={index} value={val.value}>{val.label}</option>
                     ))}
+                    <option value="">Clear Selection</option> 
                 </select>
             );
 
