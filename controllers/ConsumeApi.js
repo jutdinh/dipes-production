@@ -4204,7 +4204,7 @@ class ConsumeApi extends Controller {
         let statistics = {}
         let averageCache = {}
 
-        for (let i = 0; i < periods.length; i++) {
+        for (let i = 0; i < periods?.length; i++) {
             const period = periods[i]
 
             const { position } = period;
