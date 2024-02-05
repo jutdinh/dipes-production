@@ -4387,7 +4387,7 @@ class ConsumeApi extends Controller {
 
                             qr[`${key}`] = date;
 
-                            if (DATATYPE == "DATE") {  // Mấy cái này sao này banh xác r tính
+                            if (DATATYPE == "DATE") {  // Mấy cái này sau này banh xác r tính
                                 // const day = date.getDate()
                                 // const month = date.getMonth() + 1
                                 // const year = date.getFullYear()                               
@@ -4397,7 +4397,15 @@ class ConsumeApi extends Controller {
 
                             }
                         } else {
-                            qr[`${key}`] = query[key]
+                            if( Fields.intFamily.indexOf( DATATYPE ) != -1 ){
+                                qr[`${key}`] = parseInt(query[key])
+                            }else{
+                                if( Fields.floatFamily.indexOf( DATATYPE ) != -1 ){
+                                    qr[`${key}`] = parseFloat(query[key])
+                                }else{
+                                    qr[`${key}`] = query[key]
+                                }
+                            }
                         }
                     }
 

@@ -33,6 +33,10 @@ class Fields extends Model{
         "BIGINT", "BIGINT UNSIGNED"
     ]
 
+    static floatFamily = [
+        "DECIMAL", "DECIMAL UNSIGNED",
+    ]
+
     constructor(){
         super("fields");
         this.__addField__( "field_alias", Model.types.string, { required: true })
