@@ -18,7 +18,8 @@ export default () => {
     const [loadingImport, setLoadingImport] = useState(false);
 
     const [file, setFile] = useState({});
-
+    const stringifiedUser = localStorage.getItem("user");
+    console.log(stringifiedUser)
     const dispatch = useDispatch();
 
     const [uploadedJson, setUploadedJson] = useState(null);
@@ -49,8 +50,8 @@ export default () => {
     };
     
     useEffect(() => {
-        const stringifiedUser = localStorage.getItem("user");
-        if (stringifiedUser) {
+        
+        if (stringifiedUser !== null) {
             const user = JSON.parse(stringifiedUser);
             const { role } = user;
             const validPrivileges = ["uad", "ad"];
@@ -59,7 +60,6 @@ export default () => {
                 window.location = "/page/page-not-found";
             }
         } else {
-
             window.location = "/login";
         }
     }, []);

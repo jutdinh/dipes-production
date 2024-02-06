@@ -4,7 +4,7 @@ import icons from './icon';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const NavbarItem = ({ item, isChild = false, level, expandedItems, setExpandedItems }) => {
-    console.log(item)
+    //console.log(item)
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedItems.includes(item.page_id);
 
@@ -40,8 +40,8 @@ const NavbarItem = ({ item, isChild = false, level, expandedItems, setExpandedIt
     }
     const marginLeft = `${level > 2 && level * 5}px`;
     const paddingLeft = `${level > 2 && level * 15}px`;
-    //console.log(marginLeft)
-    //console.log(level)
+    ////console.log(marginLeft)
+    ////console.log(level)
     return (
         <li className={`navbar-item ${isChild ? 'child-item' : ''}`} >
             {hasChildren ? (

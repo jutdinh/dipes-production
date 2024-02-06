@@ -602,7 +602,7 @@ export default () => {
 
         setTime(formattedTime)
         const elapsedHours = elapsedTime / (1000 * 60 * 60);
-        // console.log(`Giây: ${elapsedSeconds} `);
+        console.log(`Giây: ${elapsedSeconds} `);
         // console.log(`Phút ${elapsedMinutes} `);
         // console.log(`Giờ ${elapsedHours} `);
 

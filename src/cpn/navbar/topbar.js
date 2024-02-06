@@ -152,7 +152,7 @@ export default () => {
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="/users/profile">{lang["my profile"]}</a>
                                         {/* <a class="dropdown-item" href="settings.html">{lang["settings"]}</a> */}
-                                        {user.role !== "uad" && <a class="dropdown-item" href="/changepassword">{lang["change password"]}</a>}
+                                        { user !== null && user.role !== "uad" && <a class="dropdown-item" href="/changepassword">{lang["change password"]}</a>}
                                         <a class="dropdown-item" href="#" onClick={signOut}>{lang["signout"]}</a>
                                     </div>
                                 </li>

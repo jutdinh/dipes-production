@@ -12,12 +12,12 @@ export default () => {
     const urlParams = new URLSearchParams(window.location.search);
     const myParam = urlParams.get('ex');
 
-    console.log(myParam)
+    //console.log(myParam)
     const md5 = require('md5');
     const [lable, setLable] = useState(false);
     // const password = '123@#123';
     // const hashedPassword = md5(password);
-    // console.log(`Password MD5: ${hashedPassword}`);
+    // //console.log(`Password MD5: ${hashedPassword}`);
     const enterTriggered = (e) => {
         if (e.keyCode === 13) {
             submit(e)
@@ -25,7 +25,7 @@ export default () => {
     }
 
     const check = pages[0]?.page_id
-    console.log(pages)
+    //console.log(pages)
     const [statusActive, setStatusActive] = useState(false);
 
     useEffect(() => {
@@ -45,7 +45,7 @@ export default () => {
 
     useEffect(() => {
         const _token = localStorage.getItem("_token");
-        console.log(_token)
+        //console.log(_token)
         if (_token !== null && !hasCheckedToken) { // Kiểm tra token và biến trạng thái
             fetch(`${proxy()}/auth/token/check`, {
                 headers: {
@@ -55,7 +55,7 @@ export default () => {
                 .then(res => res.json())
                 .then(resp => {
                     const { success } = resp;
-                    console.log(resp)
+                    //console.log(resp)
                     if (!success) {
                         setLable(true)
                     }
@@ -77,7 +77,7 @@ export default () => {
                 password: auth.password
             }
         }
-        // console.log(requestBody)
+        // //console.log(requestBody)
         fetch(`${proxy()}/auth/login`, {
             method: "post",
             headers: {
@@ -87,7 +87,7 @@ export default () => {
         }).then(res => res.json()).then((resp) => {
             const { success, content, data } = resp;
             const credential = data
-            // console.log(resp)
+            // //console.log(resp)
 
             if (success) {
                 if (rememberMe) {
@@ -113,7 +113,7 @@ export default () => {
                     .then(res => res.json())
                     .then(resp => {
                         const { success, data, activated, status, content } = resp;
-                        // console.log(resp)
+                        // //console.log(resp)
                         if (activated) {
                             setStatusActive(true)
                         } else {

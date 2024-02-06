@@ -53,7 +53,7 @@ function findPageById(data, pageId) {
 
 
 function findGetApi(data) {
-    //console.log(5656, data)
+    ////console.log(5656, data)
     if (data && data.component && Array.isArray(data.component)) {
         const tableComponent = data.component.find(comp => comp.name === "table");
         return tableComponent && tableComponent.props && tableComponent.props.source ? tableComponent.props.source.get.url : '';
@@ -82,7 +82,7 @@ function findGetApi(data) {
 
 
 function findPostApi(data) {
-    //console.log(data)
+    ////console.log(data)
     if (data && data.component && Array.isArray(data.component)) {
 
 
@@ -97,7 +97,7 @@ function findPostApi(data) {
 //     if (data && data.component && Array.isArray(data.component)) {
 //         // Tìm tất cả các thành phần "table" trong trang
 //         const tableComponents = data.component.filter(comp => comp.name === "table");
-//         //console.log("Data 1")
+//         ////console.log("Data 1")
 //         for (const tableComponent of tableComponents) {
 //             if (tableComponent.props && tableComponent.props.buttons) {
 //                 return tableComponent.props.buttons.add.api.url;
@@ -107,15 +107,15 @@ function findPostApi(data) {
 //         // Nếu không tìm thấy trong các thành phần "table", hãy tìm trong các thành phần "flex" con
 //         for (const tableComponent of tableComponents) {
 //             if (tableComponent.props && tableComponent.props.flex && Array.isArray(tableComponent.props.flex.children)) {
-//                 //console.log("Data 1")
+//                 ////console.log("Data 1")
 //                 for (const child of tableComponent.props.flex.children) {
 //                     if (child.component) {
-//                         //console.log("Data 2")
+//                         ////console.log("Data 2")
 //                         const childTableComponents = child.component.filter(comp => comp.name === "table");
 //                         for (const childTableComponent of childTableComponents) {
 //                             if (childTableComponent.props && childTableComponent.props.buttons) {
-//                                 //console.log("Data 3")
-//                                 //console.log(456,childTableComponent.props.buttons.add.api.url)
+//                                 ////console.log("Data 3")
+//                                 ////console.log(456,childTableComponent.props.buttons.add.api.url)
 //                                 return childTableComponent.props.buttons.add.api.url;
 //                             }
 //                         }
@@ -132,7 +132,7 @@ function findPostApi(data) {
 
 
 function findPutApi(data) {
-    //console.log(data)
+    ////console.log(data)
     if (data && data.component && Array.isArray(data.component)) {
         const tableComponent = data.component.find(comp => comp.name === "table");
         return tableComponent && tableComponent.props && tableComponent.props.buttons ? tableComponent.props.buttons.update.api : '';
@@ -141,7 +141,7 @@ function findPutApi(data) {
 }
 
 // function findPutApi(data, url) {
-//     //console.log(data);
+//     ////console.log(data);
 //     if (data && data.component && Array.isArray(data.component)) {
 //         const tableComponent = data.component.find(comp => comp.name === "table");
 //         if (tableComponent && tableComponent.props && tableComponent.props.buttons) {
@@ -155,7 +155,7 @@ function findPutApi(data) {
 // }
 
 function findDeleteApi(data) {
-    // //console.log(data)
+    // ////console.log(data)
     if (data && data.component && Array.isArray(data.component)) {
         const tableComponent = data.component.find(comp => comp.name === "table");
         return tableComponent && tableComponent.props && tableComponent.props.buttons ? tableComponent.props.buttons.delete.api : '';
@@ -165,7 +165,7 @@ function findDeleteApi(data) {
 
 
 function findComponentWithDeleteApiUrl(data, url) {
-    //console.log(data);
+    ////console.log(data);
     if (data && data.component && Array.isArray(data.component)) {
         for (let i = 0; i < data.component.length; i++) {
             const component = data.component[i];
@@ -183,7 +183,7 @@ function findComponentWithDeleteApiUrl(data, url) {
 
 
 function findDetailApi(data) {
-    // //console.log(data)
+    // ////console.log(data)
     if (data && data.component && Array.isArray(data.component)) {
         const tableComponent = data.component.find(comp => comp.name === "table");
         return tableComponent && tableComponent.props && tableComponent.props.buttons ? tableComponent.props.buttons.detail.api.url : '';
@@ -192,7 +192,7 @@ function findDetailApi(data) {
 }
 
 function findExportApi(data) {
-    // //console.log(data)
+    // ////console.log(data)
     if (data && data.component && Array.isArray(data.component)) {
         const tableComponent = data.component.find(comp => comp.name === "table");
         return tableComponent && tableComponent.props && tableComponent.props.buttons ? tableComponent.props.buttons.export.api.url : '';
@@ -201,7 +201,7 @@ function findExportApi(data) {
 }
 
 function findSearchApi(data) {
-    // //console.log(data)
+    // ////console.log(data)
     if (data && data.component && Array.isArray(data.component)) {
         const tableComponent = data.component.find(comp => comp.name === "table");
         return tableComponent && tableComponent.props && tableComponent.props.source ? tableComponent.props.source.search.url : '';
@@ -334,7 +334,7 @@ const findPropsNameImportByUrl = (data, targetUrl) => {
 
 
 function getComponentText(data) {
-    // //console.log(data)
+    // ////console.log(data)
     if (data && data.component && Array.isArray(data.component)) {
         const tableComponent = data.component.find(comp => comp.name === "table");
         return tableComponent && tableComponent.props && tableComponent.props ? tableComponent.props : '';
@@ -358,7 +358,7 @@ function extractValuesFromData(apiInfo, data) {
         map[field.id] = field.fomular_alias;
         return map;
     }, {});
-    //console.log(fieldIdToAlias);
+    ////console.log(fieldIdToAlias);
 
     // Lặp qua các params và trả về giá trị đầu tiên tìm thấy
     for (let param of params) {
@@ -386,7 +386,7 @@ const renderBoolData = (data, field) => {
 }
 
 const renderData = (field, data) => {
-    // //console.log(field)
+    // ////console.log(field)
     if (data) {
         switch (field.DATATYPE) {
             case "DATE":
@@ -485,12 +485,12 @@ function getTokenExpirationDate(token) {
 
 function isTokenExpired(token) {
     const expirationDate = getTokenExpirationDate(token);
-    // //console.log(expirationDate)
+    // ////console.log(expirationDate)
     return expirationDate < new Date();
 }
 
 function refreshToken(proxy, token) {
-    // //console.log(token)
+    // ////console.log(token)
     if (token) {
         return fetch(`${proxy}/auth/refreshtoken`, {
             method: "POST",
@@ -1101,7 +1101,7 @@ function shortenFileName(fileName) {
 }
 
 function renderInput(field, handleInputChange, searchValues, search, handleKeyDown) {
-    console.log(field)
+    //console.log(field)
     const datatype = field.DATATYPE;
     const auto_increment = field.AUTO_INCREMENT
     const value = searchValues[field.fomular_alias] || '';

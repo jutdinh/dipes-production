@@ -11,13 +11,13 @@ import icons from './icon';
 
 
 const RenderComponent = ({ page, component, apiData, redirectToInput, redirectToInputPUT, handleDelete, handleSearchClick, exportToCSV, handleViewDetail, exportFile, redirectToImportData, exportFile_PK, submitButton_Custom }) => {
-    //console.log(component)
+    ////console.log(component)
     const { lang, proxy, auth, functions, pages } = useSelector(state => state);
 
     // Hàm chính để xác định loại component cần render
     const renderByType = (cpn, props, flex, id) => {
 
-        //console.log(cpn)
+        ////console.log(cpn)
         const type = cpn.name
         const hasFlexData = (flex) => {
             return flex && flex.props && flex.props.style;
@@ -50,7 +50,7 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
                 const tableStyle = applyFlexStyle(props.style); // Áp dụng style ở đây
                 return (
                     <div style={tableStyle}>
-                        <div class="d-flex align-items-center mt-2">
+                        <div class="d-flex align-items-center mt-2" style={{ fontWeight: "bold" }}>
                             {props.name}
                             {extraButtons && <div class="ml-auto mb-1">{extraButtons}</div>}
                         </div>
@@ -145,12 +145,12 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
         <div class="row mt-2">
             <div class="col-md-12" >
                 <div class="white_shd full">
-                    <div class="full graph_head_cus d-flex">
+                    {/* <div class="full graph_head_cus d-flex">
                         {component?.map((comp) => (
                             <div key={comp.id}>
                             </div>
                         ))}
-                    </div>
+                    </div> */}
                     <div class="full inner_elements">
                         <div class="row" >
                             <div class="col-md-12">
@@ -187,7 +187,9 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
         </div>
     );
 };
+
 const ExtraButtons = ({ buttons, props, redirectToInput, redirectToImportData, exportToCSV, exportFile }) => {
+    //console.log(props)
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const stringifiedUser = localStorage.getItem("user");
     const _user = JSON.parse(stringifiedUser) || {}
@@ -210,7 +212,7 @@ const ExtraButtons = ({ buttons, props, redirectToInput, redirectToImportData, e
             })
 
     }, [])
-    const dataTable_id = props.source.tables[0].id
+    const dataTable_id = props?.source?.tables.length > 0 && props?.source?.tables?.[0]?.id
     const dataCheckAdministrator = {
         "read": true,
         "write": true,
@@ -264,8 +266,9 @@ const ExtraButtons = ({ buttons, props, redirectToInput, redirectToImportData, e
         return null;
     }).filter(Boolean);
 };
+
 const RenderTable = (props) => {
-    //console.log(328, props)
+    ////console.log(328, props)
     const { project_id, version_id, url } = useParams();
     const params_Table = props.page.params
     const tableProps = props.props
@@ -302,8 +305,10 @@ const RenderTable = (props) => {
     const [sumerize, setSumerize] = useState(0)
     const [dataPrivileges, setDataPrivileges] = useState([]);
     const [tableMaxHeight, setTableMaxHeight] = useState('50vh');
-
-    //console.log("datasearch", searchValues)
+    const [loadingSearch, setLoadingSearch] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [loaded, setLoaded] = useState(false);
+    ////console.log("datasearch", searchValues)
     useEffect(() => {
         function updateTableHeight() {
             const newHeight = window.innerHeight - 280;
@@ -344,8 +349,8 @@ const RenderTable = (props) => {
     const dataCheck = _user.role !== "uad" ? dataPrivileges?.find(item => item.table_id === dataTable_id) : dataCheckAdministrator;
 
     const handleSearchClick = (data, url) => {
-        //console.log(3555, data)
-        //console.log(3555, url)
+        ////console.log(3555, data)
+        ////console.log(3555, url)
 
         setSearchUrl(url)
         setSearchValues(data)
@@ -358,10 +363,53 @@ const RenderTable = (props) => {
         setSumerize(0)
     }
 
+//searching
+    // console.log(loadingSearch)
+    useEffect(() => {
+        let timeout;
+        if (loadingSearch) {
+            Swal.fire({
+                title: lang["searching"],
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        } else {
+            timeout = setTimeout(() => {
+                Swal.close();
+            }, 10);
+        }
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [loadingSearch]);
+    ///Loading
+    useEffect(() => {
+        let timeout;
+        if (!loadingSearch && loading) {
+            Swal.fire({
+                title: lang["loading"],
+                allowEscapeKey: false,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+        } else {
+            timeout = setTimeout(() => {
+                Swal.close();
+            }, 500);
+        }
+        return () => {
+            clearTimeout(timeout);
+        };
+    }, [loading]);
 
     // Hàm để xử lý thay đổi giá trị tìm kiếm
     // const handleInputChange = (e, fieldAlias, value, searchData) => {
-    //     //console.log(value)
+    //     ////console.log(value)
     //     const stringValue = typeof value === 'string' ? value : String(value);
     //     // Loại bỏ khoảng trắng ở hai đầu của chuỗi
     //     const trimmedValue = stringValue.trim();
@@ -380,7 +428,7 @@ const RenderTable = (props) => {
     // };
 
     const handleInputChange = (e, fieldAlias, value, searchData) => {
-        //console.log(value);
+        ////console.log(value);
         const stringValue = typeof value === 'string' ? value : String(value);
         // Loại bỏ khoảng trắng ở hai đầu của chuỗi
         const trimmedValue = stringValue.trim();
@@ -433,7 +481,7 @@ const RenderTable = (props) => {
     const indexOfFirst = indexOfLast - rowsPerPage;
 
     const currentData = apiData;
-    //////////////console.log(396, currentData)
+    ////////////////console.log(396, currentData)
 
     const paginate = (pageNumber) => {
         const startAt = (pageNumber - 1) * rowsPerPage;
@@ -447,7 +495,7 @@ const RenderTable = (props) => {
     };
 
     const renderSourceButtons = (source, lang) => {
-        ////////console.log(244, source)
+        //////////console.log(244, source)
         return Object.entries(source).map(([key, value]) => {
             if (!value.state) {
                 return null;
@@ -475,10 +523,10 @@ const RenderTable = (props) => {
                 return acc;
             }, {});
 
-            ////////console.log(415415, result);
+            //////////console.log(415415, result);
             setSearchValues(result)
 
-            ////////console.log(apiData);
+            //////////console.log(apiData);
             setCurrentPage(1);
             callApi(result, url)
             callApiCount(result, url)
@@ -523,12 +571,22 @@ const RenderTable = (props) => {
         })
 
     }, [checkState]);
-    //////////////console.log(308,checkState)
+    ////////////////console.log(308,checkState)
 
     const callApi = (data, dataUrl, startIndex = currentPage - 1) => {
         const startTime = new Date().getTime();
         let loadingTimeout;
         let loadingTimeoutSearch;
+
+        if (Object.keys(searchValues).length !== 0) {
+            loadingTimeoutSearch = setTimeout(() => {
+                setLoadingSearch(true);
+            }, 310);
+        }
+
+        loadingTimeout = setTimeout(() => {
+            setLoading(true)
+        }, 300);
 
         const searchBody = {
             start_index: startIndex,
@@ -536,7 +594,7 @@ const RenderTable = (props) => {
             require_count: false,
             require_statistic: false,
         }
-        //////////////console.log("ĐÂY LÀ BODY:", searchBody)
+        ////////////////console.log("ĐÂY LÀ BODY:", searchBody)
         if (dataUrl) {
 
             fetch(`${proxy()}${dataUrl}`, {
@@ -553,10 +611,10 @@ const RenderTable = (props) => {
                 .then(res => {
                     const { success, content, data, result, total, fields, count, sumerize } = res;
                     const statisticValues = res.statistic;
-                    //////////////console.log(74, res)
+                    ////////////////console.log(74, res)
                     if (success) {
                         setApiData(data.filter(record => record != undefined));
-
+                        setLoaded(true);
                         // setDataStatis(statisticValues);
                         // setLoaded(true);
                         // if (data.length < 15) {
@@ -574,9 +632,9 @@ const RenderTable = (props) => {
                     const elapsedTime = endTime - startTime;
                     clearTimeout(loadingTimeout);
                     clearTimeout(loadingTimeoutSearch);// Clear the timeout
-                    // setLoadingSearch(false);
-                    // setLoading(false)
-                    // ////////////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                    setLoadingSearch(false);
+                    setLoading(false)
+                    // //////////////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
                 });
         }
 
@@ -593,7 +651,7 @@ const RenderTable = (props) => {
             require_count: false,
             require_statistic: false,
         }
-        //////////////console.log("ĐÂY LÀ BODY:", searchBody)
+        ////////////////console.log("ĐÂY LÀ BODY:", searchBody)
         if (searchUrl) {
 
             fetch(`${proxy()}${searchUrl}`, {
@@ -610,7 +668,7 @@ const RenderTable = (props) => {
                 .then(res => {
                     const { success, content, data, result, total, fields, count, sumerize } = res;
                     const statisticValues = res.statistic;
-                    //////////////console.log(74, res)
+                    ////////////////console.log(74, res)
                     if (success) {
                         setApiData(data.filter(record => record != undefined));
 
@@ -633,7 +691,7 @@ const RenderTable = (props) => {
                     clearTimeout(loadingTimeoutSearch);// Clear the timeout
                     // setLoadingSearch(false);
                     // setLoading(false)
-                    // ////////////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                    // //////////////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
                 });
         }
 
@@ -674,7 +732,7 @@ const RenderTable = (props) => {
         // } else {
         //     urlGetCount = searchUrl
         // }
-        //////////////console.log(447, searchBody)
+        ////////////////console.log(447, searchBody)
         if (url) {
 
             fetch(`${proxy()}${url}`, {
@@ -690,9 +748,9 @@ const RenderTable = (props) => {
                 .then(res => res.json())
                 .then(res => {
 
-                    const { success, content, data, result, total, fields, count } = res;
+                    const { success, content, data, result, total, fields, count, sumerize } = res;
                     const statisticValues = res.statistic;
-                    //////////////console.log(74, res)
+                    console.log(74, res)
                     if (success) {
                         // setApiData(data.filter(record => record != undefined));
                         // setApiDataName(fields);
@@ -702,7 +760,7 @@ const RenderTable = (props) => {
                         if (count !== undefined) {
                             setCurrentCount(count);
                             setSumerize(count);
-                        } else if (sumerize !== undefined) {
+                        } else if (count === undefined && sumerize !== undefined) {
                             setSumerize(sumerize);
                         } else if (!requireCount && currentCount != null) {
                             setSumerize(currentCount);
@@ -720,7 +778,7 @@ const RenderTable = (props) => {
                     setLoadingResult(false)
                     // setLoadingSearch(false);
                     // setLoading(false)
-                    // //////////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                    // ////////////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
                 });
         }
 
@@ -729,8 +787,6 @@ const RenderTable = (props) => {
     useLayoutEffect(() => {
         headerRefs.current.forEach((ref) => {
             if (ref) {
-
-
                 const maxWidth = parseInt(getComputedStyle(ref).maxWidth, 10);
                 const minWidth = Math.min(ref.scrollWidth, maxWidth);
                 ref.style.minWidth = `${minWidth}px`;
@@ -873,7 +929,7 @@ const RenderTable = (props) => {
 };
 
 const RenderInlineButtonsForRow = (props) => {
-    ////console.log(420123, props)
+    //////console.log(420123, props)
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const { openTab, renderDateTimeByFormat } = functions
     const { children, buttons, row, handleViewDetail, redirectToInputPUT, handleDelete, exportFile, exportFile_PK, submitButton_Custom } = props
@@ -931,7 +987,7 @@ const RenderInlineButtonsForRow = (props) => {
                     .then(res => res.json())
                     .then(res => {
                         const { data, success, content } = res;
-                        //////////////console.log(res)
+                        ////////////////console.log(res)
                         if (success) {
 
 
@@ -940,20 +996,20 @@ const RenderInlineButtonsForRow = (props) => {
                     })
             })
             const { success, data } = response;
-            //////////////console.log(54, response)
+            ////////////////console.log(54, response)
             if (success) {
                 const { params } = data;
                 const stringifiedParams = params.map(param => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                //////////////console.log(962, stringifiedParams)
+                ////////////////console.log(962, stringifiedParams)
 
 
                 const bodyApprove = {
                     [fomular_approve]: true
                 }
-                //////////////console.log(bodyApprove)
+                ////////////////console.log(bodyApprove)
                 fetch(`${proxy()}${urlApprove}/${stringifiedParams}`, {
                     method: "PUT",
                     headers: {
@@ -964,7 +1020,7 @@ const RenderInlineButtonsForRow = (props) => {
                 })
                     .then(res => res.json())
                     .then(res => {
-                        //////////////console.log(res)
+                        ////////////////console.log(res)
                         const { success } = res
                         if (success) {
                             dispatch({
@@ -994,7 +1050,7 @@ const RenderInlineButtonsForRow = (props) => {
     const handleUnApprove = async (record, dataApi) => {
         const urlUnApprove = dataApi.api.url;
         const fomular_unapprove = dataApi.field.fomular_alias
-        //////////////console.log(fomular_unapprove)
+        ////////////////console.log(fomular_unapprove)
         if (urlUnApprove != undefined) {
 
             const id_str = urlUnApprove.split('/')[2]
@@ -1007,24 +1063,24 @@ const RenderInlineButtonsForRow = (props) => {
                     .then(res => res.json())
                     .then(res => {
                         const { data, success, content } = res;
-                        //////////////console.log(res)
+                        ////////////////console.log(res)
                         if (success) { }
                         resolve(res)
                     })
             })
             const { success, data } = response;
-            //////////////console.log(54, response)
+            ////////////////console.log(54, response)
             if (success) {
                 const { params } = data;
                 const stringifiedParams = params.map(param => {
                     const { fomular_alias } = param
                     return record[fomular_alias]
                 }).join('/')
-                //////////////console.log(962, stringifiedParams)
+                ////////////////console.log(962, stringifiedParams)
                 const bodyUnApprove = {
                     [fomular_unapprove]: false
                 }
-                //////////////console.log(bodyUnApprove)
+                ////////////////console.log(bodyUnApprove)
                 fetch(`${proxy()}${urlUnApprove}/${stringifiedParams}`, {
                     method: "PUT",
                     headers: {
@@ -1035,7 +1091,7 @@ const RenderInlineButtonsForRow = (props) => {
                 })
                     .then(res => res.json())
                     .then(res => {
-                        //////////////console.log(res)
+                        ////////////////console.log(res)
                         if (success) {
 
                             dispatch({
@@ -1085,13 +1141,13 @@ const RenderInlineButtonsForRow = (props) => {
         // Tìm trường có id trùng với primary_key
 
         const fomular = children[0]?.props?.primary_key?.fomular_alias;
-        //////console.log(fomular)
+        ////////console.log(fomular)
         switch (name) {
             case 'redirect_button':
                 return (
                     <>
                         <div class="icon-table-line" style={{ color: color, backgroundColor: backgroundColor }} >
-                            <i className="fa fa-link size-24 mr-1  pointer icon-link" key={id} onClick={() => handleTable_Param(row, to.page_id, to.params)} title={lang["viewdetail"]}></i>
+                            <i className="fa fa-link size-24 mr-1  pointer icon-link" key={id} onClick={() => handleTable_Param(row, to.page_id, to.params)} title={lang[""]}></i>
                         </div>
                     </>
                 )
@@ -1099,7 +1155,7 @@ const RenderInlineButtonsForRow = (props) => {
                 return (
                     <>
                         <div class="icon-table-line" style={{ color: color, backgroundColor: backgroundColor }}>
-                            <i className="fa fa fa-list-ul size-24 mr-1  pointer icon-list" key={id} onClick={() => exportFile_PK(fields, preview_api.url, api.url, fomular, row)} data-toggle="modal" data-target="#exportExcel_PK" title={lang["viewdetail"]}></i>
+                            <i className="fa fa fa-list-ul size-24 mr-1  pointer icon-list" key={id} onClick={() => exportFile_PK(fields, preview_api.url, api.url, fomular, row)} data-toggle="modal" data-target="#exportExcel_PK" title={lang[""]}></i>
                         </div>
                     </>
                 )
@@ -1183,15 +1239,15 @@ const RenderInlineButtonsForRow = (props) => {
 };
 
 const RenderChart = (props) => {
-    ////console.log(730, props.props)
+    //////console.log(730, props.props)
     const url = props.props.api
     const paramsSearch = props.props.params
-    ////////console.log(paramsSearch)
+    //////////console.log(paramsSearch)
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const _token = localStorage.getItem("_token");
     const [apiDataStatis, setApiDataStatis] = useState({})
     const [height, setHeight] = useState(350)
-    ////////console.log(apiDataStatis)
+    //////////console.log(apiDataStatis)
     useEffect(() => {
         callApiStatistic()
 
@@ -1199,19 +1255,19 @@ const RenderChart = (props) => {
 
     ///search data
     const [parentFormData, setParentFormData] = useState({});
-    //////console.log("data", parentFormData)
+    ////////console.log("data", parentFormData)
     const handleFormDataChange = (newFormData) => {
         setParentFormData(newFormData);
     };
 
     const handleSubmitSearch = (newFormData) => {
-        //////console.log(1131, newFormData)
-        ////////console.log("Đã nhấn nút sêarc")
+        ////////console.log(1131, newFormData)
+        //////////console.log("Đã nhấn nút sêarc")
         callApiStatistic()
     };
 
     const handleResetSearchValue = (newFormData) => {
-        //////console.log(1137, newFormData)
+        ////////console.log(1137, newFormData)
         setParentFormData({})
         callApiStatistic({})
     };
@@ -1233,7 +1289,7 @@ const RenderChart = (props) => {
             .then((res) => res.json())
             .then((res) => {
                 const { success, content, statistics } = res;
-                ////////console.log(1163, res)
+                //////////console.log(1163, res)
                 if (success) {
                     setApiDataStatis(statistics)
 
@@ -1241,7 +1297,7 @@ const RenderChart = (props) => {
             });
     };
 
-    //////////////console.log(apiDataStatis)
+    ////////////////console.log(apiDataStatis)
 
     const state = {
         series: [{
@@ -1256,7 +1312,7 @@ const RenderChart = (props) => {
                 },
                 events: {
                     click: function (chart, w, e) {
-                        // //////////////console.log(chart, w, e)
+                        // ////////////////console.log(chart, w, e)
                     }
                 }
             },
@@ -1300,7 +1356,7 @@ const RenderChart = (props) => {
                 },
                 x: {
                     show: true,
-                    format: 'dd MMM', // Định dạng ngày tháng nếu dữ liệu của bạn có ngày tháng
+                    format: 'dd MMM',
                 },
                 y: {
                     formatter: (value) => value.toString(), // Thêm đơn vị vào giá trị
@@ -1379,7 +1435,7 @@ const RenderChart = (props) => {
         }
     };
     const chartData = useMemo(() => transformDataForChart(apiDataStatis), [apiDataStatis]);
-    //////////////console.log(chartData)
+    ////////////////console.log(chartData)
 
     return (
         <div className='col-md-12'>
@@ -1395,7 +1451,7 @@ const RenderChart = (props) => {
 };
 
 const RenderStatisBlock = (props) => {
-    //console.log(730, props.props)
+    ////console.log(730, props.props)
     const dataStatis = props.props
     const url = props.props[0].props.api.url
 
@@ -1403,19 +1459,29 @@ const RenderStatisBlock = (props) => {
     const _token = localStorage.getItem("_token");
     const [apiDataStatis, setApiDataStatis] = useState([])
     const [height, setHeight] = useState(350)
-    //console.log(apiDataStatis)
+    ////console.log(apiDataStatis)
     // useEffect(() => {
     //     callApiStatistic()
     // }, []);
 
     useEffect(() => {
-        dataStatis.forEach((item) => {
-            callApiStatistic(item.props.api.url, item.props.icon, item.props.label);
+        // Tạo một mảng promises từ mảng dataStatis
+        const promises = dataStatis.map(item => {
+            return callApiStatistic(item.props.api.url, item.props.icon, item.props.label);
         });
+
+        // Sử dụng Promise.all để đợi tất cả promises hoàn thành
+        Promise.all(promises).then(results => {
+            // Kết quả là một mảng các giá trị được trả về từ từng lời gọi API
+            // Cập nhật trạng thái với mảng kết quả này để đảm bảo thứ tự
+            setApiDataStatis(results);
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const callApiStatistic = (url, icon, label) => {
-        fetch(`${proxy()}${url}`, {
+        // Trả về một promise từ fetch
+        return fetch(`${proxy()}${url}`, {
             method: "POST",
             headers: {
                 "content-type": "application/json",
@@ -1423,12 +1489,22 @@ const RenderStatisBlock = (props) => {
             },
             body: JSON.stringify({})
         })
-            .then((res) => res.json())
-            .then((res) => {
+            .then(res => res.json())
+            .then(res => {
                 const { success, content, statistics } = res;
+                //console.log(1469, res)
                 if (success) {
-                    setApiDataStatis(prev => [...prev, { icon, label, statistics }]);
+                    // Trả về đối tượng dữ liệu cho từng phần tử
+                    return { icon, label, statistics };
+                } else {
+                    // Trả về một giá trị mặc định hoặc thông báo lỗi
+                    return { icon, label, statistics: 'Error' };
                 }
+            })
+            .catch(error => {
+                // Xử lý lỗi tại đây
+                console.error('Error fetching statistics:', error);
+                return { icon, label, statistics: 'Error' };
             });
     };
 
@@ -1442,21 +1518,24 @@ const RenderStatisBlock = (props) => {
                         {item.label}
                     </span>
 
-                    {Object.entries(item.statistics).map(([key, value], statIndex, array) => (
-                        <span class="statistic-value" key={key}>
-                            {value}{statIndex < array.length - 1 ? ',' : ''}
+                    {Object.keys(item.statistics).length > 0 ?
+                        Object.entries(item.statistics).map(([key, value], statIndex, array) => (
+                            <span class="statistic-value" key={key}>
+                                {value}{statIndex < array.length - 1 ? ',' : ''}
+                            </span>
+                        ))
+                        : <span class="statistic-value" >
+                            0
                         </span>
-                    ))}
+                    }
                 </div>
             ))}
         </div>
     );
 };
 
-
 const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
-    //////console.log(data)
-
+    ////////console.log(data)
     const [formData, setFormData] = useState({});
     const handleInputChange = (fieldAlias, value) => {
         let processedValue;
@@ -1472,10 +1551,8 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
         onFormDataChange(newFormData);
     };
 
-
     const handleSubmit = (event) => {
         event.preventDefault();
-        ////////console.log(formData); 
         onFormSubmit(formData)
     };
 
@@ -1485,14 +1562,11 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
         setFormData(newFormData);
         onFormDataChange(newFormData);
         onFormReset(newFormData)
-
     };
 
     const renderInput = (field) => {
-        //////console.log(field)
+
         const inputValue = formData[field.fomular_alias] || "";
-        //////console.log(inputValue)
-        //////console.log(inputValue.toString())
         const valueBool = [
             {
                 id: 0,
@@ -1505,7 +1579,7 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
                 value: false
             },
         ]
-        //////console.log(valueBool)
+
         switch (field.DATATYPE) {
 
             case 'TEXT':

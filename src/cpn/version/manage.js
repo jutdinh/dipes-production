@@ -13,19 +13,13 @@ import EditorTest from './editor'
 // import { Editor } from 'react-draft-wysiwyg';
 // import { EditorState, convertToRaw, ContentState, Modifier } from 'draft-js';
 // import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-
 // import draftToHtml from 'draftjs-to-html'
 // import { convertFromHTML } from 'draft-js';
 // import { convertFromRaw } from 'draft-js';
 
-
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import CSS cho React-Quill
-
-
 import ImageResize from 'quill-image-resize-module-react';
-
-
 Quill.register('modules/imageResize', ImageResize);
 
 
@@ -52,15 +46,18 @@ export default () => {
         setUpdateVersion({})
     };
 
-
     useEffect(() => {
-        const stringifiedUser = localStorage.getItem("user");
-        const user = JSON.parse(stringifiedUser)
-        const { role } = user;
-        const validPrivileges = ["uad"]
+        if (stringifiedUser !== null) {
+            const stringifiedUser = localStorage.getItem("user");
+            const user = JSON.parse(stringifiedUser)
+            const { role } = user;
+            const validPrivileges = ["uad"]
 
-        if (validPrivileges.indexOf(role) == -1) {
-            // window.location = "/404-notfound"
+            if (validPrivileges.indexOf(role) == -1) {
+                window.location = "/404-notfound"
+            }
+        } else {
+            window.location = "/login";
         }
     }, [])
 

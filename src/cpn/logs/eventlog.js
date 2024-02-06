@@ -14,13 +14,9 @@ export default () => {
 
     const [view, setView] = useState([])
     const [filter, setFilter] = useState({ type: 'info' });
-
-
-
     const [showModal, setShowModal] = useState(false);
-
+    
     let langItem = localStorage.getItem("lang") ? localStorage.getItem("lang") : "Vi";
-
     const languages = langItem.toLowerCase();
     // //console.log(_token)
     const handleCloseModal = () => {
@@ -42,9 +38,8 @@ export default () => {
             // window.location = "/404-notfound"
         }
     }, [])
-    //console.log(_user.username)
-    useEffect(() => {
 
+    useEffect(() => {
         fetch(`${proxy()}/logs/${languages}`, {
             headers: {
                 Authorization: _token
@@ -53,11 +48,8 @@ export default () => {
             .then(res => res.json())
             .then(resp => {
                 const { success, data, status, content } = resp;
-                // //console.log(resp)
                 if (success) {
                     if (data != undefined && data.length > 0) {
-
-
                         const dataFilter = _user.username !== "administrator" ? data.filter(item => item.create_user === _user.username) : data;
                         setLogs(dataFilter)
                         setView(dataFilter);
@@ -67,7 +59,6 @@ export default () => {
                 }
             })
     }, [])
-
 
     const [logDetail, setLogDetail] = useState([]);
 
@@ -79,9 +70,6 @@ export default () => {
     const submitFilter = (e) => {
         e.preventDefault();
         filter["lang"] = languages
-
-
-
         fetch(`${proxy}/logs/search`, {
             method: "POST",
             headers: {
@@ -113,6 +101,7 @@ export default () => {
                 }
             })
     };
+
     const [currentPageLogs, setCurrentPageLogs] = useState(1);
     const rowsPerPageLogs = 17;
     const indexOfLastMemberLogs = currentPageLogs * rowsPerPageLogs;
@@ -124,12 +113,7 @@ export default () => {
     function openModalWithContent(jsonContent) {
         // Định dạng JSON để hiển thị đẹp hơn
         const formattedJson = JSON.stringify(jsonContent, null, 4);
-
-
     }
-
-
-
 
     return (
         <div class="midde_cont">
@@ -141,7 +125,6 @@ export default () => {
                         </div>
                     </div>
                 </div>
-
                 {/* <div class="row">
                     <div class="col-md-12">
                         <div class="white_shd full margin_bottom_30">
@@ -157,8 +140,6 @@ export default () => {
                                             <div className="col-lg-3">
                                                 <label>{lang["log.type"]}:</label>
                                                 <select className="form-control" value={filter.type} onChange={(e) => { setFilter({ ...filter, type: e.target.value }) }}>
-
-
                                                     <option value="info">{lang["log.information"]}</option>
                                                     <option value="warn">{lang["log.warning"]}</option>
                                                     <option value="error">{lang["log.error"]}</option>
@@ -182,12 +163,9 @@ export default () => {
                                                 <button className="btn btn-secondary btn-log" onClick={() => {
                                                     setView(logs)
                                                 }}>{lang["btn.clear"]}</button>
-
-
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -224,7 +202,7 @@ export default () => {
                                                             const event = eventType.find(item => item.label === log.event_type);
 
                                                             return (
-                                                                <tr key={log.id}>
+                                                                <tr key={'id' + indexOfFirstMemberLogs + index + 1}>
                                                                     <td style={{ width: "50px" }}>{indexOfFirstMemberLogs + index + 1}</td>
 
                                                                     <td class="align-center" style={{ width: "50px" }}>
@@ -236,7 +214,6 @@ export default () => {
                                                                     <td class="cell-log">
                                                                         {log.event_description}
                                                                     </td>
-
                                                                     <td class="align-center" style={{ width: "180px" }}>{log.create_at}</td>
                                                                     <td class="align-center" style={{ width: "80px" }}>
                                                                         <i class="fa fa-eye size pointer icon-margin size-24 icon-view" onClick={() => detailLogs(log)} data-toggle="modal" data-target="#viewLog" style={{ color: "green" }} title={lang["btn.viewdetail"]}></i>
@@ -246,12 +223,9 @@ export default () => {
                                                             );
                                                         })}
                                                     </tbody>
-
                                                 </table>
                                                 <div className="d-flex justify-content-between align-items-center">
-
-                                                    <p>{lang["show"]} {indexOfFirstMemberLogs + 1}-{Math.min(indexOfLastMemberLogs, logs.length)} {lang["of"]} {logs.length} {lang["results"]}</p>
-
+                                                    <p>{lang["show"]} {indexOfFirstMemberLogs + 1}-{Math.min(indexOfLastMemberLogs, logs.length)} {lang["of"]} {view.length} {lang["results"]}</p>
                                                     <nav aria-label="Page navigation example">
                                                         <ul className="pagination mb-0">
                                                             <li className={`page-item ${currentPageLogs === 1 ? 'disabled' : ''}`}>
@@ -292,8 +266,6 @@ export default () => {
                                                             </li>
                                                         </ul>
                                                     </nav>
-
-
                                                 </div>
                                             </>
                                         ) : (
@@ -392,7 +364,6 @@ export default () => {
                     </div>
                 </div>
             </div >
-
         </div >
     )
 }
