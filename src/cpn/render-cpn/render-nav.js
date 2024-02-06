@@ -56,7 +56,7 @@ const NavbarItem = ({ item, isChild = false, level, expandedItems, setExpandedIt
                         {!hasChildren && item.icon && ( // Kiểm tra nếu không có con thì hiển thị icon
                             <FontAwesomeIcon icon={icons[item.icon].icon} className="mr-2" />
                         )} */}
-                         <FontAwesomeIcon icon={icons[item.icon].icon} className="mr-4" />
+                         <FontAwesomeIcon icon={icons[item.icon].icon} className="mr-4 size-20" />
                         <span>{item.page_title}</span>
                         
                     </a>
@@ -90,7 +90,7 @@ const NavbarItem = ({ item, isChild = false, level, expandedItems, setExpandedIt
                 >
                     {item.icon && (
 
-                        <FontAwesomeIcon icon={icons[item.icon].icon} className="mr-4" />
+                        <FontAwesomeIcon icon={icons[item.icon].icon} className="mr-4 size-20" />
                     )}
                     {item.page_title}
                 </NavLink>
