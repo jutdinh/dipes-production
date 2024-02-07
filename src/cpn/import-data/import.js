@@ -57,7 +57,7 @@ export default () => {
             const validPrivileges = ["uad", "ad"];
     
             if (validPrivileges.indexOf(role) === -1) {
-                window.location = "/page/page-not-found";
+                window.location = "/page-not-found";
             }
         } else {
             window.location = "/login";

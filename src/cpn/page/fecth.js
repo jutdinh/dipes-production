@@ -1919,19 +1919,19 @@ export default () => {
                                         {selectedFields && selectedFields.length > 0 || current & current.length > 0 || dataStatis && dataStatis.length > 0 ? (
                                             <div class="table-responsive">
                                                 <table class="table table-striped excel-preview">
-                                                    <thead>
+                                                    <thead class="sticky-header">
                                                         {selectedFields.map((field) => {
                                                             const header = apiDataName.find(
                                                                 (header) => header.fomular_alias === field
                                                             );
-                                                            return <th key={field}>{header ? header.field_name || header.display_name : field}</th>;
+                                                            return <th key={field}  className="header-cell">{header ? header.field_name || header.display_name : field}</th>;
                                                         })}
                                                     </thead>
                                                     <tbody>
                                                         {current.slice(0, 5).map((row, rowIndex) => (
                                                             <tr key={rowIndex}>
                                                                 {selectedFields.map((field) => (
-                                                                    <td key={field}>{formatIfDate(row[field])}</td>
+                                                                    <td className="cell" key={field} title={formatIfDate(row[field])}>{formatIfDate(row[field])}</td>
                                                                 ))}
                                                             </tr>
                                                         ))}

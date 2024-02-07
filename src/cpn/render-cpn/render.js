@@ -18,20 +18,20 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
     const renderByType = (cpn, props, flex, id) => {
 
         ////console.log(cpn)
-        const type = cpn.name
+        const type = cpn?.name
         const hasFlexData = (flex) => {
-            return flex && flex.props && flex.props.style;
+            return flex && flex?.props && flex?.props?.style;
         };
 
         // Áp dụng style của flex cho table nếu có
         const applyFlexStyle = (style) => {
-            return hasFlexData(flex) ? { ...style, ...flex.props.style } : style;
+            return hasFlexData(flex) ? { ...style, ...flex?.props?.style } : style;
         };
 
         function findChildById(children, id) {
             return children?.find(child => child.id === id);
         }
-        const foundChild = hasFlexData(flex) && findChildById(flex.children, id);
+        const foundChild = hasFlexData(flex) && findChildById(flex?.children, id);
 
         switch (type) {
             case 'text':
@@ -161,16 +161,16 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
                                                 <div class="table_section">
                                                     <div class="col-md-12">
                                                         {component?.map((comp) => (
-                                                            <div key={comp.id} style={{
-                                                                order: comp.flex?.order,
-                                                                flexGrow: comp.flex?.flexGrow
+                                                            <div key={comp?.id} style={{
+                                                                order: comp?.flex?.order,
+                                                                flexGrow: comp?.flex?.flexGrow
                                                             }}>
-                                                                {comp.name === 'flex' ?
+                                                                {comp?.name === 'flex' ?
                                                                     <div class="">
-                                                                        {comp.children?.map((compflex) => <div key={compflex.id}>{renderByType(compflex, compflex.props, comp, compflex.id)} </div>)}
+                                                                        {comp?.children?.map((compflex) => <div key={compflex.id}>{renderByType(compflex, compflex.props, comp, compflex.id)} </div>)}
                                                                     </div>
                                                                     :
-                                                                    renderByType(comp, comp.props)}
+                                                                    renderByType(comp, comp?.props)}
                                                             </div>
                                                         ))}
                                                     </div>
@@ -363,7 +363,7 @@ const RenderTable = (props) => {
         setSumerize(0)
     }
 
-//searching
+    //searching
     // console.log(loadingSearch)
     useEffect(() => {
         let timeout;
@@ -830,14 +830,12 @@ const RenderTable = (props) => {
                                                     <tr key={index}>
                                                         <td class="align-center" scope="row" style={{ minWidth: "50px" }} className="cell">{indexOfFirst + index + 1}</td>
                                                         {fields?.map((header) => (
-                                                            <td key={header.fomular_alias} className="cell">{functions.renderData(header, row)}</td>
+                                                            <td key={header.fomular_alias} className="cell" title={functions.renderData(header, row)}>{functions.renderData(header, row)}</td>
                                                         ))}
                                                         {hasInlineButtons && (
                                                             <td class="align-center">
                                                                 {/* {renderInlineButtonsForRow(buttons, row)} */}
-
                                                                 < RenderInlineButtonsForRow data={currentData} children={children} {...props} tableProps={tableProps} row={row} redirectToInputPUT={redirectToInputPUT} handleViewDetail={handleViewDetail} handleDelete={handleDelete} dataPrivileges={dataPrivileges} exportFile={exportFile} exportFile_PK={exportFile_PK} submitButton_Custom={submitButton_Custom} />
-
                                                             </td>
                                                         )}
                                                     </tr>)
@@ -1239,7 +1237,7 @@ const RenderInlineButtonsForRow = (props) => {
 };
 
 const RenderChart = (props) => {
-    //////console.log(730, props.props)
+    console.log(730, props.props)
     const url = props.props.api
     const paramsSearch = props.props.params
     //////////console.log(paramsSearch)
@@ -1249,9 +1247,9 @@ const RenderChart = (props) => {
     const [height, setHeight] = useState(350)
     //////////console.log(apiDataStatis)
     useEffect(() => {
-        callApiStatistic()
-
-    }, []);
+        callApiStatistic();
+    }, [paramsSearch]); // Chỉ gọi API khi paramsSearch thay đổi
+    
 
     ///search data
     const [parentFormData, setParentFormData] = useState({});
@@ -1272,9 +1270,10 @@ const RenderChart = (props) => {
         callApiStatistic({})
     };
 
-
+    const [loadingDataChart, setLoadingDataChart] = useState(false);
 
     const callApiStatistic = (formData = parentFormData) => {
+        setLoadingDataChart(true)
         const statisBody = {
             criterias: formData
         }
@@ -1289,9 +1288,10 @@ const RenderChart = (props) => {
             .then((res) => res.json())
             .then((res) => {
                 const { success, content, statistics } = res;
-                //////////console.log(1163, res)
+                console.log(730, res)
                 if (success) {
                     setApiDataStatis(statistics)
+                    setLoadingDataChart(false)
 
                 }
             });
@@ -1327,9 +1327,19 @@ const RenderChart = (props) => {
                 }
             },
             dataLabels: {
-                enabled: true,
-                fontSize: '10px',
+                enabled:  typeof Object.values(apiDataStatis)[0] === 'number' ? true : false,
+                offsetX: 0, // Điều chỉnh này nếu cần
+                offsetY: 0, // Điều chỉnh này nếu cần
+                style: {
+                    fontSize: '14px',
+                    colors: ['#fff'] // Màu sắc của nhãn dữ liệu để tăng độ tương phản
+                },
+                format: '{value}', // Đảm bảo rằng giá trị được hiển thị đúng định dạng
+                formatter: function(val) {
+                    return val.toString(); // Chuyển đổi giá trị thành chuỗi nếu cần
+                }
             },
+            
             legend: {
                 show: true, // Hiển thị chú thích
                 position: 'bottom', // Vị trí của chú thích (có thể là 'top', 'bottom', 'right', 'left')
@@ -1389,6 +1399,7 @@ const RenderChart = (props) => {
             //     }
             // }
 
+            
 
         },
     };
@@ -1440,11 +1451,29 @@ const RenderChart = (props) => {
     return (
         <div className='col-md-12'>
             <h5 style={props.props.style}>{props.props.content}</h5>
-
             {paramsSearch && paramsSearch.length > 0 && <DynamicForm data={paramsSearch} onFormDataChange={handleFormDataChange} onFormSubmit={handleSubmitSearch} onFormReset={handleResetSearchValue} />}
-            <div id="chart" style={{ width: '100%', ...props.props.style }} >
+            <div id="chart" style={{ width: '100%', position: 'relative', ...props.props.style }}>
+                {loadingDataChart &&
+                    <>
+                        <img
+                            width={80}
+                            className="loading-image"
+                            src="/images/icon/load.gif"
+                            alt="Loading..."
+                            style={{
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                zIndex: 2
+                            }}
+                        ></img>
+                    </>
+                }
+
                 <Chart options={chartData.options} series={chartData.series} type="bar" height={height} />
             </div>
+
 
         </div>
     );
