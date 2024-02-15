@@ -11,6 +11,7 @@ class Tables extends Model{
         this.__addField__( "version_id", Model.types.int, { required: true })
         this.__addField__( "primary_key", Model.types.array)
         this.__addField__( "foreign_keys", Model.types.array)
+        this.__addField__( "display_fields", Model.types.array)
         
         this.__addField__( "create_by", Model.types.string, { required: true })
         this.__addField__( "create_at", Model.types.datetime ) 
@@ -62,7 +63,8 @@ class TablesRecord extends Tables {
             create_by: await this.getTableCreator(), 
             create_at: this.create_at.getFormatedValue(),
             primary_key: this.primary_key.value(),
-            foreign_keys: this.foreign_keys.value()
+            foreign_keys: this.foreign_keys.value(),
+            display_fields: this.display_fields.value(),
         }
     }
 

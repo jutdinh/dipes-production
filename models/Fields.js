@@ -60,6 +60,11 @@ class Fields extends Model{
         this.__addField__( "DEFAULT_TRUE", Model.types.string, { default: "TRUE" } )
         this.__addField__( "DEFAULT_FALSE", Model.types.string, { default: "FALSE" } )
 
+
+        this.__addField__("FILE_MAX_SIZE", Model.types.int, { default: 2 }) // MB
+        this.__addField__("FILE_MULTIPLE", Model.types.bool, { default: false })
+        this.__addField__("FILE_ACCEPT_TYPES", Model.types.array ) // array of strings which start with a dot, this one is prior        
+
         this.__addPrimaryKey__( ["id"] )        
         this.__addForeignKey__( "table_id", Tables, "id" )    
         // this.__addForeignKey__( "create_by", Accounts, "username" )    
@@ -211,7 +216,11 @@ class FieldsRecord extends Fields {
                 DECIMAL_PLACE: this.DECIMAL_PLACE.value(), 
                 DEFAULT: this.DEFAULT.value(), 
                 DEFAULT_TRUE: this.DEFAULT_TRUE.value(), 
-                DEFAULT_FALSE: this.DEFAULT_FALSE.value()
+                DEFAULT_FALSE: this.DEFAULT_FALSE.value(),
+                FILE_MAX_SIZE: this.FILE_MAX_SIZE.value(),
+                FILE_MULTIPLE: this.FILE_MULTIPLE.value(),
+                FILE_ACCEPT_TYPES: this.FILE_ACCEPT_TYPES.value(),
+                
             },
             create_at: this.create_at.getFormatedValue(),
             
