@@ -4191,7 +4191,7 @@ class ConsumeApi extends Controller {
 
         })
 
-        console.log( 4192, formatedQuery )
+        
 
         const parsedCriterias = this.parseCriteriasToStrings(criterias)
 
@@ -4266,7 +4266,7 @@ class ConsumeApi extends Controller {
                 }
             }
         }
-        this.res.status(200).send({ success: true, content: "Succeed", statistics })
+        this.res.status(200).send({ success: true, content: "Succeed", statistics, fields: group_by })
     }
 
     SEARCH = async () => {
