@@ -440,6 +440,7 @@ export default {
     "time update": "Thời gian cập nhật",
     "confirm delete": "Xác nhận xóa",
     "title delete version": "Bạn có chắc chắn muốn xóa thông tin phiên bản này?",
+    "Refresh": "Làm mới"
     
 
 

@@ -447,6 +447,7 @@ export default {
 
     "confirm delete": "Confirm deletion",
     "title delete version": "Are you sure you want to delete this version information?",
+    "Refresh": "Refresh"
 
 }
 

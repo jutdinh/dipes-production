@@ -131,15 +131,10 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
                         <RenderChart props={props} />
                     </>
                 );
-
-
-
-
             default:
             // return <div>Unknown component type!</div>;
         }
     };
-
 
     return (
         <div class="row mt-2">
@@ -309,7 +304,7 @@ const RenderTable = (props) => {
     const [loading, setLoading] = useState(false);
     const [loadingTable, setLoadingTable] = useState(false);
     const [loaded, setLoaded] = useState(false);
-    ////console.log("datasearch", searchValues)
+
     useEffect(() => {
         function updateTableHeight() {
             const newHeight = window.innerHeight - 280;
@@ -325,7 +320,6 @@ const RenderTable = (props) => {
     }, []);
 
     useEffect(() => {
-
         fetch(`${proxy()}/privileges/accounts`, {
             headers: {
                 Authorization: _token
@@ -340,6 +334,7 @@ const RenderTable = (props) => {
                 }
             })
     }, [])
+
     const dataCheckAdministrator = {
         "read": true,
         "write": true,
@@ -350,8 +345,6 @@ const RenderTable = (props) => {
     const dataCheck = _user.role !== "uad" ? dataPrivileges?.find(item => item.table_id === dataTable_id) : dataCheckAdministrator;
 
     const handleSearchClick = (data, url) => {
-        ////console.log(3555, data)
-        ////console.log(3555, url)
 
         setSearchUrl(url)
         setSearchValues(data)
@@ -365,7 +358,6 @@ const RenderTable = (props) => {
     }
 
     //searching
-    // console.log(loadingSearch)
     useEffect(() => {
         let timeout;
         if (loadingSearch) {
@@ -386,6 +378,7 @@ const RenderTable = (props) => {
             clearTimeout(timeout);
         };
     }, [loadingSearch]);
+
     ///Loading
     useEffect(() => {
         let timeout;
@@ -429,7 +422,6 @@ const RenderTable = (props) => {
     // };
 
     const handleInputChange = (e, fieldAlias, value, searchData) => {
-        ////console.log(value);
         const stringValue = typeof value === 'string' ? value : String(value);
         // Loại bỏ khoảng trắng ở hai đầu của chuỗi
         const trimmedValue = stringValue.trim();
@@ -480,7 +472,6 @@ const RenderTable = (props) => {
     const indexOfFirst = indexOfLast - rowsPerPage;
 
     const currentData = apiData;
-    ////////////////console.log(396, currentData)
 
     const paginate = (pageNumber) => {
         const startAt = (pageNumber - 1) * rowsPerPage;
@@ -494,7 +485,6 @@ const RenderTable = (props) => {
     };
 
     const renderSourceButtons = (source, lang) => {
-        //////////console.log(244, source)
         return Object.entries(source).map(([key, value]) => {
             if (!value.state) {
                 return null;
@@ -553,6 +543,7 @@ const RenderTable = (props) => {
                 setLoadingTable(false)
             });
     }
+
     useEffect(() => {
         setGetUrl(get.url)
         callApiView(get.url)
@@ -561,7 +552,6 @@ const RenderTable = (props) => {
     useEffect(() => {
         setGetUrl(get.url)
         callApiView(get.url)
-
         dispatch({
             branch: "ui",
             type: "checkState",
@@ -569,9 +559,7 @@ const RenderTable = (props) => {
                 success: false
             }
         })
-
     }, [checkState]);
-    ////////////////console.log(308,checkState)
 
     const callApi = (data, dataUrl, startIndex = currentPage - 1) => {
         const startTime = new Date().getTime();
@@ -594,7 +582,7 @@ const RenderTable = (props) => {
             require_count: false,
             require_statistic: false,
         }
-        ////////////////console.log("ĐÂY LÀ BODY:", searchBody)
+        //console.log("ĐÂY LÀ BODY:", searchBody)
         if (dataUrl) {
 
             fetch(`${proxy()}${dataUrl}`, {
@@ -702,13 +690,10 @@ const RenderTable = (props) => {
         //         setLoadingSearch(true);
         //     }, 310);
         // }
-
-
         if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
             setPreviousSearchValues(searchValues);
             requireCount = true;
         }
-
         const searchBody = {
             // table_id: dataTable_id,
             start_index: currentPage - 1,
@@ -736,13 +721,11 @@ const RenderTable = (props) => {
                     "content-type": "application/json",
                     Authorization: _token,
                     fromIndex: currentPage - 1,
-
                 },
                 body: JSON.stringify(searchBody)
             })
                 .then(res => res.json())
                 .then(res => {
-
                     const { success, content, data, result, total, fields, count, sumerize } = res;
                     const statisticValues = res.statistic;
                     console.log(74, res)
@@ -751,7 +734,6 @@ const RenderTable = (props) => {
                         // setApiDataName(fields);
                         // setDataStatis(statisticValues);
                         // setLoaded(true);
-
                         if (count !== undefined) {
                             setCurrentCount(count);
                             setSumerize(count);
@@ -764,20 +746,18 @@ const RenderTable = (props) => {
                         setApiData([]);
                         // setApiDataName([])
                     }
-
                     const endTime = new Date().getTime();
                     const elapsedTime = endTime - startTime;
-
                     clearTimeout(loadingTimeout);
                     clearTimeout(loadingTimeoutSearch);// Clear the timeout
                     setLoadingResult(false)
                     // setLoadingSearch(false);
                     // setLoading(false)
-                    // ////////////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+                    //console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
                 });
         }
-
     };
+
     const headerRefs = useRef([]);
     useLayoutEffect(() => {
         headerRefs.current.forEach((ref) => {
@@ -788,6 +768,7 @@ const RenderTable = (props) => {
             }
         });
     }, []);
+
     return (
         <div>
             <div class="table-responsive table-custom mb-2">
@@ -873,7 +854,6 @@ const RenderTable = (props) => {
                     <div className="d-flex justify-content-between align-items-center mt-1">
                         <p>
                             {/* {lang["show"]} {apiData.length > 0 ? indexOfFirst + 1 : 0}-{Math.min(indexOfLast, apiData.length)} {lang["of"]} {apiData.length} {lang["results"]} */}
-
                             {lang["show"]} {functions.formatNumber(indexOfFirst + 1)} - {functions.formatNumber(indexOfFirst + apiData?.length)}   {`${lang["of"]} `}
                             {loadingResult ?
                                 <img
@@ -1245,17 +1225,20 @@ const RenderInlineButtonsForRow = (props) => {
 };
 
 const RenderChart = (props) => {
+
     console.log(730, props.props)
+
     const url = props.props.api
     const paramsSearch = props.props.params
-    //////////console.log(paramsSearch)
+
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const _token = localStorage.getItem("_token");
+
     const [apiDataStatis, setApiDataStatis] = useState({})
 
     const [field, setField] = useState({})
     const [height, setHeight] = useState(350)
-    console.log(field)
+
     useEffect(() => {
         callApiStatistic();
     }, [paramsSearch]); // Chỉ gọi API khi paramsSearch thay đổi
@@ -1263,14 +1246,11 @@ const RenderChart = (props) => {
 
     ///search data
     const [parentFormData, setParentFormData] = useState({});
-    ////////console.log("data", parentFormData)
     const handleFormDataChange = (newFormData) => {
         setParentFormData(newFormData);
     };
 
     const handleSubmitSearch = (newFormData) => {
-        ////////console.log(1131, newFormData)
-        //////////console.log("Đã nhấn nút sêarc")
         callApiStatistic()
     };
 
@@ -1281,7 +1261,6 @@ const RenderChart = (props) => {
     };
 
     const [loadingDataChart, setLoadingDataChart] = useState(false);
-
     const callApiStatistic = (formData = parentFormData) => {
         setLoadingDataChart(true)
         const statisBody = {
@@ -1303,12 +1282,9 @@ const RenderChart = (props) => {
                     setApiDataStatis(statistics)
                     setField(fields)
                     setLoadingDataChart(false)
-
                 }
             });
     };
-
-    ////////////////console.log(apiDataStatis)
 
     const state = {
         series: [{
@@ -1457,12 +1433,12 @@ const RenderChart = (props) => {
         }
     };
     const chartData = useMemo(() => transformDataForChart(apiDataStatis), [apiDataStatis]);
-    ////////////////console.log(chartData)
-
+    //console.log(chartData)
     return (
         <div className='col-md-12'>
             <h5 style={props.props.style}>{props.props.content}</h5>
             {paramsSearch && paramsSearch.length > 0 && <DynamicForm data={paramsSearch} onFormDataChange={handleFormDataChange} onFormSubmit={handleSubmitSearch} onFormReset={handleResetSearchValue} />}
+
             {field && field.length > 0 &&
                 <div style={{ fontStyle: "bold", ...props.props.style }}>
                     <h5>{field?.[0].field_name}</h5>
@@ -1502,7 +1478,7 @@ const RenderStatisBlock = (props) => {
     const _token = localStorage.getItem("_token");
     const [apiDataStatis, setApiDataStatis] = useState([])
     const [height, setHeight] = useState(350)
-    ////console.log(apiDataStatis)
+
     // useEffect(() => {
     //     callApiStatistic()
     // }, []);
@@ -1578,7 +1554,8 @@ const RenderStatisBlock = (props) => {
 };
 
 const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
-    console.log(1574, data)
+    // console.log(1574, data)
+    const { lang, proxy, auth, functions, pages } = useSelector(state => state);
     const [formData, setFormData] = useState({});
     const handleInputChange = (fieldAlias, value) => {
         let processedValue;
@@ -1662,8 +1639,8 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
                 </div>
             ))}
             <div className="col-md-12 text-right">
-                <button onClick={handleResetSearchValue} className="btn btn-secondary mr-3"><i class="fa fa-history mr-1 icon-search" />Làm mới</button>
-                <button onClick={handleSubmit} className="btn btn-primary mr-3"><i class="fa fa-search mr-1 icon-search" />Tìm Kiếm</button>
+                <button onClick={handleResetSearchValue} className="btn btn-secondary mr-3"><i class="fa fa-history mr-1 icon-search" />{lang["Refresh"]}</button>
+                <button onClick={handleSubmit} className="btn btn-primary mr-3"><i class="fa fa-search mr-1 icon-search" />{lang["search"]}</button>
             </div>
         </div>
     );
