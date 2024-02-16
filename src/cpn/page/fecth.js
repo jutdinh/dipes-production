@@ -1556,13 +1556,19 @@ export default () => {
                 const statisticValues = res.statistic;
                 //console.log(9999, res)
                 if (success) {
-
                     dispatch({
                         branch: "ui",
                         type: "checkState",
                         payload: {
                             success: true
                         }
+                    })
+                    Swal.fire({
+                        title: lang["success"],
+                        text: lang["success.update"],
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1800,
                     })
                 } else { }
             });
@@ -1924,7 +1930,7 @@ export default () => {
                                                             const header = apiDataName.find(
                                                                 (header) => header.fomular_alias === field
                                                             );
-                                                            return <th key={field}  className="header-cell">{header ? header.field_name || header.display_name : field}</th>;
+                                                            return <th key={field} className="header-cell">{header ? header.field_name || header.display_name : field}</th>;
                                                         })}
                                                     </thead>
                                                     <tbody>

@@ -19,7 +19,7 @@ export default () => {
 
     const [file, setFile] = useState({});
     const stringifiedUser = localStorage.getItem("user");
-    console.log(stringifiedUser)
+    // console.log(stringifiedUser)
     const dispatch = useDispatch();
 
     const [uploadedJson, setUploadedJson] = useState(null);
@@ -48,38 +48,60 @@ export default () => {
             reader.readAsText(file);
         }
     };
-    
+
+
+
+
     useEffect(() => {
-        
+
         if (stringifiedUser !== null) {
             const user = JSON.parse(stringifiedUser);
             const { role } = user;
             const validPrivileges = ["uad", "ad"];
-    
+
             if (validPrivileges.indexOf(role) === -1) {
                 window.location = "/page-not-found";
             }
         } else {
             window.location = "/login";
         }
+
+        fetch(`${proxy()}/auth/token/check`, {
+            headers: {
+                Authorization: _token
+            }
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success } = resp;
+                if (!success) {
+
+                    localStorage.removeItem("_token");
+                    window.location = '/login'
+
+                }
+            });
+
+
+
     }, []);
-    
+
     const importData = async () => {
         if (!uploadedJson) {
             return;
         }
-    
+
         setLoadingImport(true);
-    
+
         const minimumLoadingTime = 500;
         let isLoaded = false;
-        
+
         const loadingTimeout = setTimeout(() => {
             if (!isLoaded) {
                 setLoadingImport(true)
             }
         }, minimumLoadingTime);
-        
+
         try {
             const response = await fetch(`${proxy()}/versions/import/database`, {
                 method: 'POST',
@@ -88,11 +110,11 @@ export default () => {
                 },
                 body: JSON.stringify(uploadedJson),
             });
-    
+
             clearTimeout(loadingTimeout);
             isLoaded = true;
             setLoadingImport(false);
-    
+
             if (response.ok) {
                 Swal.fire({
                     title: lang["success"],
@@ -101,7 +123,7 @@ export default () => {
                     showConfirmButton: false,
                     timer: 1500,
                 });
-    
+
                 setTimeout(() => {
                     window.location.reload();
                 }, 1600);
@@ -130,11 +152,11 @@ export default () => {
         }
         let isLoaded = false;
         const minimumLoadingTime = 500;
-        
+
         const loadingTimeout = setTimeout(() => {
             if (!isLoaded) {
-               setLoadingImport(true)
-                
+                setLoadingImport(true)
+
             }
         }, minimumLoadingTime);
         try {
@@ -149,7 +171,7 @@ export default () => {
             isLoaded = true;
             setLoadingImport(false);
             if (response.ok) {
-              
+
                 Swal.fire({
                     title: lang["success"],
                     text: lang["success.content"],
@@ -333,7 +355,6 @@ export default () => {
                 // console.log(resp)
                 if (activated) {
                     setStatusActive(true)
-
                 }
                 else {
                     Swal.fire({
@@ -365,7 +386,7 @@ export default () => {
                         </div>
                     </div>
                 </div>
-                
+
                 {statusActive ? (
                     <>
                         <div class="row margin_top_30">

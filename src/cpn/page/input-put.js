@@ -28,7 +28,8 @@ export default () => {
     const [loaded, setLoaded] = useState(false)
     const [page, setPage] = useState(null);
 
-console.log(fields)
+// console.log(fields)
+// console.log(initialData)
     const urlParams = new URLSearchParams(window.location.search);
     const myParam = urlParams.get('myParam');
 
@@ -391,6 +392,13 @@ console.log(fields)
                                                             /> : null
                                                         }
                                                         {field.DATATYPE == "BOOL" ?
+                                                            <Bool
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
+                                                            /> : null
+                                                        }
+                                                        {field.DATATYPE == "FILE" ?
                                                             <Bool
                                                                 table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                                 related={relatedTables} field={field}

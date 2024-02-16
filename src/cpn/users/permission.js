@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import $ from 'jquery';
 import Swal from 'sweetalert2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Map from '../render-map/render-map'
 import { faFileExport, faFileImport, faDownload, faSquarePlus, faCirclePlus } from '@fortawesome/free-solid-svg-icons';
 // import TableScroll from "../table-scroll/table-scroll"
 export default (props) => {
@@ -336,7 +337,7 @@ export default (props) => {
     const indexOfLastUser = currentPage * rowsPerPage;
     const indexOfFirstUser = indexOfLastUser - rowsPerPage;
     const currentUser = data.slice(indexOfFirstUser, indexOfLastUser);
-   
+
     // console.log(currentUser)
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
     const totalPages = Math.ceil(profiles.length / rowsPerPage);
@@ -408,15 +409,16 @@ export default (props) => {
                                                                                 <div class="profile_contacts_list_user ">
                                                                                     <img class="img-responsive circle-image_list_user" src={proxy() + profile.avatar} alt="#" />
                                                                                 </div>}</td>
-                                                                            
-                                                                            <td>
-                                                                                <div class="icon-table">
-                                                                                    <div className="icon-table-line">
-                                                                                        <i class="fa fa-edit icon-edit pointer size-24" onClick={() => redirectTo(profile)}></i>
+                                                                            {
+                                                                                ["pm", "ad", "uad"].indexOf(auth.role) != -1 &&
+                                                                                <td>
+                                                                                    <div class="icon-table">
+                                                                                        <div className="icon-table-line">
+                                                                                            <i class="fa fa-edit icon-edit pointer size-24" onClick={() => redirectTo(profile)}></i>
+                                                                                        </div>
                                                                                     </div>
-                                                                                    
-                                                                                </div>
-                                                                            </td>
+                                                                                </td>
+                                                                            }
                                                                         </tr>
                                                                     ))}
                                                                 </tbody>
@@ -429,7 +431,7 @@ export default (props) => {
                                                     )
                                                 }
                                             </div>
-                                    
+
                                             <div className="d-flex justify-content-between align-items-center mb-2">
                                                 <p>
                                                     {lang["show"]} {indexOfFirstUser + 1}-{Math.min(indexOfLastUser, profiles.length)} {lang["of"]} {profiles.length} {lang["results"]}
@@ -483,15 +485,14 @@ export default (props) => {
                                         <div>
                                             {lang["not found user"]}
                                         </div>
-
                                     }
-
                                 </div>
-
-
                             </div>
                         </div>
                     </div>
+                    {/* <div class="col-md-12">
+                        <Map />
+                    </div> */}
                 </div>
             </div>
         </div>

@@ -277,7 +277,6 @@ export default (props) => {
     const [initialValue, setInitialValue] = useState(null);
     // console.log(defaultOption)
     useEffect(() => {
-
         const fetchDataForDefaultValue = async () => {
             const { foreign_keys } = table;
             const corespondingKey = foreign_keys.find(key => key.field_id == field.id)
@@ -288,9 +287,7 @@ export default (props) => {
                     require_count: false,
                     //  exact: true
                 };
-
                 const criteria = {};
-
                 criteria[pk] = defaultValue;
                 dataBody.criteria = criteria;
                 // console.log(290, dataBody)
@@ -302,24 +299,19 @@ export default (props) => {
                     },
                     body: JSON.stringify(dataBody)
                 });
-
                 const res = await response.json();
                 console.log(res)
                 let returnedData = res.data;
-
                 const foundData = returnedData.find(d => d != undefined && d[pk] === defaultValue);
                 // console.log(criteria)
                 const label = generateData(foundData);
                 // console.log(label);
-
                 if (foundData) {
                     const dataOption = {
                         value: JSON.stringify(foundData),
                         label: generateData(foundData)
                     };
-
                     setDefaultOption(dataOption);
-
                     if (!initialValue) {
                         setInitialValue(dataOption);
                         setSelectedValue(dataOption);
@@ -328,7 +320,6 @@ export default (props) => {
                     }
                 }
             }
-
         };
         if (current != undefined) {
             fetchDataForDefaultValue()

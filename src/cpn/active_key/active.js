@@ -8,7 +8,7 @@ function ActivationForm() {
 
   const [key, setKey] = useState({ MAC: "", activated: true });
   const _token = localStorage.getItem("_token");
-
+  const stringifiedUser = localStorage.getItem("user");
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = (event) => {
@@ -56,6 +56,42 @@ function ActivationForm() {
       functions.showApiResponseMessage(status)
     })
   }
+
+
+  useEffect(() => {
+
+    if (stringifiedUser !== null) {
+        const user = JSON.parse(stringifiedUser);
+        const { role } = user;
+        const validPrivileges = ["uad", "ad"];
+
+        if (validPrivileges.indexOf(role) === -1) {
+            window.location = "/page-not-found";
+        }
+    } else {
+        window.location = "/login";
+    }
+
+    fetch(`${proxy()}/auth/token/check`, {
+        headers: {
+            Authorization: _token
+        }
+    })
+        .then(res => res.json())
+        .then(resp => {
+            const { success } = resp;
+            if (!success) {
+
+                localStorage.removeItem("_token");
+                window.location = '/login'
+
+            }
+        });
+
+
+
+}, []);
+
 
   return (
     <div class="midde_cont">

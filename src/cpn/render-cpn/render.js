@@ -268,7 +268,7 @@ const ExtraButtons = ({ buttons, props, redirectToInput, redirectToImportData, e
 };
 
 const RenderTable = (props) => {
-    ////console.log(328, props)
+    console.log(328, props)
     const { project_id, version_id, url } = useParams();
     const params_Table = props.page.params
     const tableProps = props.props
@@ -307,6 +307,7 @@ const RenderTable = (props) => {
     const [tableMaxHeight, setTableMaxHeight] = useState('50vh');
     const [loadingSearch, setLoadingSearch] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [loadingTable, setLoadingTable] = useState(false);
     const [loaded, setLoaded] = useState(false);
     ////console.log("datasearch", searchValues)
     useEffect(() => {
@@ -360,7 +361,7 @@ const RenderTable = (props) => {
         callApiCount(searchValues, searchUrl)
         // callApiStatistic()
         // setApiData([])
-        setSumerize(0)
+        // setSumerize(0)
     }
 
     //searching
@@ -455,8 +456,6 @@ const RenderTable = (props) => {
         setSearchUrl(searchData.url);
     };
 
-
-
     // Hàm xử lý sự kiện nhấn phím, ví dụ nhấn Enter để tìm kiếm
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
@@ -515,18 +514,13 @@ const RenderTable = (props) => {
         if (typeTable === "table_param") {
             const url = tableProps.source.search.url
 
-
             const result = params_Table?.reduce((acc, item, index) => {
                 if (index < params.length) {
                     acc[item.fomular_alias] = params[index];
                 }
                 return acc;
             }, {});
-
-            //////////console.log(415415, result);
             setSearchValues(result)
-
-            //////////console.log(apiData);
             setCurrentPage(1);
             callApi(result, url)
             callApiCount(result, url)
@@ -534,6 +528,11 @@ const RenderTable = (props) => {
             setSumerize(0)
             return;
         }
+
+        let loadingTimeout;
+        loadingTimeout = setTimeout(() => {
+            setLoadingTable(true)
+        }, 350);
         const headerApi = {
             Authorization: _token,
             'start-at': startAt,
@@ -550,12 +549,13 @@ const RenderTable = (props) => {
                     setApiData(data.filter(record => record != undefined));
                     setSumerize(count)
                 }
+                clearTimeout(loadingTimeout);
+                setLoadingTable(false)
             });
     }
     useEffect(() => {
         setGetUrl(get.url)
         callApiView(get.url)
-
     }, []);
 
     useEffect(() => {
@@ -584,9 +584,9 @@ const RenderTable = (props) => {
             }, 310);
         }
 
-        loadingTimeout = setTimeout(() => {
-            setLoading(true)
-        }, 300);
+        // loadingTimeout = setTimeout(() => {
+        //     setLoading(true)
+        // }, 300);
 
         const searchBody = {
             start_index: startIndex,
@@ -622,12 +622,10 @@ const RenderTable = (props) => {
                         // } else if (currentPage === totalPages) {
                         //     setTotalPages(prevTotalPages => prevTotalPages + 1);
                         // }
-
                     } else {
                         // setApiData([]);
                         // setApiDataName([])
                     }
-
                     const endTime = new Date().getTime();
                     const elapsedTime = endTime - startTime;
                     clearTimeout(loadingTimeout);
@@ -668,10 +666,8 @@ const RenderTable = (props) => {
                 .then(res => {
                     const { success, content, data, result, total, fields, count, sumerize } = res;
                     const statisticValues = res.statistic;
-                    ////////////////console.log(74, res)
                     if (success) {
                         setApiData(data.filter(record => record != undefined));
-
                         // setDataStatis(statisticValues);
                         // setLoaded(true);
                         // if (data.length < 15) {
@@ -679,7 +675,6 @@ const RenderTable = (props) => {
                         // } else if (currentPage === totalPages) {
                         //     setTotalPages(prevTotalPages => prevTotalPages + 1);
                         // }
-
                     } else {
                         // setApiData([]);
                         // setApiDataName([])
@@ -707,10 +702,7 @@ const RenderTable = (props) => {
         //         setLoadingSearch(true);
         //     }, 310);
         // }
-        loadingTimeout = setTimeout(() => {
-            // setLoading(true)
-            setLoadingResult(true)
-        }, 300);
+
 
         if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
             setPreviousSearchValues(searchValues);
@@ -734,7 +726,10 @@ const RenderTable = (props) => {
         // }
         ////////////////console.log(447, searchBody)
         if (url) {
-
+            loadingTimeout = setTimeout(() => {
+                // setLoading(true)
+                setLoadingResult(true)
+            }, 30);
             fetch(`${proxy()}${url}`, {
                 method: "POST",
                 headers: {
@@ -850,7 +845,20 @@ const RenderTable = (props) => {
                                     }
                                 </> :
                                 <tr>
-                                    <td class="font-weight-bold cell" colspan={`${fields.length + 2}`} style={{ textAlign: 'center' }}><div>{lang["not found"]}</div></td>
+                                    <td class="font-weight-bold cell" colspan={`${fields.length + 2}`} style={{ textAlign: 'center' }}>
+                                        <div>
+                                            {loadingTable ?
+                                                <img
+                                                    width={35}
+                                                    className="mb-1"
+                                                    src="/images/icon/load.gif"
+                                                    alt="Loading..."
+                                                ></img>
+                                                :
+                                                lang["not found"]
+                                            }
+                                        </div>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -1244,12 +1252,14 @@ const RenderChart = (props) => {
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const _token = localStorage.getItem("_token");
     const [apiDataStatis, setApiDataStatis] = useState({})
+
+    const [field, setField] = useState({})
     const [height, setHeight] = useState(350)
-    //////////console.log(apiDataStatis)
+    console.log(field)
     useEffect(() => {
         callApiStatistic();
     }, [paramsSearch]); // Chỉ gọi API khi paramsSearch thay đổi
-    
+
 
     ///search data
     const [parentFormData, setParentFormData] = useState({});
@@ -1287,10 +1297,11 @@ const RenderChart = (props) => {
         })
             .then((res) => res.json())
             .then((res) => {
-                const { success, content, statistics } = res;
+                const { success, content, statistics, fields } = res;
                 console.log(730, res)
                 if (success) {
                     setApiDataStatis(statistics)
+                    setField(fields)
                     setLoadingDataChart(false)
 
                 }
@@ -1327,7 +1338,7 @@ const RenderChart = (props) => {
                 }
             },
             dataLabels: {
-                enabled:  typeof Object.values(apiDataStatis)[0] === 'number' ? true : false,
+                enabled: typeof Object.values(apiDataStatis)[0] === 'number' ? true : false,
                 offsetX: 0, // Điều chỉnh này nếu cần
                 offsetY: 0, // Điều chỉnh này nếu cần
                 style: {
@@ -1335,11 +1346,11 @@ const RenderChart = (props) => {
                     colors: ['#fff'] // Màu sắc của nhãn dữ liệu để tăng độ tương phản
                 },
                 format: '{value}', // Đảm bảo rằng giá trị được hiển thị đúng định dạng
-                formatter: function(val) {
+                formatter: function (val) {
                     return val.toString(); // Chuyển đổi giá trị thành chuỗi nếu cần
                 }
             },
-            
+
             legend: {
                 show: true, // Hiển thị chú thích
                 position: 'bottom', // Vị trí của chú thích (có thể là 'top', 'bottom', 'right', 'left')
@@ -1399,7 +1410,7 @@ const RenderChart = (props) => {
             //     }
             // }
 
-            
+
 
         },
     };
@@ -1452,6 +1463,12 @@ const RenderChart = (props) => {
         <div className='col-md-12'>
             <h5 style={props.props.style}>{props.props.content}</h5>
             {paramsSearch && paramsSearch.length > 0 && <DynamicForm data={paramsSearch} onFormDataChange={handleFormDataChange} onFormSubmit={handleSubmitSearch} onFormReset={handleResetSearchValue} />}
+            {field && field.length > 0 &&
+                <div style={{ fontStyle: "bold", ...props.props.style }}>
+                    <h5>{field?.[0].field_name}</h5>
+                </div>
+            }
+
             <div id="chart" style={{ width: '100%', position: 'relative', ...props.props.style }}>
                 {loadingDataChart &&
                     <>
@@ -1470,11 +1487,8 @@ const RenderChart = (props) => {
                         ></img>
                     </>
                 }
-
                 <Chart options={chartData.options} series={chartData.series} type="bar" height={height} />
             </div>
-
-
         </div>
     );
 };
@@ -1564,7 +1578,7 @@ const RenderStatisBlock = (props) => {
 };
 
 const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
-    ////////console.log(data)
+    console.log(1574, data)
     const [formData, setFormData] = useState({});
     const handleInputChange = (fieldAlias, value) => {
         let processedValue;
@@ -1594,7 +1608,7 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
     };
 
     const renderInput = (field) => {
-
+        console.log(field)
         const inputValue = formData[field.fomular_alias] || "";
         const valueBool = [
             {
@@ -1613,9 +1627,8 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
 
             case 'TEXT':
                 return <input type="text" className="form-control" placeholder={field.field_name} value={inputValue} onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
-
             case 'INT UNSIGNED' || 'BIG INT' || 'INT UNSIGNED' || 'BIG INT UNSIGNED':
-                return <input type="number" className="form-control" placeholder={field.field_name} value={inputValue} min="0" onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
+                return <input type={`${field.AUTO_INCREMENT ? "text" : "number"}`} className="form-control" placeholder={field.field_name} value={inputValue} min="0" onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
             case 'DATE':
                 return <input type="date" className="form-control" placeholder={field.field_name} value={inputValue} onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
             case 'DATETIME':
@@ -1633,7 +1646,6 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
                         ))}
                     </select>
                 );
-
             default:
                 return <input type="text" value={inputValue} className="form-control" onChange={(e) => handleInputChange(field.fomular_alias, e.target.value)} />;
         }
