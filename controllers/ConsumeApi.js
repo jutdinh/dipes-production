@@ -689,8 +689,9 @@ class ConsumeApi extends Controller {
                     } return { valid: false, reason: "Kiểu char yêu cầu dữ liệu với độ dài bằng 1" }
         /*(7)*/ case "PHONE":
                 case "EMAIL":
+                    return { valid: true, result: value }
                 case "FILE":
-                    return { valid: true, result: value }               
+                    return { valid: false, result: value }
                 
         /*(8)*/ default:
                     return { valid: false }
