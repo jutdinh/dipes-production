@@ -6135,7 +6135,7 @@ class ConsumeApi extends Controller {
          * 
          * Cái này chưa sync xong 
          * 
-         * mệt cái mu ghê
+         * mệt cái mình ghê
          * 
          * check cái logic consume
          * 
