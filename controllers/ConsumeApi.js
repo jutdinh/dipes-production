@@ -572,7 +572,10 @@ class ConsumeApi extends Controller {
          *  lưu trong một tệp txt.
          * 
          * @params [
-         *      file <Base64>
+         *      file {
+         *          file_name: <String>,
+         *          base64: <Base64> 
+         *      }
          * ]
          * 
          * @return filePath <String>
@@ -581,21 +584,25 @@ class ConsumeApi extends Controller {
          * 
          */
 
+        const { base64, filename } = file
 
-        const base64Data = file.split(';base64,').pop();
+        
+
+        const base64Data = base64.split(';base64,').pop();
         const buffer = Buffer.from(base64Data, 'base64');
+        
 
 
-        const type = await fileType.fromBuffer(buffer);
-        const filename = this.getFormatedUUID()
-        const fullPath = `${TEMP_STORAGE_PATH}/${filename}.${type ? type.ext : "txt"}`
+        const type = typeof(filename)=="string" ? filename.split('.').pop() : "txt"
+        const fileName = this.getFormatedUUID()
+        const fullPath = `${TEMP_STORAGE_PATH}/${fileName}.${type}`
         fs.writeFileSync(fullPath, type ? buffer : base64Data);
 
         return fullPath
     }
 
-    formatFileName = (filename) => {
-        return `public${filename}`
+    formatFileName = (fileName) => {
+        return `public${fileName}`
     }
 
     moveFile = (sourcePath, destinationPath) => {

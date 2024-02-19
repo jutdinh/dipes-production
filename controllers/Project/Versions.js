@@ -546,6 +546,8 @@ class VersionsController extends Controller {
                                     total: data.length
                                 })
 
+                                
+
                                 await dbo.collection(`${table_alias}`).deleteMany({})
                                 await dbo.collection(`${table_alias}`).insertMany(data)
 
