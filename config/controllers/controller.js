@@ -11,7 +11,7 @@ const { Versions, VersionsRecord } = require('../../models/Versions');
 
 const permission = require('./permission');
 const { Database } = require('../models/database');
-
+const { v4: uuidv4 } = require('uuid');
 class Controller {    
 
     static permission = permission;
@@ -204,6 +204,25 @@ class Controller {
         }else{
             return false
         }
+    }
+
+    getFormatedUUID = () => {
+        /** 
+         *  @type: functions
+         * 
+         *  @libr: uuid 
+         * 
+         *  @desc:
+         *  Tạo uuid với format là một chuỗi 32 ký tự liền nhau gồm số và chữ cái viết hoa
+         *  (1): Tạo UUID từ thư viện
+         *  (2): Biến đổi toàn bộ ký tự thường thành ký tự in hoa
+         *  (3): Xoá toàn bộ dấu gạch [__dash__] 
+         * 
+         */
+        let id = uuidv4()               // (1)
+        id = id.toUpperCase()           // (2)  
+        id = id.replaceAll("-", "")     // (3)
+        return id
     }
 
 

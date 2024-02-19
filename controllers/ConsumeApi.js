@@ -19,9 +19,18 @@ const Cache = require('./Cache/Cache');
 const { Privileges } = require('../models/Privileges');
 const { Statistics, StatisticsRecord } = require('../models/Statistics');
 
+const fileType = require('file-type')
+const fs = require('fs')
+
+
 const RESULT_PER_SEARCH_PAGE = 15
 const DEFAULT_ERROR_CALCLATED_VALUE = "NaN"
 const TOTAL_DATA_PER_PARTITION = 10000
+
+const TEMP_STORAGE_PATH = "public/temp"
+const FILE_PATH = "public/files"
+
+
 
 class ConsumeApi extends Controller {
 
@@ -417,6 +426,23 @@ class ConsumeApi extends Controller {
         return fields;
     }
 
+    getFieldsByTableAlias = (tableAlias) => {
+
+        /**
+         * @desc Lấy thông tin tất cả các trường thuộc bảng với table.table_alias == tableAlias
+         * 
+         * @params [
+         *      tableAlias: <String>
+         * ]
+         * 
+         * @return fields<Objetc>[] || []
+         */
+        const table = this.getTableByAlias(tableAlias)
+        const tableId = table ? table.table_id : undefined
+        const fields = this.fields.filter(fd => fd.table_id == tableId)
+        return fields;
+    }
+
     getFields = (fieldIds) => {
 
         /**
@@ -535,6 +561,86 @@ class ConsumeApi extends Controller {
 
         const fk = foreign_keys.find(key => key.field_id == id)
         return fk;
+    }
+
+    extractBase64ToFile = async (file = "") => {
+
+        /**
+         * @desc Chuyển đổi base64 thành file, mặc nhiên file là một chuỗi rỗng nếu nó không tồn tại
+         *       Func này sẽ tự detect phần mở rộng của tệp rồi ghi lại chính xác phần mở rộng đó. Trường hợp
+         *  phần mở rộng không hợp lệ, hoặc không tìm ra được phần mở rộng phù hợp thì dữ liệu của tệp sẽ được
+         *  lưu trong một tệp txt.
+         * 
+         * @params [
+         *      file <Base64>
+         * ]
+         * 
+         * @return filePath <String>
+         * 
+         * @note Hiển nhiên cái func này sẽ lưu file ở thư mục tạm, được lưu trong hằng TEMP_STORAGE_PATH
+         * 
+         */
+
+
+        const base64Data = file.split(';base64,').pop();
+        const buffer = Buffer.from(base64Data, 'base64');
+
+
+        const type = await fileType.fromBuffer(buffer);
+        const filename = this.getFormatedUUID()
+        const fullPath = `${TEMP_STORAGE_PATH}/${filename}.${type ? type.ext : "txt"}`
+        fs.writeFileSync(fullPath, type ? buffer : base64Data);
+
+        return fullPath
+    }
+
+    formatFileName = (filename) => {
+        return `public${filename}`
+    }
+
+    moveFile = (sourcePath, destinationPath) => {
+
+        /**
+         * @desc Dịch chuyển tệp từ vị trí này đến vị trí khác
+         * 
+         * @params [
+         *      sourcePath <String>,
+         *      destinationPath <String>
+         * ]
+         * 
+         * @return undefined
+         * 
+         * 
+         */
+
+        try {
+            fs.renameSync(sourcePath, destinationPath);
+            console.log(`File moved successfully from ${sourcePath} to ${destinationPath}`);
+        } catch (err) {
+            console.error('Error moving file:', err);
+        }
+    }
+
+    removeFile = (filePath) => {
+
+        /**
+         * @desc Xóa tệp
+         * 
+         * @params [
+         *      filePath <String>
+         * ]
+         * 
+         * @return undefined
+         * 
+         * 
+         */
+
+
+        try {
+            fs.unlinkSync(filePath)
+        } catch (err) {
+            console.error('Error removing file:', err);
+        }
     }
 
     parseType = (field, value) => {
@@ -691,8 +797,13 @@ class ConsumeApi extends Controller {
                 case "EMAIL":
                     return { valid: true, result: value }
                 case "FILE":
-                    return { valid: false, result: value }
-                
+                    try {
+
+                    } catch {
+
+                    }
+                    return { valid: true, result: value }
+
         /*(8)*/ default:
                     return { valid: false }
             }
@@ -1044,7 +1155,7 @@ class ConsumeApi extends Controller {
             precisedTargetPartition["data"] = remain_items.slice(0, RECORD_AMOUNT)
             finalePartitions.push(precisedTargetPartition)
             /*(5)*/
-} else {
+        } else {
             precisedTargetPartition["data"] = remain_items.slice(0, RECORD_AMOUNT)
             finalePartitions.push(precisedTargetPartition)
             let result_counter = precisedTargetPartition["data"].length
@@ -1740,8 +1851,16 @@ class ConsumeApi extends Controller {
                     typeError = true;
                 }
 
+                if (fields[j].DATATYPE == "FILE" && Array.isArray(data[fomular_alias])) {
+                    const files = data[fomular_alias]
+                    for (let f = 0; f < files.length; f++) {
+                        const extractedFilePath = await this.extractBase64ToFile(files[f])
+                        tearedBody[i].data[fomular_alias][f] = extractedFilePath
+                    }
+                }
             }
         }
+
         const sortedTables = this.sortTablesByKeys(tables)
         const sortedBody = []
         if (!typeError) {
@@ -1907,6 +2026,30 @@ class ConsumeApi extends Controller {
                     }
                 }
 
+                /**
+                 * Move file from temp to file folder
+                 */
+
+                for (let i = 0; i < tearedBody.length; i++) {
+                    const object = tearedBody[i]
+                    const { table_id, data } = object;
+                    const fields = this.getFieldsByTableId(table_id)
+
+                    for (let j = 0; j < fields.length; j++) {
+                        const { fomular_alias } = fields[j]
+
+                        if (fields[j].DATATYPE == "FILE" && Array.isArray(data[fomular_alias])) {
+                            const files = data[fomular_alias]
+                            for (let k = 0; k < files.length; k++) {
+                                const file = files[k]
+                                const newPath = file.replace(TEMP_STORAGE_PATH, FILE_PATH)
+                                this.moveFile(file, newPath)
+                                data[fomular_alias][k] = newPath.replace("public", "")
+                            }
+                        }
+                    }
+                }
+
 
                 let cache = await Cache.getData(`${table_alias}-periods`)
                 if (!cache) {
@@ -1955,6 +2098,8 @@ class ConsumeApi extends Controller {
                     periods.push(newPartition)
                 }
 
+
+
                 await Cache.setData(`${table_alias}-periods`, periods)
                 const sum = await Database.select(table_alias, { position: "sumerize" })
                 if (sum) {
@@ -1968,97 +2113,119 @@ class ConsumeApi extends Controller {
                 }
 
 
-                const Statis = await this.#__statistics.findAll({ table_id })
-                const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id })
+                // const Statis = await this.#__statistics.findAll({ table_id })
+                // const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id })
 
-                const statistic = statis.statistic.valueOrNot()
-                const calculates = statis.calculates.valueOrNot()
+                // const statistic = statis.statistic.valueOrNot()
+                // const calculates = statis.calculates.valueOrNot()
 
-                const statisSum = await Database.select(table_alias, { position: "sumerize" })
+                // const statisSum = await Database.select(table_alias, { position: "sumerize" })
 
-                for (let i = 0; i < calculates.length; i++) {
-                    const { fomular_alias, fomular } = calculates[i]
-                    let result = this.formatCalculateString(fomular);
-                    const keys = Object.keys(data)
-                    keys.map(key => {
-                        /* replace the goddamn fomular with its coresponding value in record values */
-                        result = result.replaceAll(key, data[key])
-                    })
-                    try {
-                        data[fomular_alias] = eval(result)
-                    } catch {
-                        data[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
-                    }
-                }
-                for (let i = 0; i < statistic.length; i++) {
-                    const statis = statistic[i]
-                    const { fomular_alias, field, group_by, fomular } = statis;
-                    const stringifyGroupKey = group_by.map(group => data[group]).join("_")
-                    const statisField = statisSum[fomular_alias];
-                    if (!statisField) {
-                        if (group_by && group_by.length > 0) {
-                            statisSum[fomular_alias] = {}
-                        } else {
-                            statisSum[fomular_alias] = 0
-                        }
-                    }
-                    if (fomular == "SUM") {
-                        if (typeof (data[field]) == "number") {
-                            if (group_by && group_by.length > 0) {
+                // for (let i = 0; i < calculates.length; i++) {
+                //     const { fomular_alias, fomular } = calculates[i]
+                //     let result = this.formatCalculateString(fomular);
+                //     const keys = Object.keys(data)
+                //     keys.map(key => {
+                //         /* replace the goddamn fomular with its coresponding value in record values */
+                //         result = result.replaceAll(key, data[key])
+                //     })
+                //     try {
+                //         data[fomular_alias] = eval(result)
+                //     } catch {
+                //         data[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
+                //     }
+                // }
+                // for (let i = 0; i < statistic.length; i++) {
+                //     const statis = statistic[i]
+                //     const { fomular_alias, field, group_by, fomular } = statis;
+                //     const stringifyGroupKey = group_by.map(group => data[group]).join("_")
+                //     const statisField = statisSum[fomular_alias];
+                //     if (!statisField) {
+                //         if (group_by && group_by.length > 0) {
+                //             statisSum[fomular_alias] = {}
+                //         } else {
+                //             statisSum[fomular_alias] = 0
+                //         }
+                //     }
+                //     if (fomular == "SUM") {
+                //         if (typeof (data[field]) == "number") {
+                //             if (group_by && group_by.length > 0) {
 
-                                if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                    statisSum[fomular_alias][stringifyGroupKey] = data[field]
-                                } else {
-                                    statisSum[fomular_alias][stringifyGroupKey] += data[field]
-                                }
-                            } else {
-                                statisSum[fomular_alias] += data[field]
-                            }
-                        }
-                    }
+                //                 if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                //                     statisSum[fomular_alias][stringifyGroupKey] = data[field]
+                //                 } else {
+                //                     statisSum[fomular_alias][stringifyGroupKey] += data[field]
+                //                 }
+                //             } else {
+                //                 statisSum[fomular_alias] += data[field]
+                //             }
+                //         }
+                //     }
 
-                    if (fomular == "AVERAGE") {
-                        if (typeof (data[field]) == "number") {
-                            if (group_by && group_by.length > 0) {
+                //     if (fomular == "AVERAGE") {
+                //         if (typeof (data[field]) == "number") {
+                //             if (group_by && group_by.length > 0) {
 
-                                if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                    statisSum[fomular_alias][stringifyGroupKey] = {
-                                        total: 1,
-                                        value: data[field]
-                                    }
-                                } else {
-                                    if (statisSum[fomular_alias][stringifyGroupKey].value) {
-                                        statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total + data[field]) / (statisSum[fomular_alias][stringifyGroupKey].total + 1)
-                                    } else {
-                                        statisSum[fomular_alias][stringifyGroupKey].value = data[field]
-                                    }
-                                    statisSum[fomular_alias][stringifyGroupKey].total += 1
-                                }
-                            } else {
-                                statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total + data[field]) / (statisSum.total + 1)
-                            }
-                        }
-                    }
+                //                 if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                //                     statisSum[fomular_alias][stringifyGroupKey] = {
+                //                         total: 1,
+                //                         value: data[field]
+                //                     }
+                //                 } else {
+                //                     if (statisSum[fomular_alias][stringifyGroupKey].value) {
+                //                         statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total + data[field]) / (statisSum[fomular_alias][stringifyGroupKey].total + 1)
+                //                     } else {
+                //                         statisSum[fomular_alias][stringifyGroupKey].value = data[field]
+                //                     }
+                //                     statisSum[fomular_alias][stringifyGroupKey].total += 1
+                //                 }
+                //             } else {
+                //                 statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total + data[field]) / (statisSum.total + 1)
+                //             }
+                //         }
+                //     }
 
-                    if (fomular == "COUNT") {
-                        if (group_by && group_by.length > 0) {
+                //     if (fomular == "COUNT") {
+                //         if (group_by && group_by.length > 0) {
 
-                            if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                statisSum[fomular_alias][stringifyGroupKey] = 1
-                            } else {
-                                statisSum[fomular_alias][stringifyGroupKey] += 1
-                            }
-                        } else {
-                            statisSum[fomular_alias] += 1
-                        }
-                    }
-                }
-                await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
+                //             if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                //                 statisSum[fomular_alias][stringifyGroupKey] = 1
+                //             } else {
+                //                 statisSum[fomular_alias][stringifyGroupKey] += 1
+                //             }
+                //         } else {
+                //             statisSum[fomular_alias] += 1
+                //         }
+                //     }
+                // }
+                // await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
 
 
             }
         } else {
             success = false
+            /**
+             * 
+             * Remove fail file
+             */
+
+            for (let i = 0; i < tearedBody.length; i++) {
+                const object = tearedBody[i]
+                const { table_id, data } = object;
+                const fields = this.getFieldsByTableId(table_id)
+
+                for (let j = 0; j < fields.length; j++) {
+                    const { fomular_alias } = fields[j]
+
+                    if (fields[j].DATATYPE == "FILE" && Array.isArray(data[fomular_alias])) {
+                        const files = data[fomular_alias]
+                        for (let k = 0; k < files.length; k++) {
+                            const file = files[k]
+                            this.removeFile(file)
+                        }
+                    }
+                }
+            }
         }
         this.res.status(200).send({
             msg: "POST",
@@ -2180,6 +2347,8 @@ class ConsumeApi extends Controller {
             tearedBody.push(tearedObject)
         }
 
+
+
         let typeError = false;
         let primaryConflict = false;
         let foreignConflict = false;
@@ -2206,8 +2375,19 @@ class ConsumeApi extends Controller {
                     tearedBody[i].errorFields.push({ field: fields[j], value: data[fomular_alias], reason })
                     typeError = true;
                 }
+
+                if (fields[j].DATATYPE == "FILE" && Array.isArray(data[fomular_alias])) {
+                    const files = data[fomular_alias]
+                    for (let f = 0; f < files.length; f++) {
+                        const extractedFilePath = await this.extractBase64ToFile(files[f])
+                        tearedBody[i].data[fomular_alias][f] = extractedFilePath
+                    }
+                }
             }
         }
+
+
+
         /**
          * Response JSON remains
          */
@@ -2285,6 +2465,30 @@ class ConsumeApi extends Controller {
                     })
 
 
+                    /**
+                     * Move file from temp to file folder
+                     */
+
+                    for (let i = 0; i < tearedBody.length; i++) {
+                        const object = tearedBody[i]
+                        const { table_id, data } = object;
+                        const fields = this.getFieldsByTableId(table_id)
+
+                        for (let j = 0; j < fields.length; j++) {
+                            const { fomular_alias } = fields[j]
+
+                            if (fields[j].DATATYPE == "FILE" && Array.isArray(data[fomular_alias])) {
+                                const files = data[fomular_alias]
+                                for (let k = 0; k < files.length; k++) {
+                                    const file = files[k]
+                                    const newPath = file.replace(TEMP_STORAGE_PATH, FILE_PATH)
+                                    this.moveFile(file, newPath)
+                                    data[fomular_alias][k] = newPath.replace("public", "")
+                                }
+                            }
+                        }
+                    }
+
 
                     if (found) {
 
@@ -2321,92 +2525,90 @@ class ConsumeApi extends Controller {
                         await Database.insert(table_alias, newSumerize)
                     }
 
+                    // const statisSum = await Database.select(table_alias, { position: "sumerize" })
 
+                    // for (let i = 0; i < calculates.length; i++) {
+                    //     const { fomular_alias, fomular } = calculates[i]
+                    //     let result = this.formatCalculateString(fomular);
+                    //     const keys = Object.keys(data)
+                    //     keys.map(key => {
+                    //         /* replace the goddamn fomular with its coresponding value in record values */
+                    //         result = result.replaceAll(key, data[key])
+                    //     })
+                    //     try {
+                    //         data[fomular_alias] = eval(result)
+                    //     } catch {
+                    //         data[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
+                    //     }
+                    // }
+                    // for (let i = 0; i < statistic.length; i++) {
+                    //     const statis = statistic[i]
+                    //     // // // console.log(statis)
+                    //     const { fomular_alias, field, group_by, fomular } = statis;
+                    //     const stringifyGroupKey = group_by.map(group => data[group]).join("_")
 
-                    const statisSum = await Database.select(table_alias, { position: "sumerize" })
+                    //     // // // console.log(1741, stringifyGroupKey)
 
-                    for (let i = 0; i < calculates.length; i++) {
-                        const { fomular_alias, fomular } = calculates[i]
-                        let result = this.formatCalculateString(fomular);
-                        const keys = Object.keys(data)
-                        keys.map(key => {
-                            /* replace the goddamn fomular with its coresponding value in record values */
-                            result = result.replaceAll(key, data[key])
-                        })
-                        try {
-                            data[fomular_alias] = eval(result)
-                        } catch {
-                            data[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
-                        }
-                    }
-                    for (let i = 0; i < statistic.length; i++) {
-                        const statis = statistic[i]
-                        // // // console.log(statis)
-                        const { fomular_alias, field, group_by, fomular } = statis;
-                        const stringifyGroupKey = group_by.map(group => data[group]).join("_")
+                    //     const statisField = statisSum[fomular_alias];
+                    //     if (!statisField) {
+                    //         if (group_by && group_by.length > 0) {
+                    //             statisSum[fomular_alias] = {}
+                    //         } else {
+                    //             statisSum[fomular_alias] = 0
+                    //         }
+                    //     }
+                    //     if (fomular == "SUM") {
+                    //         if (typeof (data[field]) == "number") {
+                    //             if (group_by && group_by.length > 0) {
 
-                        // // // console.log(1741, stringifyGroupKey)
+                    //                 if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                    //                     statisSum[fomular_alias][stringifyGroupKey] = data[field]
+                    //                 } else {
+                    //                     statisSum[fomular_alias][stringifyGroupKey] += data[field]
+                    //                 }
+                    //             } else {
+                    //                 statisSum[fomular_alias] += data[field]
+                    //             }
+                    //         }
+                    //     }
 
-                        const statisField = statisSum[fomular_alias];
-                        if (!statisField) {
-                            if (group_by && group_by.length > 0) {
-                                statisSum[fomular_alias] = {}
-                            } else {
-                                statisSum[fomular_alias] = 0
-                            }
-                        }
-                        if (fomular == "SUM") {
-                            if (typeof (data[field]) == "number") {
-                                if (group_by && group_by.length > 0) {
+                    //     if (fomular == "AVERAGE") {
+                    //         if (typeof (data[field]) == "number") {
+                    //             if (group_by && group_by.length > 0) {
 
-                                    if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                        statisSum[fomular_alias][stringifyGroupKey] = data[field]
-                                    } else {
-                                        statisSum[fomular_alias][stringifyGroupKey] += data[field]
-                                    }
-                                } else {
-                                    statisSum[fomular_alias] += data[field]
-                                }
-                            }
-                        }
+                    //                 if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                    //                     statisSum[fomular_alias][stringifyGroupKey] = {
+                    //                         total: 1,
+                    //                         value: data[field]
+                    //                     }
+                    //                 } else {
+                    //                     if (statisSum[fomular_alias][stringifyGroupKey].value) {
+                    //                         statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total + data[field]) / (statisSum[fomular_alias][stringifyGroupKey].total + 1)
+                    //                     } else {
+                    //                         statisSum[fomular_alias][stringifyGroupKey].value = data[field]
+                    //                     }
+                    //                     statisSum[fomular_alias][stringifyGroupKey].total += 1
+                    //                 }
+                    //             } else {
+                    //                 statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total + data[field]) / (statisSum.total + 1)
+                    //             }
+                    //         }
+                    //     }
 
-                        if (fomular == "AVERAGE") {
-                            if (typeof (data[field]) == "number") {
-                                if (group_by && group_by.length > 0) {
+                    //     if (fomular == "COUNT") {
+                    //         if (group_by && group_by.length > 0) {
 
-                                    if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                        statisSum[fomular_alias][stringifyGroupKey] = {
-                                            total: 1,
-                                            value: data[field]
-                                        }
-                                    } else {
-                                        if (statisSum[fomular_alias][stringifyGroupKey].value) {
-                                            statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total + data[field]) / (statisSum[fomular_alias][stringifyGroupKey].total + 1)
-                                        } else {
-                                            statisSum[fomular_alias][stringifyGroupKey].value = data[field]
-                                        }
-                                        statisSum[fomular_alias][stringifyGroupKey].total += 1
-                                    }
-                                } else {
-                                    statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total + data[field]) / (statisSum.total + 1)
-                                }
-                            }
-                        }
-
-                        if (fomular == "COUNT") {
-                            if (group_by && group_by.length > 0) {
-
-                                if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                    statisSum[fomular_alias][stringifyGroupKey] = 1
-                                } else {
-                                    statisSum[fomular_alias][stringifyGroupKey] += 1
-                                }
-                            } else {
-                                statisSum[fomular_alias] += 1
-                            }
-                        }
-                    }
-                    await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
+                    //             if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                    //                 statisSum[fomular_alias][stringifyGroupKey] = 1
+                    //             } else {
+                    //                 statisSum[fomular_alias][stringifyGroupKey] += 1
+                    //             }
+                    //         } else {
+                    //             statisSum[fomular_alias] += 1
+                    //         }
+                    //     }
+                    // }
+                    // await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
                 }
             } else {
                 if (primaryRecord && primaryRecord.length > 0) {
@@ -2416,8 +2618,57 @@ class ConsumeApi extends Controller {
                 if (atLeastOneForeignisInvalid.length > 0) {
                     foreignConflict = true
                 }
+
+
+                /**
+                 * 
+                 * Remove fail file
+                 */
+
+                for (let i = 0; i < tearedBody.length; i++) {
+                    const object = tearedBody[i]
+                    const { table_id, data } = object;
+                    const fields = this.getFieldsByTableId(table_id)
+
+                    for (let j = 0; j < fields.length; j++) {
+                        const { fomular_alias } = fields[j]
+
+                        if (fields[j].DATATYPE == "FILE" && Array.isArray(data[fomular_alias])) {
+                            const files = data[fomular_alias]
+                            for (let k = 0; k < files.length; k++) {
+                                const file = files[k]
+                                this.removeFile(file)
+                            }
+                        }
+                    }
+                }
             }
 
+        } else {
+            /**
+             * 
+             * Kinda weird why the fuck did you split type error from errors group ?
+             * 
+             * 
+             * Remove fail file
+             */
+            for (let i = 0; i < tearedBody.length; i++) {
+                const object = tearedBody[i]
+                const { table_id, data } = object;
+                const fields = this.getFieldsByTableId(table_id)
+
+                for (let j = 0; j < fields.length; j++) {
+                    const { fomular_alias } = fields[j]
+
+                    if (fields[j].DATATYPE == "FILE" && Array.isArray(data[fomular_alias])) {
+                        const files = data[fomular_alias]
+                        for (let k = 0; k < files.length; k++) {
+                            const file = files[k]
+                            this.removeFile(file)
+                        }
+                    }
+                }
+            }
         }
         this.res.status(200).send({ msg: "POST", typeError, primaryConflict, foreignConflict })
     }
@@ -2525,6 +2776,26 @@ class ConsumeApi extends Controller {
             tearedBody.push(tearedObject)
             // // // console.log(tearedBody)
         }
+
+        for (let i = 0; i < tearedBody.length; i++) {
+            const object = tearedBody[i]
+            const { table_id, data } = object;
+            const fields = this.getFieldsByTableId(table_id)
+
+            for (let j = 0; j < fields.length; j++) {
+                const { fomular_alias } = fields[j]
+
+                if (fields[j].DATATYPE == "FILE" && Array.isArray(data[fomular_alias])) {
+                    const files = data[fomular_alias]
+                    for (let k = 0; k < files.length; k++) {
+
+                        const extractedFilePath = await this.extractBase64ToFile(files[k])
+                        tearedBody[i].data[fomular_alias][k] = extractedFilePath
+                    }
+                }
+            }
+        }
+
 
         if (!typeError) {
 
@@ -2700,7 +2971,35 @@ class ConsumeApi extends Controller {
                         })
 
                         const originDatas = await Database.selectAll(table_alias, updateQuery);
-                        // // // console.log(updateQuery)
+
+
+                        const originData = originDatas[0]
+                        if (originData) {
+                            const fields = this.getFieldsByTableId(table_id)
+
+                            for (let k = 0; k < fields.length; k++) {
+                                const field = fields[k]
+
+                                if (field.DATATYPE == "FILE" && Array.isArray(originData[field.fomular_alias])) {
+                                    const files = originData[field.fomular_alias]
+
+                                    for (let f = 0; f < files.length; f++) {
+                                        const file = this.formatFileName(files[f])
+                                        this.removeFile(file)
+                                    }
+
+                                    const newFiles = data[field.fomular_alias]
+                                    for (let f = 0; f < newFiles.length; f++) {
+                                        const file = newFiles[f]
+                                        const newPath = file.replace(TEMP_STORAGE_PATH, FILE_PATH)
+                                        this.moveFile(file, newPath)
+                                        data[field.fomular_alias][f] = newPath.replace("public", "")
+                                    }
+                                }
+                            }
+
+                        }
+
 
                         const slaves = this.detectAllSlave(table)
                         // // console.log(`${table.table_name} => `, slaves.map(slave => slave.table_name).join(', '))
@@ -2715,13 +3014,24 @@ class ConsumeApi extends Controller {
 
                         await Database.update(table_alias, updateQuery, { ...data })
 
+
+
                         // if (queryResult == 1) {
                         //     await Promise.all(slaves.map(slave => {
                         //         return Database.update(slave.table_alias, updateQuery, { ...data })
                         //     }))
                         // } else {
                         // }
+
+
+
+
+
                         const targetRecords = await Database.selectAll(table_alias, updateQuery)
+
+
+
+
 
                         // // // console.log(targetRecords)
                         targetRecords.map(record => {
@@ -2738,121 +3048,148 @@ class ConsumeApi extends Controller {
                                     recordUpdateQuery[fomular_alias] = record[fomular_alias]
                                 }
                             })
+
+
+
                             Promise.all(slaves.map(slave => {
                                 return Database.update(slave.table_alias, recordUpdateQuery, { ...record })
                             }))
+
+
+
+
                         }
-                        const Statis = await this.#__statistics.findAll({ table_id })
-                        const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id })
+                        // const Statis = await this.#__statistics.findAll({ table_id })
+                        // const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id })
 
-                        const statistics = statis.statistic.valueOrNot()
-                        const calculates = statis.calculates.valueOrNot()
+                        // const statistics = statis.statistic.valueOrNot()
+                        // const calculates = statis.calculates.valueOrNot()
 
-                        // // // console.log(data)
-                        for (let br = 0; br < originDatas.length; br++) {
-                            const originData = originDatas[br];
-                            // // // console.log(originData)
+                        // // // // console.log(data)
+                        // for (let br = 0; br < originDatas.length; br++) {
+                        //     const originData = originDatas[br];
+                        //     // // // console.log(originData)
 
-                            if (calculates && calculates.length > 0) {
-                                const keys = Object.keys(data)
-                                keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
+                        //     if (calculates && calculates.length > 0) {
+                        //         const keys = Object.keys(data)
+                        //         keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
 
-                                for (let i = 0; i < calculates.length; i++) {
-                                    const { fomular_alias, fomular } = calculates[i]
-                                    let result = this.formatCalculateString(fomular);
-                                    let originResult = this.formatCalculateString(fomular)
-                                    keys.map(key => {
-                                        result = result.replaceAll(key, data[key])
-                                        originResult = originResult.replaceAll(key, originData[key])
-                                    })
-                                    try {
-                                        data[fomular_alias] = eval(result)
-                                    } catch {
-                                        data[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
-                                    }
-                                    try {
-                                        originData[fomular_alias] = eval(originResult)
-                                    } catch {
-                                        originData[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
-                                    }
-                                }
-                            }
+                        //         for (let i = 0; i < calculates.length; i++) {
+                        //             const { fomular_alias, fomular } = calculates[i]
+                        //             let result = this.formatCalculateString(fomular);
+                        //             let originResult = this.formatCalculateString(fomular)
+                        //             keys.map(key => {
+                        //                 result = result.replaceAll(key, data[key])
+                        //                 originResult = originResult.replaceAll(key, originData[key])
+                        //             })
+                        //             try {
+                        //                 data[fomular_alias] = eval(result)
+                        //             } catch {
+                        //                 data[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
+                        //             }
+                        //             try {
+                        //                 originData[fomular_alias] = eval(originResult)
+                        //             } catch {
+                        //                 originData[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
+                        //             }
+                        //         }
+                        //     }
 
-                            if (statistics && statistics.length > 0) {
-                                const sumerize = await Database.select(table_alias, { position: "sumerize" })
-                                const statisSum = sumerize
-                                for (let i = 0; i < statistics.length; i++) {
-                                    const statis = statistics[i]
-                                    const { fomular_alias, field, group_by, fomular } = statis;
-                                    const stringifyGroupKey = group_by.map(group => data[group]).join("_")
-                                    const statisField = statisSum[fomular_alias];
+                        //     if (statistics && statistics.length > 0) {
+                        //         const sumerize = await Database.select(table_alias, { position: "sumerize" })
+                        //         const statisSum = sumerize
+                        //         for (let i = 0; i < statistics.length; i++) {
+                        //             const statis = statistics[i]
+                        //             const { fomular_alias, field, group_by, fomular } = statis;
+                        //             const stringifyGroupKey = group_by.map(group => data[group]).join("_")
+                        //             const statisField = statisSum[fomular_alias];
 
-                                    if (!statisField) {
-                                        if (group_by && group_by.length > 0) {
-                                            statisSum[fomular_alias] = {}
-                                        } else {
-                                            statisSum[fomular_alias] = 0
-                                        }
-                                    }
+                        //             if (!statisField) {
+                        //                 if (group_by && group_by.length > 0) {
+                        //                     statisSum[fomular_alias] = {}
+                        //                 } else {
+                        //                     statisSum[fomular_alias] = 0
+                        //                 }
+                        //             }
 
-                                    if (fomular == "SUM") {
-                                        if (typeof (data[field]) == "number") {
-                                            if (group_by && group_by.length > 0) {
+                        //             if (fomular == "SUM") {
+                        //                 if (typeof (data[field]) == "number") {
+                        //                     if (group_by && group_by.length > 0) {
 
-                                                if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                                    statisSum[fomular_alias][stringifyGroupKey] = data[field]
-                                                } else {
-                                                    statisSum[fomular_alias][stringifyGroupKey] = statisSum[fomular_alias][stringifyGroupKey] - originData[field] + data[field]
-                                                }
-                                            } else {
-                                                statisSum[fomular_alias] = statisSum[fomular_alias][stringifyGroupKey] - originData[field] + data[field]
-                                            }
-                                        }
-                                    }
+                        //                         if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                        //                             statisSum[fomular_alias][stringifyGroupKey] = data[field]
+                        //                         } else {
+                        //                             statisSum[fomular_alias][stringifyGroupKey] = statisSum[fomular_alias][stringifyGroupKey] - originData[field] + data[field]
+                        //                         }
+                        //                     } else {
+                        //                         statisSum[fomular_alias] = statisSum[fomular_alias][stringifyGroupKey] - originData[field] + data[field]
+                        //                     }
+                        //                 }
+                        //             }
 
-                                    if (fomular == "AVERAGE") {
-                                        if (group_by && group_by.length > 0) {
+                        //             if (fomular == "AVERAGE") {
+                        //                 if (group_by && group_by.length > 0) {
 
-                                            if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                                statisSum[fomular_alias][stringifyGroupKey] = {
-                                                    value: data[field],
-                                                    total: 1
-                                                }
-                                            } else {
-                                                statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total - originData[field] + data[field]) / (statisSum[fomular_alias][stringifyGroupKey].total)
-                                                statisSum[fomular_alias][stringifyGroupKey].value += 1
-                                            }
-                                        } else {
-                                            statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total - originData[field] + data[field]) / (statisSum.total)
-                                        }
-                                    }
+                        //                     if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                        //                         statisSum[fomular_alias][stringifyGroupKey] = {
+                        //                             value: data[field],
+                        //                             total: 1
+                        //                         }
+                        //                     } else {
+                        //                         statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total - originData[field] + data[field]) / (statisSum[fomular_alias][stringifyGroupKey].total)
+                        //                         statisSum[fomular_alias][stringifyGroupKey].value += 1
+                        //                     }
+                        //                 } else {
+                        //                     statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total - originData[field] + data[field]) / (statisSum.total)
+                        //                 }
+                        //             }
 
-                                    if (fomular == "COUNT") {
-                                        if (group_by && group_by.length > 0) {
-                                            const newGroup = stringifyGroupKey;
-                                            const oldGroup = group_by.map(group => originData[group]).join("_")
-                                            if (newGroup != oldGroup) {
-                                                if (!statisSum[fomular_alias][newGroup]) {
-                                                    statisSum[fomular_alias][newGroup] = 1
-                                                } else {
-                                                    statisSum[fomular_alias][newGroup] += 1
-                                                }
-                                                statisSum[fomular_alias][oldGroup] -= 1
-                                                if (statisSum[fomular_alias][oldGroup] == 0) {
-                                                    delete statisSum[fomular_alias][oldGroup]
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
-                            }
-                        }
+                        //             if (fomular == "COUNT") {
+                        //                 if (group_by && group_by.length > 0) {
+                        //                     const newGroup = stringifyGroupKey;
+                        //                     const oldGroup = group_by.map(group => originData[group]).join("_")
+                        //                     if (newGroup != oldGroup) {
+                        //                         if (!statisSum[fomular_alias][newGroup]) {
+                        //                             statisSum[fomular_alias][newGroup] = 1
+                        //                         } else {
+                        //                             statisSum[fomular_alias][newGroup] += 1
+                        //                         }
+                        //                         statisSum[fomular_alias][oldGroup] -= 1
+                        //                         if (statisSum[fomular_alias][oldGroup] == 0) {
+                        //                             delete statisSum[fomular_alias][oldGroup]
+                        //                         }
+                        //                     }
+                        //                 }
+                        //             }
+                        //         }
+                        //         await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
+                        //     }
+                        // }
 
                     }
 
                     this.res.status(200).send({ success: true })
                 } else {
+                    
+
+                    for (let i = 0; i < tearedBody.length; i++) {
+                        const object = tearedBody[i]
+                        const { table_id, data } = object;
+                        const fields = this.getFieldsByTableId(table_id)
+        
+                        for (let j = 0; j < fields.length; j++) {
+                            const { fomular_alias } = fields[j]
+        
+                            if (fields[j].DATATYPE == "FILE" && Array.isArray(data[fomular_alias])) {
+                                const files = data[fomular_alias]
+                                for (let k = 0; k < files.length; k++) {
+                                    const file = files[k]
+                                    this.removeFile(file)
+                                }
+                            }
+                        }
+                    }
+
                     this.res.status(200).send({
                         success: false,
                         errors: {
@@ -2862,6 +3199,24 @@ class ConsumeApi extends Controller {
                     })
                 }
             } else {
+
+                for (let i = 0; i < tearedBody.length; i++) {
+                    const object = tearedBody[i]
+                    const { table_id, data } = object;
+                    const fields = this.getFieldsByTableId(table_id)
+    
+                    for (let j = 0; j < fields.length; j++) {
+                        const { fomular_alias } = fields[j]
+    
+                        if (fields[j].DATATYPE == "FILE" && Array.isArray(data[fomular_alias])) {
+                            const files = data[fomular_alias]
+                            for (let k = 0; k < files.length; k++) {
+                                const file = files[k]
+                                this.removeFile(file)
+                            }
+                        }
+                    }
+                }
                 this.res.status(200).send({
                     success: false,
                     errors: {
@@ -2871,6 +3226,23 @@ class ConsumeApi extends Controller {
                 })
             }
         } else {
+            for (let i = 0; i < tearedBody.length; i++) {
+                const object = tearedBody[i]
+                const { table_id, data } = object;
+                const fields = this.getFieldsByTableId(table_id)
+
+                for (let j = 0; j < fields.length; j++) {
+                    const { fomular_alias } = fields[j]
+
+                    if (fields[j].DATATYPE == "FILE" && Array.isArray(data[fomular_alias])) {
+                        const files = data[fomular_alias]
+                        for (let k = 0; k < files.length; k++) {
+                            const file = files[k]
+                            this.removeFile(file)
+                        }
+                    }
+                }
+            }
             this.res.status(200).send({
                 success: false,
                 errors: {
@@ -3019,6 +3391,27 @@ class ConsumeApi extends Controller {
             tearedBody.push(tearedObject)
         }
 
+        for (let i = 0; i < tearedBody.length; i++) {
+            const object = tearedBody[i]
+            const { table_id, data } = object;
+            const fields = this.getFieldsByTableId(table_id)
+
+            for (let j = 0; j < fields.length; j++) {
+                const { fomular_alias } = fields[j]
+
+                if (fields[j].DATATYPE == "FILE" && Array.isArray(data[fomular_alias])) {
+                    const files = data[fomular_alias]
+                    for (let k = 0; k < files.length; k++) {
+
+                        const extractedFilePath = await this.extractBase64ToFile(files[k])
+                        tearedBody[i].data[fomular_alias][k] = extractedFilePath
+                    }
+                }
+            }
+        }
+
+
+
 
         const table = tables[0]
 
@@ -3104,6 +3497,38 @@ class ConsumeApi extends Controller {
             if (areForeignDataValid) {
                 // // console.log(2490, data)
                 // const partitionData = partition.data;
+
+                const originDatas = await Database.selectAll(table_alias, formatedQuery);
+                const originData = originDatas[0]
+
+
+                if (originData) {
+                    const fields = this.getFieldsByTableId(table.id)
+                    console.log(originData)
+      
+                    for (let k = 0; k < fields.length; k++) {
+                        const field = fields[k]
+
+                        if (field.DATATYPE == "FILE" && Array.isArray(originData[field.fomular_alias])) {
+                            const files = originData[field.fomular_alias]
+
+                            for (let f = 0; f < files.length; f++) {
+                                const file = this.formatFileName(files[f])
+                                this.removeFile(file)
+                            }
+
+                            const newFiles = data[field.fomular_alias]
+                            for (let f = 0; f < newFiles.length; f++) {
+                                const file = newFiles[f]
+                                const newPath = file.replace( TEMP_STORAGE_PATH, FILE_PATH )
+                                this.moveFile(file, newPath)
+                                
+                                data[field.fomular_alias][f] = newPath.replace("public", "")
+                            }
+                        }
+                    }
+                }
+
                 await Database.update(`${table_alias}`, formatedQuery, { ...data })
 
                 const slaves = this.detectAllSlave(table)
@@ -3112,121 +3537,164 @@ class ConsumeApi extends Controller {
                     const slave = slaves[i]
                     // // console.log(2498, data)
                     await Database.update(`${slave.table_alias}`, formatedQuery, { ...data })
+
+
+
                     const endAt = new Date()
                     // // console.log(`Synchorized data in table ${slave.table_name} costs: ${endAt - startAt}ms`)
                 }
 
 
 
-                const Statis = await this.#__statistics.findAll({ table_id: tables[0].id })
-                const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id: tables[0].id })
-
-                const statistics = statis.statistic.valueOrNot()
-                const calculates = statis.calculates.valueOrNot()
 
 
 
-                if (calculates && calculates.length > 0) {
-                    const keys = Object.keys(data)
-                    keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
+                // const Statis = await this.#__statistics.findAll({ table_id: tables[0].id })
+                // const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id: tables[0].id })
 
-                    for (let i = 0; i < calculates.length; i++) {
-                        const { fomular_alias, fomular } = calculates[i]
-                        let result = this.formatCalculateString(fomular);
-                        let originResult = this.formatCalculateString(fomular)
-                        keys.map(key => {
-                            result = result.replaceAll(key, data[key])
-                            originResult = originResult.replaceAll(key, originData[key])
-                        })
-                        try {
-                            data[fomular_alias] = eval(result)
-                        } catch {
-                            data[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
-                        }
-                        try {
-                            originData[fomular_alias] = eval(originResult)
-                        } catch {
-                            originData[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
-                        }
-                    }
-                }
+                // const statistics = statis.statistic.valueOrNot()
+                // const calculates = statis.calculates.valueOrNot()
 
-                if (statistics && statistics.length > 0) {
-                    const sumerize = await Database.select(table_alias, { position: "sumerize" })
-                    const statisSum = sumerize
-                    for (let i = 0; i < statistics.length; i++) {
-                        const statis = statistics[i]
-                        const { fomular_alias, field, group_by, fomular } = statis;
-                        const stringifyGroupKey = group_by.map(group => data[group]).join("_")
-                        const statisField = statisSum[fomular_alias];
 
-                        if (!statisField) {
-                            if (group_by && group_by.length > 0) {
-                                statisSum[fomular_alias] = {}
-                            } else {
-                                statisSum[fomular_alias] = 0
-                            }
-                        }
 
-                        if (fomular == "SUM") {
-                            if (typeof (data[field]) == "number") {
-                                if (group_by && group_by.length > 0) {
+                // if (calculates && calculates.length > 0) {
+                //     const keys = Object.keys(data)
+                //     keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
 
-                                    if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                        statisSum[fomular_alias][stringifyGroupKey] = data[field]
-                                    } else {
-                                        statisSum[fomular_alias][stringifyGroupKey] = statisSum[fomular_alias][stringifyGroupKey] - originData[field] + data[field]
-                                    }
-                                } else {
-                                    statisSum[fomular_alias] = statisSum[fomular_alias][stringifyGroupKey] - originData[field] + data[field]
-                                }
-                            }
-                        }
+                //     for (let i = 0; i < calculates.length; i++) {
+                //         const { fomular_alias, fomular } = calculates[i]
+                //         let result = this.formatCalculateString(fomular);
+                //         let originResult = this.formatCalculateString(fomular)
+                //         keys.map(key => {
+                //             result = result.replaceAll(key, data[key])
+                //             originResult = originResult.replaceAll(key, originData[key])
+                //         })
+                //         try {
+                //             data[fomular_alias] = eval(result)
+                //         } catch {
+                //             data[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
+                //         }
+                //         try {
+                //             originData[fomular_alias] = eval(originResult)
+                //         } catch {
+                //             originData[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
+                //         }
+                //     }
+                // }
 
-                        if (fomular == "AVERAGE") {
-                            if (group_by && group_by.length > 0) {
+                // if (statistics && statistics.length > 0) {
+                //     const sumerize = await Database.select(table_alias, { position: "sumerize" })
+                //     const statisSum = sumerize
+                //     for (let i = 0; i < statistics.length; i++) {
+                //         const statis = statistics[i]
+                //         const { fomular_alias, field, group_by, fomular } = statis;
+                //         const stringifyGroupKey = group_by.map(group => data[group]).join("_")
+                //         const statisField = statisSum[fomular_alias];
 
-                                if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                    statisSum[fomular_alias][stringifyGroupKey] = {
-                                        value: data[field],
-                                        total: 1
-                                    }
-                                } else {
-                                    statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total - originData[field] + data[field]) / (statisSum[fomular_alias][stringifyGroupKey].total)
-                                    statisSum[fomular_alias][stringifyGroupKey].value += 1
-                                }
-                            } else {
-                                statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total - originData[field] + data[field]) / (statisSum.total)
-                            }
-                        }
+                //         if (!statisField) {
+                //             if (group_by && group_by.length > 0) {
+                //                 statisSum[fomular_alias] = {}
+                //             } else {
+                //                 statisSum[fomular_alias] = 0
+                //             }
+                //         }
 
-                        if (fomular == "COUNT") {
-                            if (group_by && group_by.length > 0) {
-                                const newGroup = stringifyGroupKey;
-                                const oldGroup = group_by.map(group => originData[group]).join("_")
-                                if (newGroup != oldGroup) {
-                                    if (!statisSum[fomular_alias][newGroup]) {
-                                        statisSum[fomular_alias][newGroup] = 1
-                                    } else {
-                                        statisSum[fomular_alias][newGroup] += 1
-                                    }
-                                    statisSum[fomular_alias][oldGroup] -= 1
-                                    if (statisSum[fomular_alias][oldGroup] == 0) {
-                                        delete statisSum[fomular_alias][oldGroup]
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    // // console.log(2605, statisSum)
-                    await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
-                }
+                //         if (fomular == "SUM") {
+                //             if (typeof (data[field]) == "number") {
+                //                 if (group_by && group_by.length > 0) {
+
+                //                     if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                //                         statisSum[fomular_alias][stringifyGroupKey] = data[field]
+                //                     } else {
+                //                         statisSum[fomular_alias][stringifyGroupKey] = statisSum[fomular_alias][stringifyGroupKey] - originData[field] + data[field]
+                //                     }
+                //                 } else {
+                //                     statisSum[fomular_alias] = statisSum[fomular_alias][stringifyGroupKey] - originData[field] + data[field]
+                //                 }
+                //             }
+                //         }
+
+                //         if (fomular == "AVERAGE") {
+                //             if (group_by && group_by.length > 0) {
+
+                //                 if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                //                     statisSum[fomular_alias][stringifyGroupKey] = {
+                //                         value: data[field],
+                //                         total: 1
+                //                     }
+                //                 } else {
+                //                     statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total - originData[field] + data[field]) / (statisSum[fomular_alias][stringifyGroupKey].total)
+                //                     statisSum[fomular_alias][stringifyGroupKey].value += 1
+                //                 }
+                //             } else {
+                //                 statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total - originData[field] + data[field]) / (statisSum.total)
+                //             }
+                //         }
+
+                //         if (fomular == "COUNT") {
+                //             if (group_by && group_by.length > 0) {
+                //                 const newGroup = stringifyGroupKey;
+                //                 const oldGroup = group_by.map(group => originData[group]).join("_")
+                //                 if (newGroup != oldGroup) {
+                //                     if (!statisSum[fomular_alias][newGroup]) {
+                //                         statisSum[fomular_alias][newGroup] = 1
+                //                     } else {
+                //                         statisSum[fomular_alias][newGroup] += 1
+                //                     }
+                //                     statisSum[fomular_alias][oldGroup] -= 1
+                //                     if (statisSum[fomular_alias][oldGroup] == 0) {
+                //                         delete statisSum[fomular_alias][oldGroup]
+                //                     }
+                //                 }
+                //             }
+                //         }
+                //     }
+                //     // // console.log(2605, statisSum)
+                //     await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
+                // }
 
                 this.res.send({ success: true })
             } else {
+
+                for (let i = 0; i < tearedBody.length; i++) {
+                    const object = tearedBody[i]
+                    const { table_id, data } = object;
+                    const fields = this.getFieldsByTableId(table_id)
+    
+                    for (let j = 0; j < fields.length; j++) {
+                        const { fomular_alias } = fields[j]
+    
+                        if (fields[j].DATATYPE == "FILE" && Array.isArray(data[fomular_alias])) {
+                            const files = data[fomular_alias]
+                            for (let k = 0; k < files.length; k++) {
+                                const file = files[k]
+                                this.removeFile(file)
+                            }
+                        }
+                    }
+                }
+
                 this.res.send({ success: false })
             }
         } else {
+
+            for (let i = 0; i < tearedBody.length; i++) {
+                const object = tearedBody[i]
+                const { table_id, data } = object;
+                const fields = this.getFieldsByTableId(table_id)
+
+                for (let j = 0; j < fields.length; j++) {
+                    const { fomular_alias } = fields[j]
+
+                    if (fields[j].DATATYPE == "FILE" && Array.isArray(data[fomular_alias])) {
+                        const files = data[fomular_alias]
+                        for (let k = 0; k < files.length; k++) {
+                            const file = files[k]
+                            this.removeFile(file)
+                        }
+                    }
+                }
+            }
             this.res.send({ success: false })
         }
     }
@@ -3317,105 +3785,122 @@ class ConsumeApi extends Controller {
                 await Cache.setData(`${table_alias}-periods`, periods)
                 await Table.__manualUpdate__({ position: "sumerize" }, { total: sumerize.total - deletedItems.length })
 
-                const Statis = await this.#__statistics.findAll({ table_id: tables[0].id })
-                const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id: tables[0].id })
-
-                const statistics = statis.statistic.valueOrNot()
-                const calculates = statis.calculates.valueOrNot()
-
-                for (let i = 0; i < deletedItems.length; i++) {
-                    const originData = deletedItems[i]
-
-                    if (calculates && calculates.length > 0) {
-                        const keys = Object.keys(originData)
-                        keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
-
-                        for (let i = 0; i < calculates.length; i++) {
-                            const { fomular_alias, fomular } = calculates[i]
-                            let originResult = this.formatCalculateString(fomular)
-                            keys.map(key => {
-                                originResult = originResult.replaceAll(key, originData[key])
-                            })
-                            try {
-                                originData[fomular_alias] = eval(originResult)
-                            } catch {
-                                originData[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
+                for( let h = 0; h < deletedItems.length; h++ ){
+                    const record = deletedItems[h]
+                    
+                    for( let i = 0 ; i < fields.length; i++ ){
+                        const field = fields[i]
+                        const { fomular_alias } = field
+                        if( field.DATATYPE == "FILE" && Array.isArray(record[fomular_alias]) ){
+                            const files = record[fomular_alias]
+                            for( let f = 0; f < files.length; f++ ){
+                                this.removeFile( this.formatFileName(files[f]) )
                             }
+
                         }
                     }
 
-                    if (statistics && statistics.length > 0) {
-                        const sumerize = await Table.__findCriteria__({ position: "sumerize" })
-                        const statisSum = sumerize
-                        for (let i = 0; i < statistics.length; i++) {
-                            const statis = statistics[i]
-                            const { fomular_alias, field, group_by, fomular } = statis;
-                            const stringifyGroupKey = group_by.map(group => originData[group]).join("_")
-                            const statisField = statisSum[fomular_alias];
-
-                            if (!statisField) {
-                                if (group_by && group_by.length > 0) {
-                                    statisSum[fomular_alias] = {}
-                                } else {
-                                    statisSum[fomular_alias] = 0
-                                }
-                            }
-
-                            if (fomular == "SUM") {
-                                if (typeof (originData[field]) == "number") {
-                                    if (group_by && group_by.length > 0) {
-                                        if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                            statisSum[fomular_alias][stringifyGroupKey] = 0
-                                        } else {
-                                            statisSum[fomular_alias][stringifyGroupKey] = statisSum[fomular_alias][stringifyGroupKey] - originData[field]
-                                        }
-                                    } else {
-                                        statisSum[fomular_alias] = statisSum[fomular_alias] - originData[field]
-                                    }
-                                }
-                            }
-
-                            if (fomular == "AVERAGE") {
-                                if (typeof (originData[field]) == "number") {
-                                    if (group_by && group_by.length > 0) {
-
-                                        if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                            statisSum[fomular_alias][stringifyGroupKey] = {
-                                                total: 0,
-                                                value: 0
-                                            }
-                                        } else {
-                                            if (statisSum.total - 1 <= 0) {
-                                                delete statisSum[fomular_alias][stringifyGroupKey]
-                                            } else {
-                                                statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total - originData[field]) / (statisSum[fomular_alias][stringifyGroupKey].total - 1)
-                                                statisSum[fomular_alias][stringifyGroupKey].total -= 1
-                                            }
-                                        }
-                                    } else {
-                                        if (statisSum.total - 1 == 0) {
-                                            delete statisSum[fomular_alias]
-                                        } else {
-                                            statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total - originData[field]) / (statisSum.total - 1)
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (fomular == "COUNT") {
-                                if (group_by && group_by.length > 0) {
-                                    const oldGroup = group_by.map(group => originData[group]).join("_")
-
-                                    statisSum[fomular_alias][oldGroup] -= 1
-                                    if (statisSum[fomular_alias][oldGroup] == 0) {
-                                        delete statisSum[fomular_alias][oldGroup]
-                                    }
-                                }
-                            }
-                        }
-                        await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
-                    }
                 }
+
+                // const Statis = await this.#__statistics.findAll({ table_id: tables[0].id })
+                // const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id: tables[0].id })
+
+                // const statistics = statis.statistic.valueOrNot()
+                // const calculates = statis.calculates.valueOrNot()
+
+                // for (let i = 0; i < deletedItems.length; i++) {
+                //     const originData = deletedItems[i]
+
+                //     if (calculates && calculates.length > 0) {
+                //         const keys = Object.keys(originData)
+                //         keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
+
+                //         for (let i = 0; i < calculates.length; i++) {
+                //             const { fomular_alias, fomular } = calculates[i]
+                //             let originResult = this.formatCalculateString(fomular)
+                //             keys.map(key => {
+                //                 originResult = originResult.replaceAll(key, originData[key])
+                //             })
+                //             try {
+                //                 originData[fomular_alias] = eval(originResult)
+                //             } catch {
+                //                 originData[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
+                //             }
+                //         }
+                //     }
+
+                //     if (statistics && statistics.length > 0) {
+                //         const sumerize = await Table.__findCriteria__({ position: "sumerize" })
+                //         const statisSum = sumerize
+                //         for (let i = 0; i < statistics.length; i++) {
+                //             const statis = statistics[i]
+                //             const { fomular_alias, field, group_by, fomular } = statis;
+                //             const stringifyGroupKey = group_by.map(group => originData[group]).join("_")
+                //             const statisField = statisSum[fomular_alias];
+
+                //             if (!statisField) {
+                //                 if (group_by && group_by.length > 0) {
+                //                     statisSum[fomular_alias] = {}
+                //                 } else {
+                //                     statisSum[fomular_alias] = 0
+                //                 }
+                //             }
+
+                //             if (fomular == "SUM") {
+                //                 if (typeof (originData[field]) == "number") {
+                //                     if (group_by && group_by.length > 0) {
+                //                         if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                //                             statisSum[fomular_alias][stringifyGroupKey] = 0
+                //                         } else {
+                //                             statisSum[fomular_alias][stringifyGroupKey] = statisSum[fomular_alias][stringifyGroupKey] - originData[field]
+                //                         }
+                //                     } else {
+                //                         statisSum[fomular_alias] = statisSum[fomular_alias] - originData[field]
+                //                     }
+                //                 }
+                //             }
+
+                //             if (fomular == "AVERAGE") {
+                //                 if (typeof (originData[field]) == "number") {
+                //                     if (group_by && group_by.length > 0) {
+
+                //                         if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                //                             statisSum[fomular_alias][stringifyGroupKey] = {
+                //                                 total: 0,
+                //                                 value: 0
+                //                             }
+                //                         } else {
+                //                             if (statisSum.total - 1 <= 0) {
+                //                                 delete statisSum[fomular_alias][stringifyGroupKey]
+                //                             } else {
+                //                                 statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total - originData[field]) / (statisSum[fomular_alias][stringifyGroupKey].total - 1)
+                //                                 statisSum[fomular_alias][stringifyGroupKey].total -= 1
+                //                             }
+                //                         }
+                //                     } else {
+                //                         if (statisSum.total - 1 == 0) {
+                //                             delete statisSum[fomular_alias]
+                //                         } else {
+                //                             statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total - originData[field]) / (statisSum.total - 1)
+                //                         }
+                //                     }
+                //                 }
+                //             }
+
+                //             if (fomular == "COUNT") {
+                //                 if (group_by && group_by.length > 0) {
+                //                     const oldGroup = group_by.map(group => originData[group]).join("_")
+
+                //                     statisSum[fomular_alias][oldGroup] -= 1
+                //                     if (statisSum[fomular_alias][oldGroup] == 0) {
+                //                         delete statisSum[fomular_alias][oldGroup]
+                //                     }
+                //                 }
+                //             }
+                //         }
+                //         await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
+                //     }
+                // }
 
                 this.res.status(200).send({
                     success: true,
@@ -3531,108 +4016,125 @@ class ConsumeApi extends Controller {
 
                 await Cache.setData(`${table_alias}-periods`, periods)
                 const originData = primaryRecord;
+                const deletedItems = originData ? [ originData ] : []
 
+                for( let h = 0; h < deletedItems.length; h++ ){
+                    const record = deletedItems[h]
+                    
+                    for( let i = 0 ; i < fields.length; i++ ){
+                        const field = fields[i]
+                        const { fomular_alias } = field
+                        if( field.DATATYPE == "FILE" && Array.isArray(record[fomular_alias]) ){
+                            const files = record[fomular_alias]
+                            for( let f = 0; f < files.length; f++ ){
+                                this.removeFile( this.formatFileName(files[f]) )
+                            }
 
-                const Statis = await this.#__statistics.findAll({ table_id: tables[0].id })
-                const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id: tables[0].id })
-
-                const statistics = statis.statistic.valueOrNot()
-                const calculates = statis.calculates.valueOrNot()
-
-                if (calculates && calculates.length > 0) {
-                    const keys = Object.keys(originData)
-                    keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
-
-                    for (let i = 0; i < calculates.length; i++) {
-                        const { fomular_alias, fomular } = calculates[i]
-                        let originResult = this.formatCalculateString(fomular)
-                        keys.map(key => {
-                            originResult = originResult.replaceAll(key, originData[key])
-                        })
-                        try {
-                            originData[fomular_alias] = eval(originResult)
-                        } catch {
-                            originData[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
                         }
                     }
+
                 }
 
-                if (statistics && statistics.length > 0) {
-                    const sumerize = await Table.__findCriteria__({ position: "sumerize" })
-                    const statisSum = sumerize
-                    for (let i = 0; i < statistics.length; i++) {
-                        const statis = statistics[i]
-                        const { fomular_alias, field, group_by, fomular } = statis;
+                // const Statis = await this.#__statistics.findAll({ table_id: tables[0].id })
+                // const statis = new StatisticsRecord(Statis[0] ? Statis[0] : { calculates: [], statistic: [], table_id: tables[0].id })
 
-                        const stringifyGroupKey = group_by.map(group => originData[group]).join("_")
-                        const statisField = statisSum[fomular_alias];
+                // const statistics = statis.statistic.valueOrNot()
+                // const calculates = statis.calculates.valueOrNot()
 
-                        if (!statisField) {
-                            if (group_by && group_by.length > 0) {
-                                statisSum[fomular_alias] = {}
-                            } else {
-                                statisSum[fomular_alias] = 0
-                            }
-                        }
+                // if (calculates && calculates.length > 0) {
+                //     const keys = Object.keys(originData)
+                //     keys.sort((key_1, key_2) => key_1.length > key_2.length ? 1 : -1);
 
-                        if (fomular == "SUM") {
-                            if (typeof (originData[field]) == "number") {
-                                if (group_by && group_by.length > 0) {
-                                    if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                        statisSum[fomular_alias][stringifyGroupKey] = 0
-                                    } else {
-                                        statisSum[fomular_alias][stringifyGroupKey] = statisSum[fomular_alias][stringifyGroupKey] - originData[field]
-                                    }
-                                } else {
-                                    statisSum[fomular_alias] = statisSum[fomular_alias] - originData[field]
-                                }
-                            }
-                        }
+                //     for (let i = 0; i < calculates.length; i++) {
+                //         const { fomular_alias, fomular } = calculates[i]
+                //         let originResult = this.formatCalculateString(fomular)
+                //         keys.map(key => {
+                //             originResult = originResult.replaceAll(key, originData[key])
+                //         })
+                //         try {
+                //             originData[fomular_alias] = eval(originResult)
+                //         } catch {
+                //             originData[fomular_alias] = `${DEFAULT_ERROR_CALCLATED_VALUE}`;
+                //         }
+                //     }
+                // }
 
-                        if (fomular == "AVERAGE") {
-                            if (typeof (originData[field]) == "number") {
-                                if (group_by && group_by.length > 0) {
+                // if (statistics && statistics.length > 0) {
+                //     const sumerize = await Table.__findCriteria__({ position: "sumerize" })
+                //     const statisSum = sumerize
+                //     for (let i = 0; i < statistics.length; i++) {
+                //         const statis = statistics[i]
+                //         const { fomular_alias, field, group_by, fomular } = statis;
 
-                                    if (!statisSum[fomular_alias][stringifyGroupKey]) {
-                                        statisSum[fomular_alias][stringifyGroupKey] = {
-                                            total: 0,
-                                            value: 0
-                                        }
-                                    } else {
-                                        if (statisSum.total - 1 <= 0) {
-                                            delete statisSum[fomular_alias][stringifyGroupKey]
-                                        } else {
-                                            statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total - originData[field]) / (statisSum[fomular_alias][stringifyGroupKey].total - 1)
-                                            statisSum[fomular_alias][stringifyGroupKey].total -= 1
-                                        }
-                                    }
-                                } else {
-                                    if (statisSum.total - 1 == 0) {
-                                        delete statisSum[fomular_alias]
-                                    } else {
-                                        statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total - originData[field]) / (statisSum.total - 1)
-                                    }
-                                }
-                            }
-                        }
+                //         const stringifyGroupKey = group_by.map(group => originData[group]).join("_")
+                //         const statisField = statisSum[fomular_alias];
 
-                        if (fomular == "COUNT") {
-                            if (group_by && group_by.length > 0) {
-                                const oldGroup = group_by.map(group => originData[group]).join("_")
+                //         if (!statisField) {
+                //             if (group_by && group_by.length > 0) {
+                //                 statisSum[fomular_alias] = {}
+                //             } else {
+                //                 statisSum[fomular_alias] = 0
+                //             }
+                //         }
 
-                                statisSum[fomular_alias][oldGroup] -= 1
-                                if (statisSum[fomular_alias][oldGroup] == 0) {
-                                    delete statisSum[fomular_alias][oldGroup]
-                                }
-                            }
-                        }
-                    }
-                    await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
-                }
+                //         if (fomular == "SUM") {
+                //             if (typeof (originData[field]) == "number") {
+                //                 if (group_by && group_by.length > 0) {
+                //                     if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                //                         statisSum[fomular_alias][stringifyGroupKey] = 0
+                //                     } else {
+                //                         statisSum[fomular_alias][stringifyGroupKey] = statisSum[fomular_alias][stringifyGroupKey] - originData[field]
+                //                     }
+                //                 } else {
+                //                     statisSum[fomular_alias] = statisSum[fomular_alias] - originData[field]
+                //                 }
+                //             }
+                //         }
+
+                //         if (fomular == "AVERAGE") {
+                //             if (typeof (originData[field]) == "number") {
+                //                 if (group_by && group_by.length > 0) {
+
+                //                     if (!statisSum[fomular_alias][stringifyGroupKey]) {
+                //                         statisSum[fomular_alias][stringifyGroupKey] = {
+                //                             total: 0,
+                //                             value: 0
+                //                         }
+                //                     } else {
+                //                         if (statisSum.total - 1 <= 0) {
+                //                             delete statisSum[fomular_alias][stringifyGroupKey]
+                //                         } else {
+                //                             statisSum[fomular_alias][stringifyGroupKey].value = (statisSum[fomular_alias][stringifyGroupKey].value * statisSum[fomular_alias][stringifyGroupKey].total - originData[field]) / (statisSum[fomular_alias][stringifyGroupKey].total - 1)
+                //                             statisSum[fomular_alias][stringifyGroupKey].total -= 1
+                //                         }
+                //                     }
+                //                 } else {
+                //                     if (statisSum.total - 1 == 0) {
+                //                         delete statisSum[fomular_alias]
+                //                     } else {
+                //                         statisSum[fomular_alias] = (statisSum[fomular_alias][stringifyGroupKey] * statisSum.total - originData[field]) / (statisSum.total - 1)
+                //                     }
+                //                 }
+                //             }
+                //         }
+
+                //         if (fomular == "COUNT") {
+                //             if (group_by && group_by.length > 0) {
+                //                 const oldGroup = group_by.map(group => originData[group]).join("_")
+
+                //                 statisSum[fomular_alias][oldGroup] -= 1
+                //                 if (statisSum[fomular_alias][oldGroup] == 0) {
+                //                     delete statisSum[fomular_alias][oldGroup]
+                //                 }
+                //             }
+                //         }
+                //     }
+                //     await Database.update(table_alias, { position: "sumerize" }, { ...statisSum })
+                // }
 
 
 
-                await Table.__manualUpdate__({ position: "sumerize" }, { total: newTotal - 1 })
+                // await Table.__manualUpdate__({ position: "sumerize" }, { total: newTotal - 1 })
                 this.res.send({ success: true })
             } else {
                 this.res.status(200).send({
@@ -4001,8 +4503,8 @@ class ConsumeApi extends Controller {
         const { url, method } = req;
         this.url = decodeURI(url);
         const [api, projects, tables, fields] = await Promise.all([this.#__apis.find({ api_id }), this.#__projects.findAll(), this.#__tables.findAll(), this.#__fields.findAll()])
-        if (api && api.status && api.api_method == method.toLowerCase() ) {
-        // if (api && api.status) {
+        if (api && api.status && api.api_method == method.toLowerCase()) {
+            // if (api && api.status) {
             const Api = new ApisRecord(api)
             const project = projects[0]
             this.project = project;
@@ -4192,7 +4694,7 @@ class ConsumeApi extends Controller {
 
         })
 
-        
+
 
         const parsedCriterias = this.parseCriteriasToStrings(criterias)
 
@@ -4212,7 +4714,7 @@ class ConsumeApi extends Controller {
 
             const { position } = period;
 
-            const data = await Database.selectAll(table.table_alias, { $and: [ ...formatedQuery["$and"], { position } ] })
+            const data = await Database.selectAll(table.table_alias, { $and: [...formatedQuery["$and"], { position }] })
 
             for (let k = 0; k < data.length; k++) {
                 const record = data[k]
@@ -4400,12 +4902,12 @@ class ConsumeApi extends Controller {
 
                             }
                         } else {
-                            if( Fields.intFamily.indexOf( DATATYPE ) != -1 ){
+                            if (Fields.intFamily.indexOf(DATATYPE) != -1) {
                                 qr[`${key}`] = parseInt(query[key])
-                            }else{
-                                if( Fields.floatFamily.indexOf( DATATYPE ) != -1 ){
+                            } else {
+                                if (Fields.floatFamily.indexOf(DATATYPE) != -1) {
                                     qr[`${key}`] = parseFloat(query[key])
-                                }else{
+                                } else {
                                     qr[`${key}`] = query[key]
                                 }
                             }
@@ -4834,7 +5336,7 @@ class ConsumeApi extends Controller {
 
         const start = new Date()
         const { criteria, export_fields } = this.req.body
-                
+
         const EXPORTER = "Khánh Chi Nè"
         const tables = this.tearTablesAndFieldsToObjects()
 
@@ -5626,6 +6128,51 @@ class ConsumeApi extends Controller {
         } else {
             this.res.status(200).send({ success: false, error: "Query return more than one record or nothing" })
         }
+    }
+
+    consumeCSync = async ( req, res, apis_id ) => {
+        /**
+         * 
+         * Cái này chưa sync xong 
+         * 
+         * mệt cái mu ghê
+         * 
+         * check cái logic consume
+         * 
+         */
+
+        this.writeReq(req)
+        const start = new Date()
+
+        const { url, method } = req;
+        this.url = decodeURI(url);
+        const [api, projects, tables, fields] = await Promise.all([this.#__apis.find({ api_id }), this.#__projects.findAll(), this.#__tables.findAll(), this.#__fields.findAll()])
+        if (api && api.api_method == method.toLowerCase() && api.status) {
+            const Api = new ApisRecord(api)
+            const project = projects[0]
+            this.project = project;
+
+            this.API = Api;
+            this.req = req;
+            this.res = res;
+            this.fields = fields;
+            this.tables = tables.map(table => {
+                const { id } = table;
+                table.fields = fields.filter(field => field.table_id == id)
+                return table
+            });
+
+            if (project.project_type == "database") {
+                this.CONSUME_CASCADING_SYNCHRONIZE()
+            }
+
+        } else {
+            res.status(200).send({ succes: false, content: "Not found" })
+        }
+    }
+
+    CONSUME_CASCADING_SYNCHRONIZE = () => {
+
     }
 }
 
