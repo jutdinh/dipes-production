@@ -2995,7 +2995,7 @@ class ConsumeApi extends Controller {
                                         this.removeFile(file)
                                     }
 
-                                    const newFiles = data[field.fomular_alias]
+                                    const newFiles = data[field.fomular_alias] ? data[field.fomular_alias] : []
                                     for (let f = 0; f < newFiles.length; f++) {
                                         const file = newFiles[f]
                                         const newPath = file.replace(TEMP_STORAGE_PATH, FILE_PATH)
