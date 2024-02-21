@@ -109,7 +109,7 @@ export default (props) => {
         });
         e.target.value = '';
     };
-    
+
 
     async function convertImageToBase64(url) {
         return fetch(url)
@@ -121,37 +121,74 @@ export default (props) => {
                 reader.readAsDataURL(blob);
             }));
     }
-    
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    })
+    // async function processImagePaths(paths) {
+    //     if (!Array.isArray(paths)) {
+    //         // Trả về một mảng rỗng nếu paths không phải là một mảng
+    //         return [];
+    //     }
+    //     const imagesData = [];
+    //     for (const path of paths) {
+    //         const base64FullString = await convertImageToBase64(path);
+    //         // Cắt để lấy chỉ chuỗi base64
+    //         const base64 = base64FullString.split('base64,').pop();
+    //         const filename = path.split('/').pop();
+    //         imagesData.push({
+    //             filename,
+    //             base64
+    //         });
+    //     }
+    //     return imagesData;
+    // }
+
+
+
     async function processImagePaths(paths) {
+        // Kiểm tra xem paths có phải là mảng không
         if (!Array.isArray(paths)) {
-            return
+            // Trả về một mảng rỗng nếu paths không phải là một mảng
+            return [];
         }
+    
         const imagesData = [];
         for (const path of paths) {
-            const base64FullString = await convertImageToBase64(path);
-            // Cắt để lấy chỉ chuỗi base64
-            const base64 = base64FullString.split('base64,').pop();
-            const filename = path.split('/').pop();
-            imagesData.push({
-                filename,
-                base64
-            });
+            try {
+                const base64FullString = await convertImageToBase64(path);
+                // Cắt để lấy chỉ chuỗi base64
+                const base64 = base64FullString.split('base64,').pop();
+                const filename = path.split('/').pop();
+                imagesData.push({
+                    filename,
+                    base64
+                });
+            } catch (error) {
+                console.error(`Error converting image to base64: ${error}`);
+                // Xử lý hoặc log lỗi nếu cần
+            }
         }
         return imagesData;
     }
 
+
+
+
     useEffect(() => {
-            const dataImg = fileUploads?.map(item => (
-                {
-                    "filename": item.name,
-                    "base64": item.dataUrl ? item.dataUrl.split('base64,').pop() : null
-                })
-            );
-            processImagePaths(current).then(imagesData => {
-                console.log(imagesData);
-                changeTrigger(field, [...dataImg, ...imagesData]);
-            });
-    }, [fileUploads]); // Theo dõi sự thay đổi của `currfileUploadsent`
+        const dataImg = fileUploads?.map(item => (
+            {
+                "filename": item.name,
+                "base64": item.dataUrl ? item.dataUrl.split('base64,').pop() : null
+            })
+        );
+        processImagePaths(current).then(imagesData => {
+            console.log(imagesData);
+            changeTrigger(field, [...dataImg, ...imagesData]);
+        });
+    }, [fileUploads, current]); 
 
     const removeAttachMedia = (e, media) => {
         e.stopPropagation();
@@ -164,7 +201,7 @@ export default (props) => {
         e.stopPropagation();
         e.preventDefault();
         const updatedMediaList = fileUploads?.filter(item => item !== media);
- 
+
         SetFileUploads(updatedMediaList)
     };
     return (
@@ -200,55 +237,57 @@ export default (props) => {
                     </div>
                 </div>
 
-              
-                    <div className={`selected-images-container-add`} >
-                        {current?.map((media, index) => (
-                            <div key={index} className="selected-image-wrapper-add">
-                                {functions.isExcelDocumentFormat(media) ?
-                                    <img src={'/images/icon/excel.svg'} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media}/*onClick={() => openModalPreview(media)}*/ />
-                                    : functions.isPdfDocumentFormat(media) ?
-                                        <img src={'/images/icon/pdf.svg'} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media}/*onClick={() => openModalPreview(media)}*/ />
+
+                <div className={`selected-images-container-add`} >
+                    {current?.map((media, index) => (
+                        <div key={index} className="selected-image-wrapper-add">
+                            {functions.isExcelDocumentFormat(media) ?
+                                <img src={'/images/icon/excel.svg'} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media}/*onClick={() => openModalPreview(media)}*/ />
+                                : functions.isPdfDocumentFormat(media) ?
+                                    <img src={'/images/icon/pdf.svg'} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media}/*onClick={() => openModalPreview(media)}*/ />
+                                    :
+                                    functions.isDocDocumentFormat(media) ?
+                                        <img src={'/images/icon/docs.svg'} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media}/*onClick={() => openModalPreview(media)}*/ />
                                         :
-                                        functions.isDocDocumentFormat(media) ?
-                                            <img src={'/images/icon/docs.svg'} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media}/*onClick={() => openModalPreview(media)}*/ />
+                                        functions.isZipDocumentFormat(media) ?
+                                            <img src={'/images/icon/zip.svg'} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media}/*onClick={() => openModalPreview(media)}*/ />
                                             :
-                                            functions.isZipDocumentFormat(media) ?
-                                                <img src={'/images/icon/zip.svg'} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media}/*onClick={() => openModalPreview(media)}*/ />
-                                                :
-                                                <img src={proxy() + media} className="selected-image-add" title={media}/*onClick={() => openModalPreview(media)}*/ />
-                                }
-                                <button onClick={(e) => removeAttachMedia(e, media)} className="remove-image" title={lang["delete image"]}>X</button>
-                            </div>
-                        ))}
-                        {fileUploads?.map((media, index) => (
-                            <div key={index} className="selected-image-wrapper-add">
+                                            <img src={proxy() + media} className="selected-image-add" title={media}/*onClick={() => openModalPreview(media)}*/ />
+                            }
+                            <button onClick={(e) => removeAttachMedia(e, media)} className="remove-image" title={lang["delete image"]}>X</button>
+                        </div>
+                    ))}
+                    {fileUploads?.map((media, index) => (
+                        <div key={index} className="selected-image-wrapper-add">
 
-                                {media.type === 'image' && (
-                                    <img src={media.url} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media.name}/*onClick={() => openModalPreview(media)}*/ />
-                                )}
-                                {media.type === 'video' && (
-                                    <div>
-                                        <img src={media.cover} alt={`Cover for ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media.name}/*onClick={() => openModalPreview(media)}*/ />
+                            {media.type === 'image' && (
+                                <img src={media.url} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media.name}/*onClick={() => openModalPreview(media)}*/ />
+                            )}
+                            {media.type === 'video' && (
+                                <div>
+                                    <img src={media.cover} alt={`Cover for ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media.name}/*onClick={() => openModalPreview(media)}*/ />
 
-                                        <div class="video-duration">Video</div>
-                                    </div>
-                                )}
-                                {media.type === 'pdf' && (
-                                    <img src={"/images/icon/pdf.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
-                                )}
+                                    <div class="video-duration">Video</div>
+                                </div>
+                            )}
+                            {media.type === 'pdf' && (
+                                <img src={"/images/icon/pdf.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
+                            )}
+                            {media.type === 'excel' && (
+                                <img src={"/images/icon/excel.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
+                            )}
+                            {media.type === 'word' && (
+                                <img src={"/images/icon/docs.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
+                            )}
+                            {media.type === 'zip' && (
+                                <img src={"/images/icon/zip.png"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
+                            )}
+                            <button onClick={(e) => removeUploadFiles(e, media)} className="remove-image" title={lang["delete image"]}>X</button>
+                        </div>
+                    ))}
+                </div>
 
-                                {media.type === 'word' && (
-                                    <img src={"/images/icon/docs.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
-                                )}
-                                {media.type === 'zip' && (
-                                    <img src={"/images/icon/zip.png"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
-                                )}
-                                <button onClick={(e) => removeUploadFiles(e, media)} className="remove-image" title={lang["delete image"]}>X</button>
-                            </div>
-                        ))}
-                    </div>
-                
-                
+
             </div>
         </div>
     );

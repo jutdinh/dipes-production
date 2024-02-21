@@ -178,7 +178,7 @@ export default (props) => {
                                 {media.type === 'pdf' && (
                                     <img src={"/images/icon/pdf.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
                                 )}
-                                {functions.isExcelDocumentFormat(media) && (
+                                {media.type === 'excel'&& (
                                     <img src={"/images/icon/excel.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
                                 )}
                                 {media.type === 'word' && (
@@ -191,16 +191,7 @@ export default (props) => {
                             </div>
                         ))}
 
-                        {current?.map((media, index) => (
-                            <div key={index} className="selected-image-wrapper-add">
-                                {functions.isExcelDocumentFormat(media) ?
-                                    <img src={'/images/icon/excel.svg'} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media}/*onClick={() => openModalPreview(media)}*/ />
-                                    :
-                                    null
-                                }
-                                <button onClick={(e) => removeAttachMedia(e, media)} className="remove-image" title={lang["delete image"]}>X</button>
-                            </div>
-                        ))}
+                       
                     </div>
                 }
             </div>

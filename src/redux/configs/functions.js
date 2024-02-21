@@ -1013,6 +1013,7 @@ function isDocDocumentFormatTableView(fileNames) {
     });
 }
 function isImageDocumentFormatTableView(fileNames) {
+    console.log(fileNames)
     if (!fileNames || !Array.isArray(fileNames)) return false;
     const docFormats = ['png', 'jpg', 'jpeg'];
     return fileNames.some(fileName => {
