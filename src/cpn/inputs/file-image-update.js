@@ -71,9 +71,9 @@ export default (props) => {
                     } else if (file.type.startsWith('image/')) {
                         fileType = 'image';
                     } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-                        fileType = 'word'; // Đánh dấu fileType là 'word' cho docx
+                        fileType = 'word'; 
                     } else if (file.type === 'application/msword') {
-                        fileType = 'word'; // Đánh dấu fileType là 'word' cho doc
+                        fileType = 'word'; 
                     } else if (fileExtension === 'xls' || fileExtension === 'xlsx') {
                         fileType = 'excel';
                     } else if (fileExtension === 'pdf') {
@@ -81,7 +81,7 @@ export default (props) => {
                     } else if (fileExtension === 'zip') {
                         fileType = 'zip';
                     } else {
-                        fileType = 'unknown'; // Hoặc một giá trị mặc định khác
+                        fileType = 'unknown'; 
                     }
                     const mediaObject = {
                         name: file.name,
