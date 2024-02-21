@@ -1,13 +1,15 @@
+import { faUpload } from '@fortawesome/free-solid-svg-icons';
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 export default (props) => {
 
     const { proxy, pages, lang, functions } = useSelector(state => state);
     const [current, setCurrent] = useState([]);
+    const [fileUploads, SetFileUploads] = useState([]);
     const [imageError, setImageError] = useState(false);
 
     const { field, changeTrigger, defaultValue } = props;
-    console.log(16, props)
+    console.log(16, fileUploads)
 
     const fieldChangeData = (e) => {
         const { value } = e.target;
@@ -25,7 +27,7 @@ export default (props) => {
 
     const handleAttachMedia = (e) => {
         console.log(e)
-        if (!field.FILE_MULTIPLE && current && current.length > 0) {
+        if (!field.FILE_MULTIPLE && current && current.length > 0 && fileUploads && fileUploads.length > 0) {
             return;
         }
         const newFiles = Array.from(e.target.files).filter(file => {
@@ -102,31 +104,69 @@ export default (props) => {
 
         Promise.all(newMediaPromises).then(newMediaFiles => {
 
-            setCurrent(prevImages => Array.isArray(prevImages) ? [...prevImages, ...newMediaFiles] : [...newMediaFiles]);
+            SetFileUploads(prevImages => Array.isArray(prevImages) ? [...prevImages, ...newMediaFiles] : [...newMediaFiles]);
 
         });
         e.target.value = '';
     };
+    
+
+    async function convertImageToBase64(url) {
+        return fetch(url)
+            .then(response => response.blob())
+            .then(blob => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            }));
+    }
+    
+    async function processImagePaths(paths) {
+        if (!Array.isArray(paths)) {
+            return
+        }
+        const imagesData = [];
+        for (const path of paths) {
+            const base64FullString = await convertImageToBase64(path);
+            // Cắt để lấy chỉ chuỗi base64
+            const base64 = base64FullString.split('base64,').pop();
+            const filename = path.split('/').pop();
+            imagesData.push({
+                filename,
+                base64
+            });
+        }
+        return imagesData;
+    }
 
     useEffect(() => {
-        if (current !== undefined) { // Kiểm tra để đảm bảo `current` không phải là `undefined`
-            const dataImg = current?.map(item => (
+            const dataImg = fileUploads?.map(item => (
                 {
                     "filename": item.name,
                     "base64": item.dataUrl ? item.dataUrl.split('base64,').pop() : null
                 })
             );
-            changeTrigger(field, dataImg);
-        }
-    }, [current]); // Theo dõi sự thay đổi của `current`
+            processImagePaths(current).then(imagesData => {
+                console.log(imagesData);
+                changeTrigger(field, [...dataImg, ...imagesData]);
+            });
+    }, [fileUploads]); // Theo dõi sự thay đổi của `currfileUploadsent`
 
     const removeAttachMedia = (e, media) => {
         e.stopPropagation();
         e.preventDefault();
-        const updatedMediaList = current?.filter(item => item.url !== media.url);
+        const updatedMediaList = current?.filter(item => item !== media);
         setCurrent(updatedMediaList)
     };
 
+    const removeUploadFiles = (e, media) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const updatedMediaList = fileUploads?.filter(item => item !== media);
+ 
+        SetFileUploads(updatedMediaList)
+    };
     return (
         <div class="row justify-content-center ">
 
@@ -160,9 +200,27 @@ export default (props) => {
                     </div>
                 </div>
 
-                {current && current.length > 0 &&
+              
                     <div className={`selected-images-container-add`} >
                         {current?.map((media, index) => (
+                            <div key={index} className="selected-image-wrapper-add">
+                                {functions.isExcelDocumentFormat(media) ?
+                                    <img src={'/images/icon/excel.svg'} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media}/*onClick={() => openModalPreview(media)}*/ />
+                                    : functions.isPdfDocumentFormat(media) ?
+                                        <img src={'/images/icon/pdf.svg'} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media}/*onClick={() => openModalPreview(media)}*/ />
+                                        :
+                                        functions.isDocDocumentFormat(media) ?
+                                            <img src={'/images/icon/docs.svg'} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media}/*onClick={() => openModalPreview(media)}*/ />
+                                            :
+                                            functions.isZipDocumentFormat(media) ?
+                                                <img src={'/images/icon/zip.svg'} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media}/*onClick={() => openModalPreview(media)}*/ />
+                                                :
+                                                <img src={proxy() + media} className="selected-image-add" title={media}/*onClick={() => openModalPreview(media)}*/ />
+                                }
+                                <button onClick={(e) => removeAttachMedia(e, media)} className="remove-image" title={lang["delete image"]}>X</button>
+                            </div>
+                        ))}
+                        {fileUploads?.map((media, index) => (
                             <div key={index} className="selected-image-wrapper-add">
 
                                 {media.type === 'image' && (
@@ -171,38 +229,26 @@ export default (props) => {
                                 {media.type === 'video' && (
                                     <div>
                                         <img src={media.cover} alt={`Cover for ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media.name}/*onClick={() => openModalPreview(media)}*/ />
-                                   
+
                                         <div class="video-duration">Video</div>
                                     </div>
                                 )}
                                 {media.type === 'pdf' && (
                                     <img src={"/images/icon/pdf.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
                                 )}
-                                {functions.isExcelDocumentFormat(media) && (
-                                    <img src={"/images/icon/excel.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
-                                )}
+
                                 {media.type === 'word' && (
                                     <img src={"/images/icon/docs.svg"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
                                 )}
                                 {media.type === 'zip' && (
                                     <img src={"/images/icon/zip.png"} alt={`Selected ${index}`} className="selected-image-add" title={media.name} />
                                 )}
-                                <button onClick={(e) => removeAttachMedia(e, media)} className="remove-image" title={lang["delete image"]}>X</button>
-                            </div>
-                        ))}
-
-                        {current?.map((media, index) => (
-                            <div key={index} className="selected-image-wrapper-add">
-                                {functions.isExcelDocumentFormat(media) ?
-                                    <img src={'/images/icon/excel.svg'} alt={`Selected ${index}`} className="selected-image-add" data-toggle="modal" data-target="#previewMedia" title={media}/*onClick={() => openModalPreview(media)}*/ />
-                                    :
-                                    null
-                                }
-                                <button onClick={(e) => removeAttachMedia(e, media)} className="remove-image" title={lang["delete image"]}>X</button>
+                                <button onClick={(e) => removeUploadFiles(e, media)} className="remove-image" title={lang["delete image"]}>X</button>
                             </div>
                         ))}
                     </div>
-                }
+                
+                
             </div>
         </div>
     );

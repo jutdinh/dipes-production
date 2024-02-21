@@ -386,7 +386,8 @@ const renderBoolData = (data, field) => {
 }
 
 const renderData = (field, data) => {
-    // ////console.log(field)
+    console.log(field)
+    console.log(data)
     if (data) {
         switch (field.DATATYPE) {
             case "DATE":
@@ -400,12 +401,19 @@ const renderData = (field, data) => {
             case "BOOL":
                 return renderBoolData(data[field.fomular_alias], field)
             default:
+                console.log(data[field.fomular_alias])
                 return data[field.fomular_alias];
         }
     } else {
         return "Invalid value"
     }
 };
+
+
+
+
+
+
 
 function getBrowser() {
     const browserInfo = detect();
@@ -964,6 +972,115 @@ function resizeImage(file, maxWidth, maxHeight, callback) {
     };
     reader.readAsDataURL(file);
 }
+
+
+//
+function isExcelDocumentFormat(fileName) {
+    if (!fileName) return false;
+    const imageFormats = ['xls', 'xlsx'];
+    return imageFormats.includes(fileName.split('.').pop().toLowerCase());
+}
+
+
+function isExcelDocumentFormatTableView(fileNames) {
+    if (!fileNames || !Array.isArray(fileNames)) return false;
+
+    const imageFormats = ['xls', 'xlsx'];
+
+    return fileNames.some(fileName => {
+        if (!fileName) return false;
+        const extension = fileName.split('.').pop().toLowerCase();
+        return imageFormats.includes(extension);
+    });
+}
+function isPdfDocumentFormatTableView(fileNames) {
+    if (!fileNames || !Array.isArray(fileNames)) return false;
+    const pdfFormats = ['pdf'];
+    return fileNames.some(fileName => {
+        if (!fileName) return false;
+        const extension = fileName.split('.').pop().toLowerCase();
+        return pdfFormats.includes(extension);
+    });
+}
+
+function isDocDocumentFormatTableView(fileNames) {
+    if (!fileNames || !Array.isArray(fileNames)) return false;
+    const docFormats = ['doc', 'docx'];
+    return fileNames.some(fileName => {
+        if (!fileName) return false;
+        const extension = fileName.split('.').pop().toLowerCase();
+        return docFormats.includes(extension);
+    });
+}
+function isImageDocumentFormatTableView(fileNames) {
+    if (!fileNames || !Array.isArray(fileNames)) return false;
+    const docFormats = ['png', 'jpg', 'jpeg'];
+    return fileNames.some(fileName => {
+        if (!fileName) return false;
+        const extension = fileName.split('.').pop().toLowerCase();
+        return docFormats.includes(extension);
+    });
+}
+function isZipDocumentFormatTableView(fileNames) {
+    if (!fileNames || !Array.isArray(fileNames)) return false;
+    const zipFormats = ['zip'];
+    return fileNames.some(fileName => {
+        if (!fileName) return false;
+        const extension = fileName.split('.').pop().toLowerCase();
+        return zipFormats.includes(extension);
+    });
+}
+function isOtherDocumentFormatTableView(fileNames) {
+    if (!fileNames || !Array.isArray(fileNames)) return false;
+
+    // Tạo một mảng chứa tất cả các định dạng đã kiểm tra
+    const checkedFormats = ['xls', 'xlsx', 'pdf', 'doc', 'docx', 'zip','png', 'jpg', 'jpeg'];
+
+    // Kiểm tra xem có bất kỳ định dạng nào khác được tìm thấy không
+    return fileNames.some(fileName => {
+        if (!fileName) return false;
+        const extension = fileName.split('.').pop().toLowerCase();
+        if (!checkedFormats.includes(extension)) {
+            return false
+        }
+        else return true
+    });
+}
+function isPdfDocumentFormat(fileName) {
+    console.log(fileName)
+    if (!fileName) return false;
+    const imageFormats = ['pdf'];
+    return imageFormats.includes(fileName.split('.').pop().toLowerCase());
+}
+
+function isDocDocumentFormat(fileName) {
+    if (!fileName) return false;
+    const imageFormats = ['doc', 'docx'];
+    return imageFormats.includes(fileName.split('.').pop().toLowerCase());
+}
+
+function isZipDocumentFormat(fileName) {
+    if (!fileName) return false;
+    const imageFormats = ['zip'];
+    return imageFormats.includes(fileName.split('.').pop().toLowerCase());
+}
+
+function getFileType(fileName) {
+    if (!fileName) return null;
+    const extension = fileName.split('.').pop().toLowerCase();
+    const fileTypes = {
+        xls: 'excel',
+        xlsx: 'excel',
+        pdf: 'pdf',
+        doc: 'document',
+        docx: 'document',
+        zip: 'zip',
+        // Thêm các loại file khác nếu cần
+    };
+
+    return fileTypes[extension] || 'other';
+}
+
 function resizeImageToFit(file, maxWidth, maxHeight, maxSizeKB, callback) {
     const reader = new FileReader();
     reader.onload = function (e) {
@@ -1135,7 +1252,7 @@ function renderInput(field, handleInputChange, searchValues, search, handleKeyDo
         case 'BIGINT UNSIGNED':
             return (
                 <input
-                    type={auto_increment ? "text": "number"}
+                    type={auto_increment ? "text" : "number"}
                     className="form-control"
                     value={value}
                     onChange={(e) => handleInputChange(e, field.fomular_alias, e.target.value, search)}
@@ -1171,11 +1288,11 @@ function renderInput(field, handleInputChange, searchValues, search, handleKeyDo
                     className="form-control"
                     onKeyDown={handleKeyDown}
                 >
-                    <option value="" disabled selected>Choose</option> 
+                    <option value="" disabled selected>Choose</option>
                     {valueBool.map((val, index) => (
                         <option key={index} value={val.value}>{val.label}</option>
                     ))}
-                    <option value="">Clear Selection</option> 
+                    <option value="">Clear Selection</option>
                 </select>
             );
 
@@ -1204,5 +1321,6 @@ export default {
     resizeImageToFit, renameDuplicateFiles, arraysAreEqual, getBrowser, detectBrowser, shortenFileName,
     isPdfFormat, isExcelFormat, determineFileType, isZipFormat, renderData, findGetApi, findPostApi, findPageById, findPutApi, findRowsPerPage,
     getNamePage, findDeleteApi, extractValuesFromData, findSearchApi, findExportApi, findDetailApi, findComponentWithDeleteApiUrl, findPropsNameAddByUrl,
-    findPropsNameUpdateByUrl, findPropsNameImportByUrl, findPropsNameDetailByUrl, renderInput
+    findPropsNameUpdateByUrl, findPropsNameImportByUrl, findPropsNameDetailByUrl, renderInput, isExcelDocumentFormat, isPdfDocumentFormat, isDocDocumentFormat,
+    isZipDocumentFormat, getFileType, isExcelDocumentFormatTableView, isPdfDocumentFormatTableView, isDocDocumentFormatTableView, isZipDocumentFormatTableView, isOtherDocumentFormatTableView, isImageDocumentFormatTableView
 }

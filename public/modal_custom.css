@@ -1427,17 +1427,31 @@ img[class="scaled-hover-target"] {
     width: 100%;
     /* Đảm bảo container chiếm toàn bộ chiều rộng của phần tử cha */
     /* padding-bottom: 5px; */
+
+    border: 1px solid #cad0d6;
 }
 
 .selected-image-add {
     width: 50px;
-    /* Chiều rộng của hình ảnh */
+
     height: 50px;
-    /* Chiều cao của hình ảnh */
+
     object-fit: cover;
-    /* Đảm bảo hình ảnh phủ đầy không gian mà không mất tỉ lệ */
+
     border-radius: 10px;
-    /* Bo góc cho hình ảnh */
+
+}
+
+.selected-image-list {
+    width: 30px;
+
+    height: 30px;
+
+    object-fit: cover;
+
+    border-radius: 10px;
+
+    margin-right: 2px;
 }
 
 .dragging {

@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import {
     Varchar, Char, Text, Int,
     DateInput, TimeInput, DateTimeInput,
-    Decimal, Bool, DataEmail, DataPhone
+    Decimal, Bool, DataEmail, DataPhone, FileImage
 
 } from '../inputs';
 
@@ -26,7 +26,7 @@ export default () => {
     const [page, setPage] = useState(null);
 
 
-    console.log(id_str); 
+    console.log(299, fields);
     const goToHomePage = () => {
         // navigate(`/page/${url}`);
         navigate(-1)
@@ -96,6 +96,7 @@ export default () => {
     console.log(result)
 
     const changeTrigger = (field, value) => {
+        console.log(value)
         const newData = data;
         if (value === "true") {
             newData[field.fomular_alias] = true;
@@ -189,7 +190,7 @@ export default () => {
         }
     };
 
-    console.log(functions.findPropsNameAddByUrl(page,id_str))
+    console.log(functions.findPropsNameAddByUrl(page, id_str))
 
     return (
 
@@ -209,11 +210,10 @@ export default () => {
                             <div class="full graph_head_cus d-flex">
                                 <div class="heading1_cus margin_0 ">
                                     {/* <h5> <a onClick={() => navigate(-1)}><i class="fa fa-chevron-circle-left mr-3"></i></a>{page?.components?.[0]?.component_name}</h5> */}
-
                                     <h5>
                                         <label class="pointer" onClick={() => goToHomePage()}>
-                                            <a title={lang["back"]}><i class=" fa fa-chevron-circle-left  mt-3 mb-1 nav-item nav-link"></i></a>{functions.findPropsNameAddByUrl( page, id_str)}
-                                            <i class={` ${functions.findPropsNameAddByUrl( page,id_str)?.trim() !== '' && 'fa fa-chevron-right ml-2 mr-1'} `}></i> {lang["create"]}
+                                            <a title={lang["back"]}><i class=" fa fa-chevron-circle-left  mt-3 mb-1 nav-item nav-link"></i></a>{functions.findPropsNameAddByUrl(page, id_str)}
+                                            <i class={` ${functions.findPropsNameAddByUrl(page, id_str)?.trim() !== '' && 'fa fa-chevron-right ml-2 mr-1'} `}></i> {lang["create"]}
                                         </label>
                                     </h5>
 
@@ -338,6 +338,12 @@ export default () => {
                                                                 related={relatedTables} field={field}
                                                                 changeTrigger={changeTrigger} /> : null
                                                         }
+                                                        {field.DATATYPE == "FILE" ?
+                                                            <FileImage
+                                                                table={tables.filter(tb => tb.id == field.table_id)[0]}
+                                                                related={relatedTables} field={field}
+                                                                changeTrigger={changeTrigger} /> : null
+                                                        }
                                                     </div>
                                                 )}
                                                 {/* <div className="m-t-1">
@@ -351,7 +357,6 @@ export default () => {
                                                 </div>
                                             </div> */}
 
-
                                                 <div class="row justify-content-center">
                                                     <div class="col-md-6">
                                                         <div class="mt-2 d-flex justify-content-end">
@@ -360,11 +365,8 @@ export default () => {
                                                         </div>
                                                     </div>
                                                 </div>
-
-
                                             </div>
                                         </div>
-
                                     )}
                                 </div>
                             </div>

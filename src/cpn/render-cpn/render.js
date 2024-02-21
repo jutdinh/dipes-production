@@ -82,9 +82,10 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
                     exportToCSV={exportToCSV}
                     exportFile={exportFile}
                 />;
+                const tableParamStyle = applyFlexStyle(props.style); // Áp dụng style ở đây
                 return (
-                    <div>
-                        <div class="d-flex align-items-center mt-2">
+                    <div style={tableParamStyle}>
+                        <div class="d-flex align-items-center mt-2" style={{ fontWeight: "bold" }}>
                             {props.name}
                             {extraButtons_Param && <div class="ml-auto mb-1">{extraButtons_Param}</div>}
                         </div>
@@ -623,7 +624,6 @@ const RenderTable = (props) => {
                     // //////////////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
                 });
         }
-
     };
 
     const callApiPa = (startIndex = currentPage - 1) => {
@@ -802,11 +802,61 @@ const RenderTable = (props) => {
                                     {dataCheck && dataCheck?.read ? (
                                         currentData.map((row, index) => {
                                             if (row) {
+
                                                 return (
                                                     <tr key={index}>
                                                         <td class="align-center" scope="row" style={{ minWidth: "50px" }} className="cell">{indexOfFirst + index + 1}</td>
                                                         {fields?.map((header) => (
-                                                            <td key={header.fomular_alias} className="cell" title={functions.renderData(header, row)}>{functions.renderData(header, row)}</td>
+                                                            header.DATATYPE === "FILE" ?
+                                                                // <td key={header.fomular_alias} className="cell" title={functions.renderData(header, row)}>
+                                                                //     {
+                                                                //         functions.isExcelDocumentFormatTableView(functions.renderData(header, row)) ?
+                                                                //             <img src={"/images/icon/excel.svg"} className="selected-image-list" />
+                                                                //             :
+                                                                //             functions.isPdfDocumentFormatTableView(functions.renderData(header, row)) ?
+                                                                //                 <img src={"/images/icon/pdf.svg"} className="selected-image-list" />
+                                                                //                 :
+                                                                //                 functions.isDocDocumentFormatTableView(functions.renderData(header, row)) ?
+                                                                //                     <img src={"/images/icon/docs.svg"} className="selected-image-list" />
+                                                                //                     :
+                                                                //                     functions.isZipDocumentFormatTableView(functions.renderData(header, row)) ?
+                                                                //                         <img src={"/images/icon/zip.svg"} className="selected-image-list" />
+                                                                //                         :
+
+                                                                //                         functions.isOtherDocumentFormatTableView(functions.renderData(header, row)) ?
+                                                                //                             <img src={"/images/icon/file-unknown.svg"} className="selected-image-list" />
+                                                                //                             :
+                                                                //                             functions.renderData(header, row) &&
+                                                                //                             functions.renderData(header, row).length > 0 &&
+                                                                //                             functions.renderData(header, row).map((imageUrl, index) => (
+                                                                //                                 <img key={index} src={proxy() + imageUrl} className="selected-image-list" />
+                                                                //                             ))
+
+                                                                //     }
+                                                                // </td>
+                                                                <td key={header.fomular_alias} className="cell" title={functions.renderData(header, row)}>
+                                                                    {functions.renderData(header, row) &&
+                                                                        functions.renderData(header, row).length > 0 &&
+                                                                        functions.renderData(header, row).map((imageUrl, index) => {
+                                                                            if (functions.isExcelDocumentFormatTableView([imageUrl])) {
+                                                                                return <img key={index} src={"/images/icon/excel.svg"} className="selected-image-list" />;
+                                                                            } else if (functions.isPdfDocumentFormatTableView([imageUrl])) {
+                                                                                return <img key={index} src={"/images/icon/pdf.svg"} className="selected-image-list" />;
+                                                                            } else if (functions.isDocDocumentFormatTableView([imageUrl])) {
+                                                                                return <img key={index} src={"/images/icon/docs.svg"} className="selected-image-list" />;
+                                                                            } else if (functions.isZipDocumentFormatTableView([imageUrl])) {
+                                                                                return <img key={index} src={"/images/icon/zip.svg"} className="selected-image-list" />;
+                                                                            } else if (functions.isImageDocumentFormatTableView([imageUrl])) {
+                                                                                return <img key={index} src={proxy() + imageUrl} className="selected-image-list" />;
+                                                                            } else {
+                                                                                // Nếu không phải là các định dạng đã kiểm tra, bạn có thể hiển thị một biểu tượng mặc định hoặc thực hiện hành động khác tùy thuộc vào yêu cầu của bạn
+                                                                                return <img key={index} src={"/images/icon/file-unknown.svg"} className="selected-image-list" />;
+                                                                            }
+                                                                        })
+                                                                    }
+                                                                </td>
+                                                                :
+                                                                <td key={header.fomular_alias} className="cell" title={functions.renderData(header, row)}>{functions.renderData(header, row)}</td>
                                                         ))}
                                                         {hasInlineButtons && (
                                                             <td class="align-center">
@@ -1149,7 +1199,7 @@ const RenderInlineButtonsForRow = (props) => {
                 return (
                     <>
                         <div class="icon-table-line" style={{ color: color, backgroundColor: backgroundColor }} >
-                            <FontAwesomeIcon key={id} icon={icons[icon].icon} onClick={() => submitButton_Custom(api.params, api.url, primaryKeys, value, row, dataTableField)} />
+                            <FontAwesomeIcon key={id} icon={icons[icon]?.icon} onClick={() => submitButton_Custom(api.params, api.url, primaryKeys, value, row, dataTableField)} />
                             {/* <i className="fa fa fa-list-ul size-24 mr-1  pointer icon-list" key={id} onClick={() => exportFile_PK(fields, preview_api.url, api.url, fomular, row)} data-toggle="modal" data-target="#exportExcel_PK" title={lang["viewdetail"]}></i> */}
                         </div>
                     </>

@@ -228,7 +228,8 @@ export default () => {
                                                                     field.DATATYPE == "DATETIME" ||
                                                                     field.DATATYPE == "DECIMAL" ||
                                                                     field.DATATYPE == "DECIMAL UNSIGNED" ||
-                                                                    field.DATATYPE == "BOOL"
+                                                                    field.DATATYPE == "BOOL" ||
+                                                                    field.DATATYPE == "FILE"
                                                                     ?
                                                                     <Label
                                                                         selectOption={false}

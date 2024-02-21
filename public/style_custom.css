@@ -1770,15 +1770,50 @@ select:required:invalid {
     background-color: rgb(214, 206, 206)
 
 }
-
+.block-image{
+    background-color: #eee0e0;
+}
 .padding_infor_info_p-d-5 {
     padding: 5px 10px 5px 10px;
     float: left;
     width: 100%;
     min-height: 560px;
 }
+.image-container {
+    cursor: pointer;
+    position: relative;
+    width: fit-content; /* Hoặc cố định, tùy theo yêu cầu của bạn */
+    display: inline-block; /* Để img và icon cùng chia sẻ không gian */
+}
+.image-container:hover .selected-image-add {
+    opacity: 0.5; /* Làm mờ hình ảnh khi hover */
+}
+.download-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/images/icon/download.svg') center center no-repeat;
+    background-size:80%; /* Kích thước của icon */
+    opacity: 0; /* Mặc định là không hiển thị */
+    transition: opacity 0.3s ease; /* Hiệu ứng chuyển đổi mượt mà */
+}
 
+.image-container:hover .download-icon {
+    opacity: 1; /* Hiển thị icon khi hover */
+}
 
+.image-detail {
+    width: 50px;
+    /* Chiều rộng của hình ảnh */
+    height: 50px;
+    /* Chiều cao của hình ảnh */
+    object-fit: cover;
+    /* Đảm bảo hình ảnh phủ đầy không gian mà không mất tỉ lệ */
+    border-radius: 10px;
+    /* Bo góc cho hình ảnh */
+}
 
 #sidebar {
     display: flex;
