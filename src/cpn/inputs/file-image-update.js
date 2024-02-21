@@ -54,12 +54,14 @@ export default (props) => {
             // e.target.value = '';
             return;
         }
-
         const newMediaPromises = newFiles.map(file => {
+
             return new Promise((resolve) => {
+
                 const reader = new FileReader();
 
                 reader.onload = (readerEvent) => {
+
                     // Xác định fileType dựa trên MIME type hoặc phần mở rộng của file
                     let fileType;
                     const fileExtension = file.name.split('.').pop().toLowerCase();
@@ -81,7 +83,6 @@ export default (props) => {
                     } else {
                         fileType = 'unknown'; // Hoặc một giá trị mặc định khác
                     }
-
                     const mediaObject = {
                         name: file.name,
                         size: file.size,
@@ -89,7 +90,6 @@ export default (props) => {
                         type: fileType,
                         dataUrl: readerEvent.target.result, // Chuỗi base64
                     };
-
                     resolve(mediaObject);
                 };
 
@@ -103,16 +103,15 @@ export default (props) => {
         });
 
         Promise.all(newMediaPromises).then(newMediaFiles => {
-
             SetFileUploads(prevImages => Array.isArray(prevImages) ? [...prevImages, ...newMediaFiles] : [...newMediaFiles]);
-
         });
         e.target.value = '';
     };
 
 
     async function convertImageToBase64(url) {
-        return fetch(url)
+        console.log(url)
+        return fetch(url, { mode: 'no-cors' })
             .then(response => response.blob())
             .then(blob => new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -121,61 +120,27 @@ export default (props) => {
                 reader.readAsDataURL(blob);
             }));
     }
-    const toBase64 = file => new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-    })
-    // async function processImagePaths(paths) {
-    //     if (!Array.isArray(paths)) {
-    //         // Trả về một mảng rỗng nếu paths không phải là một mảng
-    //         return [];
-    //     }
-    //     const imagesData = [];
-    //     for (const path of paths) {
-    //         const base64FullString = await convertImageToBase64(path);
-    //         // Cắt để lấy chỉ chuỗi base64
-    //         const base64 = base64FullString.split('base64,').pop();
-    //         const filename = path.split('/').pop();
-    //         imagesData.push({
-    //             filename,
-    //             base64
-    //         });
-    //     }
-    //     return imagesData;
-    // }
-
-
-
+    
     async function processImagePaths(paths) {
-        // Kiểm tra xem paths có phải là mảng không
         if (!Array.isArray(paths)) {
             // Trả về một mảng rỗng nếu paths không phải là một mảng
             return [];
         }
-    
         const imagesData = [];
         for (const path of paths) {
-            try {
-                const base64FullString = await convertImageToBase64(path);
-                // Cắt để lấy chỉ chuỗi base64
-                const base64 = base64FullString.split('base64,').pop();
-                const filename = path.split('/').pop();
-                imagesData.push({
-                    filename,
-                    base64
-                });
-            } catch (error) {
-                console.error(`Error converting image to base64: ${error}`);
-                // Xử lý hoặc log lỗi nếu cần
-            }
+            console.log(path)
+            const base64FullString = await convertImageToBase64(path);
+            console.log(base64FullString)
+            // Cắt để lấy chỉ chuỗi base64
+            const base64 = base64FullString.split('base64,').pop();
+            const filename = path.split('/').pop();
+            imagesData.push({
+                filename,
+                base64
+            });
         }
         return imagesData;
     }
-
-
-
 
     useEffect(() => {
         const dataImg = fileUploads?.map(item => (
@@ -184,10 +149,12 @@ export default (props) => {
                 "base64": item.dataUrl ? item.dataUrl.split('base64,').pop() : null
             })
         );
-        processImagePaths(current).then(imagesData => {
+             processImagePaths(current).then(imagesData => {
             console.log(imagesData);
             changeTrigger(field, [...dataImg, ...imagesData]);
         });
+        
+       
     }, [fileUploads, current]); 
 
     const removeAttachMedia = (e, media) => {
