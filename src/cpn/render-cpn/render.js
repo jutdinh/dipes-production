@@ -1727,7 +1727,7 @@ const RenderDetail = (props) => {
 
         callApiDetail(props.props.api.url);
     }, []);
-    
+
     const callApiDetail = (url) => {
         fetch(`${proxy()}${url}/${rawParams}`, {
             headers: {
@@ -1784,7 +1784,6 @@ const RenderDetail = (props) => {
                                 <span class="carousel-control-next-icon"></span>
                             </a>
                         </div>
-
                     </div>
                 );
             default:
