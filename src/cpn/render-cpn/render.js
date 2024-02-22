@@ -1238,7 +1238,7 @@ const RenderInlineButtonsForRow = (props) => {
 
     return (
         <div class="icon-table">
-            {mappedButtons}
+
             {orderedKeys.filter(key => buttons[key] && buttons[key].state && buttons[key].api !== null).map(key => {
                 switch (key) {
                     case 'approve':
@@ -1285,6 +1285,8 @@ const RenderInlineButtonsForRow = (props) => {
                         return <button key={key}>{key}</button>;
                 }
             })}
+
+            {mappedButtons}
         </div>
     )
 };
@@ -1756,16 +1758,41 @@ const RenderDetail = (props) => {
             case 'detail_image':
                 return (
                     <div class="col-md-12">
-                        <div class="image-detail align-center">
+                        <div class="image-detail">
                             <img src={proxy() + apiDataDetail[fieldShow.fomular_alias]} className="view-image-detail" />
                         </div>
                     </div>
                 );
             case 'detail_images':
                 return (
-                    <div class="image-detail-images">
+                    // <div class="image-detail">
+                    //     <div id="demo" class="carousel slide" data-ride="carousel">
+                    //         <ul class="carousel-indicators">
+                    //             {apiDataDetail[fieldShow.fomular_alias]?.map((item, index) => (
+                    //                 <li key={index} data-target="#demo" data-slide-to={index} className={index === 0 ? "active" : ""}></li>
+                    //             ))}
+                    //         </ul>
+                    //         <div class="carousel-inner">
+                    //             {apiDataDetail[fieldShow.fomular_alias]?.map((item, index) => (
+                    //                 <div key={index} className={`carousel-item ${index === 0 ? "active" : ""}`}>
+                    //                     <img src={proxy() + item} width="1100" height="450" />
+                    //                 </div>
+                    //             ))}
+                    //         </div>
+                    //         <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                    //             <span class="carousel-control-prev-icon"></span>
+                    //         </a>
+                    //         <a class="carousel-control-next" href="#demo" data-slide="next">
+                    //             <span class="carousel-control-next-icon"></span>
+                    //         </a>
+                    //     </div>
+                    // </div>
+
+
+                    <div>
+                         <div class="image-detail">
                         <div id="demo" class="carousel slide" data-ride="carousel">
-                            <ul class="carousel-indicators">
+                            {/* <ul class="carousel-indicators">
                                 {apiDataDetail[fieldShow.fomular_alias]?.map((item, index) => (
                                     <li key={index} data-target="#demo" data-slide-to={index} className={index === 0 ? "active" : ""}></li>
                                 ))}
@@ -1773,16 +1800,68 @@ const RenderDetail = (props) => {
                             <div class="carousel-inner">
                                 {apiDataDetail[fieldShow.fomular_alias]?.map((item, index) => (
                                     <div key={index} className={`carousel-item ${index === 0 ? "active" : ""}`}>
-                                        <img src={proxy() + item}  width="1100" height="450" />
+                                        <img src={proxy() + item} width="1100" height="450" />
                                     </div>
                                 ))}
-                            </div>
+                            </div> */}
                             <a class="carousel-control-prev" href="#demo" data-slide="prev">
                                 <span class="carousel-control-prev-icon"></span>
                             </a>
                             <a class="carousel-control-next" href="#demo" data-slide="next">
                                 <span class="carousel-control-next-icon"></span>
                             </a>
+                        </div>
+                    </div>
+                        <div class="carousel">
+                            <ul class="slides">
+                                <input type="radio" name="radio-buttons" id="img-1" checked />
+                                <li class="slide-container">
+                                    <div class="slide-image">
+                                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Timisoara_-_Regional_Business_Centre.jpg"/>
+                                    </div>
+                                    <div class="carousel-controls">
+                                        <label for="img-3" class="prev-slide">
+                                            <span>&lsaquo;</span>
+                                        </label>
+                                        <label for="img-2" class="next-slide">
+                                            <span>&rsaquo;</span>
+                                        </label>
+                                    </div>
+                                </li>
+                                <input type="radio" name="radio-buttons" id="img-2" />
+                                <li class="slide-container">
+                                    <div class="slide-image">
+                                        <img src="https://content.r9cdn.net/rimg/dimg/db/02/06b291e8-city-14912-171317ad83a.jpg?width=1750&height=1000&xhint=3040&yhint=2553&crop=true"/>
+                                    </div>
+                                    <div class="carousel-controls">
+                                        <label for="img-1" class="prev-slide">
+                                            <span>&lsaquo;</span>
+                                        </label>
+                                        <label for="img-3" class="next-slide">
+                                            <span>&rsaquo;</span>
+                                        </label>
+                                    </div>
+                                </li>
+                                <input type="radio" name="radio-buttons" id="img-3" />
+                                <li class="slide-container">
+                                    <div class="slide-image">
+                                        <img src="https://speakzeasy.files.wordpress.com/2015/05/twa_blogpic_timisoara-4415.jpg"/>
+                                    </div>
+                                    <div class="carousel-controls">
+                                        <label for="img-2" class="prev-slide">
+                                            <span>&lsaquo;</span>
+                                        </label>
+                                        <label for="img-1" class="next-slide">
+                                            <span>&rsaquo;</span>
+                                        </label>
+                                    </div>
+                                </li>
+                                <div class="carousel-dots">
+                                    <label for="img-1" class="carousel-dot" id="img-dot-1"></label>
+                                    <label for="img-2" class="carousel-dot" id="img-dot-2"></label>
+                                    <label for="img-3" class="carousel-dot" id="img-dot-3"></label>
+                                </div>
+                            </ul>
                         </div>
                     </div>
                 );
