@@ -202,49 +202,49 @@ export default () => {
         const paramsList = rawParams.split('/');
         console.log(data)
 
-        // if (!emailError && !phoneError && nullCheck(data)) {
-        //     fetch(`${proxy()}/ui/${id_str}/${paramsList.join('/')}`, {
-        //         method: "PUT",
-        //         headers: {
-        //             Authorization: `${_token}`,
-        //             "content-type": "application/json"
-        //         },
-        //         body: JSON.stringify({ ...data })
-        //     })
+        if (!emailError && !phoneError && nullCheck(data)) {
+            fetch(`${proxy()}/ui/${id_str}/${paramsList.join('/')}`, {
+                method: "PUT",
+                headers: {
+                    Authorization: `${_token}`,
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({ ...data })
+            })
 
-        //         .then(res => res.json())
-        //         .then(res => {
-        //             // console.log(res)
-        //             if (res.primaryConflict || res.foreignConflict || res.typeError) {
-        //                 handleAPIErrors(res);
-        //             } else {
-        //                 Swal.fire({
-        //                     title: lang["success"],
-        //                     text: lang["success.update"],
-        //                     icon: "success",
-        //                     showConfirmButton: false,
-        //                     timer: 1500
-        //                 }).then(function () {
-        //                     window.location.reload();
-        //                 });
-        //             }
-        //             const dataSubmit = {
-        //                 api_id: id_str,
-        //                 data: data
-        //             }
+                .then(res => res.json())
+                .then(res => {
+                    // console.log(res)
+                    if (res.primaryConflict || res.foreignConflict || res.typeError) {
+                        handleAPIErrors(res);
+                    } else {
+                        Swal.fire({
+                            title: lang["success"],
+                            text: lang["success.update"],
+                            icon: "success",
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(function () {
+                            window.location.reload();
+                        });
+                    }
+                    const dataSubmit = {
+                        api_id: id_str,
+                        data: data
+                    }
 
-        //             socket.emit("/dipe-production-update-data", dataSubmit);
+                    socket.emit("/dipe-production-update-data", dataSubmit);
 
 
-        //         })
-        //         .catch(error => {
-        //             // Xử lý lỗi nếu cần
-        //         });
-        // } else {
-        //     if (emailError) showError(lang["faild"], lang["error.email_invalid"]);
-        //     else if (phoneError) showError(lang["faild"], lang["error.phone_invalid"]);
-        //     else showError(lang["faild"], lang["fail.null"]);
-        // }
+                })
+                .catch(error => {
+                    // Xử lý lỗi nếu cần
+                });
+        } else {
+            if (emailError) showError(lang["faild"], lang["error.email_invalid"]);
+            else if (phoneError) showError(lang["faild"], lang["error.phone_invalid"]);
+            else showError(lang["faild"], lang["fail.null"]);
+        }
     };
 
     return (

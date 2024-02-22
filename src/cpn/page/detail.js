@@ -84,7 +84,7 @@ export default () => {
             const url = window.location;
             const rawParams = url.pathname.split(`/${id_str}/`)[1];
             const paramsList = rawParams.split('/');
-            // console.log(rawParams)
+            console.log(rawParams)
             fetch(`${proxy()}/apis/api/${id_str}/input_info`,
                 {
                     headers: {

@@ -11,7 +11,7 @@ import icons from './icon';
 
 
 const RenderComponent = ({ page, component, apiData, redirectToInput, redirectToInputPUT, handleDelete, handleSearchClick, exportToCSV, handleViewDetail, exportFile, redirectToImportData, exportFile_PK, submitButton_Custom }) => {
-    ////console.log(component)
+    console.log(component)
     const { lang, proxy, auth, functions, pages } = useSelector(state => state);
 
     // Hàm chính để xác định loại component cần render
@@ -105,6 +105,21 @@ const RenderComponent = ({ page, component, apiData, redirectToInput, redirectTo
                             submitButton_Custom={submitButton_Custom} />
                     </div>
                 );
+
+
+            case 'detail_box':
+                // Các logic khác cho flex
+                return (
+                    <>
+                        <div style={props.style}>
+                            <div class="d-flex align-items-center mt-2">
+                                <RenderDetail cpn={cpn} props={props} />
+                            </div>
+                        </div>
+
+                    </>
+                );
+
             case 'flex':
                 // Các logic khác cho flex
                 return (
@@ -965,7 +980,7 @@ const RenderTable = (props) => {
 };
 
 const RenderInlineButtonsForRow = (props) => {
-    //////console.log(420123, props)
+    console.log(420123, props)
     const { lang, proxy, auth, functions } = useSelector(state => state);
     const { openTab, renderDateTimeByFormat } = functions
     const { children, buttons, row, handleViewDetail, redirectToInputPUT, handleDelete, exportFile, exportFile_PK, submitButton_Custom } = props
@@ -1692,6 +1707,100 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
                 <button onClick={handleResetSearchValue} className="btn btn-secondary mr-3"><i class="fa fa-history mr-1 icon-search" />{lang["Refresh"]}</button>
                 <button onClick={handleSubmit} className="btn btn-primary mr-3"><i class="fa fa-search mr-1 icon-search" />{lang["search"]}</button>
             </div>
+        </div>
+    );
+};
+
+const RenderDetail = (props) => {
+    console.log(730, props)
+    const { url } = useParams()
+    const urls = window.location;
+    const rawParams = urls.pathname.split(`/${url}/`)[1];
+
+
+    const { lang, proxy, auth, functions } = useSelector(state => state);
+    const _token = localStorage.getItem("_token");
+    const [apiDataDetail, setApiDataDetail] = useState({})
+    console.log(apiDataDetail)
+
+    useEffect(() => {
+
+        callApiDetail(props.props.api.url);
+    }, []);
+    
+    const callApiDetail = (url) => {
+        fetch(`${proxy()}${url}/${rawParams}`, {
+            headers: {
+                Authorization: _token
+            }
+        })
+            .then(res => res.json())
+            .then(resp => {
+                const { success, data, activated, status, content } = resp;
+                if (success) {
+                    if (data.length > 0) {
+                        setApiDataDetail(...data)
+                    }
+                }
+            })
+    };
+
+    const renderLabel = (child) => {
+        const propsLabel = child.props
+        const fieldShow = child.props.field
+        switch (child.name) {
+            case 'detail_text':
+                return (
+                    <label>{propsLabel.prefix} {apiDataDetail[fieldShow.fomular_alias]}{propsLabel.postfix}</label>
+                );
+            case 'detail_image':
+                return (
+                    <div class="col-md-12">
+                        <div class="image-detail align-center">
+                            <img src={proxy() + apiDataDetail[fieldShow.fomular_alias]} className="view-image-detail" />
+                        </div>
+                    </div>
+                );
+            case 'detail_images':
+                return (
+                    <div class="image-detail-images">
+                        <div id="demo" class="carousel slide" data-ride="carousel">
+                            <ul class="carousel-indicators">
+                                {apiDataDetail[fieldShow.fomular_alias]?.map((item, index) => (
+                                    <li key={index} data-target="#demo" data-slide-to={index} className={index === 0 ? "active" : ""}></li>
+                                ))}
+                            </ul>
+                            <div class="carousel-inner">
+                                {apiDataDetail[fieldShow.fomular_alias]?.map((item, index) => (
+                                    <div key={index} className={`carousel-item ${index === 0 ? "active" : ""}`}>
+                                        <img src={proxy() + item}  width="1100" height="450" />
+                                    </div>
+                                ))}
+                            </div>
+                            <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                            </a>
+                            <a class="carousel-control-next" href="#demo" data-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                            </a>
+                        </div>
+
+                    </div>
+                );
+            default:
+                return 0;
+        }
+    };
+    return (
+        <div class="col-md-12">
+            <label class="font-weight-bold">{props.props.content}</label>
+            {props.cpn.children.map((child, index) => (
+                <div className="col-md-12" key={index}>
+                    <div className="form-group">
+                        {renderLabel(child)}
+                    </div>
+                </div>
+            ))}
         </div>
     );
 };
