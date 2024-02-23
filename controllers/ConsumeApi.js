@@ -6069,7 +6069,7 @@ class ConsumeApi extends Controller {
                 const { id } = table;
                 table.fields = fields.filter(field => field.table_id == id)
                 return table
-            });
+            });           
 
             if (project.project_type == "database") {
                 this.CONSUME_DETAIL_RECORD()
@@ -6112,7 +6112,7 @@ class ConsumeApi extends Controller {
                 })
                 return
             }
-        }
+        }       
 
         const table = tables[0]
         const fields = this.getFields(this.API.fields.valueOrNot().map(f => f.id))

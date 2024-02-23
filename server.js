@@ -159,7 +159,7 @@ app.use(async (req, res, next) => {
         if (requestType == "import") {
           await Consumer.consumeImport(req, res, api_id)
         } else {
-          if (requestType == "d") {
+          if (requestType == "d" || requestType == "detail") {
             await Consumer.consumeDetail(req, res, api_id)
           } else {
             if( requestType == "statis" ){
