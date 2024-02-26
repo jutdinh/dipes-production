@@ -17,6 +17,7 @@ import { Table } from "react-bootstrap";
 import icons from "./icon";
 import { LoadingIcon } from "../../Icons/loading.icon";
 import { DelayLoading } from "../../Hooks/DelayLoading";
+import { ColumnChart } from "../../Components/Charts/Column.chart";
 
 const RenderComponent = ({
   page,
@@ -182,6 +183,8 @@ const RenderComponent = ({
             <RenderChart props={props} />
           </>
         );
+      case "chart_3":
+        return <ColumnChart props={props} />;
       default:
       // return <div>Unknown component type!</div>;
     }
@@ -1790,7 +1793,10 @@ const RenderChart = (props) => {
       plotOptions: {
         bar: {
           horizontal:
-            typeof Object.values(apiDataStatis)[0] === "number" ? true : false, // Thiết lập này để thay đổi sang biểu đồ cột ngang
+            typeof Object.values(apiDataStatis)[0] === "number" ||
+            props.props.isHorizontal
+              ? true
+              : false, // Thiết lập này để thay đổi sang biểu đồ cột ngang
           columnWidth: "24px",
           barHeight: "24px",
           distributed: true,
@@ -2213,6 +2219,13 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
   );
 };
 
+const ConvertToDate = (key, value, keys = []) => {
+  if (keys.includes(key)) {
+    return new Date(value).toLocaleString();
+  }
+  return value;
+};
+
 const RenderDetail = (props) => {
   console.log(730, props);
   const { url } = useParams();
@@ -2262,11 +2275,11 @@ const RenderDetail = (props) => {
         return (
           <label style={{ ...propsLabel.style }}>
             {propsLabel.prefix}
-            {fieldShow.fomular_alias === "1NX"
-              ? new Date(
-                  apiDataDetail[fieldShow.fomular_alias]
-                ).toLocaleDateString()
-              : apiDataDetail[fieldShow.fomular_alias]}
+            {ConvertToDate(
+              fieldShow.fomular_alias,
+              apiDataDetail[fieldShow.fomular_alias],
+              ["1NX", "5NN"]
+            )}
             {propsLabel.postfix}
           </label>
         );
@@ -2425,7 +2438,7 @@ const RenderDetail = (props) => {
           </div>
         ))
       ) : (
-        <p class="text-center">{lang["not found"]}</p>
+        <p class="text-center font-weight-bold">{lang["not found"]}</p>
       )}
     </div>
   );
