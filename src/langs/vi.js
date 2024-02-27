@@ -276,6 +276,7 @@ export default {
     "criteria": "Tiêu chí",
     "importing": "Đang nhập dữ liệu",
     "privileges manager": "Quản lý quyền",
+    "privileges groups": "Nhóm quyền",
     "avatar": "Ảnh đại diện",
     "table name": "Tên bảng",
     "privileges": "Phân quyền tài khoản",
@@ -441,7 +442,7 @@ export default {
     "confirm delete": "Xác nhận xóa",
     "title delete version": "Bạn có chắc chắn muốn xóa thông tin phiên bản này?",
     
-
+    "privileges groups group_name": "Tên nhóm quyền",
 
     
 }

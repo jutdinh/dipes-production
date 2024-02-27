@@ -282,6 +282,7 @@ export default {
     "criteria": "Criteria",
     "importing": "Importing data",
     "privileges manager": "Permission Management",
+    "privileges groups": "Permission Groups",
     "avatar": "Avatar",
     "table name": "Table name",
     "privileges": "Account privileges",
@@ -447,6 +448,8 @@ export default {
 
     "confirm delete": "Confirm deletion",
     "title delete version": "Are you sure you want to delete this version information?",
+
+    "privileges groups group_name": "Group name",
 
 }
 

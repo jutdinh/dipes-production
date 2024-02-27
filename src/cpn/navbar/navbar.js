@@ -64,82 +64,93 @@ export default () => {
                </div>
             </div>
          </div>
-         <div class ="block-nav">
+         <div class="block-nav">
             <div class="sidebar_blog_2">
-         
-            <ul class="list-unstyled components">
-               {/* <li className="navbar-item">
+
+               <ul class="list-unstyled components">
+                  {/* <li className="navbar-item">
                   <NavLink to="/" activeClassName="nav-active">
                      <i class="fa fa-home icon-home"></i>
                      <span>{lang["home"]}</span>
                   </NavLink>
                </li> */}
-               { user.role === "uad" ? (
-                  <li className="navbar-item">
-                     <NavLink to="/" activeClassName="nav-active">
-                        <i class="fa fa-upload size-24 icon-import-nav"></i>
-                        <span>Import</span>
-                     </NavLink>
-                  </li>
-               ) : null}
-               { user.role === "uad" ? (
-                  <li className="navbar-item">
-                     <NavLink to="/active" activeClassName="nav-active">
-                        <i class="fa fa-key purple_color3"></i>
-                        <span>{lang["activation"]}</span>
-                     </NavLink>
-                  </li>
-               ) : null}
+                  {user.role === "uad" ? (
+                     <li className="navbar-item">
+                        <NavLink to="/" activeClassName="nav-active">
+                           <i class="fa fa-upload size-24 icon-import-nav"></i>
+                           <span>Import</span>
+                        </NavLink>
+                     </li>
+                  ) : null}
+                  {user.role === "uad" ? (
+                     <li className="navbar-item">
+                        <NavLink to="/active" activeClassName="nav-active">
+                           <i class="fa fa-key purple_color3"></i>
+                           <span>{lang["activation"]}</span>
+                        </NavLink>
+                     </li>
+                  ) : null}
 
-               {user.role === "ad" || user.role === "uad" ? (
-                  <li className="navbar-item">
-                     <NavLink to="/users" activeClassName="nav-active">
-                        <i class="fa fa-users icon-user"></i>
-                        <span>{lang["accounts manager"]}</span>
-                     </NavLink>
-                  </li>
-               ) : null}
+                  {user.role === "ad" || user.role === "uad" ? (
+                     <li className="navbar-item">
+                        <NavLink to="/users" activeClassName="nav-active">
+                           <i class="fa fa-users icon-user"></i>
+                           <span>{lang["accounts manager"]}</span>
+                        </NavLink>
+                     </li>
+                  ) : null}
 
-               {user.role === "ad" || user.role === "uad" ? (
-                  <li className="navbar-item">
-                     <NavLink to="/privileges" activeClassName="nav-active">
+                  {user.role === "ad" || user.role === "uad" ? (
+                     <li className="navbar-item">
+                        <NavLink to="/privileges" activeClassName="nav-active">
 
-                        <i class="fa fa-lock icon-privileges"></i>
+                           <i class="fa fa-lock icon-privileges"></i>
 
-                        <span>{lang["privileges manager"]}</span>
-                     </NavLink>
-                  </li>
-               ) : null}
+                           <span>{lang["privileges manager"]}</span>
+                        </NavLink>
+                     </li>
+                  ) : null}
 
-               {user.role === "ad" || user.role === "uad" ? (
-                  <li>
-                     <a href="#dashboard" onClick={toggleMenu} aria-expanded="false" class="dropdown-toggle">
-                        <i class="fa fa-dashboard yellow_color"></i>
-                        <span>{lang["data management"]}</span>
-                        <i class="fa "></i>
-                     </a>
-                     <ul className={`collapse list-unstyled ${isExpanded ? 'show' : ''} scrollable`} id="dashboard">
-                        {pages && pages.map((ui, index) => (
-                           ui.status ? (
-                              <li key={index} className="navbar-item">
-                                 <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
-                                    <i class="fa fa-newspaper-o"></i>
-                                    <span>{ui.title}</span>
-                                 </NavLink>
-                              </li>
-                           ) : null
-                        ))}
-                     </ul>
-                  </li>
-               ) : null}
+                  {user.role === "ad" || user.role === "uad" ? (
+                     <li className="navbar-item">
+                        <NavLink to="/privileges/groups" activeClassName="nav-active">
+
+                           <i class="fa fa-users icon-privileges"></i>
+
+                           <span>{lang["privileges groups"]}</span>
+                        </NavLink>
+                     </li>
+                  ) : null}
+
+                  {user.role === "ad" || user.role === "uad" ? (
+                     <li>
+                        <a href="#dashboard" onClick={toggleMenu} aria-expanded="false" class="dropdown-toggle">
+                           <i class="fa fa-dashboard yellow_color"></i>
+                           <span>{lang["data management"]}</span>
+                           <i class="fa "></i>
+                        </a>
+                        <ul className={`collapse list-unstyled ${isExpanded ? 'show' : ''} scrollable`} id="dashboard">
+                           {pages && pages.map((ui, index) => (
+                              ui.status ? (
+                                 <li key={index} className="navbar-item">
+                                    <NavLink to={`/page${ui.url}`} activeClassName="nav-active">
+                                       <i class="fa fa-newspaper-o"></i>
+                                       <span>{ui.title}</span>
+                                    </NavLink>
+                                 </li>
+                              ) : null
+                           ))}
+                        </ul>
+                     </li>
+                  ) : null}
 
 
-               < Navbar_Render data ={pages} />
+                  < Navbar_Render data={pages} />
 
 
-               {/* Feedback */}
+                  {/* Feedback */}
 
-               {/* {user.role === "pd" ? (
+                  {/* {user.role === "pd" ? (
                   <>
                      {pages && pages.map((ui, index) => (
                         ui.status && ui.title === "HOME" ? (
@@ -188,8 +199,8 @@ export default () => {
                   </>
                ) : null}
                 */}
-               {/* Active online */}
-               {/* <div class={`scrollable_user ${user.role === "pd" ? 'no_shadow' : ''}`}>
+                  {/* Active online */}
+                  {/* <div class={`scrollable_user ${user.role === "pd" ? 'no_shadow' : ''}`}>
                   {user.role === "pd" ? (
                      <li>
                         {pages && pages.map(ui => (
@@ -205,49 +216,49 @@ export default () => {
                      </li>
                   ) : null}
                </div> */}
-               {user.role === "uad" ? (
-                  <>
-                     <li className="navbar-item">
-                        <NavLink to="/diagram_db" activeClassName="nav-active">
-                           <i class="fa fa-database pointer icon-database"></i>
-                           <span>{lang["diagram"]}</span>
-                        </NavLink>
-                     </li>
-                     <li className="navbar-item">
-                        <NavLink to="/sitemap" onClick={() => { openTab('/sitemap') }} activeClassName="nav-active">
-                           <i class="fa fa-sitemap"></i>
-                           <span>{lang["site map"]}</span>
-                        </NavLink>
-                     </li>
-                     <li className="navbar-item">
-                        <NavLink to="/version" activeClassName="nav-active">
-                           
-                           <i class="fa fa-code-fork"></i>
-                           <span>{lang["version"]}</span>
-                        </NavLink>
-                     </li>
-                     <li className="navbar-item">
-                        <NavLink to="/logs" activeClassName="nav-active">
-                        <i class=" fa fa-shield"></i>
-                           <span>{lang["log.login"]}</span>
-                        </NavLink>
-                     </li>
-                  </>
-               ) : null}
-               {user.role !== "uad" ? (
-                  <>
-                    
-                     <li className="navbar-item">
-                        <NavLink to="/logs" activeClassName="nav-active">
-                           <i class=" fa fa-shield"></i>
-                           <span>{lang["log.login"]}</span>
-                        </NavLink>
-                     </li>
+                  {user.role === "uad" ? (
+                     <>
+                        <li className="navbar-item">
+                           <NavLink to="/diagram_db" activeClassName="nav-active">
+                              <i class="fa fa-database pointer icon-database"></i>
+                              <span>{lang["diagram"]}</span>
+                           </NavLink>
+                        </li>
+                        <li className="navbar-item">
+                           <NavLink to="/sitemap" onClick={() => { openTab('/sitemap') }} activeClassName="nav-active">
+                              <i class="fa fa-sitemap"></i>
+                              <span>{lang["site map"]}</span>
+                           </NavLink>
+                        </li>
+                        <li className="navbar-item">
+                           <NavLink to="/version" activeClassName="nav-active">
 
-                  </>
+                              <i class="fa fa-code-fork"></i>
+                              <span>{lang["version"]}</span>
+                           </NavLink>
+                        </li>
+                        <li className="navbar-item">
+                           <NavLink to="/logs" activeClassName="nav-active">
+                              <i class=" fa fa-shield"></i>
+                              <span>{lang["log.login"]}</span>
+                           </NavLink>
+                        </li>
+                     </>
+                  ) : null}
+                  {user.role !== "uad" ? (
+                     <>
 
-               ) : null}
-               {/* {user.role === "uad" ? (
+                        <li className="navbar-item">
+                           <NavLink to="/logs" activeClassName="nav-active">
+                              <i class=" fa fa-shield"></i>
+                              <span>{lang["log.login"]}</span>
+                           </NavLink>
+                        </li>
+
+                     </>
+
+                  ) : null}
+                  {/* {user.role === "uad" ? (
                   <li className="navbar-item">
                      <NavLink to="/logs" activeClassName="nav-active">
                         <i class="fa fa-shield"></i>
@@ -255,10 +266,10 @@ export default () => {
                      </NavLink>
                   </li>
                ) : null} */}
-            </ul>
+               </ul>
+            </div>
          </div>
-         </div>
-         
+
          <div class="footer-custom">
             <p>&copy; 2023 - Designed by Mylan Group </p>
          </div>

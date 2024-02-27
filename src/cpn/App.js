@@ -14,7 +14,7 @@ import { Import } from './import-data';
 import { Navigation, PageNotFound } from './navigations';
 import { Login, SignUp, SignOut, ChangePassword } from './auth';
 import { Settings } from './settings';
-import { ListUser, Profile, Permission, PermissionDetail } from './users';
+import { ListUser, Profile, Permission, PermissionDetail, PermissionUI, PermissionGroups } from './users';
 import { Logs } from './logs';
 import { Version } from './version'
 import { Tables, Field, UpdateField } from './tables';
@@ -282,6 +282,8 @@ function App() {
         <Route path="/users/profile" element={<Navigation Child={Profile} />} />
         <Route path="/privileges" element={<Navigation Child={Permission} />} />
         <Route path="/privileges/detail" element={<Navigation Child={PermissionDetail} />} />
+        <Route path="/privileges/groups" element={<Navigation Child={PermissionGroups} />} />
+        <Route path="/privileges/group/:id" element={<Navigation Child={PermissionUI} />} />
         <Route path="/settings" element={<Navigation Child={Settings} />} />
 
         <Route path="/active" element={<Navigation Child={Active_Key} />} />

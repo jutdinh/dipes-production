@@ -325,10 +325,6 @@ export default (props) => {
         window.location.href = `/privileges/detail?username=${profile.username}`;
     }
 
-    const moveToUIConfig = ( profile ) => {
-        window.location.href = `/privileges/ui?username=${profile.username}`;
-    }
-
     const admins = profiles.filter(profile => profile.role === 'ad');
     const projectManagers = profiles.filter(profile => profile.role === 'pm');
     const implementers = profiles.filter(profile => profile.role === 'pd');
@@ -416,16 +412,13 @@ export default (props) => {
                                                                             {
                                                                                 ["pm", "ad", "uad"].indexOf(auth.role) != -1 &&
                                                                                 <td>
-                                                                                    <div className="row text-center">
-                                                                                        <div class="icon-table">
-                                                                                            <div className="icon-table-line">
-                                                                                                <i class="fa fa-edit icon-edit pointer size-24" onClick={() => redirectTo(profile)}></i>
-                                                                                            </div>
-                                                                                        </div>                                                                                        
+                                                                                    <div class="icon-table">
+                                                                                        <div className="icon-table-line">
+                                                                                            <i class="fa fa-edit icon-edit pointer size-24" onClick={() => redirectTo(profile)}></i>
+                                                                                        </div>
                                                                                     </div>
                                                                                 </td>
                                                                             }
-
                                                                         </tr>
                                                                     ))}
                                                                 </tbody>

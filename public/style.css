@@ -3486,3 +3486,12 @@ table.projects tr td:first-child {
     border-radius: 16px;
     box-shadow: 2px 1px 10px 0px #ccc;
 }
+
+
+.privilege-pages{
+    padding: 1em;
+}
+
+.privilege-pages .privilege-page {    
+    margin-top: 2em;
+}
