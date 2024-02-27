@@ -17,7 +17,7 @@ import { Table } from "react-bootstrap";
 import icons from "./icon";
 import { LoadingIcon } from "../../Icons/loading.icon";
 import { DelayLoading } from "../../Hooks/DelayLoading";
-import { ColumnChart } from "../../Components/Charts/Column.chart";
+import { ColumnChart } from "../../Components/Charts/Column/Column.chart";
 
 const RenderComponent = ({
   page,
