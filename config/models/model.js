@@ -90,6 +90,7 @@ class Model {
                 newData[ __fieldName ] = this[ __fieldName ].value();                
             }
             const updateResult = await this.#model.__updateObject__( {...newData} );
+            
             return updateResult;
                         
         }else{            

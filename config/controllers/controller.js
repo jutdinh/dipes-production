@@ -25,6 +25,9 @@ class Controller {
         this.events = events;
         this.#__code = response;   
         this.__taskStatus = [ 1, 2, 3, 4, 5 ]   
+
+        this.tableTypes = ["table", "table_param"]
+        this.defaultButtons = ["detail", "update", "delete"]
     }
 
     #__privileges = {
@@ -223,6 +226,41 @@ class Controller {
         id = id.toUpperCase()           // (2)  
         id = id.replaceAll("-", "")     // (3)
         return id
+    }
+
+
+    flatteningPages = ( pages ) => {
+
+        /**
+         * Ép dẹp cây pages thành mảng các page cùng cấp
+         */
+
+        const pgs = []
+        
+        for( let i = 0 ; i < pages.length; i++ ){
+            pgs.push({...pages[i], children: []})
+            const { children } = pages[i]
+            if( children ){
+                pgs.push(...this.flatteningPages( children ) )
+            }
+        }
+        return pgs
+    }
+
+    flatteningComponents = (components) => {
+        /**
+         * Ép dẹp cây component thành mảng các component cùng cấp
+         */
+
+        const cpns = []
+        for (let i = 0; i < components.length; i++) {
+            const { children } = components[i]
+            cpns.push({ ...components[i] })
+            if (children) {
+                cpns.push(...this.flatteningComponents(children))
+            }
+        }
+        return cpns
     }
 
 

@@ -11,10 +11,20 @@ const { Privileges, PrivilegesRecord } = require('../models/Privileges');
 const { Tables } = require('../models/Tables');
 
 
+const { PrivilegeGroup, PrivilegeGroupRecord } = require('../models/PrivilegeGroup');
+const { PrivilegeDetail, PrivilegeDetailRecord } = require('../models/PrivilegeDetail')
+
+
+const { Buttons, ButtonsRecord } = require('../models/Buttons');
+
 class PrivilegesController extends Controller {
     #__accounts = undefined
     #__privileges = new Privileges()
+    #__pg = new PrivilegeGroup()
+    #__pd = new PrivilegeDetail()
+
     #__tables = new Tables()
+    #__buttons = new Buttons()
 
     constructor() {
         super();
@@ -143,43 +153,11 @@ class PrivilegesController extends Controller {
         res.status(200).send(context)
     }
 
-    flatteningPages = ( pages ) => {
-
-        /**
-         * Ép dẹp cây pages thành mảng các page cùng cấp
-         */
-
-        const pgs = []
-        
-        for( let i = 0 ; i < pages.length; i++ ){
-            pgs.push({...pages[i], children: []})
-            const { children } = pages[i]
-            if( children ){
-                pgs.push(...this.flatteningPages( children ) )
-            }
-        }
-        return pgs
-    }
 
 
-    flatteningComponents = (components) => {
-        /**
-         * Ép dẹp cây component thành mảng các component cùng cấp
-         */
-
-        const cpns = []
-        for (let i = 0; i < components.length; i++) {
-            const { children } = components[i]
-            cpns.push({ ...components[i] })
-            if (children) {
-                cpns.push(...this.flatteningComponents(children))
-            }
-        }
-        return cpns
-    }
-
-    getUITree = async (req, res) => {
+    getUITree = async ( req, res ) => {
         const verified = await this.verifyToken(req);
+        const { id } = req.params; 
 
         const context = {
             success: false,
@@ -188,8 +166,10 @@ class PrivilegesController extends Controller {
             status: 200
 
         }
-        const tableTypes = ["table", "table_param"]
+        const tableTypes = this.tableTypes
         const path = 'public/config/ui.json'
+
+
 
         if (verified) {
             const decodedToken = this.decodeToken(req.header("Authorization"));
@@ -200,6 +180,23 @@ class PrivilegesController extends Controller {
                     const rawUI = fs.readFileSync( path )
                     const ui = JSON.parse(rawUI)
                     const pages = this.flatteningPages(ui.data);
+                    
+                    const availablePrivileges = await this.#__pd.findAll({ privilegegroup_id: parseInt(id) })
+                    const buttonArray = await this.#__buttons.findAll()
+                    /**
+                     * 
+                     * 
+                     * Map these privilege to the tree
+                     */
+
+                    const buttons = {}
+                    for( let i = 0 ; i < buttonArray.length; i++ ){
+                        const button = buttonArray[i]
+                        buttons[`${button.id}`] = button
+                    }
+
+
+
                     if( pages ){
                         for( let i = 0; i < pages.length; i++ ){
                             const page = pages[i]
@@ -212,28 +209,58 @@ class PrivilegesController extends Controller {
                                 tables: tables.map( table => {
                                     const { props, id, children } = table;
                                     
+                                    const buttonsWhichBelongToThisTable = buttonArray.filter( btn => btn.table_id === id )
+                                    const buttonIds = buttonsWhichBelongToThisTable.map( btn => btn.id )
+                                    
+                                    const thisTablePrivileges = availablePrivileges.filter( privilege => {
+                                        const { button_id } = privilege
+                                        return buttonIds.indexOf(button_id) != -1
+                                    })
+                                    
+                                    const serializedButtons = {}
+
+                                    for( let c = 0 ; c < thisTablePrivileges.length; c++ ){
+                                        const { button_id } = thisTablePrivileges[c]
+                                        const correspondingButton = buttons[button_id]
+                                        serializedButtons[ correspondingButton.button_id ] = true
+                                    }
+
+                                    const serializedThisTableButtons = {}
+                                    buttonsWhichBelongToThisTable.map(  btn => {
+                                        serializedThisTableButtons[btn.button_id] = btn
+                                    })
+                                    
                                     if( props ){
                                         const { name } = props
                                         const customButtons = children.filter( child => child.name == "custom_button" )
                                         const buttons = [
                                             {
                                                 id: "detail",
-                                                name: "Xem chi tiết",
+                                                title: "Xem chi tiết",
+                                                grantted: serializedButtons["detail"],
+                                                button: serializedThisTableButtons["detail"]
                                             },
                                             {
                                                 id: "update",
-                                                name: "Cập nhật",
+                                                title: "Cập nhật",
+                                                grantted: serializedButtons["update"],
+                                                button: serializedThisTableButtons["update"]
                                             },
                                             {
                                                 id: "delete",
-                                                name: "Xóa",
+                                                title: "Xóa",
+                                                grantted: serializedButtons["delete"],
+                                                button: serializedThisTableButtons["delete"]
                                             },
                                         ]
 
                                         for( let j = 0; j < customButtons.length; j++ ){
-                                            const { id, title, icon } = customButtons[j]
+                                            const { id, props } = customButtons[j]
+                                            const { title, icon } = props
                                             const btn = {
-                                                id, title, icon
+                                                id, title, icon, 
+                                                grantted: serializedButtons[id],
+                                                button: serializedThisTableButtons[id]
                                             }
                                             buttons.push(btn)
                                         }
@@ -253,5 +280,261 @@ class PrivilegesController extends Controller {
         }
         res.status(200).send(context)
     }
+
+    createPrivilegeGroup = async ( req, res ) => {
+
+        /**
+         * 
+         * PRIVILEGES ["ad", "uad"]
+         * 
+         * HEADERS: {
+         * 
+         *      Authorization: <Token>
+         * }
+         * 
+         * BODY: {
+         * 
+         *      group: {
+         *          name: <String>
+         *      }
+         * 
+         * }
+         * 
+         * 
+         */
+
+        const verified = await this.verifyToken(req);
+
+        const context = {
+            success: false,
+            content: "",            
+            status: 200
+
+        }
+        if( verified ){
+            const decodedToken = this.decodeToken(req.header("Authorization"));            
+            
+            if(  this.isAdmin(decodedToken) ){
+
+                const { group } = req.body;
+                
+                if( group ){
+                    let name = group.name
+                    if( name ){                    
+                        const oldGroupWithSameName = await this.#__pg.findAll({ group_name: name })
+                        if( oldGroupWithSameName.length == 0 ){
+                            const Group = new PrivilegeGroupRecord({ group_name: name })                        
+    
+                            await Group.save()
+                            const data = Group.get()
+    
+                            context.success = true;
+                            context.data = data;
+                        }else{
+                            context.content = "Group with same name already existed"
+                        }
+                    }else{
+                        context.content = "Invalid request body"
+                    }
+                }else{
+                    context.content = "Invalid request body"
+                }
+            }else{
+                context.content = "Administrator rights required"
+            }
+        }else{
+            context.content = "Invalid token"
+        }
+        res.send(context)
+    }
+
+
+    getAllPrivilegeGroup = async (req, res) => {
+        /**
+         * 
+         * PRIVILEGES ["ad", "uad"]
+         * 
+         * 
+         * HEADERS: {
+         * 
+         *      Authorization: <Token>
+         * }
+         * 
+         * 
+         */
+
+        
+        const verified = await this.verifyToken(req);
+
+        const context = {
+            success: false,
+            content: "",            
+            status: 200
+
+        }
+        if( verified ){
+            const decodedToken = this.decodeToken(req.header("Authorization"));            
+            
+            if(  this.isAdmin(decodedToken) ){
+
+                const groups = await this.#__pg.findAll()
+                context.success = true;
+                context.groups = groups                
+
+            }else{
+                context.content = "Administrator rights required"
+            }
+        }else{
+            context.content = "Invalid token"
+        }
+        res.send(context)
+    }
+
+    updatePrivilegeGroup = async ( req, res ) => {
+
+        /**
+         * 
+         * PRIVILEGES ["ad", "uad"]
+         * 
+         * HEADERS: {
+         * 
+         *      Authorization: <Token>
+         * }
+         * 
+         * BODY: {
+         * 
+         *      group: {
+         *          privilegegroup_id: <Int>
+         *          name: <String>
+         *      }
+         * 
+         * }
+         * 
+         * 
+         */
+
+        const verified = await this.verifyToken(req);
+
+        const context = {
+            success: false,
+            content: "",            
+            status: 200
+
+        }
+        if( verified ){
+            const decodedToken = this.decodeToken(req.header("Authorization"));            
+            
+            if(  this.isAdmin(decodedToken) ){
+
+                const { group } = req.body;
+                
+                if( group ){
+                    if( this.notNullCheck( group, ["name", "privilegegroup_id"] ).valid ){      
+
+                        let { name, privilegegroup_id } = group
+                        const oldGroup = await this.#__pg.findAll({ privilegegroup_id: parseInt(privilegegroup_id) })
+                        if( oldGroup.length != 0 ){
+                            const Group = new PrivilegeGroupRecord({...oldGroup[0]}) // to prevent conflict in case multiple group with the same id                        
+                            
+                            Group.group_name.value(name);
+
+                            await Group.save()
+                            const data = Group.get()
+    
+                            context.success = true;
+                            context.data = data;
+                        }else{
+                            context.content = `Group with id ${ privilegegroup_id } does not exist`
+                        }
+                    }else{
+                        context.content = "Invalid request body"
+                    }
+                }else{
+                    context.content = "Invalid request body"
+                }
+            }else{
+                context.content = "Administrator rights required"
+            }
+        }else{
+            context.content = "Invalid token"
+        }
+        res.send(context)
+    }
+
+
+    deletePrivilegeGroup = async ( req, res ) => {
+
+        /**
+         * 
+         * PRIVILEGES ["ad", "uad"]
+         * 
+         * HEADERS: {
+         * 
+         *      Authorization: <Token>
+         * }
+         * 
+         * BODY: {
+         * 
+         *      group: {
+         *          privilegegroup_id: <Int>
+         *          name: <String>
+         *      }
+         * 
+         * }
+         * 
+         * 
+         */
+
+        const verified = await this.verifyToken(req);
+
+        const context = {
+            success: false,
+            content: "",            
+            status: 200
+
+        }
+        if( verified ){
+            const decodedToken = this.decodeToken(req.header("Authorization"));            
+            
+            if(  this.isAdmin(decodedToken) ){
+
+                const { group } = req.body;
+                
+                if( group ){
+                    if( this.notNullCheck( group, ["privilegegroup_id"] ).valid ){      
+
+                        let { privilegegroup_id } = group
+                        const oldGroup = await this.#__pg.findAll({ privilegegroup_id: parseInt(privilegegroup_id) })
+                        if( oldGroup.length != 0 ){
+                            const Group = new PrivilegeGroupRecord({...oldGroup[0]}) // to prevent conflict in case multiple group with the same id                        
+                            
+                            Group.remove()
+
+                            /**
+                             * 
+                             * DELETE ALL PRIVILGE DETAIL WITH IN THIS GROUP
+                             * 
+                             */
+    
+                            context.success = true;
+                        }else{
+                            context.success = true
+                            context.content = `Group with id ${ privilegegroup_id } does not exist`
+                        }
+                    }else{
+                        context.content = "Invalid request body"
+                    }
+                }else{
+                    context.content = "Invalid request body"
+                }
+            }else{
+                context.content = "Administrator rights required"
+            }
+        }else{
+            context.content = "Invalid token"
+        }
+        res.send(context)
+    }
+
 }
 module.exports = PrivilegesController

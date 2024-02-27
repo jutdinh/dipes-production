@@ -164,14 +164,12 @@ app.use(async (req, res, next) => {
           } else {
             if( requestType == "statis" ){
               await Consumer.consumeStatis(req, res, api_id)
-
             }else{
               if( requestType == "csync" ){
                 await Consumer.consumeCSync(req, res, api_id)
               }else{
                 await Consumer.consume(req, res, api_id)
-              }
-              
+              }              
             }
           }
         }

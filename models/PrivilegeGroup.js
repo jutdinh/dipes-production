@@ -12,15 +12,16 @@ class PrivilegeGroup extends Model{
     }
 }   
 class PrivilegeGroupRecord extends PrivilegeGroup {
-    constructor( { id, privilegegroup_id } ){
+    constructor( { id, privilegegroup_id, group_name } ){
         super();
-        this.setDefaultValue( { id, privilegegroup_id } )        
+        this.setDefaultValue( { id, privilegegroup_id, group_name } )        
     }
 
     get = () => {
         return {
             id: this.id.value(),
-            privilegegroup_id: this.privilegegroup_id.value()
+            privilegegroup_id: this.privilegegroup_id.value(),
+            group_name: this.group_name.value()
         }
     }
 }

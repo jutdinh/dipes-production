@@ -6,6 +6,9 @@ const { Versions, VersionsRecord } = require('../../models/Versions');
 const { intValidate, objectComparator } = require('../../functions/validator');
 const { Fields, FieldsRecord } = require('../../models/Fields');
 const { Apis, ApisRecord } = require('../../models/Apis');
+
+const { Buttons, ButtonsRecord } = require('../../models/Buttons')
+
 const  Model  = require('../../config/models/model');
 
 const fs = require("fs")
@@ -19,6 +22,7 @@ class Api extends Controller {
     #__tables = new Tables();
     #__fields = new Fields();
     #__apis = new Apis();
+    #__btns = new Buttons();
 
     constructor(){
         super();
@@ -213,17 +217,63 @@ class Api extends Controller {
         res.status(200).send({ success: true, data: { tables, fields: formattedFields } })
     }
 
-    importUI = ( req, res ) => {
+    importUI = async ( req, res ) => {
         const { ui } = req.body;
         if( ui && ui.data ){           
             const stringifiedUI = JSON.stringify( ui )
             if( fs.existsSync(UI_PATH) ){
                 fs.unlinkSync(UI_PATH)
             }
+
+            await this.syncChronizeButtons( ui )
+
             fs.writeFileSync(UI_PATH, stringifiedUI)
             res.status(200).send({ success: true, content: "SUCCESSFULLY WRITE UI"})
         }else{
             res.status(200).send({ success: false, content: "INVALID FILE CONFIG" })
+        }
+    }
+
+    syncChronizeButtons = async ( ui = {} ) => {
+        const { data } = ui
+
+        if( data ){
+            const pages = this.flatteningPages(data)
+            const tableTypes = this.tableTypes           
+            
+            await this.#__btns.removeAll()
+            for( let i = 0; i < pages.length; i++ ){
+                const page = pages[i]                
+
+                const flattenComponents = this.flatteningComponents( page.component )
+                const tables = flattenComponents.filter( cpn => tableTypes.indexOf(cpn.name) != -1 )  
+
+                for( let j = 0 ; j < tables.length; j++ ){
+                    const table = tables[j]
+                    
+                    const { children } = table
+                    const customButtons = children.filter( child => child.name == "custom_button" )
+
+                    const defaultButtons = this.defaultButtons.map( btn => {
+                        const Button = new ButtonsRecord({ button_id: btn, table_id: table.id, api_id: table.props.buttons[btn].api.api_id })
+                        // console.log(Button.get())
+                        return Button
+                    })
+
+                    const objectiveCustomButtons = customButtons.map( btn => {
+                        const { id, props } = btn
+                        const Button = new ButtonsRecord({ button_id: id, table_id: table.id, api_id: props.api.api_id })
+                        return Button
+                    })
+
+                    // await Promise.all( [ ...defaultButtons, ...objectiveCustomButtons ].map( Button => Button.save() ) )                    
+
+                    const Buttons = [ ...defaultButtons, ...objectiveCustomButtons ]
+                    for( let k = 0 ; k < Buttons.length; k++ ){
+                        await Buttons[k].save()
+                    }
+                }
+            }
         }
     }
 

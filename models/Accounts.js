@@ -1,6 +1,10 @@
 const fs = require('fs');
 const { Model } = require('../config/models');
 
+const { UserPrivileges, UserPrivilegesRecord } = require('./UserPrivileges')
+const { PrivilegeGroup, PrivilegeGroupRecord } = require('./PrivilegeGroup')
+
+
 class Accounts extends Model{
 
     static __defaultAccount = {
@@ -32,11 +36,31 @@ class Accounts extends Model{
     }
 
     getAllAccounts = async () => {
-        const accounts = await this.findAll();
+        const accounts = await this.findAll();        
+        const Groups = new PrivilegeGroup()
+        const Privileges = new UserPrivileges()
+
+        const groups = await Groups.findAll()
+        const privileges = await Privileges.findAll()
+
+        const serializedGroups = {}
+        groups.map( g => { serializedGroups[`${ g.privilegegroup_id }`] = g } )
+        const serializedPrivileges = {}
+        privileges.map( p => {serializedPrivileges[ p.username ] = p } )
+
         if( accounts ){
-            const result = accounts.map( account => {
-                const Account = new AccountsRecord( account );
-                return Account.get()
+            const result = accounts.map( acc => {
+                const Account = new AccountsRecord( acc );
+
+                const account = Account.get()
+                const { username } = account
+                const granttedPrivilege = serializedPrivileges[username]
+                if( granttedPrivilege ){
+                    const { privilegegroup_id } = granttedPrivilege                    
+                    const group = serializedGroups[`${ privilegegroup_id }`]
+                    account.privilege = group
+                }
+                return account
             })
             return result
         }else{
