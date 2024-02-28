@@ -234,12 +234,12 @@ class PrivilegesController extends Controller {
                                         const { name } = props
                                         const customButtons = children.filter( child => child.name == "custom_button" )
                                         const buttons = [
-                                            {
-                                                id: "detail",
-                                                title: "Xem chi tiết",
-                                                grantted: serializedButtons["detail"],
-                                                button: serializedThisTableButtons["detail"]
-                                            },
+                                            // {
+                                            //     id: "detail",
+                                            //     title: "Xem chi tiết",
+                                            //     grantted: serializedButtons["detail"],
+                                            //     button: serializedThisTableButtons["detail"]
+                                            // },
                                             {
                                                 id: "update",
                                                 title: "Cập nhật",

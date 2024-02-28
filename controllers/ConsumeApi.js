@@ -19,8 +19,14 @@ const Cache = require('./Cache/Cache');
 const { Privileges } = require('../models/Privileges');
 const { Statistics, StatisticsRecord } = require('../models/Statistics');
 
+const { UserPrivileges, UserPrivilegesRecord } = require('../models/UserPrivileges')
+const { PrivilegeGroup, PrivilegeGroupRecord } = require('../models/PrivilegeGroup')
+const { PrivilegeDetail, PrivilegeDetailRecord } = require('../models/PrivilegeDetail')
+const { Buttons, ButtonsRecord } = require('../models/Buttons');
+
 const fileType = require('file-type')
-const fs = require('fs')
+const fs = require('fs');
+const { Accounts } = require('../models/Accounts');
 
 
 const RESULT_PER_SEARCH_PAGE = 15
@@ -53,6 +59,12 @@ class ConsumeApi extends Controller {
     #__projects = new Projects()
     #__privileges = new Privileges()
     #__statistics = new Statistics()
+
+    #__userprivileges = new UserPrivileges()
+    #__privilegegroup= new PrivilegeGroup()
+    #__privilegedetail= new PrivilegeDetail()
+    #__buttons= new Buttons()
+
 
     constructor() {
         super();
@@ -180,6 +192,68 @@ class ConsumeApi extends Controller {
         }
     }
 
+
+    checkButtonPrivilege = async( api, user ) => {
+        /**
+         * 
+         *  @name: Kiểm tra nhóm quyền của người dùng User xem nó có được phân quyền trên API hay khum
+         * 
+         *  @param: [
+         *      api: <API>
+         *      user: <Account>
+         *  ]
+         * 
+         *  @desc: Giải thích về mối quan hệ giữa người dùng, nhóm phân quyền, nút và API chúng ta có quan hệ sau:
+         * 
+         * 
+         *      - 1 người dùng <-> 1 nhóm quyền
+         *      - 1 nhóm quyền <-> nhiều chi tiết phân quyền
+         *      - 1 chi tiết phân quyền <-> 1 nút
+         *      - 1 nút <->  1 API
+         * 
+         *      Giải thuật này tạm thời có thể chạy đúng nhưng hiệu xuất đang khá tệ, O(3n):
+         * 
+         *      1. Nếu người dùng là admin hay uad thì pass luôn khỏi test
+         * 
+         *      2.  Nếu người dùng là user bình thường thì tiếp tục
+         *      3.  Gọi toàn bộ quyền có username là username của user, nếu kết quả tồn tại và có ít nhất 1 kết quả thì chọn kết quả đầu tiên, nếu không thì -> (10)
+         *      4.  Gọi toàn bộ chi tiết quyền của nhóm phân quyền tìm được ở (3)
+         *      5.  Chọn ra toàn bộ button_id từ các chi tiết phân quyền
+         *      6.  Chọn ra toàn bộ Buttons
+         *      7.  Lọc ra những button thuộc nhóm phân quyền dựa vào danh sách button_id ở bước 5
+         *      8.  Chọn ra nút có chứa api_id của tham số api
+         *      9.  Nếu nút đó tồn tại -> return true, nếu khum -> return false
+         *      10. Return false
+         * 
+         * 
+         */
+
+        const { api_id } = api;
+        const { username } = user;
+/* 1 */ if( this.isAdmin(user) ){
+            return true
+/* 2 */ }else{
+/* 3 */     const privilegeGroup = await this.#__userprivileges.findAll({ username })
+            if( privilegeGroup && privilegeGroup.length > 0 ){
+                const group = privilegeGroup[0]
+                const { privilegegroup_id } = group
+
+/* 4 */         const privilegedetails = await this.#__privilegedetail.find({ privilegegroup_id })
+                const button_ids = privilegedetails.map( btn => btn.button_id )
+                const buttons = await this.#__buttons.findAll()
+                
+                const privilegeButtons = buttons.filter( button => button_ids.indexOf( button.id ) != -1 )
+                const targetAPI = privilegeButtons.find( button => button.api_id == api_id )
+                if( targetAPI ){
+                    return true
+                }
+                return false
+            }else{
+                return false
+            }            
+        }
+    }
+
     consumeUI = async (req, res, api_id) => {
 
         /**
@@ -260,6 +334,8 @@ class ConsumeApi extends Controller {
                 // // // console.log(api)
                 let isGranted;
 
+                
+
                 const { project_type } = project
 /*(6)*/         if (project_type == "database") {
                     switch (api.api_method) {
@@ -286,9 +362,9 @@ class ConsumeApi extends Controller {
                             break;
 
                         case "put":
-
+                            const updateButtonPrivilege = await this.checkButtonPrivilege( api, user )
                             isGranted = this.hasEnoughPrivileges(apiTables, [Privileges.MODIFY], privileges)
-                            if (isGranted) {
+                            if ( isGranted && updateButtonPrivilege ) {
                                 await this.PUT_UI()
                                 const end = new Date()
                                 // // console.log("PROCCESS IN : " + `${end - start} `)
@@ -297,8 +373,9 @@ class ConsumeApi extends Controller {
                             }
                             break;
                         case "delete":
+                            const deleteButtonPrivilege = await this.checkButtonPrivilege( api, user )
                             isGranted = this.hasEnoughPrivileges(apiTables, [Privileges.PURGE], privileges)
-                            if (isGranted) {
+                            if ( isGranted && deleteButtonPrivilege ) {
                                 await this.DELETE_UI()
                                 const end = new Date()
                                 // // console.log("PROCCESS IN : " + `${end - start} `)
@@ -3511,7 +3588,7 @@ class ConsumeApi extends Controller {
 
                 if (originData) {
                     const fields = this.getFieldsByTableId(table.id)
-                    console.log(originData)
+                    // console.log(originData)
       
                     for (let k = 0; k < fields.length; k++) {
                         const field = fields[k]
@@ -6069,7 +6146,7 @@ class ConsumeApi extends Controller {
                 const { id } = table;
                 table.fields = fields.filter(field => field.table_id == id)
                 return table
-            });           
+            });                       
 
             if (project.project_type == "database") {
                 this.CONSUME_DETAIL_RECORD()
@@ -6140,11 +6217,6 @@ class ConsumeApi extends Controller {
     consumeCSync = async ( req, res, apis_id ) => {
         /**
          * 
-         * Cái này chưa sync xong 
-         * 
-         * mệt cái mình ghê
-         * 
-         * check cái logic consume
          * 
          */
 
@@ -6179,7 +6251,22 @@ class ConsumeApi extends Controller {
     }
 
     CONSUME_CASCADING_SYNCHRONIZE = () => {
+        const data = this.req.body.data ? this.req.body.data : []
+        const tables = this.tearTablesAndFieldsToObjects()
+        const table = tables[0]
 
+        const { fields, primary_key, foreign_keys, table_alias } = table
+        this.import_fields = this.getFieldsByTableId(table.id);
+        this.primaryKeys = primary_key
+        this.primaryFields = this.getFields(primary_key)
+        this.table = table
+        const rawIndices = []
+
+        if( data.length > 0){
+            console.log( data )
+        }
+
+        this.res.send({ success: true })
     }
 }
 
