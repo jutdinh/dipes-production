@@ -4,19 +4,20 @@ import { useSelector } from "react-redux";
 import { DelayLoading } from "../../../Hooks/DelayLoading";
 import { LoadingIcon } from "../../../Icons/loading.icon";
 import { Link, useSearchParams } from "react-router-dom";
-import { Pagination } from "react-bootstrap";
 import { Statistic } from "./Statistic";
+import { Pagination } from "../../Pagination";
 
 const STATE_LOADING = {
   SUCCESS: 1,
   PENDING: 2,
   FAILED: 3,
 };
+const MAX_ITEM_DISPLAY = 15;
 
 export const ColumnChart = ({ props }) => {
-  const MAX_ITEM_DISPLAY = 15;
   const [MAX_PAGE, setMAX_PAGE] = useState();
   const [searchParams, setSearchParams] = useSearchParams();
+
   let CURRENT_PAGE = searchParams.get("page") || 1;
   CURRENT_PAGE = CURRENT_PAGE > MAX_PAGE ? MAX_PAGE : CURRENT_PAGE;
 
@@ -51,6 +52,7 @@ export const ColumnChart = ({ props }) => {
         const statistics_key = Object.keys(statistics);
 
         DelayLoading(start_time, () => setIsFetching(STATE_LOADING.SUCCESS));
+
         setMAX_PAGE(Math.ceil(statistics_key.length / MAX_ITEM_DISPLAY));
         setValue({
           fields,
@@ -118,7 +120,7 @@ export const ColumnChart = ({ props }) => {
           fontSize: "16px",
         }}
       >
-        Thống kê
+        {lang["log.statis"]}
       </p>
       <section>
         <p class="font-weight-bold  mb-2 h1">Chọn tiêu chí thống kê</p>
@@ -166,7 +168,11 @@ export const ColumnChart = ({ props }) => {
         </table>
       </div>
       {MAX_PAGE > 1 ? (
-        <Pagination TOTAL_ITEM={value.statistics_key.length} />
+        <Pagination
+          TOTAL_ITEM={value.statistics_key.length}
+          MAX_ITEM_DISPLAY={MAX_ITEM_DISPLAY}
+          MAX_PAGE={MAX_PAGE}
+        />
       ) : null}
     </section>
   );

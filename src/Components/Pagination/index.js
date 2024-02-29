@@ -1,12 +1,11 @@
-import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
-export const Pagination = ({ TOTAL_ITEM }) => {
-  const MAX_ITEM_DISPLAY = 15;
-  const [MAX_PAGE, setMAX_PAGE] = useState();
+export const Pagination = ({ TOTAL_ITEM, MAX_ITEM_DISPLAY, MAX_PAGE }) => {
   const [searchParams, setSearchParams] = useSearchParams();
+
   let CURRENT_PAGE = searchParams.get("page") || 1;
   CURRENT_PAGE = CURRENT_PAGE > MAX_PAGE ? MAX_PAGE : CURRENT_PAGE;
+
   const DISABLED_PREV_BTN = Number(CURRENT_PAGE) - 1 > 0;
   const DISABLED_NEXT_BTN = Number(CURRENT_PAGE) + 1 > MAX_PAGE;
 
