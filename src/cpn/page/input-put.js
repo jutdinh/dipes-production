@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import {
     Varchar, Char, Text, Int,
     DateInput, TimeInput, DateTimeInput,
-    Decimal, Bool, DataEmail, DataPhone
+    Decimal, Bool, DataEmail, DataPhone, FileImage, FileImageUpdate
 
 } from '../inputs';
 
@@ -200,7 +200,7 @@ export default () => {
         const url = window.location;
         const rawParams = url.pathname.split(`/${id_str}/`)[1];
         const paramsList = rawParams.split('/');
-        // console.log(data)
+        console.log(data)
 
         if (!emailError && !phoneError && nullCheck(data)) {
             fetch(`${proxy()}/ui/${id_str}/${paramsList.join('/')}`, {
@@ -398,12 +398,11 @@ export default () => {
                                                                 changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
                                                             /> : null
                                                         }
-                                                        {field.DATATYPE == "FILE" ?
-                                                            <Bool
+                                                     {field.DATATYPE == "FILE" ?
+                                                            <FileImageUpdate
                                                                 table={tables.filter(tb => tb.id == field.table_id)[0]}
                                                                 related={relatedTables} field={field}
-                                                                changeTrigger={changeTrigger} defaultValue={initialData[field.fomular_alias]}
-                                                            /> : null
+                                                                changeTrigger={changeTrigger}  defaultValue={initialData[field.fomular_alias]}/> : null
                                                         }
                                                     </div>
                                                 )}
@@ -417,7 +416,6 @@ export default () => {
                                                     </div>
                                                 </div>
                                             </div> */}
-
 
                                                 <div class="row justify-content-center">
                                                     <div class="col-md-6">

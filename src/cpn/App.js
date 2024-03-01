@@ -122,6 +122,7 @@ function App() {
       if (pages && pages.length == 0) {
         const { success, ui } = response.data;
         if (success) {
+          console.log("DISPATCH HERE", response);
           dispatch({
             type: "setUIPages",
             payload: { pages: ui.data },
