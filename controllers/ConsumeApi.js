@@ -29,9 +29,12 @@ const fs = require('fs');
 const { Accounts } = require('../models/Accounts');
 
 
-const RESULT_PER_SEARCH_PAGE = 15
-const DEFAULT_ERROR_CALCLATED_VALUE = "NaN"
-const TOTAL_DATA_PER_PARTITION = 10000
+const {
+    RESULT_PER_SEARCH_PAGE,
+    DEFAULT_ERROR_CALCLATED_VALUE,
+    TOTAL_DATA_PER_PARTITION,
+} = require('./enums')
+
 
 const TEMP_STORAGE_PATH = "public/temp"
 const FILE_PATH = "public/files"

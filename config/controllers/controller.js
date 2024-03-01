@@ -26,8 +26,17 @@ class Controller {
         this.#__code = response;   
         this.__taskStatus = [ 1, 2, 3, 4, 5 ]   
 
+        this.EPC_LENGTH = 16
+
         this.tableTypes = ["table", "table_param"]
         this.defaultButtons = ["detail", "update", "delete"]
+
+
+        this.NUMBERS = "0 1 2 3 4 5 6 7 8 9".split(' ')
+        this.LETTERS = "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z".split(' ')
+        this.BASE = [ ...this.NUMBERS , ...this.LETTERS ]
+
+
     }
 
     #__privileges = {
@@ -207,6 +216,35 @@ class Controller {
         }else{
             return false
         }
+    }
+
+    translateBase10toAnyBase = (num, chars) => {
+        if(num == 0){
+            return chars[0]
+        }
+        let result = ""
+        while( num > 0 ){
+            const remainder = num % chars.length
+            num = Math.floor( num / chars.length )
+            result = chars[remainder] + result
+        }
+        return result
+    }
+
+    translateBase10toBase36 = (num) => {
+        return this.translateBase10toAnyBase( num, this.BASE )
+    } 
+
+    formatEPCData = (pattern, value) => {
+        // const stringifiedValue = value.toString()
+        // const length = stringifiedValue.length;        
+        const date = new Date()
+        const month = date.getMonth()
+
+        const prefix = (pattern ? pattern.slice(0, 4): "RJV") 
+
+
+        return `${ prefix }${this.LETTERS[month]}${ date.getFullYear().toString().slice(2, 4) }${ value.slice(2, value.length ) }${ value[0] }${value[1]}`
     }
 
     getFormatedUUID = () => {

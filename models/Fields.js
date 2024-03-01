@@ -14,7 +14,8 @@ class Fields extends Model{
         "DECIMAL", "DECIMAL UNSIGNED",
         "DATE", "DATETIME",
         "TEXT", "CHAR",
-        "EMAIL", "PHONE"
+        "EMAIL", "PHONE",
+        "FILE"
     ]
 
     static validPrimaryTypes = [

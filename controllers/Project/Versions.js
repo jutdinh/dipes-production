@@ -519,6 +519,7 @@ class VersionsController extends Controller {
                             const systemTables = [
                                 { table_alias: "accounts", keys: [ "username" ] },
                                 { table_alias: "table", keys: [ "id" ] },
+                                { table_alias: "fields", keys: [ "id", "table_id" ] },
                                 { table_alias: "buttons", keys: [ "button_id", "id" ] },
                                 { table_alias: "privileges", keys: [ "username", "table_id" ] },
                                 { table_alias: "privilegegroup", keys: [ "privilegegroup_id", "id" ] },
