@@ -18,6 +18,7 @@ import icons from "./icon";
 import { LoadingIcon } from "../../Icons/loading.icon";
 import { DelayLoading } from "../../Hooks/DelayLoading";
 import { ColumnChart } from "../../Components/Charts/Column/Column.chart";
+import { GenerateRandomCode } from "../../APIs/GenerateRandomCode.api";
 
 const IS_DISABLED_BUTTON = false;
 
@@ -1525,7 +1526,7 @@ const RenderInlineButtonsForRow = (props) => {
   const handleTable_Param = async (row, pageId, params) => {
     const fomularAlias = params.map((item) => item.fomular_alias);
     const values = fomularAlias.map((alias) => row[alias]);
-    console.log("VALUE:::", values, fomularAlias);
+
     openTab(`/page/${pageId}/${values}`);
   };
 
@@ -1565,6 +1566,63 @@ const RenderInlineButtonsForRow = (props) => {
                 onClick={() => handleTable_Param(row, to.page_id, to.params)}
                 title={lang[""]}
               ></i>
+            </div>
+          </>
+        );
+      case "code_generating_button":
+        return (
+          <>
+            <div
+              class="icon-table-line"
+              style={{ color: color, backgroundColor: backgroundColor }}
+            >
+              <FontAwesomeIcon
+                key={id}
+                icon={icons[icon]?.icon}
+                onClick={() => {
+                  submitButton_Custom(
+                    api.params,
+                    api.url,
+                    primaryKeys,
+                    value,
+                    row,
+                    dataTableField
+                  );
+
+                  const {
+                    props: {
+                      generator: {
+                        amount,
+                        pattern,
+                        table,
+                        indexField,
+                        onField,
+                      },
+                    },
+                  } = child;
+
+                  const payload = {
+                    amount,
+                    pattern,
+                    indexField: indexField.id,
+                    onField: onField.id,
+                    table: table.id,
+                    foreign_table: props.props.source.tables[0].id,
+                    foreign_value:
+                      props.row[
+                        props.props.source.fields.find(
+                          (field) =>
+                            field.id ===
+                            props.props.source.tables[0].primary_key[0]
+                        )?.fomular_alias
+                      ],
+                  };
+                  console.log("CHILD", payload);
+                  GenerateRandomCode.create(payload, proxy(), _token).then(
+                    (res) => console.log("GENERATE CODE", res)
+                  );
+                }}
+              />
             </div>
           </>
         );
@@ -1628,7 +1686,7 @@ const RenderInlineButtonsForRow = (props) => {
     // Kiểm tra điều kiện và trả về true nếu cần ẩn icon
     return fomularAlias && row[fomularAlias] === false;
   };
-
+  console.log("PROPS::", props);
   return (
     <div class="icon-table">
       {orderedKeys
