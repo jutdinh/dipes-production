@@ -168,12 +168,17 @@ const COMPONENT = (props) => {
                 </section>
               ) : null}
               <section
-                class="d-flex w-100 px-2"
+                class="d-flex w-100 px-2 flex-wrap"
                 style={{
                   gap: "20px",
                 }}
               >
-                <div class="w-100">
+                <div
+                  style={{
+                    flex: 1,
+                    minWidth: "250px",
+                  }}
+                >
                   <label
                     for="formGroupExampleInput"
                     class="h5 ml-2 mt-2 text-dark font-weight-bold"
@@ -218,11 +223,11 @@ const COMPONENT = (props) => {
                         margin: 0,
                       }}
                     >
-                      Search
+                      {lang["search"]}
                     </button>
                   </form>
                 </div>
-                <div class="w-100">
+                <div style={{ flex: 1, minWidth: "250px" }}>
                   <label
                     for="formGroupExampleInput"
                     class="h5 ml-2 mt-2 text-dark font-weight-bold"
@@ -267,7 +272,7 @@ const COMPONENT = (props) => {
                         margin: 0,
                       }}
                     >
-                      Search
+                      {lang["search"]}
                     </button>
                   </form>
                 </div>
@@ -286,7 +291,7 @@ const COMPONENT = (props) => {
 };
 
 const Page = (props) => {
-  const { proxy } = useSelector((state) => state);
+  const { proxy, lang } = useSelector((state) => state);
   const { page } = props;
   const [tables, setTables] = useState(page.tables);
   const [active, setActive] = useState(false);
@@ -347,50 +352,67 @@ const Page = (props) => {
         break;
       }
     }
-    console.log(
-      "condition",
-      id === props.page.page_id,
-      table !== "",
-      id,
-      props.page.page_id
-    );
+
     if (id === props.page.page_id || table !== "") {
       setActive(true);
     } else {
       setActive(false);
     }
   }, [location]);
-
+  console.log(tables);
   return (
-    <div id={props.page.page_id} className="privilege-page w-50">
+    <div id={props.page.page_id} className="privilege-page privilege_column">
       <span
         style={{ fontWeight: "bold" }}
         class={`h5 ${active ? "text-primary" : "text-dark"}`}
       >
         {page.page_title}
       </span>
-
       {tables.map((table) => (
         <div className="privilege-table" id={table.id}>
           <div className="table-title">
             <span class={`font-weight-bold ${active ? "text-primary" : ""}`}>
-              Tên bảng: {table.name}
+              {lang["table name"]}: {table.name}
             </span>
           </div>
           <div className="buttons">
             {table.buttons.map((button) => (
-              <div className="button" style={{ display: "flex" }}>
-                <div className="checkbox">
-                  <input
-                    type="checkbox"
-                    checked={button.grantted}
-                    onChange={(e) => {
-                      checkTrigger(e, button);
+              <div
+                className=" permission_ui_hover_text py-1 px-2"
+                style={{
+                  cursor: "pointer",
+                }}
+              >
+                <div
+                  className="button d-flex align-items-center"
+                  style={{ gap: "10px" }}
+                >
+                  <div className="checkbox">
+                    <input
+                      type="checkbox"
+                      checked={button.grantted}
+                      id={button.button.id}
+                      onChange={(e) => {
+                        checkTrigger(e, button);
+                      }}
+                    />
+                  </div>
+                  <div
+                    className="button-name"
+                    style={{
+                      flex: "1",
                     }}
-                  />
-                </div>
-                <div className="button-name">
-                  <span>{button.title}</span>
+                  >
+                    <label
+                      className="w-100 m-0"
+                      style={{
+                        cursor: "pointer",
+                      }}
+                      for={button.button.id}
+                    >
+                      {button.title}
+                    </label>
+                  </div>
                 </div>
               </div>
             ))}

@@ -1487,7 +1487,7 @@ const RenderInlineButtonsForRow = (props) => {
         );
       default:
     }
-  }); // lockbuttons
+  });
 
   // mappedButtons sẽ là một mảng các phần tử JSX của nút
   const fomularAlias = props.buttons.approve.field.fomular_alias;
