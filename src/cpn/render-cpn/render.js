@@ -15,8 +15,9 @@ import Chart from "react-apexcharts";
 import Swal from "sweetalert2";
 import { Table } from "react-bootstrap";
 import icons from "./icon";
-
-const IS_DISABLED_BUTTON = false;
+import { LoadingIcon } from "../../Icons/loading.icon";
+import { DelayLoading } from "../../Hooks/DelayLoading";
+import { ColumnChart } from "../../Components/Charts/Column/Column.chart";
 
 const RenderComponent = ({
   page,
@@ -33,12 +34,12 @@ const RenderComponent = ({
   exportFile_PK,
   submitButton_Custom,
 }) => {
-  ////console.log(component)
+  console.log("COMPONENT---", component);
   const { lang, proxy, auth, functions, pages } = useSelector((state) => state);
 
   // Hàm chính để xác định loại component cần render
   const renderByType = (cpn, props, flex, id) => {
-    ////console.log(cpn)
+    console.log("cpn", cpn);
     const type = cpn?.name;
     const hasFlexData = (flex) => {
       return flex && flex?.props && flex?.props?.style;
@@ -115,9 +116,13 @@ const RenderComponent = ({
             exportFile={exportFile}
           />
         );
+        const tableParamStyle = applyFlexStyle(props.style); // Áp dụng style ở đây
         return (
-          <div>
-            <div class="d-flex align-items-center mt-2">
+          <div style={tableParamStyle}>
+            <div
+              class="d-flex align-items-center mt-2"
+              style={{ fontWeight: "bold" }}
+            >
               {props.name}
               {extraButtons_Param && (
                 <div class="ml-auto mb-1">{extraButtons_Param}</div>
@@ -140,6 +145,19 @@ const RenderComponent = ({
             />
           </div>
         );
+
+      case "detail_box":
+        // Các logic khác cho flex
+        return (
+          <>
+            <div style={props.style}>
+              <div class="d-flex align-items-center mt-2">
+                <RenderDetail cpn={cpn} props={props} />
+              </div>
+            </div>
+          </>
+        );
+
       case "flex":
         // Các logic khác cho flex
         return (
@@ -165,7 +183,8 @@ const RenderComponent = ({
             <RenderChart props={props} />
           </>
         );
-
+      case "chart_3":
+        return <ColumnChart props={props} />;
       default:
       // return <div>Unknown component type!</div>;
     }
@@ -431,7 +450,7 @@ const RenderTable = (props) => {
   const [loading, setLoading] = useState(false);
   const [loadingTable, setLoadingTable] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  ////console.log("datasearch", searchValues)
+
   useEffect(() => {
     function updateTableHeight() {
       const newHeight = window.innerHeight - 280;
@@ -463,6 +482,7 @@ const RenderTable = (props) => {
         }
       });
   }, []);
+
   const dataCheckAdministrator = {
     read: true,
     write: true,
@@ -476,9 +496,6 @@ const RenderTable = (props) => {
       : dataCheckAdministrator;
 
   const handleSearchClick = (data, url) => {
-    ////console.log(3555, data)
-    ////console.log(3555, url)
-
     setSearchUrl(url);
     setSearchValues(data);
     setCurrentPage(1);
@@ -491,7 +508,6 @@ const RenderTable = (props) => {
   };
 
   //searching
-  // console.log(loadingSearch)
   useEffect(() => {
     let timeout;
     if (loadingSearch) {
@@ -512,6 +528,7 @@ const RenderTable = (props) => {
       clearTimeout(timeout);
     };
   }, [loadingSearch]);
+
   ///Loading
   useEffect(() => {
     let timeout;
@@ -555,7 +572,6 @@ const RenderTable = (props) => {
   // };
 
   const handleInputChange = (e, fieldAlias, value, searchData) => {
-    ////console.log(value);
     const stringValue = typeof value === "string" ? value : String(value);
     // Loại bỏ khoảng trắng ở hai đầu của chuỗi
     const trimmedValue = stringValue.trim();
@@ -607,8 +623,7 @@ const RenderTable = (props) => {
   const indexOfFirst = indexOfLast - rowsPerPage;
 
   const currentData = apiData;
-  ////////////////console.log(396, currentData)
-
+  console.log("CURRENT DATA:::", currentData);
   const paginate = (pageNumber) => {
     const startAt = (pageNumber - 1) * rowsPerPage;
     if (Object.keys(searchValues).length === 0) {
@@ -620,7 +635,6 @@ const RenderTable = (props) => {
   };
 
   const renderSourceButtons = (source, lang) => {
-    //////////console.log(244, source)
     return Object.entries(source)
       .map(([key, value]) => {
         if (!value.state) {
@@ -688,6 +702,7 @@ const RenderTable = (props) => {
         setLoadingTable(false);
       });
   };
+
   useEffect(() => {
     setGetUrl(get.url);
     callApiView(get.url);
@@ -696,7 +711,6 @@ const RenderTable = (props) => {
   useEffect(() => {
     setGetUrl(get.url);
     callApiView(get.url);
-
     dispatch({
       branch: "ui",
       type: "checkState",
@@ -705,7 +719,6 @@ const RenderTable = (props) => {
       },
     });
   }, [checkState]);
-  ////////////////console.log(308,checkState)
 
   const callApi = (data, dataUrl, startIndex = currentPage - 1) => {
     const startTime = new Date().getTime();
@@ -728,7 +741,7 @@ const RenderTable = (props) => {
       require_count: false,
       require_statistic: false,
     };
-    ////////////////console.log("ĐÂY LÀ BODY:", searchBody)
+    //console.log("ĐÂY LÀ BODY:", searchBody)
     if (dataUrl) {
       fetch(`${proxy()}${dataUrl}`, {
         method: "POST",
@@ -849,12 +862,10 @@ const RenderTable = (props) => {
     //         setLoadingSearch(true);
     //     }, 310);
     // }
-
     if (JSON.stringify(searchValues) !== JSON.stringify(previousSearchValues)) {
       setPreviousSearchValues(searchValues);
       requireCount = true;
     }
-
     const searchBody = {
       // table_id: dataTable_id,
       start_index: currentPage - 1,
@@ -904,7 +915,6 @@ const RenderTable = (props) => {
             // setApiDataName(fields);
             // setDataStatis(statisticValues);
             // setLoaded(true);
-
             if (count !== undefined) {
               setCurrentCount(count);
               setSumerize(count);
@@ -917,19 +927,18 @@ const RenderTable = (props) => {
             setApiData([]);
             // setApiDataName([])
           }
-
           const endTime = new Date().getTime();
           const elapsedTime = endTime - startTime;
-
           clearTimeout(loadingTimeout);
           clearTimeout(loadingTimeoutSearch); // Clear the timeout
           setLoadingResult(false);
           // setLoadingSearch(false);
           // setLoading(false)
-          // ////////////////console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
+          //console.log(`---------------------------------TimeResponse: ${elapsedTime} ms`);
         });
     }
   };
+
   const headerRefs = useRef([]);
   useLayoutEffect(() => {
     headerRefs.current.forEach((ref) => {
@@ -940,6 +949,7 @@ const RenderTable = (props) => {
       }
     });
   }, []);
+
   return (
     <div>
       <div class="table-responsive table-custom mb-2">
@@ -1001,15 +1011,129 @@ const RenderTable = (props) => {
                             >
                               {indexOfFirst + index + 1}
                             </td>
-                            {fields?.map((header) => (
-                              <td
-                                key={header.fomular_alias}
-                                className="cell"
-                                title={functions.renderData(header, row)}
-                              >
-                                {functions.renderData(header, row)}
-                              </td>
-                            ))}
+                            {fields?.map((header) =>
+                              header.DATATYPE === "FILE" ? (
+                                // <td key={header.fomular_alias} className="cell" title={functions.renderData(header, row)}>
+                                //     {
+                                //         functions.isExcelDocumentFormatTableView(functions.renderData(header, row)) ?
+                                //             <img src={"/images/icon/excel.svg"} className="selected-image-list" />
+                                //             :
+                                //             functions.isPdfDocumentFormatTableView(functions.renderData(header, row)) ?
+                                //                 <img src={"/images/icon/pdf.svg"} className="selected-image-list" />
+                                //                 :
+                                //                 functions.isDocDocumentFormatTableView(functions.renderData(header, row)) ?
+                                //                     <img src={"/images/icon/docs.svg"} className="selected-image-list" />
+                                //                     :
+                                //                     functions.isZipDocumentFormatTableView(functions.renderData(header, row)) ?
+                                //                         <img src={"/images/icon/zip.svg"} className="selected-image-list" />
+                                //                         :
+
+                                //                         functions.isOtherDocumentFormatTableView(functions.renderData(header, row)) ?
+                                //                             <img src={"/images/icon/file-unknown.svg"} className="selected-image-list" />
+                                //                             :
+                                //                             functions.renderData(header, row) &&
+                                //                             functions.renderData(header, row).length > 0 &&
+                                //                             functions.renderData(header, row).map((imageUrl, index) => (
+                                //                                 <img key={index} src={proxy() + imageUrl} className="selected-image-list" />
+                                //                             ))
+
+                                //     }
+                                // </td>
+                                <td
+                                  key={header.fomular_alias}
+                                  className="cell"
+                                  title={functions.renderData(header, row)}
+                                >
+                                  {functions.renderData(header, row) &&
+                                    functions.renderData(header, row).length >
+                                      0 &&
+                                    functions
+                                      .renderData(header, row)
+                                      .map((imageUrl, index) => {
+                                        if (
+                                          functions.isExcelDocumentFormatTableView(
+                                            [imageUrl]
+                                          )
+                                        ) {
+                                          return (
+                                            <img
+                                              key={index}
+                                              src={"/images/icon/excel.svg"}
+                                              className="selected-image-list"
+                                            />
+                                          );
+                                        } else if (
+                                          functions.isPdfDocumentFormatTableView(
+                                            [imageUrl]
+                                          )
+                                        ) {
+                                          return (
+                                            <img
+                                              key={index}
+                                              src={"/images/icon/pdf.svg"}
+                                              className="selected-image-list"
+                                            />
+                                          );
+                                        } else if (
+                                          functions.isDocDocumentFormatTableView(
+                                            [imageUrl]
+                                          )
+                                        ) {
+                                          return (
+                                            <img
+                                              key={index}
+                                              src={"/images/icon/docs.svg"}
+                                              className="selected-image-list"
+                                            />
+                                          );
+                                        } else if (
+                                          functions.isZipDocumentFormatTableView(
+                                            [imageUrl]
+                                          )
+                                        ) {
+                                          return (
+                                            <img
+                                              key={index}
+                                              src={"/images/icon/zip.svg"}
+                                              className="selected-image-list"
+                                            />
+                                          );
+                                        } else if (
+                                          functions.isImageDocumentFormatTableView(
+                                            [imageUrl]
+                                          )
+                                        ) {
+                                          return (
+                                            <img
+                                              key={index}
+                                              src={proxy() + imageUrl}
+                                              className="selected-image-list"
+                                            />
+                                          );
+                                        } else {
+                                          // Nếu không phải là các định dạng đã kiểm tra, bạn có thể hiển thị một biểu tượng mặc định hoặc thực hiện hành động khác tùy thuộc vào yêu cầu của bạn
+                                          return (
+                                            <img
+                                              key={index}
+                                              src={
+                                                "/images/icon/file-unknown.svg"
+                                              }
+                                              className="selected-image-list"
+                                            />
+                                          );
+                                        }
+                                      })}
+                                </td>
+                              ) : (
+                                <td
+                                  key={header.fomular_alias}
+                                  className="cell"
+                                  title={functions.renderData(header, row)}
+                                >
+                                  {functions.renderData(header, row)}
+                                </td>
+                              )
+                            )}
                             {hasInlineButtons && (
                               <td class="align-center">
                                 {/* {renderInlineButtonsForRow(buttons, row)} */}
@@ -1186,6 +1310,7 @@ const RenderTable = (props) => {
 };
 
 const RenderInlineButtonsForRow = (props) => {
+  console.log(420123, props);
   const { lang, proxy, auth, functions } = useSelector((state) => state);
   const { openTab, renderDateTimeByFormat } = functions;
   const {
@@ -1199,6 +1324,7 @@ const RenderInlineButtonsForRow = (props) => {
     exportFile_PK,
     submitButton_Custom,
   } = props;
+  console.log("ROW:::", row);
   const dataTableField = props.props.source.fields;
   const orderedKeys = ["approve", "unapprove", "detail", "update", "delete"]; // Thứ tự mong muốn
   const dispatch = useDispatch();
@@ -1385,18 +1511,10 @@ const RenderInlineButtonsForRow = (props) => {
     }
   };
 
-  const handleCheckIsDisabledButton = (key) => {
-    const condition =
-      props.props.lockbuttons?.["33TT"]?.[props.row["33TT"]]?.[key];
-    return (
-      (condition !== undefined ? condition : !IS_DISABLED_BUTTON) ===
-      IS_DISABLED_BUTTON
-    );
-  };
-
   const handleTable_Param = async (row, pageId, params) => {
     const fomularAlias = params.map((item) => item.fomular_alias);
     const values = fomularAlias.map((alias) => row[alias]);
+    console.log("VALUE:::", values, fomularAlias);
     openTab(`/page/${pageId}/${values}`);
   };
 
@@ -1408,15 +1526,10 @@ const RenderInlineButtonsForRow = (props) => {
 
   const mappedButtons = children.map((child) => {
     const { id, props: buttonProps, name } = child;
-
-    if (handleCheckIsDisabledButton(id)) {
-      return null;
-    }
-
     const { to, icon, style, fields, api, preview_api, primary_key, value } =
       buttonProps;
     const { color, backgroundColor } = style;
-
+    console.log("TO::::", to, row);
     const primaryKeys = primary_key?.[0]?.fomular_alias;
 
     // Tìm trường có id trùng với primary_key
@@ -1469,7 +1582,7 @@ const RenderInlineButtonsForRow = (props) => {
             >
               <FontAwesomeIcon
                 key={id}
-                icon={icons[icon].icon}
+                icon={icons[icon]?.icon}
                 onClick={() =>
                   submitButton_Custom(
                     api.params,
@@ -1503,7 +1616,6 @@ const RenderInlineButtonsForRow = (props) => {
 
   return (
     <div class="icon-table">
-      {mappedButtons}
       {orderedKeys
         .filter(
           (key) =>
@@ -1512,7 +1624,7 @@ const RenderInlineButtonsForRow = (props) => {
         .map((key) => {
           switch (key) {
             case "approve":
-              return !handleCheckIsDisabledButton("approve") ? (
+              return (
                 <div class="icon-table-line">
                   {shouldHideIconApprove(row) ? (
                     <i
@@ -1527,9 +1639,9 @@ const RenderInlineButtonsForRow = (props) => {
                     ></i>
                   )}
                 </div>
-              ) : null;
+              );
             case "unapprove":
-              return !handleCheckIsDisabledButton("unapprove") ? (
+              return (
                 <div className="icon-table-line">
                   {shouldHideIconUnApprove(row) ? (
                     <i
@@ -1547,10 +1659,10 @@ const RenderInlineButtonsForRow = (props) => {
                     ></i>
                   )}
                 </div>
-              ) : null;
+              );
 
             case "detail":
-              return !handleCheckIsDisabledButton("detail") ? (
+              return (
                 <div class="icon-table-line">
                   <i
                     className="fa fa-eye size-24 mr-1  pointer icon-view"
@@ -1561,71 +1673,68 @@ const RenderInlineButtonsForRow = (props) => {
                     title={lang["viewdetail"]}
                   ></i>
                 </div>
-              ) : null;
+              );
             case "update":
-              return !handleCheckIsDisabledButton("update") ? (
-                dataCheck && dataCheck.modify ? (
-                  <div class="icon-table-line">
-                    <i
-                      className="fa fa-edit size-24 pointer  icon-edit"
-                      key={key}
-                      onClick={() =>
-                        redirectToInputPUT(row, props.buttons.update.api.url)
-                      }
-                      title={lang["edit"]}
-                    ></i>
-                  </div>
-                ) : null
+              return dataCheck && dataCheck.modify ? (
+                <div class="icon-table-line">
+                  <i
+                    className="fa fa-edit size-24 pointer  icon-edit"
+                    key={key}
+                    onClick={() =>
+                      redirectToInputPUT(row, props.buttons.update.api.url)
+                    }
+                    title={lang["edit"]}
+                  ></i>
+                </div>
               ) : null;
             case "delete":
-              return !handleCheckIsDisabledButton("delete") ? (
-                dataCheck && dataCheck.purge ? (
-                  <div class="icon-table-line">
-                    <i
-                      className="fa fa-trash-o size-24 pointer icon-delete"
-                      key={key}
-                      onClick={() =>
-                        handleDelete(row, props.buttons.delete.api.url)
-                      }
-                      title={lang["delete"]}
-                    ></i>
-                  </div>
-                ) : null
+              return dataCheck && dataCheck.purge ? (
+                <div class="icon-table-line">
+                  <i
+                    className="fa fa-trash-o size-24 pointer icon-delete"
+                    key={key}
+                    onClick={() =>
+                      handleDelete(row, props.buttons.delete.api.url)
+                    }
+                    title={lang["delete"]}
+                  ></i>
+                </div>
               ) : null;
             default:
               return <button key={key}>{key}</button>;
           }
         })}
+
+      {mappedButtons}
     </div>
   );
 };
 
 const RenderChart = (props) => {
   console.log(730, props.props);
+
   const url = props.props.api;
   const paramsSearch = props.props.params;
-  //////////console.log(paramsSearch)
+
   const { lang, proxy, auth, functions } = useSelector((state) => state);
   const _token = localStorage.getItem("_token");
+
   const [apiDataStatis, setApiDataStatis] = useState({});
 
   const [field, setField] = useState({});
   const [height, setHeight] = useState(350);
-  console.log(field);
+
   useEffect(() => {
     callApiStatistic();
   }, [paramsSearch]); // Chỉ gọi API khi paramsSearch thay đổi
 
   ///search data
   const [parentFormData, setParentFormData] = useState({});
-  ////////console.log("data", parentFormData)
   const handleFormDataChange = (newFormData) => {
     setParentFormData(newFormData);
   };
 
   const handleSubmitSearch = (newFormData) => {
-    ////////console.log(1131, newFormData)
-    //////////console.log("Đã nhấn nút sêarc")
     callApiStatistic();
   };
 
@@ -1636,7 +1745,6 @@ const RenderChart = (props) => {
   };
 
   const [loadingDataChart, setLoadingDataChart] = useState(false);
-
   const callApiStatistic = (formData = parentFormData) => {
     setLoadingDataChart(true);
     const statisBody = {
@@ -1662,8 +1770,6 @@ const RenderChart = (props) => {
       });
   };
 
-  ////////////////console.log(apiDataStatis)
-
   const state = {
     series: [
       {
@@ -1687,7 +1793,10 @@ const RenderChart = (props) => {
       plotOptions: {
         bar: {
           horizontal:
-            typeof Object.values(apiDataStatis)[0] === "number" ? true : false, // Thiết lập này để thay đổi sang biểu đồ cột ngang
+            typeof Object.values(apiDataStatis)[0] === "number" ||
+            props.props.isHorizontal
+              ? true
+              : false, // Thiết lập này để thay đổi sang biểu đồ cột ngang
           columnWidth: "24px",
           barHeight: "24px",
           distributed: true,
@@ -1814,11 +1923,9 @@ const RenderChart = (props) => {
     () => transformDataForChart(apiDataStatis),
     [apiDataStatis]
   );
-  ////////////////console.log(chartData)
 
   return (
-    <div className="col-md-12">
-      <h5 style={props.props.style}>{props.props.content}</h5>
+    <div className="col-md-12 mt-5">
       {paramsSearch && paramsSearch.length > 0 && (
         <DynamicForm
           data={paramsSearch}
@@ -1827,6 +1934,7 @@ const RenderChart = (props) => {
           onFormReset={handleResetSearchValue}
         />
       )}
+
       {field && field.length > 0 && (
         <div style={{ fontStyle: "bold", ...props.props.style }}>
           <h5>{field?.[0].field_name}</h5>
@@ -1874,7 +1982,7 @@ const RenderStatisBlock = (props) => {
   const _token = localStorage.getItem("_token");
   const [apiDataStatis, setApiDataStatis] = useState([]);
   const [height, setHeight] = useState(350);
-  ////console.log(apiDataStatis)
+
   // useEffect(() => {
   //     callApiStatistic()
   // }, []);
@@ -1955,7 +2063,8 @@ const RenderStatisBlock = (props) => {
 };
 
 const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
-  console.log(1574, data);
+  // console.log(1574, data)
+  const { lang, proxy, auth, functions, pages } = useSelector((state) => state);
   const [formData, setFormData] = useState({});
   const handleInputChange = (fieldAlias, value) => {
     let processedValue;
@@ -2099,13 +2208,238 @@ const DynamicForm = ({ data, onFormDataChange, onFormSubmit, onFormReset }) => {
           className="btn btn-secondary mr-3"
         >
           <i class="fa fa-history mr-1 icon-search" />
-          Làm mới
+          {lang["Refresh"]}
         </button>
         <button onClick={handleSubmit} className="btn btn-primary mr-3">
           <i class="fa fa-search mr-1 icon-search" />
-          Tìm Kiếm
+          {lang["search"]}
         </button>
       </div>
+    </div>
+  );
+};
+
+const ConvertToDate = (key, value, keys = []) => {
+  if (keys.includes(key)) {
+    return new Date(value).toLocaleString();
+  }
+  return value;
+};
+
+const RenderDetail = (props) => {
+  console.log(730, props);
+  const { url } = useParams();
+  const urls = window.location;
+  const rawParams = urls.pathname.split(`/${url}/`)[1];
+
+  const { lang, proxy, auth, functions } = useSelector((state) => state);
+  const _token = localStorage.getItem("_token");
+  const [apiDataDetail, setApiDataDetail] = useState({});
+  const [isFetching, setIsFetching] = useState(false);
+
+  console.log("apiDataDetail", apiDataDetail);
+  console.log("raw params in render file", rawParams);
+
+  useEffect(() => {
+    callApiDetail(props.props.api.url);
+  }, []);
+
+  const callApiDetail = (url) => {
+    setIsFetching(true);
+    const start_time = new Date().getTime();
+    fetch(`${proxy()}${url}/${rawParams}`, {
+      headers: {
+        Authorization: _token,
+      },
+    })
+      .then((res) => res.json())
+      .then((resp) => {
+        const { success, data, activated, status, content } = resp;
+        console.log("success in render page", success, data, url);
+        if (success) {
+          if (data !== undefined) {
+            setApiDataDetail(data);
+          }
+        }
+      })
+      .finally(() => {
+        DelayLoading(start_time, () => setIsFetching(false));
+      });
+  };
+
+  const renderLabel = (child) => {
+    const propsLabel = child.props;
+    const fieldShow = child.props.field;
+    switch (child.name) {
+      case "detail_text":
+        return (
+          <label style={{ ...propsLabel.style }}>
+            {propsLabel.prefix}
+            {ConvertToDate(
+              fieldShow.fomular_alias,
+              apiDataDetail[fieldShow.fomular_alias],
+              ["1NX", "5NN"]
+            )}
+            {propsLabel.postfix}
+          </label>
+        );
+      case "detail_image":
+        return (
+          <div class="col-md-12">
+            <div class="image-detail">
+              <img
+                src={proxy() + apiDataDetail[fieldShow.fomular_alias]}
+                className="view-image-detail"
+              />
+            </div>
+          </div>
+        );
+      case "detail_images":
+        return (
+          // <div class="image-detail">
+          //     <div id="demo" class="carousel slide" data-ride="carousel">
+          //         <ul class="carousel-indicators">
+          //             {apiDataDetail[fieldShow.fomular_alias]?.map((item, index) => (
+          //                 <li key={index} data-target="#demo" data-slide-to={index} className={index === 0 ? "active" : ""}></li>
+          //             ))}
+          //         </ul>
+          //         <div class="carousel-inner">
+          //             {apiDataDetail[fieldShow.fomular_alias]?.map((item, index) => (
+          //                 <div key={index} className={`carousel-item ${index === 0 ? "active" : ""}`}>
+          //                     <img src={proxy() + item} width="1100" height="450" />
+          //                 </div>
+          //             ))}
+          //         </div>
+          //         <a class="carousel-control-prev" href="#demo" data-slide="prev">
+          //             <span class="carousel-control-prev-icon"></span>
+          //         </a>
+          //         <a class="carousel-control-next" href="#demo" data-slide="next">
+          //             <span class="carousel-control-next-icon"></span>
+          //         </a>
+          //     </div>
+          // </div>
+
+          <div>
+            <div id="demo" class="carousel slide" data-ride="carousel">
+              <ul class="carousel-indicators">
+                {apiDataDetail[fieldShow.fomular_alias]?.map((item, index) => (
+                  <li
+                    key={index}
+                    data-target="#demo"
+                    data-slide-to={index}
+                    className={index === 0 ? "active" : ""}
+                  ></li>
+                ))}
+              </ul>
+              <div class="carousel-inner">
+                {apiDataDetail[fieldShow.fomular_alias]?.map((item, index) => (
+                  <div
+                    key={index}
+                    className={`carousel-item ${index === 0 ? "active" : ""}`}
+                    style={{ height: "500px" }}
+                  >
+                    <img src={proxy() + item} class="d-block w-100 mh-100" />
+                  </div>
+                ))}
+              </div>
+              <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+              </a>
+              <a class="carousel-control-next" href="#demo" data-slide="next">
+                <span class="carousel-control-next-icon"></span>
+              </a>
+            </div>
+            {/* <div class="carousel">
+              <ul class="slides">
+                <input type="radio" name="radio-buttons" id="img-1" checked />
+                <li class="slide-container">
+                  <div class="slide-image">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/9e/Timisoara_-_Regional_Business_Centre.jpg" />
+                  </div>
+                  <div class="carousel-controls">
+                    <label for="img-3" class="prev-slide">
+                      <span>&lsaquo;</span>
+                    </label>
+                    <label for="img-2" class="next-slide">
+                      <span>&rsaquo;</span>
+                    </label>
+                  </div>
+                </li>
+                <input type="radio" name="radio-buttons" id="img-2" />
+                <li class="slide-container">
+                  <div class="slide-image">
+                    <img src="https://content.r9cdn.net/rimg/dimg/db/02/06b291e8-city-14912-171317ad83a.jpg?width=1750&height=1000&xhint=3040&yhint=2553&crop=true" />
+                  </div>
+                  <div class="carousel-controls">
+                    <label for="img-1" class="prev-slide">
+                      <span>&lsaquo;</span>
+                    </label>
+                    <label for="img-3" class="next-slide">
+                      <span>&rsaquo;</span>
+                    </label>
+                  </div>
+                </li>
+                <input type="radio" name="radio-buttons" id="img-3" />
+                <li class="slide-container">
+                  <div class="slide-image">
+                    <img src="https://speakzeasy.files.wordpress.com/2015/05/twa_blogpic_timisoara-4415.jpg" />
+                  </div>
+                  <div class="carousel-controls">
+                    <label for="img-2" class="prev-slide">
+                      <span>&lsaquo;</span>
+                    </label>
+                    <label for="img-1" class="next-slide">
+                      <span>&rsaquo;</span>
+                    </label>
+                  </div>
+                </li>
+                <div class="carousel-dots">
+                  <label
+                    for="img-1"
+                    class="carousel-dot"
+                    id="img-dot-1"
+                  ></label>
+                  <label
+                    for="img-2"
+                    class="carousel-dot"
+                    id="img-dot-2"
+                  ></label>
+                  <label
+                    for="img-3"
+                    class="carousel-dot"
+                    id="img-dot-3"
+                  ></label>
+                </div>
+              </ul>
+            </div> */}
+          </div>
+        );
+
+      default:
+        return 0;
+    }
+  };
+
+  return (
+    <div class="col-md-12">
+      {isFetching ? (
+        <div
+          style={{
+            width: "50px",
+            margin: "auto",
+          }}
+        >
+          <LoadingIcon />
+        </div>
+      ) : Object.values(apiDataDetail).length > 0 ? (
+        props.cpn.children.map((child, index) => (
+          <div className="col-md-12" key={index}>
+            <div className="form-group">{renderLabel(child)}</div>
+          </div>
+        ))
+      ) : (
+        <p class="text-center font-weight-bold">{lang["not found"]}</p>
+      )}
     </div>
   );
 };
