@@ -19,6 +19,8 @@ import { LoadingIcon } from "../../Icons/loading.icon";
 import { DelayLoading } from "../../Hooks/DelayLoading";
 import { ColumnChart } from "../../Components/Charts/Column/Column.chart";
 
+const IS_DISABLED_BUTTON = false;
+
 const RenderComponent = ({
   page,
   component,
@@ -1324,7 +1326,7 @@ const RenderInlineButtonsForRow = (props) => {
     exportFile_PK,
     submitButton_Custom,
   } = props;
-  console.log("ROW:::", row);
+
   const dataTableField = props.props.source.fields;
   const orderedKeys = ["approve", "unapprove", "detail", "update", "delete"]; // Thứ tự mong muốn
   const dispatch = useDispatch();
@@ -1333,6 +1335,15 @@ const RenderInlineButtonsForRow = (props) => {
   const _user = JSON.parse(stringifiedUser) || {};
   const _token = localStorage.getItem("_token");
   const [dataPrivileges, setDataPrivileges] = useState([]);
+
+  const handleCheckIsDisabledButton = (key) => {
+    const condition =
+      props.props.lockbuttons?.["33TT"]?.[props.row["33TT"]]?.[key];
+    return (
+      (condition !== undefined ? condition : !IS_DISABLED_BUTTON) ===
+      IS_DISABLED_BUTTON
+    );
+  };
 
   useEffect(() => {
     fetch(`${proxy()}/privileges/accounts`, {
@@ -1529,7 +1540,11 @@ const RenderInlineButtonsForRow = (props) => {
     const { to, icon, style, fields, api, preview_api, primary_key, value } =
       buttonProps;
     const { color, backgroundColor } = style;
-    console.log("TO::::", to, row);
+
+    if (handleCheckIsDisabledButton(id)) {
+      return null;
+    }
+
     const primaryKeys = primary_key?.[0]?.fomular_alias;
 
     // Tìm trường có id trùng với primary_key
@@ -1624,7 +1639,7 @@ const RenderInlineButtonsForRow = (props) => {
         .map((key) => {
           switch (key) {
             case "approve":
-              return (
+              return !handleCheckIsDisabledButton("approve") ? (
                 <div class="icon-table-line">
                   {shouldHideIconApprove(row) ? (
                     <i
@@ -1639,9 +1654,9 @@ const RenderInlineButtonsForRow = (props) => {
                     ></i>
                   )}
                 </div>
-              );
+              ) : null;
             case "unapprove":
-              return (
+              return !handleCheckIsDisabledButton("unapprove") ? (
                 <div className="icon-table-line">
                   {shouldHideIconUnApprove(row) ? (
                     <i
@@ -1659,10 +1674,10 @@ const RenderInlineButtonsForRow = (props) => {
                     ></i>
                   )}
                 </div>
-              );
+              ) : null;
 
             case "detail":
-              return (
+              return !handleCheckIsDisabledButton("detail") ? (
                 <div class="icon-table-line">
                   <i
                     className="fa fa-eye size-24 mr-1  pointer icon-view"
@@ -1673,32 +1688,36 @@ const RenderInlineButtonsForRow = (props) => {
                     title={lang["viewdetail"]}
                   ></i>
                 </div>
-              );
+              ) : null;
             case "update":
-              return dataCheck && dataCheck.modify ? (
-                <div class="icon-table-line">
-                  <i
-                    className="fa fa-edit size-24 pointer  icon-edit"
-                    key={key}
-                    onClick={() =>
-                      redirectToInputPUT(row, props.buttons.update.api.url)
-                    }
-                    title={lang["edit"]}
-                  ></i>
-                </div>
+              return !handleCheckIsDisabledButton("update") ? (
+                dataCheck && dataCheck.modify ? (
+                  <div class="icon-table-line">
+                    <i
+                      className="fa fa-edit size-24 pointer  icon-edit"
+                      key={key}
+                      onClick={() =>
+                        redirectToInputPUT(row, props.buttons.update.api.url)
+                      }
+                      title={lang["edit"]}
+                    ></i>
+                  </div>
+                ) : null
               ) : null;
             case "delete":
-              return dataCheck && dataCheck.purge ? (
-                <div class="icon-table-line">
-                  <i
-                    className="fa fa-trash-o size-24 pointer icon-delete"
-                    key={key}
-                    onClick={() =>
-                      handleDelete(row, props.buttons.delete.api.url)
-                    }
-                    title={lang["delete"]}
-                  ></i>
-                </div>
+              return !handleCheckIsDisabledButton("delete") ? (
+                dataCheck && dataCheck.purge ? (
+                  <div class="icon-table-line">
+                    <i
+                      className="fa fa-trash-o size-24 pointer icon-delete"
+                      key={key}
+                      onClick={() =>
+                        handleDelete(row, props.buttons.delete.api.url)
+                      }
+                      title={lang["delete"]}
+                    ></i>
+                  </div>
+                ) : null
               ) : null;
             default:
               return <button key={key}>{key}</button>;
