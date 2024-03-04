@@ -91,6 +91,35 @@ class ConsumeApi extends Controller {
         this.res.status(498).send({ success: false, content: "498 - Invalid token" })
     }
 
+
+    isANormalPutApiOrACalculateOne = () => {
+        const Api = this.API.get()
+        const { api_method, body, body_update_method } = Api
+        if( api_method == "put"  ){
+
+            if( body_update_method ){
+
+                const calculates = body_update_method.filter( field => {
+                    const { field_id, method } = field;
+    
+                    const index = body.indexOf(field_id)
+                    if( index != -1 && method == "calculate" ){
+                        return true
+                    }
+                    return false
+                })
+                if( calculates.length > 0 ){
+                    return false
+                }else{
+                    return true
+                }
+            }else{
+                return true
+            }
+        }
+        return false;
+    }
+
     consume = async (req, res, api_id) => {
 
         /**
@@ -136,7 +165,7 @@ class ConsumeApi extends Controller {
             const project = projects[0]
             this.project = project;
 
-            this.API = Api;
+            this.API = Api;            
 
             this.fields = fields;
             this.tables = tables.map(table => {
@@ -144,6 +173,8 @@ class ConsumeApi extends Controller {
                 table.fields = fields.filter(field => field.table_id == id)
                 return table
             });
+
+
 
             const { project_type } = project
 /*(6)*/     if (project_type == "database") {
@@ -158,6 +189,9 @@ class ConsumeApi extends Controller {
                         await this.POST()
                         break;
                     case "put":
+
+
+
                         await this.PUT()
                         break;
                     case "delete":
@@ -2317,6 +2351,7 @@ class ConsumeApi extends Controller {
         this.res.status(200).send({
             msg: "POST",
             success,
+            data: tearedBody[0]?.data,
             conflict: {
                 type: errorFields,
                 primary: existedPrimaryKeys,
@@ -2757,7 +2792,7 @@ class ConsumeApi extends Controller {
                 }
             }
         }
-        this.res.status(200).send({ msg: "POST", typeError, primaryConflict, foreignConflict })
+        this.res.status(200).send({ msg: "POST", typeError, primaryConflict, foreignConflict, data: tearedBody[0]?.data })
     }
 
 
