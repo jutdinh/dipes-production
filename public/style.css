@@ -3495,3 +3495,18 @@ table.projects tr td:first-child {
 .privilege-pages .privilege-page {    
     margin-top: 2em;
 }
+
+.permission_ui_hover_text:hover {
+    color: rgb(0, 0, 0);
+    background-color: #EAE7D6;
+    transition: all .1s linear;
+    border-radius: 5px;
+}
+.privilege_column{
+    width: 50%;
+}
+@media (max-width: 576px) { 
+    .privilege_column{
+        width: 100%;
+    }
+}
