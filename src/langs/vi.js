@@ -252,6 +252,7 @@ export default {
   loading: "Đang tải...",
   searching: "Đang tìm kiếm...",
   import: "Nhập",
+  bulkUpdate: "Cập nhật",
   "error.import.primarykey": "Lỗi khóa chính",
   "error.import.duplicate": "Lỗi trùng lặp",
   "error.import.foreign": "Lỗi khóa ngoại",

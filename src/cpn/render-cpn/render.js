@@ -391,18 +391,20 @@ const ExtraButtons = ({
             <FontAwesomeIcon
               icon={faDownload}
               className="icon-export pointer margin-bottom-1"
-              onClick={() =>
+              onClick={() => {
                 exportFile(
                   props.source.fields,
                   props.source.get.url,
                   buttons.export.api.url
-                )
-              }
+                );
+              }}
               data-toggle="modal"
               data-target="#exportExcel"
               title={"Export_excel_csv"}
             />
           ) : null;
+          break;
+        default:
           break;
         // Thêm các trường hợp khác
       }
@@ -1540,6 +1542,7 @@ const RenderInlineButtonsForRow = (props) => {
     const { id, props: buttonProps, name } = child;
     const { to, icon, style, fields, api, preview_api, primary_key, value } =
       buttonProps;
+    console.log("buttonProps::", buttonProps);
     const { color, backgroundColor } = style;
 
     if (handleCheckIsDisabledButton(id)) {

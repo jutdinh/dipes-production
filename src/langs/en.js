@@ -258,6 +258,7 @@ export default {
   loading: "Loading...",
   searching: "Searching...",
   import: "Import",
+  bulkUpdate: "Update",
   "error.import.primarykey": "Primary key error",
   "error.import.duplicate": "Duplicate errors",
   "error.import.foreign": "Foreign key error",
