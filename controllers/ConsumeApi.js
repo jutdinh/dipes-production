@@ -2805,6 +2805,9 @@ class ConsumeApi extends Controller {
         const tables = this.tearTablesAndFieldsToObjects()
         const params = this.getFields(this.API.params.valueOrNot())
         let paramQueries = [];
+        const isCalculate = !this.isANormalPutApiOrACalculateOne()
+
+        
 
         if (params.length > 0) {
             const formatedUrl = this.url.replaceAll('//', '/')
@@ -3057,6 +3060,26 @@ class ConsumeApi extends Controller {
 
                 if (areAllForeignKeyValid) {
 
+
+                    const { body_update_method, body } = this.API.get()
+                    const updateMethods = {}
+
+
+
+                    const bodyFields = this.fields.filter( f => body.indexOf( f.id ) != -1 )
+                    if( body_update_method ){
+
+                        for( let i = 0 ; i < bodyFields.length; i++ ){
+                            const field = bodyFields[i]
+                            const corespondingField = body_update_method.find( f => f.field_id == field.id )
+                            if( corespondingField && corespondingField.method == "calculate" ){
+                                updateMethods[field.fomular_alias] = corespondingField.fomular
+                            }
+                        }
+                    }
+
+                    
+
                     for (let i = 0; i < sortedBody.length; i++) {
                         const { table_id, data } = sortedBody[sortedBody.length - i - 1]
 
@@ -3073,6 +3096,31 @@ class ConsumeApi extends Controller {
                                 updateQuery[fomular_alias] = data[fomular_alias]
                             }
                         })
+
+
+                        // const { fomular_alias } = field;
+                        // if (data[fomular_alias] != undefined) {
+
+                        //     if( isCalculate ){    
+                                
+                        //         const fomular = updateMethods[fomular_alias]
+
+                        //         if( fomular ){
+                        //             switch(fomular){
+                        //                 case "SUM":
+                        //                     updateQuery[fomular_alias] = data[fomular_alias];
+                        //                     break;
+                        //                 default:
+                        //                     updateQuery[fomular_alias] = data[fomular_alias];
+                        //                     break;
+                        //             }
+                        //         }else{
+                        //             updateQuery[fomular_alias] = data[fomular_alias]    
+                        //         }                                    
+                        //     }else{
+                        //         updateQuery[fomular_alias] = data[fomular_alias]
+                        //     }
+                        // }
 
 
                         const masters = this.detectAllMaster(table)
@@ -3120,7 +3168,33 @@ class ConsumeApi extends Controller {
                                 }
                             }
 
+                            if( isCalculate ){
+
+
+
+                                for( let k = 0 ; k < fields.length; k++ ){
+                                    const field = fields[k]
+                                    const { fomular_alias } = field;
+                                    const fomular = updateMethods[fomular_alias]
+                                    
+                                    if( fomular ){
+                                        switch(fomular){
+                                            case "SUM":
+                                                data[fomular_alias] = data[fomular_alias] + originData[fomular_alias];
+                                                break;
+                                            default:
+                                                data[fomular_alias] = data[fomular_alias];
+                                                break;
+                                        }
+                                    }                                                                       
+                                }
+
+
+                            }
+
                         }
+
+                        
 
 
                         const slaves = this.detectAllSlave(table)
@@ -3133,6 +3207,9 @@ class ConsumeApi extends Controller {
 
                             data[ref_field.fomular_alias] = data[field.fomular_alias]
                         })
+
+                        console.log(updateQuery)
+                        console.log(data)
 
                         await Database.update(table_alias, updateQuery, { ...data })
 
