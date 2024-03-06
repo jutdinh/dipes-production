@@ -3180,7 +3180,10 @@ class ConsumeApi extends Controller {
                                     if( fomular ){
                                         switch(fomular){
                                             case "SUM":
-                                                data[fomular_alias] = data[fomular_alias] + originData[fomular_alias];
+                                                data[fomular_alias] = originData[fomular_alias] + data[fomular_alias];
+                                                break;
+                                            case "MINUS":
+                                                data[fomular_alias] = originData[fomular_alias] - data[fomular_alias];
                                                 break;
                                             default:
                                                 data[fomular_alias] = data[fomular_alias];
