@@ -1430,8 +1430,7 @@ class ConsumeApi extends Controller {
       this.API.fields.valueOrNot().map((field) => field.id)
     );
     let paramQueries = [];
-    console.log(tableids);
-    return this.res.status(200);
+
     const datafrom = intValidate(this.req.header("start-at"))
       ? parseInt(this.req.header("start-at"))
       : 0;
