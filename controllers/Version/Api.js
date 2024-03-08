@@ -423,17 +423,30 @@ class Api extends Controller {
                                 }
     
                                 if (positions.length < dataset.length) {
-                                    const newPartition = this.translateColIndexToName(periods.length)
-                                    const amount = dataset.length - positions.length;
-                                    for (let i = 0; i < amount; i++) {
-                                        positions.push(newPartition)
-                                    }                
-                                    const newPeriods = {
-                                        position: newPartition,
-                                        total: amount
+
+                                    const remainLoop = Math.ceil(dataset.length / TOTAL_DATA_PER_PARTITION) 
+                                    let pivot = dataset.length + TOTAL_DATA_PER_PARTITION
+                                    for( let i = 0 ; i < remainLoop; i++ ){
+                                        
+                                        const newPartition = this.translateColIndexToName(periods.length + i + 1)
+                                        const remainingItems = pivot - TOTAL_DATA_PER_PARTITION;
+                                        const counter  = remainingItems > TOTAL_DATA_PER_PARTITION ? TOTAL_DATA_PER_PARTITION : remainingItems
+                                        for (let k = 0; k < counter; k++) {
+                                            positions.push(newPartition)
+                                        }                
+
+                                        // const amount = dataset.length - positions.length;                                        
+                                        
+                                        const newPeriods = {
+                                            position: newPartition,
+                                            total: counter
+                                        }                                        
+                                        periods.push(newPeriods)
+                                        pivot = pivot - TOTAL_DATA_PER_PARTITION                                       
                                     }
-                                    periods.push(newPeriods)
                                 }
+
+                                console.log(positions.length)
     
                                 dataset.map((record, index) => {
                                     record.position = positions[index]

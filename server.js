@@ -168,7 +168,11 @@ app.use(async (req, res, next) => {
               if( requestType == "csync" ){
                 await Consumer.consumeCSync(req, res, api_id)
               }else{
-                await Consumer.consume(req, res, api_id)
+                if( requestType == "barcode_activation" ){
+                  await Consumer.consumeBarcodeActivation(req, res, api_id)
+                }else{
+                  await Consumer.consume(req, res, api_id)
+                }
               }              
             }
           }

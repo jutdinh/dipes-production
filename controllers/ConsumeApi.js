@@ -6386,6 +6386,72 @@ class ConsumeApi extends Controller {
 
         this.res.send({ success: true })
     }
+
+    consumeBarcodeActivation = async ( req, res ) => {
+        this.req = req;
+        this.res = res;
+        
+        if( req.method.toLowerCase() == "put" ){
+
+            const { table, criteria, master, from, to, value } = req.body;
+            
+
+            const tables = await this.#__tables.findAll({ id: { $in: [ table, master ] } })
+
+            if( tables.length == 2 ){
+                const updateTable = tables.find( tb => tb.id == table )
+                const primalTable = tables.find( tb => tb.id == master )
+
+                const criteriaField = await this.#__fields.find({ id: criteria })
+
+                if( criteriaField && updateTable && primalTable ){
+                    const { foreign_keys } = updateTable
+                    
+                    if( foreign_keys ){
+
+                        const key = foreign_keys.find( key => key.table_id == master )
+                        
+                        if( key ){
+                            
+                            const { ref_field_id } = key;
+                            const refOn = await this.#__fields.find({ id: ref_field_id })                           
+
+                            const primalQuery = { [refOn.fomular_alias]: value }
+                            
+                            const primalRecord = await Database.selectAll( primalTable.table_alias, primalQuery )
+
+                            if( primalRecord ){
+
+                                const updateQuery = {
+                                    [criteriaField.fomular_alias]: { $gte: from, $lte: to }                            
+                                }
+
+                                // const foreignField = 
+
+                                const data = await Database.selectAll( updateTable.table_alias, { ...updateQuery } )
+                                console.log(data)
+                                console.log(  ) 
+
+                            }else{
+                                res.send({ success: false, content: "Foreign data not found" })            
+                            }
+                        }else{
+                            res.send({ success: false, content: "Foreign keys not found" })            
+                        }                      
+                    }else{
+                        res.send({ success: false, content: "Foreign keys not found" })            
+                    }
+                }else{
+                    res.send({ success: false, content: "Invalid tableset" })    
+                }
+            }else{
+                res.send({ success: false, content: "Invalid tableset" })
+            }
+            this.NotFound()
+        }else{
+            this.NotFound()
+        }
+    }
 }
 
 module.exports = ConsumeApi
