@@ -6430,7 +6430,7 @@ class ConsumeApi extends Controller {
 
                                 const data = await Database.selectAll( updateTable.table_alias, { ...updateQuery } )
                                 console.log(data)
-                                console.log(  ) 
+                                console.log(  )
 
                             }else{
                                 res.send({ success: false, content: "Foreign data not found" })            
