@@ -135,7 +135,11 @@ class Mongo {
     return data;
   };
 
-  selectAll = async (table, criteria = undefined) => {
+  selectAll = async (
+    table,
+    criteria = undefined,
+    { skip, limit } = { skip: null, limit: null }
+  ) => {
     await this.init();
     /**
      * @desc Select là phương thức gọi dữ liệu từ một bảng thuộc cơ sở dữ liệu
@@ -168,6 +172,26 @@ class Mongo {
           });
       }
     });
+
+    // const query = criteria || {};
+
+    // const data = await new Promise((resolve, reject) => {
+    //   const q = this.dbo
+    //     .collection(table)
+    //     .find(query, { projection: { _id: 0 } });
+
+    //   console.log("SKIP", skip, limit);
+    //   if (limit && limit >= 0) {
+    //     q.limit(limit);
+    //   }
+    //   if (skip && skip >= 0) {
+    //     q.skip(skip);
+    //   }
+    //   q.toArray((err, result) => {
+    //     resolve(result);
+    //   });
+    // });
+
     return data;
   };
 

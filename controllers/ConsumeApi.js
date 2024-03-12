@@ -3204,7 +3204,7 @@ class ConsumeApi extends Controller {
       const data = this.req.body?.data;
       const mapping_foreign_key = {};
       const mapping_table_alias_primary_keys = {};
-
+      // MEMORY RISK, DATA CAN BE TOO LARGE
       await MeasureExecutionTime(() => {
         for (let i = 0; i < tables.length; i++) {
           const { foreign_keys, fields, table_alias, primary_key } = tables[i];
@@ -6373,14 +6373,19 @@ class ConsumeApi extends Controller {
     }
 
     const start = new Date();
-    const { criteria, export_fields, condition_fields, unique_fields } =
-      this.req.body;
+    const {
+      criteria,
+      export_fields,
+      condition_fields,
+      unique_fields,
+      data_for_filtering,
+    } = this.req.body;
     const tables = this.tearTablesAndFieldsToObjects();
     const table = tables[0];
     let fields = this.fields.filter((field) => field.table_id == table.id);
 
     const tableFields = fields;
-    console.log("export_fields", export_fields, condition_fields);
+
     if (export_fields != undefined && export_fields.length > 0) {
       const rawFields = export_fields
         .map((alias) =>
@@ -6419,6 +6424,7 @@ class ConsumeApi extends Controller {
     keys.sort((key_1, key_2) => (key_1.length > key_2.length ? 1 : -1));
 
     const splittedData = [];
+
     if (fields.length != 0) {
       const cache = await Cache.getData(`${table.table_alias}-periods`);
       const periods = cache.value;
@@ -6426,9 +6432,23 @@ class ConsumeApi extends Controller {
         for (let i = 0; i < periods.length; i++) {
           const period = periods[i];
           const { position } = period;
-          const data = await Database.selectAll(table.table_alias, {
-            position,
-          });
+          const data = await Database.selectAll(
+            table.table_alias,
+            {
+              // position,
+            },
+            {
+              skip: Number(data_for_filtering?.from),
+              limit: Number(data_for_filtering?.to - data_for_filtering?.from),
+            }
+          );
+          // console.log(
+          //   "SELECT HERE:",
+          //   data.length,
+          //   data_for_filtering,
+          //   table.table_alias
+          // );
+          // return;
           newCsvData.push(
             ...data.map((record) => {
               const tmp = {};
