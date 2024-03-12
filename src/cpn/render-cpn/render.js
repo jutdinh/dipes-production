@@ -1583,15 +1583,6 @@ const RenderInlineButtonsForRow = (props) => {
                 key={id}
                 icon={icons[icon]?.icon}
                 onClick={() => {
-                  submitButton_Custom(
-                    api.params,
-                    api.url,
-                    primaryKeys,
-                    value,
-                    row,
-                    dataTableField
-                  );
-
                   const {
                     props: {
                       generator: {
@@ -1605,7 +1596,7 @@ const RenderInlineButtonsForRow = (props) => {
                   } = child;
 
                   const payload = {
-                    amount,
+                    amount: +props.row[amount.fomular_alias],
                     pattern,
                     indexField: indexField.id,
                     onField: onField.id,
@@ -1620,9 +1611,25 @@ const RenderInlineButtonsForRow = (props) => {
                         )?.fomular_alias
                       ],
                   };
-                  console.log("CHILD", payload);
+                  Swal.fire({
+                    title: lang["loading"],
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                      Swal.showLoading();
+                    },
+                  });
                   GenerateRandomCode.create(payload, proxy(), _token).then(
-                    (res) => console.log("GENERATE CODE", res)
+                    (res) => {
+                      console.log("GENERATE CODE", res);
+                      Swal.fire({
+                        title: lang["success"],
+                        text: lang["success.update"],
+                        icon: "success",
+                        showConfirmButton: false,
+                        timer: 1500,
+                      });
+                    }
                   );
                 }}
               />

@@ -1,29 +1,20 @@
-import { useParams } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faFileExport,
-  faFileImport,
-  faDownload,
-  faSquarePlus,
-  faCirclePlus,
-} from "@fortawesome/free-solid-svg-icons";
-import { useState, useEffect, useRef } from "react";
+import $ from "jquery";
+import Papa from "papaparse";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useLocation } from "react-router-dom";
-import Step from "./step/active";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import XLSX from "xlsx-js-style";
-import Papa from "papaparse";
-import $ from "jquery";
 
-import Layout0 from "./layout/layout 0";
-import Layout1 from "./layout/layout 1";
-import StatisTable from "./statistic/table_chart";
-import Layout_active from "./layout/layout_active";
-import Layout_keys from "./layout/layout_keys";
-import Layout_chart from "./layout/layout_chart";
+import { Option } from "../../Components/Option";
 import data_cpn from "../render-cpn/data.json";
 import RenderUI from "../render-cpn/render";
+import Layout0 from "./layout/layout 0";
+import Layout1 from "./layout/layout 1";
+import Layout_active from "./layout/layout_active";
+import Layout_chart from "./layout/layout_chart";
+import Layout_keys from "./layout/layout_keys";
+import { IsNumber } from "../../utils/isNumber";
 const rowsPerPage = 15;
 
 const COMPONENT = () => {
@@ -441,6 +432,7 @@ const COMPONENT = () => {
         .then((res) => {
           const { data, success, content } = res;
           //////console.log(413, res)
+
           if (success) {
             setDataTables(data.tables);
             setDataTableID(data.tables[0].id);
@@ -1259,6 +1251,7 @@ const COMPONENT = () => {
   const [selectedStats, setSelectedStats] = useState([]);
   const [exportType, setExportType] = useState("excel");
   const [selectedConditionField, setSelectedConditionField] = useState({});
+  const [selectedUniqueField, setSelectedUniqueField] = useState({});
 
   //console.log(selectedFields)
   // statis fields
@@ -1291,8 +1284,9 @@ const COMPONENT = () => {
     );
   };
 
-  const handleSelectedConditionField = (key, checked = false) => {
-    setSelectedConditionField((prev) => ({ ...prev, [key]: checked }));
+  const handleSelectedField = (key, checked = false, cb) => {
+    cb((prev) => ({ ...prev, [key]: checked }));
+    // setSelectedConditionField();
   };
 
   function jsonToCsv(jsonData) {
@@ -1411,7 +1405,7 @@ const COMPONENT = () => {
     $("#closeModalExportFileSample").click();
   };
 
-  const filterSelectedConditionField = (obj, state = true) => {
+  const filterSelectedField = (obj, state = true) => {
     const selectedObject = {};
     for (const k in obj) {
       if (obj[k] === true) {
@@ -1432,19 +1426,19 @@ const COMPONENT = () => {
     return `${year}${month}${day}_${hours}${minutes}${seconds}`;
   };
 
-  const Export = () => {
+  const Export = (payload) => {
     const selectFields = [...selectedFields, ...selectedStats];
 
     const exportBody = {
       export_fields: selectFields,
       criteria: valueExport,
       export_type: exportType,
-      condition_fields: filterSelectedConditionField(selectedConditionField),
+      condition_fields: filterSelectedField(selectedConditionField),
+      unique_fields: filterSelectedField(selectedUniqueField),
+      ...payload,
     };
-
     setLoadingExportFile(true);
-    console.log("DATA URL::", dataUrlExport);
-    return;
+
     fetch(`${proxy()}${dataUrlExport}`, {
       method: "POST",
       headers: {
@@ -1668,6 +1662,7 @@ const COMPONENT = () => {
 
   // Loading Export
   const [isInitialRender, setIsInitialRender] = useState(true);
+
   useEffect(() => {
     let timeout;
     if (isInitialRender) {
@@ -1701,6 +1696,19 @@ const COMPONENT = () => {
       newData[field.fomular_alias] = value;
     }
     setData(newData);
+  };
+
+  const [exportedData, setExportedData] = useState();
+  const handleChangingExportedData = ({ key, value }) => {
+    setExportedData((prev) => {
+      return { ...prev, [key]: value };
+    });
+  };
+
+  const handleValidateIsNumber = (value, key) => {
+    if (IsNumber(value) || value === "") {
+      handleChangingExportedData({ key, value });
+    }
   };
 
   return (
@@ -1804,7 +1812,14 @@ const COMPONENT = () => {
                               checked={selectedFields.includes(
                                 header.fomular_alias
                               )}
-                              onChange={handleFieldChange}
+                              onChange={(e) => {
+                                handleFieldChange(e);
+                                handleSelectedField(
+                                  header.fomular_alias,
+                                  { checked: e.target.checked },
+                                  setSelectedConditionField
+                                );
+                              }}
                             />
                             <span className="ml-2">
                               {header.display_name || header.field_name}
@@ -1812,23 +1827,149 @@ const COMPONENT = () => {
                           </label>
 
                           {selectedFields.includes(header.fomular_alias) ? (
-                            <label>
-                              <input
-                                type="checkbox"
-                                value={`condition_${header.fomular_alias}`}
-                                onChange={({ target: { checked } }) => {
-                                  handleSelectedConditionField(
-                                    header.fomular_alias,
-                                    checked
-                                  );
-                                }}
-                              />
-                              <span className="ml-2">condition</span>
-                            </label>
+                            <>
+                              <label>
+                                <input
+                                  type="checkbox"
+                                  value={`condition_${header.fomular_alias}`}
+                                  onChange={({ target: { checked } }) => {
+                                    handleSelectedField(
+                                      header.fomular_alias,
+                                      checked,
+                                      setSelectedConditionField
+                                    );
+                                  }}
+                                />
+                                <span className="ml-2">
+                                  {lang["condition_fields"]}
+                                </span>
+                              </label>
+                              <label>
+                                <input
+                                  type="checkbox"
+                                  value={`condition_${header.fomular_alias}`}
+                                  onChange={({ target: { checked } }) => {
+                                    handleSelectedField(
+                                      header.fomular_alias,
+                                      checked,
+                                      setSelectedUniqueField
+                                    );
+                                  }}
+                                />
+                                <span className="ml-2">
+                                  {lang["unique_fields"]}
+                                </span>
+                              </label>
+                            </>
                           ) : null}
                         </section>
                       ))}
                     </div>
+
+                    <section>
+                      <h5 class="mt-2 mb-2">
+                        {lang["select_export_condition"]}:
+                      </h5>
+
+                      <section
+                        className="d-flex flex-wrap"
+                        style={{
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          gap: "5px",
+                        }}
+                      >
+                        {apiDataName.map((item) => {
+                          let table = {
+                            id: null,
+                            primary_key: item.id,
+                          };
+
+                          const res = dataTables?.[0].foreign_keys.find(
+                            (k) => k.field_id === item.id
+                          );
+
+                          if (res) {
+                            table.id = res?.table_id;
+                            table.primary_key = res.ref_field_id;
+                          } else if (
+                            dataTables?.[0].primary_key.includes(item.id)
+                          ) {
+                            table.id = item.table_id;
+                          }
+
+                          return (
+                            <div
+                              style={{
+                                width: "calc(50% - 5px)",
+                              }}
+                            >
+                              {table.id ? (
+                                <Option
+                                  key={item.fomular_alias}
+                                  label={item.field_name}
+                                  table_id={table.id}
+                                  primary_key={table.primary_key}
+                                  onChange={(props) => {
+                                    handleChangingExportedData({
+                                      key: item.fomular_alias,
+                                      value: props.value,
+                                    });
+                                  }}
+                                />
+                              ) : (
+                                <div className="form-group">
+                                  <label>{item.field_name}</label>
+                                  <input
+                                    className="form-control "
+                                    type="text"
+                                    placeholder={item.field_name}
+                                    onChange={({ target: { value } }) => {
+                                      handleChangingExportedData({
+                                        key: item.fomular_alias,
+                                        value,
+                                      });
+                                    }}
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                        <div
+                          className="d-flex"
+                          style={{
+                            gap: "5px",
+                            width: "calc(50% - 5px)",
+                          }}
+                        >
+                          <div className="form-group">
+                            <label>Từ:</label>
+                            <input
+                              className="form-control "
+                              type="text"
+                              placeholder={0}
+                              value={exportedData?.["from"] || ""}
+                              onChange={({ target: { value } }) => {
+                                handleValidateIsNumber(value, "from");
+                              }}
+                            />
+                          </div>
+                          <div className="form-group">
+                            <label>Đến:</label>
+                            <input
+                              className="form-control "
+                              type="text"
+                              placeholder={0}
+                              value={exportedData?.["to"] || ""}
+                              onChange={({ target: { value } }) => {
+                                handleValidateIsNumber(value, "to");
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </section>
+                    </section>
 
                     <h5 class="mt-4 mb-2">{lang["select export type"]}:</h5>
                     <div className="ml-4">
@@ -1932,7 +2073,14 @@ const COMPONENT = () => {
                           },
                         });
                       } else {
-                        Export(apiData);
+                        const data_for_filtering = {};
+                        for (const k in exportedData) {
+                          if (exportedData[k]) {
+                            data_for_filtering[k] = exportedData[k];
+                          }
+                        }
+
+                        Export({ data_for_filtering });
                       }
                     }}
                     class="btn btn-success "

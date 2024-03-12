@@ -299,6 +299,7 @@ const COMPONENT = () => {
           let isValidHeader = true;
           let modifiedData;
           const condition_fields = {};
+          const unique_fields = {};
 
           if (fileExtension === "csv") {
             Papa.parse(e.target.result, {
@@ -356,13 +357,19 @@ const COMPONENT = () => {
               const newRow = {};
 
               for (let key in row) {
-                const k = extractValueInBrackets(key).split("-")[0];
-                condition_fields[k] = true;
-                newRow[k] = row[key];
+                const k = extractValueInBrackets(key).split("-");
+                if (k.includes("c")) {
+                  condition_fields[k[0]] = true;
+                } else if (k.includes("u")) {
+                  unique_fields[k[0]] = true;
+                }
+
+                newRow[k[0]] = row[key];
               }
 
               return newRow;
             });
+
             const maxRows = 1100000;
             if (modifiedData.length > maxRows) {
               setErrorSelect(
@@ -382,7 +389,10 @@ const COMPONENT = () => {
             setUploadedJson({ data: modifiedData });
             setSumerize(modifiedData.length);
             console.log("BULK UPDATE", bulkUpdate);
-            importData({ data: modifiedData, condition_fields }, bulkUpdate);
+            importData(
+              { data: modifiedData, condition_fields, unique_fields },
+              bulkUpdate
+            );
           }
 
           setLoadingReadFile(false);
@@ -543,11 +553,7 @@ const COMPONENT = () => {
 
     const startTime = new Date().getTime();
 
-    console.log(
-      "BULK UPDATE AFTER ::",
-      uploadedJson.data,
-      uploadedJson.condition_fields
-    );
+    console.log("BULK UPDATE AFTER ::", uploadedJson);
 
     for (let batch of batches) {
       const requestBody = {
