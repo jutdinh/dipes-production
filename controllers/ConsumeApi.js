@@ -1502,10 +1502,19 @@ class ConsumeApi extends Controller {
 
       const foreignKeys = [];
       tables.map((tb) => {
-        foreignKeys.push(...tb.foreign_keys);
+        if (tb) {
+          foreignKeys.push(...tb.foreign_keys);
+        }
       });
 
       const mainTable = tables[0];
+
+      if (!mainTable) {
+        return this.res.status(500).send({
+          message: "MAIN TABLE IS NULL CONSUMEAPI AT line number 1514 ",
+        });
+      }
+
       const paramQuery = paramQueries.filter((q) => q.table_id == mainTable.id);
 
       const sideQueries = {};
@@ -1516,6 +1525,7 @@ class ConsumeApi extends Controller {
       });
 
       let partitions = [];
+
       const dataLimitation = await Database.selectFields(
         mainTable.table_alias,
         { position: "sumerize" },
@@ -6428,7 +6438,7 @@ class ConsumeApi extends Controller {
 
     if (fields.length != 0) {
       const cache = await Cache.getData(`${table.table_alias}-periods`);
-      const periods = cache.value;
+      const periods = cache?.value || [];
       if (criteria == undefined || objectComparator(criteria, {})) {
         for (let i = 0; i < periods.length; i++) {
           const period = periods[i];
