@@ -1,25 +1,56 @@
 @media (min-width: 2560px) {
     .modal-dialog {
-        max-width: 50%; 
+        max-width: 50%;
     }
 }
+
 @media (min-width: 1920px) {
     .modal-dialog {
-        max-width: 50%; 
+        max-width: 50%;
     }
 }
 
-@media (min-width: 1366) {
+@media (min-width: 1366px) {
     .modal-dialog {
-        max-width: 50%; 
+        max-width: 50%;
     }
 }
+
 @media (min-width: 1080px) {
     .modal-dialog {
-        max-width: 50%; 
+        max-width: 50%;
     }
 }
 
+@media (min-width: 1200px) {
+    .footer-custom {
+        position: unset;
+    }
+}
+
+@media (max-width: 1200px) {
+    .page_title h4 {
+        padding-left: 30px;
+    }
+
+    .custom-buttonadd {
+        margin-right: 30px !important;
+    }
+
+    .padding_infor_info_p-d-5,
+    .padding_infor_info_ver,
+    .padding_infor_info_user,
+    .padding_infor_info {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+@media (max-width: 1024px) {
+    ._flex-wrap {
+        justify-content: center;
+    }
+}
 
 @media (max-width: 768px) {
     .pie-legend-container {
@@ -39,50 +70,76 @@
 } */
 @media (max-width: 600px) {
     .step-item {
-        width: 100%; 
+        width: 100%;
     }
-    .step-arrow-right.step-active .step-link:after, 
+
+    .step-arrow-right.step-active .step-link:after,
     .step-arrow-both.step-active .step-link:before,
     .step-arrow-both.step-active .step-link:after,
     .step-arrow-left-flat-right.step-active .step-link:before,
     .step-arrow-left-flat-right.step-active .step-link:after {
-        display: none; 
-       
+        display: none;
     }
 }
 
 @media (min-width: 768px) {
     .error-login {
-        width: 395px; 
+        width: 395px;
         float: right;
     }
 }
+
 /* Custom Responsive Styles */
 @media (max-width: 768px) {
     h5 {
         font-size: 18px;
     }
+
     label {
         font-size: 14px;
     }
+
     .input-group-text {
-     
+
         font-size: 14px;
     }
+
     .form-control {
         font-size: 14px;
     }
 }
 
-
 @media (min-width: 768px) {
     .size-img-success {
-        width: 180px; 
-    }
-}
-@media (max-width: 480px) {
-    .size-img-success {
-        width: 120px; 
+        width: 180px;
     }
 }
 
+@media (max-width: 480px) {
+    .size-img-success {
+        width: 120px;
+    }
+    .login_form .field label.form-check-label {
+        display: flex;
+        align-items: flex-end;     
+    }
+    .login_form .field label.form-check-label span {
+       margin-left: 0.5em;
+       margin-bottom: 0.25rem;
+    }
+    .login_form .field label.form-check-label #checkbox {
+        margin-bottom: 3px;
+     }
+}
+
+@media (max-width: 420px) {
+    .contact_inner {
+        text-align: center;
+    }
+}
+
+@media (max-width: 375px) {
+    .branch {
+        margin-left: 45px;
+    }
+}

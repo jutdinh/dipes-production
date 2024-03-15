@@ -1215,7 +1215,7 @@ const COMPONENT = (props) => {
                                         value={item.privilegegroup_id}
                                         selected={
                                           item.privilegegroup_id ===
-                                          profile.privilege.privilegegroup_id
+                                          profile.privilege?.privilegegroup_id
                                         }
                                       >
                                         {item.group_name}
