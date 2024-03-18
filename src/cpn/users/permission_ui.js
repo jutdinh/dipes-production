@@ -278,9 +278,9 @@ const COMPONENT = (props) => {
                 </div>
               </section>
               <div className="privilege-pages d-flex flex-wrap">
-                {pages.map((page) => (
-                  <Page page={page} />
-                ))}
+                {pages.map((page) =>
+                  page.is_hidden ? null : <Page page={page} />
+                )}
               </div>
             </div>
           </div>
@@ -320,7 +320,7 @@ const Page = (props) => {
       });
 
       const response = await request.json();
-      console.log("GRANT", response);
+
       event.target.checked = true;
     } else {
       const request = await fetch(`${proxy()}/privileges/detail`, {
@@ -359,7 +359,7 @@ const Page = (props) => {
       setActive(false);
     }
   }, [location]);
-  console.log(tables);
+
   return (
     <div id={props.page.page_id} className="privilege-page privilege_column">
       <span

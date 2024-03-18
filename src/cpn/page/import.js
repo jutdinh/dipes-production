@@ -168,7 +168,7 @@ const COMPONENT = () => {
           console.log(res);
           if (success) {
             setDataTables(data.tables);
-            setDataTableID(data.tables[0].id);
+            setDataTableID(data.tables[0]?.id);
             setDataFields(data.body);
             setLoaded(true);
           }
@@ -484,13 +484,13 @@ const COMPONENT = () => {
               >
                 {lang["import"]}
               </button>
-              <button
+              {/* <button
                 style={{ width: "87px" }}
                 className="btn btn-primary ml-auto"
                 onClick={(e) => processSelectedFile(e, true)}
               >
                 {lang["bulkUpdate"]}
-              </button>
+              </button> */}
             </section>
           )}
         </div>
@@ -740,7 +740,7 @@ const COMPONENT = () => {
           // console.log(res)
           if (success) {
             setDataTables(data.tables);
-            setDataTableID(data.tables[0].id);
+            setDataTableID(data.tables[0]?.id);
             setDataFields(data.body);
             setLoaded(true);
           }

@@ -1,7 +1,7 @@
-import { useEffect, useState, memo } from "react";
+import { memo, useState } from "react";
+import { useSelector } from "react-redux";
 import { AsyncPaginate } from "react-select-async-paginate";
 import { ForeignData_API } from "../../APIs/ForeignData.api";
-import { useSelector } from "react-redux";
 
 const Component = ({ label, table_id, primary_key, onChange }) => {
   const [data, setData] = useState({

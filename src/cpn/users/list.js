@@ -170,7 +170,7 @@ const COMPONENT = (props) => {
     if (!address) {
       errors.address = lang["error.address"];
     }
-    if (user.password != user.confirmPassword) {
+    if (user?.password != user?.confirmPassword) {
       errors.confirmPassword = lang["error.confirmpassowrd"];
     }
 
@@ -179,7 +179,7 @@ const COMPONENT = (props) => {
       return;
     }
     // //console.log(_token);
-    if (user.username && user.password) {
+    if (user?.username && user?.password) {
       fetch(`${proxy()}/auth/signup`, {
         method: "POST",
         headers: {
@@ -199,7 +199,7 @@ const COMPONENT = (props) => {
   const handleDeleteUser = (user) => {
     const requestBody = {
       account: {
-        username: user.username,
+        username: user?.username,
       },
     };
     Swal.fire({
@@ -279,7 +279,7 @@ const COMPONENT = (props) => {
         const { success, content, status } = resp;
         //console.log(resp)
         const newProfiles = profiles.map((user) => {
-          if (user.username == editUser.username) {
+          if (user?.username == editUser.username) {
             return editUser;
           } else {
             return user;
@@ -420,7 +420,7 @@ const COMPONENT = (props) => {
                             <input
                               type="text"
                               class="form-control"
-                              value={user.fullname}
+                              value={user?.fullname}
                               onChange={(e) => {
                                 setUser({ ...user, fullname: e.target.value });
                               }}
@@ -443,7 +443,7 @@ const COMPONENT = (props) => {
                             <input
                               type="text"
                               class="form-control"
-                              value={user.username}
+                              value={user?.username}
                               onChange={(e) => {
                                 setUser({ ...user, username: e.target.value });
                               }}
@@ -466,7 +466,7 @@ const COMPONENT = (props) => {
                             <input
                               type="password"
                               class="form-control"
-                              value={user.password}
+                              value={user?.password}
                               onChange={(e) => {
                                 setUser({ ...user, password: e.target.value });
                               }}
@@ -489,7 +489,7 @@ const COMPONENT = (props) => {
                             <input
                               type="password"
                               class="form-control"
-                              value={user.confirmPassword}
+                              value={user?.confirmPassword}
                               onChange={(e) => {
                                 setUser({
                                   ...user,
@@ -515,7 +515,7 @@ const COMPONENT = (props) => {
                             <input
                               type="email"
                               class="form-control"
-                              value={user.email}
+                              value={user?.email}
                               onChange={(e) => {
                                 setUser({ ...user, email: e.target.value });
                               }}
@@ -538,7 +538,7 @@ const COMPONENT = (props) => {
                             <input
                               type="phone"
                               class="form-control"
-                              value={user.phone}
+                              value={user?.phone}
                               onChange={(e) => {
                                 setUser({ ...user, phone: e.target.value });
                               }}
@@ -561,11 +561,11 @@ const COMPONENT = (props) => {
                             <select
                               className="form-control"
                               name="role"
-                              value={user.role}
+                              value={user?.role}
                               onChange={handleChange}
                             >
                               <option value="">{lang["p.permission"]}</option>
-                              {users.role === "ad"
+                              {users?.role === "ad"
                                 ? roles.slice(0, 4).map((role) => (
                                     <option key={role.id} value={role.value}>
                                       {role.label}
@@ -596,7 +596,7 @@ const COMPONENT = (props) => {
                               rows="5"
                               type="text"
                               class="form-control"
-                              value={user.address}
+                              value={user?.address}
                               onChange={(e) => {
                                 setUser({ ...user, address: e.target.value });
                               }}
@@ -620,7 +620,7 @@ const COMPONENT = (props) => {
                               rows="5"
                               type="text"
                               class="form-control"
-                              value={user.note}
+                              value={user?.note}
                               onChange={(e) => {
                                 setUser({ ...user, note: e.target.value });
                               }}
@@ -780,7 +780,7 @@ const COMPONENT = (props) => {
                                 })
                               }
                             >
-                              {users.role === "ad"
+                              {users?.role === "ad"
                                 ? roles.slice(0, 4).map((role) => (
                                     <option key={role.id} value={role.value}>
                                       {role.label}
