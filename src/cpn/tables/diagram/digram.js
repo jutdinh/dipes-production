@@ -62,7 +62,7 @@ export default () => {
     useEffect(() => {
         const width = $('#hdxjhdksrhkhg').width();
         const height = $('#hdxjhdksrhkhg').height();
-        setWidth((window.innerWidth)) ; setHeight( window.innerHeight);
+        setWidth((window.innerWidth)) ; setHeight("100%");
     }, [])
 
     useEffect(() => {
