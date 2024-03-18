@@ -303,7 +303,7 @@ const TEXT = (props) => {
         const res = await response.json();
         console.log(res);
         let returnedData = res.data;
-        const foundData = returnedData.find(
+        const foundData = returnedData?.find(
           (d) => d != undefined && d[pk] === defaultValue
         );
         // console.log(criteria)

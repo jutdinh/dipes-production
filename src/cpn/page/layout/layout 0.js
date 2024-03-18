@@ -465,7 +465,7 @@ export default (props) => {
           // console.log(res)
           if (success) {
             setDataTables(data.tables);
-            setDataTableID(data.tables[0].id);
+            setDataTableID(data.tables[0]?.id);
             setDataFields(data.body);
             setLoaded(true);
           }
@@ -1146,9 +1146,361 @@ export default (props) => {
                           <div class="col-md-12">
                             {statusActive ? (
                               <>
-                                {loaded ? (
-                                  current && current.length > 0 ? (
-                                    <>
+                                {
+                                  loaded ? (
+                                    current && current.length > 0 ? (
+                                      <>
+                                        <div class="table-responsive">
+                                          <div style={{ overflowX: "auto" }}>
+                                            <table
+                                              className={"table"}
+                                              style={{
+                                                marginBottom: "10px",
+                                                width: "100%",
+                                              }}
+                                            >
+                                              <thead>
+                                                <tr class="color-tr">
+                                                  <th
+                                                    class="font-weight-bold "
+                                                    style={{ minWidth: "50px" }}
+                                                    scope="col"
+                                                  >
+                                                    {lang["log.no"]}
+                                                  </th>
+                                                  {apiDataName?.map(
+                                                    (header, index) => (
+                                                      <th
+                                                        key={index}
+                                                        class="font-weight-bold"
+                                                        style={{
+                                                          minWidth: "200px",
+                                                        }}
+                                                      >
+                                                        {header.display_name
+                                                          ? header.display_name
+                                                          : header.field_name}
+                                                      </th>
+                                                    )
+                                                  )}
+                                                  <th
+                                                    class="font-weight-bold align-center"
+                                                    style={{
+                                                      minWidth: "100px",
+                                                    }}
+                                                  >
+                                                    {lang["log.action"]}
+                                                  </th>
+                                                </tr>
+                                                <tr>
+                                                  <th></th>
+                                                  {apiDataName?.map(
+                                                    (header, index) => (
+                                                      <th
+                                                        key={index}
+                                                        className="header-cell"
+                                                        style={{
+                                                          minWidth: "200px",
+                                                        }}
+                                                      >
+                                                        <input
+                                                          type="search"
+                                                          class="form-control"
+                                                          value={
+                                                            searchValues[
+                                                              header
+                                                                .fomular_alias
+                                                            ] || ""
+                                                          }
+                                                          onChange={(e) =>
+                                                            handleInputChange(
+                                                              header.fomular_alias,
+                                                              e.target.value
+                                                            )
+                                                          }
+                                                          onKeyDown={
+                                                            handleKeyDown
+                                                          }
+                                                        />
+                                                      </th>
+                                                    )
+                                                  )}
+                                                  <th
+                                                    class="align-center"
+                                                    onClick={handleSearchClick}
+                                                    style={{
+                                                      minWidth: "100px",
+                                                    }}
+                                                  >
+                                                    <i
+                                                      class="fa fa-search size-24 pointer mb-2"
+                                                      title={lang["search"]}
+                                                    ></i>
+                                                  </th>
+                                                </tr>
+                                              </thead>
+                                              <tbody>
+                                                {current.map((row, index) => {
+                                                  if (row) {
+                                                    return (
+                                                      <tr key={index}>
+                                                        <td
+                                                          scope="row"
+                                                          style={{
+                                                            minWidth: "50px",
+                                                          }}
+                                                          className="cell"
+                                                        >
+                                                          {indexOfFirst +
+                                                            index +
+                                                            1}
+                                                        </td>
+                                                        {apiDataName?.map(
+                                                          (header) => (
+                                                            <td
+                                                              key={
+                                                                header.fomular_alias
+                                                              }
+                                                              className="cell"
+                                                            >
+                                                              {renderData(
+                                                                header,
+                                                                row
+                                                              )}
+                                                            </td>
+                                                          )
+                                                        )}
+                                                        <td
+                                                          class="align-center"
+                                                          style={{
+                                                            width: "100px",
+                                                          }}
+                                                        >
+                                                          {checkDetail && (
+                                                            <i
+                                                              className="fa fa-eye size-24 pointer icon-view"
+                                                              onClick={() =>
+                                                                handleViewDetail(
+                                                                  row
+                                                                )
+                                                              }
+                                                              title={
+                                                                lang[
+                                                                  "viewdetail"
+                                                                ]
+                                                              }
+                                                            ></i>
+                                                          )}
+                                                          {_user.role ===
+                                                          "uad" ? (
+                                                            <>
+                                                              <i
+                                                                className="fa fa-edit size-24 pointer ml-2 icon-margin icon-edit"
+                                                                onClick={() =>
+                                                                  redirectToInputPUT(
+                                                                    row
+                                                                  )
+                                                                }
+                                                                title={
+                                                                  lang["edit"]
+                                                                }
+                                                              ></i>
+                                                            </>
+                                                          ) : dataCheck &&
+                                                            dataCheck?.modify ? (
+                                                            <i
+                                                              className="fa fa-edit size-24 pointer icon-margin icon-edit"
+                                                              onClick={() =>
+                                                                redirectToInputPUT(
+                                                                  row
+                                                                )
+                                                              }
+                                                              title={
+                                                                lang["edit"]
+                                                              }
+                                                            ></i>
+                                                          ) : null}
+                                                          {_user.role ===
+                                                          "uad" ? (
+                                                            <>
+                                                              <i
+                                                                className="fa fa-trash-o size-24 pointer icon-delete"
+                                                                onClick={() =>
+                                                                  handleDelete(
+                                                                    row
+                                                                  )
+                                                                }
+                                                                title={
+                                                                  lang["delete"]
+                                                                }
+                                                              ></i>
+                                                            </>
+                                                          ) : dataCheck &&
+                                                            dataCheck?.purge ? (
+                                                            <i
+                                                              className="fa fa-trash-o size-24 pointer icon-delete"
+                                                              onClick={() =>
+                                                                handleDelete(
+                                                                  row
+                                                                )
+                                                              }
+                                                              title={
+                                                                lang["delete"]
+                                                              }
+                                                            ></i>
+                                                          ) : null}
+                                                        </td>
+                                                      </tr>
+                                                    );
+                                                  } else {
+                                                    return null;
+                                                  }
+                                                })}
+                                              </tbody>
+                                            </table>
+                                          </div>
+                                          <div className="d-flex justify-content-between align-items-center">
+                                            <p>
+                                              {lang["show"]}{" "}
+                                              {formatNumber(indexOfFirst + 1)} -{" "}
+                                              {formatNumber(
+                                                indexOfFirst + apiData?.length
+                                              )}{" "}
+                                              {`${lang["of"]} `}
+                                              {loadingResult ? (
+                                                <img
+                                                  width={20}
+                                                  className="mb-1"
+                                                  src="/images/icon/load.gif"
+                                                  alt="Loading..."
+                                                ></img>
+                                              ) : (
+                                                formatNumber(sumerize)
+                                              )}{" "}
+                                              {lang["results"]}
+                                            </p>
+                                            <nav aria-label="Page navigation example">
+                                              <ul className="pagination mb-0">
+                                                <li
+                                                  className={`page-item ${
+                                                    currentPage === 1
+                                                      ? "disabled"
+                                                      : ""
+                                                  }`}
+                                                >
+                                                  <button
+                                                    className="page-link"
+                                                    onClick={() => paginate(1)}
+                                                  >
+                                                    &#8810;
+                                                  </button>
+                                                </li>
+                                                <li
+                                                  className={`page-item ${
+                                                    currentPage === 1
+                                                      ? "disabled"
+                                                      : ""
+                                                  }`}
+                                                >
+                                                  <button
+                                                    className="page-link"
+                                                    onClick={() =>
+                                                      paginate(currentPage - 1)
+                                                    }
+                                                  >
+                                                    &laquo;
+                                                  </button>
+                                                </li>
+                                                {currentPage > 1 && (
+                                                  <li className="page-item">
+                                                    <span className="page-link">
+                                                      ...
+                                                    </span>
+                                                  </li>
+                                                )}
+                                                {Array(totalPages)
+                                                  .fill()
+                                                  .map((_, index) => {
+                                                    if (
+                                                      index + 1 ===
+                                                        currentPage ||
+                                                      (index + 1 >=
+                                                        currentPage - 1 &&
+                                                        index + 1 <=
+                                                          currentPage + 1)
+                                                    ) {
+                                                      return (
+                                                        <li
+                                                          key={index}
+                                                          className={`page-item ${
+                                                            currentPage ===
+                                                            index + 1
+                                                              ? "active"
+                                                              : ""
+                                                          }`}
+                                                        >
+                                                          <button
+                                                            className="page-link"
+                                                            onClick={() =>
+                                                              paginate(
+                                                                index + 1
+                                                              )
+                                                            }
+                                                          >
+                                                            {index + 1}
+                                                          </button>
+                                                        </li>
+                                                      );
+                                                    }
+                                                  })}
+                                                {currentPage <
+                                                  totalPages - 1 && (
+                                                  <li className="page-item">
+                                                    <span className="page-link">
+                                                      ...
+                                                    </span>
+                                                  </li>
+                                                )}
+                                                <li
+                                                  className={`page-item ${
+                                                    currentPage === totalPages
+                                                      ? "disabled"
+                                                      : ""
+                                                  }`}
+                                                >
+                                                  <button
+                                                    className="page-link"
+                                                    onClick={() =>
+                                                      paginate(currentPage + 1)
+                                                    }
+                                                  >
+                                                    &raquo;
+                                                  </button>
+                                                </li>
+                                                <li
+                                                  className={`page-item ${
+                                                    currentPage ===
+                                                      totalPages ||
+                                                    sumerize === 0
+                                                      ? "disabled"
+                                                      : ""
+                                                  }`}
+                                                >
+                                                  <button
+                                                    className="page-link"
+                                                    onClick={() =>
+                                                      paginate(totalPages)
+                                                    }
+                                                  >
+                                                    &#8811;
+                                                  </button>
+                                                </li>
+                                              </ul>
+                                            </nav>
+                                          </div>
+                                        </div>
+                                      </>
+                                    ) : (
                                       <div class="table-responsive">
                                         <div style={{ overflowX: "auto" }}>
                                           <table
@@ -1162,19 +1514,16 @@ export default (props) => {
                                               <tr class="color-tr">
                                                 <th
                                                   class="font-weight-bold "
-                                                  style={{ minWidth: "50px" }}
+                                                  style={{ width: "100px" }}
                                                   scope="col"
                                                 >
                                                   {lang["log.no"]}
                                                 </th>
-                                                {apiDataName?.map(
+                                                {apiDataName.map(
                                                   (header, index) => (
                                                     <th
                                                       key={index}
                                                       class="font-weight-bold"
-                                                      style={{
-                                                        minWidth: "200px",
-                                                      }}
                                                     >
                                                       {header.display_name
                                                         ? header.display_name
@@ -1184,22 +1533,17 @@ export default (props) => {
                                                 )}
                                                 <th
                                                   class="font-weight-bold align-center"
-                                                  style={{ minWidth: "100px" }}
+                                                  style={{ width: "100px" }}
                                                 >
                                                   {lang["log.action"]}
                                                 </th>
                                               </tr>
+
                                               <tr>
                                                 <th></th>
-                                                {apiDataName?.map(
+                                                {apiDataName.map(
                                                   (header, index) => (
-                                                    <th
-                                                      key={index}
-                                                      className="header-cell"
-                                                      style={{
-                                                        minWidth: "200px",
-                                                      }}
-                                                    >
+                                                    <th key={index}>
                                                       <input
                                                         type="search"
                                                         class="form-control"
@@ -1214,9 +1558,6 @@ export default (props) => {
                                                             e.target.value
                                                           )
                                                         }
-                                                        onKeyDown={
-                                                          handleKeyDown
-                                                        }
                                                       />
                                                     </th>
                                                   )
@@ -1224,361 +1565,39 @@ export default (props) => {
                                                 <th
                                                   class="align-center"
                                                   onClick={handleSearchClick}
-                                                  style={{ minWidth: "100px" }}
                                                 >
+                                                  {" "}
                                                   <i
-                                                    class="fa fa-search size-24 pointer mb-2"
+                                                    class="fa fa-search size-24 pointer icon-margin mb-2"
                                                     title={lang["search"]}
                                                   ></i>
                                                 </th>
                                               </tr>
                                             </thead>
                                             <tbody>
-                                              {current.map((row, index) => {
-                                                if (row) {
-                                                  return (
-                                                    <tr key={index}>
-                                                      <td
-                                                        scope="row"
-                                                        style={{
-                                                          minWidth: "50px",
-                                                        }}
-                                                        className="cell"
-                                                      >
-                                                        {indexOfFirst +
-                                                          index +
-                                                          1}
-                                                      </td>
-                                                      {apiDataName?.map(
-                                                        (header) => (
-                                                          <td
-                                                            key={
-                                                              header.fomular_alias
-                                                            }
-                                                            className="cell"
-                                                          >
-                                                            {renderData(
-                                                              header,
-                                                              row
-                                                            )}
-                                                          </td>
-                                                        )
-                                                      )}
-                                                      <td
-                                                        class="align-center"
-                                                        style={{
-                                                          width: "100px",
-                                                        }}
-                                                      >
-                                                        {checkDetail && (
-                                                          <i
-                                                            className="fa fa-eye size-24 pointer icon-view"
-                                                            onClick={() =>
-                                                              handleViewDetail(
-                                                                row
-                                                              )
-                                                            }
-                                                            title={
-                                                              lang["viewdetail"]
-                                                            }
-                                                          ></i>
-                                                        )}
-                                                        {_user.role ===
-                                                        "uad" ? (
-                                                          <>
-                                                            <i
-                                                              className="fa fa-edit size-24 pointer ml-2 icon-margin icon-edit"
-                                                              onClick={() =>
-                                                                redirectToInputPUT(
-                                                                  row
-                                                                )
-                                                              }
-                                                              title={
-                                                                lang["edit"]
-                                                              }
-                                                            ></i>
-                                                          </>
-                                                        ) : dataCheck &&
-                                                          dataCheck?.modify ? (
-                                                          <i
-                                                            className="fa fa-edit size-24 pointer icon-margin icon-edit"
-                                                            onClick={() =>
-                                                              redirectToInputPUT(
-                                                                row
-                                                              )
-                                                            }
-                                                            title={lang["edit"]}
-                                                          ></i>
-                                                        ) : null}
-                                                        {_user.role ===
-                                                        "uad" ? (
-                                                          <>
-                                                            <i
-                                                              className="fa fa-trash-o size-24 pointer icon-delete"
-                                                              onClick={() =>
-                                                                handleDelete(
-                                                                  row
-                                                                )
-                                                              }
-                                                              title={
-                                                                lang["delete"]
-                                                              }
-                                                            ></i>
-                                                          </>
-                                                        ) : dataCheck &&
-                                                          dataCheck?.purge ? (
-                                                          <i
-                                                            className="fa fa-trash-o size-24 pointer icon-delete"
-                                                            onClick={() =>
-                                                              handleDelete(row)
-                                                            }
-                                                            title={
-                                                              lang["delete"]
-                                                            }
-                                                          ></i>
-                                                        ) : null}
-                                                      </td>
-                                                    </tr>
-                                                  );
-                                                } else {
-                                                  return null;
-                                                }
-                                              })}
+                                              <tr>
+                                                <td
+                                                  class="font-weight-bold cell"
+                                                  colspan={`${
+                                                    apiDataName.length + 2
+                                                  }`}
+                                                  style={{
+                                                    textAlign: "center",
+                                                  }}
+                                                >
+                                                  <div>{lang["not found"]}</div>
+                                                </td>
+                                              </tr>
                                             </tbody>
                                           </table>
                                         </div>
-                                        <div className="d-flex justify-content-between align-items-center">
-                                          <p>
-                                            {lang["show"]}{" "}
-                                            {formatNumber(indexOfFirst + 1)} -{" "}
-                                            {formatNumber(
-                                              indexOfFirst + apiData?.length
-                                            )}{" "}
-                                            {`${lang["of"]} `}
-                                            {loadingResult ? (
-                                              <img
-                                                width={20}
-                                                className="mb-1"
-                                                src="/images/icon/load.gif"
-                                                alt="Loading..."
-                                              ></img>
-                                            ) : (
-                                              formatNumber(sumerize)
-                                            )}{" "}
-                                            {lang["results"]}
-                                          </p>
-                                          <nav aria-label="Page navigation example">
-                                            <ul className="pagination mb-0">
-                                              <li
-                                                className={`page-item ${
-                                                  currentPage === 1
-                                                    ? "disabled"
-                                                    : ""
-                                                }`}
-                                              >
-                                                <button
-                                                  className="page-link"
-                                                  onClick={() => paginate(1)}
-                                                >
-                                                  &#8810;
-                                                </button>
-                                              </li>
-                                              <li
-                                                className={`page-item ${
-                                                  currentPage === 1
-                                                    ? "disabled"
-                                                    : ""
-                                                }`}
-                                              >
-                                                <button
-                                                  className="page-link"
-                                                  onClick={() =>
-                                                    paginate(currentPage - 1)
-                                                  }
-                                                >
-                                                  &laquo;
-                                                </button>
-                                              </li>
-                                              {currentPage > 1 && (
-                                                <li className="page-item">
-                                                  <span className="page-link">
-                                                    ...
-                                                  </span>
-                                                </li>
-                                              )}
-                                              {Array(totalPages)
-                                                .fill()
-                                                .map((_, index) => {
-                                                  if (
-                                                    index + 1 === currentPage ||
-                                                    (index + 1 >=
-                                                      currentPage - 1 &&
-                                                      index + 1 <=
-                                                        currentPage + 1)
-                                                  ) {
-                                                    return (
-                                                      <li
-                                                        key={index}
-                                                        className={`page-item ${
-                                                          currentPage ===
-                                                          index + 1
-                                                            ? "active"
-                                                            : ""
-                                                        }`}
-                                                      >
-                                                        <button
-                                                          className="page-link"
-                                                          onClick={() =>
-                                                            paginate(index + 1)
-                                                          }
-                                                        >
-                                                          {index + 1}
-                                                        </button>
-                                                      </li>
-                                                    );
-                                                  }
-                                                })}
-                                              {currentPage < totalPages - 1 && (
-                                                <li className="page-item">
-                                                  <span className="page-link">
-                                                    ...
-                                                  </span>
-                                                </li>
-                                              )}
-                                              <li
-                                                className={`page-item ${
-                                                  currentPage === totalPages
-                                                    ? "disabled"
-                                                    : ""
-                                                }`}
-                                              >
-                                                <button
-                                                  className="page-link"
-                                                  onClick={() =>
-                                                    paginate(currentPage + 1)
-                                                  }
-                                                >
-                                                  &raquo;
-                                                </button>
-                                              </li>
-                                              <li
-                                                className={`page-item ${
-                                                  currentPage === totalPages ||
-                                                  sumerize === 0
-                                                    ? "disabled"
-                                                    : ""
-                                                }`}
-                                              >
-                                                <button
-                                                  className="page-link"
-                                                  onClick={() =>
-                                                    paginate(totalPages)
-                                                  }
-                                                >
-                                                  &#8811;
-                                                </button>
-                                              </li>
-                                            </ul>
-                                          </nav>
-                                        </div>
                                       </div>
-                                    </>
-                                  ) : (
-                                    <div class="table-responsive">
-                                      <div style={{ overflowX: "auto" }}>
-                                        <table
-                                          className={"table"}
-                                          style={{
-                                            marginBottom: "10px",
-                                            width: "100%",
-                                          }}
-                                        >
-                                          <thead>
-                                            <tr class="color-tr">
-                                              <th
-                                                class="font-weight-bold "
-                                                style={{ width: "100px" }}
-                                                scope="col"
-                                              >
-                                                {lang["log.no"]}
-                                              </th>
-                                              {apiDataName.map(
-                                                (header, index) => (
-                                                  <th
-                                                    key={index}
-                                                    class="font-weight-bold"
-                                                  >
-                                                    {header.display_name
-                                                      ? header.display_name
-                                                      : header.field_name}
-                                                  </th>
-                                                )
-                                              )}
-                                              <th
-                                                class="font-weight-bold align-center"
-                                                style={{ width: "100px" }}
-                                              >
-                                                {lang["log.action"]}
-                                              </th>
-                                            </tr>
-
-                                            <tr>
-                                              <th></th>
-                                              {apiDataName.map(
-                                                (header, index) => (
-                                                  <th key={index}>
-                                                    <input
-                                                      type="search"
-                                                      class="form-control"
-                                                      value={
-                                                        searchValues[
-                                                          header.fomular_alias
-                                                        ] || ""
-                                                      }
-                                                      onChange={(e) =>
-                                                        handleInputChange(
-                                                          header.fomular_alias,
-                                                          e.target.value
-                                                        )
-                                                      }
-                                                    />
-                                                  </th>
-                                                )
-                                              )}
-                                              <th
-                                                class="align-center"
-                                                onClick={handleSearchClick}
-                                              >
-                                                {" "}
-                                                <i
-                                                  class="fa fa-search size-24 pointer icon-margin mb-2"
-                                                  title={lang["search"]}
-                                                ></i>
-                                              </th>
-                                            </tr>
-                                          </thead>
-                                          <tbody>
-                                            <tr>
-                                              <td
-                                                class="font-weight-bold cell"
-                                                colspan={`${
-                                                  apiDataName.length + 2
-                                                }`}
-                                                style={{ textAlign: "center" }}
-                                              >
-                                                <div>{lang["not found"]}</div>
-                                              </td>
-                                            </tr>
-                                          </tbody>
-                                        </table>
-                                      </div>
-                                    </div>
-                                  )
-                                ) : null
-                                // <div class="d-flex justify-content-center align-items-center w-100 responsive-div" >
-                                //     <img width={350} className="scaled-hover-target" src="/images/icon/loading.gif" ></img>
-                                // </div>
-                                // <div>{lang["not found data"]}</div>
+                                    )
+                                  ) : null
+                                  // <div class="d-flex justify-content-center align-items-center w-100 responsive-div" >
+                                  //     <img width={350} className="scaled-hover-target" src="/images/icon/loading.gif" ></img>
+                                  // </div>
+                                  // <div>{lang["not found data"]}</div>
                                 }
                               </>
                             ) : null}
