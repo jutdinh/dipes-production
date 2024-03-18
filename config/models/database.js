@@ -135,11 +135,7 @@ class Mongo {
     return data;
   };
 
-  selectAll = async (
-    table,
-    criteria = undefined,
-    { skip, limit } = { skip: null, limit: null }
-  ) => {
+  selectAll = async (table, criteria = undefined) => {
     await this.init();
     /**
      * @desc Select là phương thức gọi dữ liệu từ một bảng thuộc cơ sở dữ liệu

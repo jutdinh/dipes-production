@@ -25,8 +25,21 @@ app.use(
 
 app.use(bodyparser.json({ limit: "50mb" }));
 app.use(express.static("public"));
-app.use(cors());
 
+app.use(cors());
+// {
+//   origin: function (origin, callback) {
+//     console.log("REQUEST FROM: ", origin);
+//     callback(null, true);
+//     return;
+//     if (!origin || whitelist.indexOf(origin) !== -1) {
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   // methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
+//   credentials: true,
+// }
 const io = new Server(server, {
   cors: {
     origin: "*",

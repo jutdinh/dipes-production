@@ -227,6 +227,7 @@ class ConsumeApi extends Controller {
             break;
           case "put":
             await this.REMOTE_PUT();
+
             break;
           case "delete":
             await this.REMOTE_DELETE();
@@ -552,15 +553,15 @@ class ConsumeApi extends Controller {
       (fd) => paramIds.indexOf(fd.id) != -1
     );
 
-    const objects = tables.map((table) => {
+    const objects = tables.map((table = {}) => {
       const fieldsBelongToThisTable = this.fields.filter(
-        (field) => field.table_id == table.id
+        (field) => field.table_id == table?.id
       );
       const paramsBelongToThisTable = paramFields.filter(
-        (field) => field.table_id == table.id
+        (field) => field.table_id == table?.id
       );
       const bodyBeLongToThisTable = bodyFields.filter(
-        (field) => field.table_id == table.id
+        (field) => field.table_id == table?.id
       );
       return {
         ...table,
@@ -7073,6 +7074,7 @@ class ConsumeApi extends Controller {
 
     const { url, method } = req;
     this.url = decodeURI(url);
+    this.tables;
     const [api, projects, tables, fields] = await Promise.all([
       this.#__apis.find({ api_id }),
       this.#__projects.findAll(),
@@ -7184,6 +7186,7 @@ class ConsumeApi extends Controller {
       this.#__tables.findAll(),
       this.#__fields.findAll(),
     ]);
+
     if (api && api.api_method == method.toLowerCase() && api.status) {
       const Api = new ApisRecord(api);
       const project = projects[0];
@@ -7224,6 +7227,186 @@ class ConsumeApi extends Controller {
     }
 
     this.res.send({ success: true });
+  };
+
+  consumeBarcodeActivation = async (req, res) => {
+    this.req = req;
+    this.res = res;
+    const [tables, fields] = await Promise.all([
+      this.#__tables.findAll(),
+      this.#__fields.findAll(),
+    ]);
+
+    this.tables = tables;
+    this.fields = fields;
+
+    if (req.method.toLowerCase() == "put") {
+      const { table, criteria, master, from, to, value, select } = req.body;
+
+      const mappedSelect = select?.reduce(
+        (prev, { key, value }) => ({
+          ...prev,
+          [key]: value,
+        }),
+        {}
+      );
+
+      const updateTable = tables.find((tb) => tb.id == table);
+      const primalTable = tables.find((tb) => tb.id == master);
+
+      const criteriaField = await this.#__fields.find({ id: criteria });
+
+      if (criteriaField && updateTable && primalTable) {
+        const { foreign_keys } = updateTable;
+
+        if (foreign_keys) {
+          const key = foreign_keys.find((key) => key.table_id == master);
+
+          if (key) {
+            const { ref_field_id } = key;
+            const refOn = await this.#__fields.find({ id: ref_field_id });
+
+            const primalQuery = { [refOn.fomular_alias]: value };
+
+            const primalRecord = await Database.selectAll(
+              primalTable.table_alias,
+              primalQuery
+            );
+
+            if (primalRecord) {
+              const updateQuery = {
+                $and: [
+                  { [criteriaField.fomular_alias]: { $gte: from, $lte: to } },
+                  mappedSelect,
+                ],
+              };
+
+              if (primalRecord.length === 0) {
+                return res.send({
+                  success: false,
+                  content: "Primary  data not found",
+                });
+              }
+
+              const { id, position, ...mappingData } = primalRecord[0];
+              updateTable.foreign_keys.map(({ ref_field_id, field_id }) => {
+                const foreign = this.getField(field_id);
+                const primary = this.getField(ref_field_id);
+                if (mappingData[primary.fomular_alias]) {
+                  mappingData[foreign.fomular_alias] =
+                    mappingData[primary.fomular_alias];
+                }
+              });
+
+              await Database.updateMany(updateTable.table_alias, [
+                {
+                  condition: {
+                    [criteriaField.fomular_alias]: { $gte: from, $lte: to },
+                    ...mappedSelect,
+                  },
+                  value: { ...mappingData },
+                },
+              ]);
+
+              const data = await Database.selectAll(updateTable.table_alias, {
+                ...updateQuery,
+              });
+
+              const slaves = this.detectAllSlave(updateTable);
+
+              let slaves_fields = [];
+
+              slaves.map(({ foreign_keys, table_alias }) => {
+                foreign_keys.map(({ field_id, ref_field_id }) => {
+                  const field = this.getField(field_id);
+
+                  if (updateTable.primary_key.includes(ref_field_id)) {
+                    const master_field = this.getField(ref_field_id);
+
+                    slaves_fields.push({
+                      slave_fomular_alias: field.fomular_alias,
+                      table_alias,
+                      master_fomular_alias: master_field.fomular_alias,
+                    });
+                  }
+                });
+              });
+
+              /* START UPDATING SLAVES */
+
+              let updatedData = [];
+
+              slaves_fields.map(
+                ({
+                  slave_fomular_alias,
+                  master_fomular_alias,
+                  table_alias,
+                }) => {
+                  updatedData.push({
+                    table_alias,
+                    data: data.map(({ position, id, ...props }) => ({
+                      condition: {
+                        [slave_fomular_alias]: props[master_fomular_alias],
+                      },
+                      value: props,
+                    })),
+                  });
+                }
+              );
+
+              const updated_list = [];
+
+              updatedData.map(({ data, table_alias }) => {
+                if (data.length) {
+                  updated_list.push(Database.updateMany(table_alias, data));
+                }
+              });
+
+              const res1 = await Promise.all(updated_list);
+
+              /* END UPDATING SLAVES */
+
+              return res.send({
+                mappingData,
+                res1,
+                data,
+                slaves_fields,
+                slaves,
+                primalRecord,
+                updateQuery,
+                primalTable,
+                criteriaField,
+                updateTable,
+                updateQuery,
+                refOn,
+                primalQuery,
+                updatedData,
+                key,
+              });
+            } else {
+              return res.send({
+                success: false,
+                content: "Foreign data not found",
+              });
+            }
+          } else {
+            return res.send({
+              success: false,
+              content: "Foreign keys not found",
+            });
+          }
+        } else {
+          return res.send({
+            success: false,
+            content: "Foreign keys not found",
+          });
+        }
+      }
+
+      return res.send({ success: false, content: "Invalid tableset" });
+    } else {
+      this.NotFound();
+    }
   };
 }
 
