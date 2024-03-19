@@ -103,6 +103,9 @@ export default (props) => {
                     <div class="col-md-12">
                         <div class="page_title d-flex align-items-center">
                             <h4 class="ml-1">{lang["privileges groups"]}</h4>
+                            <button style={{ marginTop: 0 }} type="button" class="btn btn-primary custom-buttonadd ml-auto mr-4" data-toggle="modal" data-target="#quoteForm">
+                                <i class="fa fa-plus"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -113,17 +116,15 @@ export default (props) => {
                 <div class="row column1">
                     <div class="col-md-12">
                         <div class="white_shd full margin_bottom_30">
-
-
                             <div class="full graph_head">
                                 <div class="heading1 margin_0">
                                     <div className="row justify-content-end">
                                         <div className="col-auto d-flex align-items-center" style={{ padding: 0 }}>
                                             <h5>{lang["privileges groups"]}</h5>
 
-                                            <button style={{ marginTop: 0 }} type="button" class="btn btn-primary custom-buttonadd ml-auto mr-4" data-toggle="modal" data-target="#quoteForm">
+                                            {/* <button style={{ marginTop: 0 }} type="button" class="btn btn-primary custom-buttonadd ml-auto mr-4" data-toggle="modal" data-target="#quoteForm">
                                                 <i class="fa fa-plus"></i>
-                                            </button>
+                                            </button> */}
                                         </div>
 
 
