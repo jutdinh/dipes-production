@@ -10,9 +10,7 @@ export default () => {
     useEffect(() => {
         socket.emit("/dipe-production-user-logout", { username: auth.username })
 
-        // localStorage.removeItem('_token')
-
-
+        localStorage.removeItem('_token')
         localStorage.removeItem("password_hash");
         localStorage.removeItem("user");
         localStorage.setItem("user", JSON.stringify({}));
