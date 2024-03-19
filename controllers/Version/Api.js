@@ -383,7 +383,9 @@ class Api extends Controller {
             const currentValues = await Database.selectAll(
               "RFID_AMOUNT_CODE_MARK"
             );
+
             let currentValue = 63_710_065_410_048;
+
             if (currentValues && currentValues.length > 0) {
               const record = currentValues[0];
               currentValue = record ? record.value : 0;

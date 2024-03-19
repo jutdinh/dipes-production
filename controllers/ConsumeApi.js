@@ -2992,7 +2992,7 @@ class ConsumeApi extends Controller {
     const tables = this.tearTablesAndFieldsToObjects();
     const params = this.getFields(this.API.params.valueOrNot());
     let paramQueries = [];
-
+    let isBulkUpdate = false;
     // console.log("UPDATE HERE::", tables, tables[0].body, params);
 
     // console.log("REQ BODY::", this.req.body);
