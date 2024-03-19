@@ -54,7 +54,7 @@ const COMPONENT = () => {
   const [effectOneCompleted, setEffectOneCompleted] = useState(false);
   const [page, setPage] = useState([]);
   const [dataUi, setDataUi] = useState([]);
-  console.log("PAGE FETCH", page);
+
   //////console.log(1175,apiDataName)
   const [apiViewPages, setApiViewPages] = useState([]);
 
@@ -435,7 +435,7 @@ const COMPONENT = () => {
 
           if (success) {
             setDataTables(data.tables);
-            setDataTableID(data.tables[0].id);
+            setDataTableID(data.tables[0]?.id);
             setDataFields(data.body);
             setApiDataName(data.fields);
             setLoaded(true);

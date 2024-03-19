@@ -35,12 +35,13 @@ import "../css/index.scss";
 import { SiteMap } from "./site-map";
 import Layout_Detail from "./page/layout/layout_detail";
 import FeedBack from "./page/layout_feedback/feedback";
+import { Auth_API } from "../APIs/Auth.api";
 
 function App() {
   const dispatch = useDispatch();
   const __token = localStorage.getItem("_token");
   const [_token, setToken] = useState(__token);
-
+  const [isLogged, setIsLogged] = useState(false);
   const { lang, proxy, auth, pages, socket, functions } = useSelector(
     (state) => state
   );
@@ -92,16 +93,17 @@ function App() {
 
   const expirationDate = functions.getTokenExpirationDate(_token);
   // console.log('Ngày hết hạn của token (hiện tại):', expirationDate);
+  const [isPageNotFound, setIsPageNotFound] = useState(false);
+  const regex = /\/page\/.*/;
+  const url = window.location.pathname;
 
   useEffect(() => {
-    const specialURLs = ["/login", "/signup", "/signout"];
-    const url = window.location.pathname;
     const _token = localStorage.getItem("_token");
+    const specialURLs = ["/login", "/signup", "/signout"];
     const stringifiedUser = localStorage.getItem("user");
     const user = stringifiedUser ? JSON.parse(stringifiedUser) : defaultValue;
 
-    // console.log(user)
-    if (specialURLs.indexOf(url) === -1) {
+    if (specialURLs.indexOf(url) === -1 && !regex.test(url)) {
       if (!_token) {
         window.location = "/login";
       }
@@ -119,10 +121,35 @@ function App() {
     const fetchData = async () => {
       // try {
       const response = await axios.get(proxy() + "/apis/get/ui");
+      const isExpired = await Auth_API.isTokenExpired(proxy(), _token);
+      if (!isExpired) {
+        setIsLogged(true);
+      }
+      const url = window.location.pathname;
+      const page_id = url.split("/")?.[2];
       if (pages && pages.length == 0) {
         const { success, ui } = response.data;
+
+        let page = {};
+
         if (success) {
-          console.log("DISPATCH HERE", response);
+          ui.data.map((i) => {
+            if (i.page_id === page_id) {
+              page = i;
+            } else if (i?.children) {
+              i.children.map((c) => {
+                if (c.page_id === page_id) {
+                  page = c;
+                }
+              });
+            }
+          });
+
+          if (regex.test(url) && !page?.is_public && isExpired) {
+            setIsPageNotFound(true);
+            return;
+          }
+
           dispatch({
             type: "setUIPages",
             payload: { pages: ui.data },
@@ -208,7 +235,6 @@ function App() {
             if (!success) {
               isTokenValid = false;
               localStorage.removeItem("_token");
-
               //  Swal.fire({
               //     title: lang["Notification"],
               //     text: lang["expired"],
@@ -221,7 +247,9 @@ function App() {
               //         window.location = '/signout';
               //     }
               // });
+              return;
             }
+            setIsLogged(true);
           });
       } else {
         window.location = `/signout?ex=${"1"}`;
@@ -262,6 +290,9 @@ function App() {
   //   }
 
   // }, []);
+  if (isPageNotFound) {
+    return <PageNotFound />;
+  }
 
   return (
     <Router>

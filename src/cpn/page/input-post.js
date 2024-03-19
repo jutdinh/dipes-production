@@ -17,6 +17,7 @@ import {
   DataPhone,
   FileImage,
 } from "../inputs";
+import { PageNotFound } from "../navigations";
 
 const COMPONENT = () => {
   const dispatch = useDispatch();
@@ -34,6 +35,7 @@ const COMPONENT = () => {
   const [data, setData] = useState({});
   const [relatedTables, setRelatedTables] = useState([]);
   const [page, setPage] = useState(null);
+  const [isFetching, setIsFetching] = useState(true);
 
   console.log(299, fields);
   const goToHomePage = () => {
@@ -77,6 +79,9 @@ const COMPONENT = () => {
         } else {
           // al.failure("Lỗi", "Không thực hiện được chức năng này")
         }
+      })
+      .finally(() => {
+        setIsFetching(false);
       });
   }, [pages]);
   // console.log(fields)
@@ -196,6 +201,11 @@ const COMPONENT = () => {
   };
 
   console.log(functions.findPropsNameAddByUrl(page, id_str));
+  if (!isFetching) {
+    if (!fields.length || !tables.length) {
+      return <PageNotFound />;
+    }
+  }
 
   return (
     <div class="midde_cont">

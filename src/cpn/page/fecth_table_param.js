@@ -444,7 +444,7 @@ export default () => {
           //console.log(413, res)
           if (success) {
             setDataTables(data.tables);
-            setDataTableID(data.tables[0].id);
+            setDataTableID(data.tables[0]?.id);
             setDataFields(data.body);
             setApiDataName(data.fields);
             setLoaded(true);

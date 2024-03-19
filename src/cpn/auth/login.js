@@ -84,6 +84,7 @@ export default () => {
       method: "post",
       headers: {
         "content-type": "application/json",
+        "Access-Control-Allow-Origin": "*",
       },
       body: JSON.stringify(requestBody),
     })

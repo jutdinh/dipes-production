@@ -19,6 +19,9 @@ import { LoadingIcon } from "../../Icons/loading.icon";
 import { DelayLoading } from "../../Hooks/DelayLoading";
 import { ColumnChart } from "../../Components/Charts/Column/Column.chart";
 import { GenerateRandomCode } from "../../APIs/GenerateRandomCode.api";
+import { Option } from "../../Components/Option";
+import { BarCodeActivation } from "../../Components/BarcodeActivation";
+import { PageNotFound } from "../navigations";
 
 const IS_DISABLED_BUTTON = false;
 
@@ -37,7 +40,21 @@ const RenderComponent = ({
   exportFile_PK,
   submitButton_Custom,
 }) => {
-  console.log("COMPONENT---", component);
+  console.log("COMPONENT---", component, page);
+
+  const params = page.params?.map((item) => ({
+    field_alias: item.field_alias,
+    field_name: item.field_name,
+  }));
+
+  const params_value = window.location.pathname.split("/").slice(3);
+
+  for (let i = 0; i < params?.length; i++) {
+    if (params_value?.[i]) {
+      params[i]["value"] = params_value[i];
+    }
+  }
+  console.log(params);
   const { lang, proxy, auth, functions, pages } = useSelector((state) => state);
 
   // Hàm chính để xác định loại component cần render
@@ -57,7 +74,6 @@ const RenderComponent = ({
       return children?.find((child) => child.id === id);
     }
     const foundChild = hasFlexData(flex) && findChildById(flex?.children, id);
-
     switch (type) {
       case "text":
         return <div style={props.style}>{props.content}</div>;
@@ -160,7 +176,21 @@ const RenderComponent = ({
             </div>
           </>
         );
-
+      case "barcode_activation":
+        return params.length === params_value.length ? (
+          <BarCodeActivation
+            props={props}
+            othersPayload={{
+              select: params.map(({ value, field_alias }) => ({
+                key: field_alias,
+                value,
+              })),
+            }}
+            title_list={params.map((i) => `${i.field_name}: ${i.value}`)}
+          />
+        ) : (
+          <PageNotFound />
+        );
       case "flex":
         // Các logic khác cho flex
         return (
@@ -428,7 +458,7 @@ const RenderTable = (props) => {
   const handleDelete = props.handleDelete;
   const stringifiedUser = localStorage.getItem("user");
   const _user = JSON.parse(stringifiedUser) || {};
-  const dataTable_id = tableProps.source.tables[0].id;
+  const dataTable_id = tableProps.source.tables[0]?.id;
   const dispatch = useDispatch();
   const typeTable = props.type;
   const data = props.apiData;
@@ -683,29 +713,41 @@ const RenderTable = (props) => {
       return;
     }
 
-    let loadingTimeout;
-    loadingTimeout = setTimeout(() => {
-      setLoadingTable(true);
-    }, 350);
-    const headerApi = {
-      Authorization: _token,
-      "start-at": startAt,
-      "data-amount": amount,
-    };
-    fetch(`${proxy()}${url}`, {
-      headers: headerApi,
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        const { success, content, data, count, fields, limit, statistic } = res;
-        setApiData([]);
-        if (data && data.length > 0) {
-          setApiData(data.filter((record) => record != undefined));
-          setSumerize(count);
-        }
-        clearTimeout(loadingTimeout);
-        setLoadingTable(false);
-      });
+    if (url) {
+      let loadingTimeout;
+      loadingTimeout = setTimeout(() => {
+        setLoadingTable(true);
+      }, 350);
+      const headerApi = {
+        Authorization: _token,
+        "start-at": startAt,
+        "data-amount": amount,
+      };
+
+      fetch(`${proxy()}${url}`, {
+        headers: headerApi,
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          const { success, content, data, count, fields, limit, statistic } =
+            res;
+          setApiData([]);
+          if (data && data.length > 0) {
+            setApiData(data.filter((record) => record != undefined));
+            setSumerize(count);
+          }
+          clearTimeout(loadingTimeout);
+          setLoadingTable(false);
+        })
+        .catch(() => {
+          clearTimeout(loadingTimeout);
+          setLoadingTable(false);
+        })
+        .finally(() => {
+          clearTimeout(loadingTimeout);
+          setLoadingTable(false);
+        });
+    }
   };
 
   useEffect(() => {
