@@ -21,6 +21,7 @@ import { ColumnChart } from "../../Components/Charts/Column/Column.chart";
 import { GenerateRandomCode } from "../../APIs/GenerateRandomCode.api";
 import { Option } from "../../Components/Option";
 import { BarCodeActivation } from "../../Components/BarcodeActivation";
+import { PageNotFound } from "../navigations";
 
 const IS_DISABLED_BUTTON = false;
 
@@ -49,9 +50,11 @@ const RenderComponent = ({
   const params_value = window.location.pathname.split("/").slice(3);
 
   for (let i = 0; i < params?.length; i++) {
-    params[i]["value"] = params_value?.[i];
+    if (params_value?.[i]) {
+      params[i]["value"] = params_value[i];
+    }
   }
-
+  console.log(params);
   const { lang, proxy, auth, functions, pages } = useSelector((state) => state);
 
   // Hàm chính để xác định loại component cần render
@@ -174,19 +177,19 @@ const RenderComponent = ({
           </>
         );
       case "barcode_activation":
-        return (
+        return params.length === params_value.length ? (
           <BarCodeActivation
             props={props}
             othersPayload={{
-              select: [
-                {
-                  key: "7MLSX",
-                  value: "RF20243150002",
-                },
-              ],
+              select: params.map(({ value, field_alias }) => ({
+                key: field_alias,
+                value,
+              })),
             }}
             title_list={params.map((i) => `${i.field_name}: ${i.value}`)}
           />
+        ) : (
+          <PageNotFound />
         );
       case "flex":
         // Các logic khác cho flex

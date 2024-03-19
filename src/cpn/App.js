@@ -144,15 +144,7 @@ function App() {
               });
             }
           });
-          console.log(
-            "WTF",
-            regex.test(url),
-            page?.is_public,
-            isExpired,
-            page,
-            page_id,
-            ui.data
-          );
+
           if (regex.test(url) && !page?.is_public && isExpired) {
             setIsPageNotFound(true);
             return;
