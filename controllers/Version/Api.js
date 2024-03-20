@@ -384,7 +384,7 @@ class Api extends Controller {
               "RFID_AMOUNT_CODE_MARK"
             );
 
-            let currentValue = 63_710_065_410_048;
+            let currentValue = 2_293_562_354_761_728;
 
             if (currentValues && currentValues.length > 0) {
               const record = currentValues[0];
@@ -431,6 +431,7 @@ class Api extends Controller {
                   const current = i + currentValue;
                   const value = this.translateBase10toBase36(current);
                   const barcode = this.formatEPCData(pattern, value);
+
                   const record = {
                     [index.fomular_alias]: i + 1,
                     [field.fomular_alias]: barcode,

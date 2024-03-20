@@ -31,7 +31,9 @@ class Controller {
     this.defaultButtons = ["detail", "update", "delete"];
 
     this.NUMBERS = "0 1 2 3 4 5 6 7 8 9".split(" ");
-    this.LETTERS = "A B C D E F G H I J K L M N O P Q R S T U V W".split(" ");
+    this.LETTERS = "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z".split(
+      " "
+    );
     this.BASE = [...this.NUMBERS, ...this.LETTERS];
   }
 
