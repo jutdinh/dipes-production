@@ -128,9 +128,15 @@ export const BarCodeActivation = ({ props, title_list, othersPayload }) => {
           );
       }}
     >
-      <section className="mx-2">
+      <div className="preview p-3">
+        <div
+          class="d-flex align-items-center mt-2"
+          style={{ fontWeight: "bold" }}
+        >
+          {props.name}
+        </div>
         {title_list?.map((title, i) => (
-          <h5 key={i}>{title}</h5>
+          <h5 className="mt-2" key={i}>{title}</h5>
         ))}
 
         <section style={props.style}>
@@ -148,23 +154,19 @@ export const BarCodeActivation = ({ props, title_list, othersPayload }) => {
             primary_key={props?.master.primary_key[0]}
             table_id={props?.master.id}
           />
-          <p>Điều kiện lọc: {props?.criteria.field_name}</p>
-          <section
-            className="d-flex justify-content-between"
-            style={{
-              gap: "20px",
-            }}
-          >
+          <p>
+            Điều kiện lọc:
+            <span style={{ fontWeight: "bold" }}>
+              {props?.criteria.field_name}
+            </span>
+          </p>
+          <div className="condition d-flex flex-wrap">
             {input_list.map(({ label, key, ...props }) => (
-              <section
-                style={{
-                  flex: 1,
-                }}
-                key={key}
-              >
-                <p>{label}</p>
+              <div key={key}>
+                <p className="mt-3 mb-3">{label}</p>
                 <input
-                  className="w-100"
+                  className="mr-5"
+                  style={{ borderRadius: "1px solid" }}
                   onChange={({ target: { value } }) => {
                     if (IsNumber(value) || value === "") {
                       handleChangeInput(key, +value, props);
@@ -172,9 +174,9 @@ export const BarCodeActivation = ({ props, title_list, othersPayload }) => {
                   }}
                   value={data?.[key]?.value || ""}
                 />
-              </section>
+              </div>
             ))}
-          </section>
+          </div>
           <section>
             <button
               type="submit"
@@ -193,7 +195,7 @@ export const BarCodeActivation = ({ props, title_list, othersPayload }) => {
             </button>
           </section>
         </section>
-      </section>
+      </div>
     </form>
   );
 };
