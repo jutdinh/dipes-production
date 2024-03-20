@@ -162,8 +162,21 @@ export const BarCodeActivation = ({ props, title_list, othersPayload }) => {
           </p>
           <div className="condition d-flex flex-wrap">
             {input_list.map(({ label, key, ...props }) => (
-              <div key={key}>
-                <p className="mt-3 mb-3">{label}</p>
+              <div key={key} className="col-md-2 p-0 mr-5">
+                <div className="form-group">
+                  <label className="mt-3 mb-3">{label}</label>
+                  <input
+                  className="form-control"
+                  style={{ borderRadius: "1px solid" }}
+                  onChange={({ target: { value } }) => {
+                    if (IsNumber(value) || value === "") {
+                      handleChangeInput(key, +value, props);
+                    }
+                  }}
+                  value={data?.[key]?.value || ""}
+                />
+                </div>
+                {/* <p className="mt-3 mb-3">{label}</p>
                 <input
                   className="mr-5"
                   style={{ borderRadius: "1px solid" }}
@@ -173,7 +186,7 @@ export const BarCodeActivation = ({ props, title_list, othersPayload }) => {
                     }
                   }}
                   value={data?.[key]?.value || ""}
-                />
+                /> */}
               </div>
             ))}
           </div>
