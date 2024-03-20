@@ -76,7 +76,7 @@ const Component = ({ label, table_id, primary_key, onChange }) => {
       <div class="">
         <form>
           <div class="form-group">
-            <label for="name">{label}</label>
+            <label className="mt-2" for="name">{label}</label>
 
             <AsyncPaginate
               loadOptions={async (search, loadedOptions, { page }) => {

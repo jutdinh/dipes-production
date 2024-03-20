@@ -54,7 +54,6 @@ const RenderComponent = ({
       params[i]["value"] = params_value[i];
     }
   }
-  console.log(params);
   const { lang, proxy, auth, functions, pages } = useSelector((state) => state);
 
   // Hàm chính để xác định loại component cần render
