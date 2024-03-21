@@ -299,7 +299,7 @@ class Mongo {
     });
   };
 
-  update = async (table, criteria, newValue) => {
+  update = async (table, criteria, newValue, increasedData = {}) => {
     await this.init();
     /**
      * @desc Update là phương thức cập nhật một hoặc nhiều bảng ghi với một hoặc nhiều giá trị mới
@@ -312,14 +312,17 @@ class Mongo {
      * @author DS
      *
      **/
-
     const query = criteria;
     const updateResult = await new Promise((resolve, reject) => {
       this.dbo
         .collection(table)
-        .updateMany(query, { $set: { ...newValue } }, (err, result) => {
-          resolve(result);
-        });
+        .updateMany(
+          query,
+          { $set: { ...newValue }, $inc: increasedData },
+          (err, result) => {
+            resolve(result);
+          }
+        );
     });
   };
 
