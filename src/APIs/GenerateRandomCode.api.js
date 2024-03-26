@@ -8,6 +8,8 @@ export const GenerateRandomCode = {
       indexField,
       amount,
       pattern,
+      onOption,
+      prefix,
     },
     proxy,
     _token
@@ -26,6 +28,8 @@ export const GenerateRandomCode = {
         indexField,
         amount,
         pattern,
+        onOption,
+        prefix,
       }),
     });
     return res.json();

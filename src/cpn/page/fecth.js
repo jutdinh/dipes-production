@@ -1453,7 +1453,6 @@ const COMPONENT = () => {
       .then((res) => res.blob())
 
       .then((blob) => {
-        ////////console.log(1300, blob)
         if (exportType === "csv") {
           const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
           const withBom = new Blob([bom, blob], { type: "text/csv" });
@@ -1470,10 +1469,11 @@ const COMPONENT = () => {
         const segments = page.page_title.split("/");
         const lastSegment = segments[segments.length - 1]; //tên
         const result = lastSegment.replace(/-/g, "");
+        const criteriaContent = Object.values(exportBody.criteria)[0]
 
         a.download =
           exportType === "excel"
-            ? `DATA_${result.toUpperCase()}_${datetimeString}.xlsx`
+            ? `DATA_${result.toUpperCase()}_${datetimeString}_${criteriaContent}.xlsx`
             : `DATA_${result.toUpperCase()}_${datetimeString}.csv`;
 
         document.body.appendChild(a);

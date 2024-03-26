@@ -2647,3 +2647,7 @@ select:required:invalid {
     font-weight: bold;
     z-index: 2;
 }
+
+form .form-group .css-b62m3t-container{
+    width: 50%;
+}
