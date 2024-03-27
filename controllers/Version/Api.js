@@ -363,23 +363,24 @@ class Api extends Controller {
         indexField,
         amount,
         pattern,
+        onOption,
+        prefix,
       } = req.body;
-
       const targetTables = await this.#__tables.findAll({ id: table });
       if (targetTables.length > 0) {
         const targetTable = targetTables[0];
-
         const fields = await this.#__fields.findAll({
-          id: { $in: [onField, indexField] },
+          id: { $in: [onField, indexField, onOption] }, //onField_Option
         });
         const targetTableFields = await this.#__fields.findAll({
           table_id: targetTable.id,
         });
-        if (fields.length == 2) {
+        if (fields.length == 3) {
           const index = fields.find((f) => f.id == indexField);
           const field = fields.find((f) => f.id == onField);
-
-          if (index && field) {
+          const option = fields.find((f) => f.id == onOption);
+        
+          if (index && field && option) {
             const currentValues = await Database.selectAll(
               "RFID_AMOUNT_CODE_MARK"
             );
@@ -431,10 +432,12 @@ class Api extends Controller {
                   const current = i + currentValue;
                   const value = this.translateBase10toBase36(current);
                   const barcode = this.formatEPCData(pattern, value);
+                  const getPrefix = this.prefix(prefix, value);
 
                   const record = {
                     [index.fomular_alias]: i + 1,
                     [field.fomular_alias]: barcode,
+                    [option.fomular_alias]: getPrefix + barcode,
                     [foreignField.fomular_alias]: foreign_value,
                     ...primaryRecord,
                   };
