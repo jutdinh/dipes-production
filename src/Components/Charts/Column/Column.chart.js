@@ -17,7 +17,6 @@ const MAX_ITEM_DISPLAY = 15;
 export const ColumnChart = ({ props }) => {
   const [MAX_PAGE, setMAX_PAGE] = useState();
   const [searchParams, setSearchParams] = useSearchParams();
-
   let CURRENT_PAGE = searchParams.get("page") || 1;
   CURRENT_PAGE = CURRENT_PAGE > MAX_PAGE ? MAX_PAGE : CURRENT_PAGE;
 
@@ -54,6 +53,7 @@ export const ColumnChart = ({ props }) => {
         DelayLoading(start_time, () => setIsFetching(STATE_LOADING.SUCCESS));
 
         setMAX_PAGE(Math.ceil(statistics_key.length / MAX_ITEM_DISPLAY));
+
         setValue({
           fields,
           statistics,

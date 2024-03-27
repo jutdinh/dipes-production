@@ -383,18 +383,14 @@ const renderBoolData = (data, field) => {
   const IF_TRUE = field.DEFAULT_TRUE;
   const IF_FALSE = field.DEFAULT_FALSE;
   if (data != undefined) {
-    if (data) {
-      return IF_TRUE ? IF_TRUE : "true";
+    if (data === IF_TRUE) {
+      return "true";
     }
-    return IF_FALSE ? IF_FALSE : "false";
-  } else {
-    return IF_FALSE ? IF_FALSE : "false";
   }
+  return "false";
 };
 
 const renderData = (field, data) => {
-  console.log(field);
-  console.log(data);
   if (data) {
     switch (field.DATATYPE) {
       case "DATE":

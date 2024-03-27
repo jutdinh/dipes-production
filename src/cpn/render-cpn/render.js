@@ -58,7 +58,7 @@ const RenderComponent = ({
 
   // Hàm chính để xác định loại component cần render
   const renderByType = (cpn, props, flex, id) => {
-    console.log("cpn", cpn);
+    console.log("cpn", props);
     const type = cpn?.name;
     const hasFlexData = (flex) => {
       return flex && flex?.props && flex?.props?.style;
@@ -647,7 +647,7 @@ const RenderTable = (props) => {
 
   const rowsPerPage = functions.findRowsPerPage(tableProps);
 
-  const accurateTotalPages = Math.ceil(sumerize / rowsPerPage);
+  const accurateTotalPages = Math.ceil(sumerize / rowsPerPage) || totalPages;
 
   if (totalPages !== accurateTotalPages) {
     setTotalPages(accurateTotalPages);
@@ -657,7 +657,6 @@ const RenderTable = (props) => {
   const indexOfFirst = indexOfLast - rowsPerPage;
 
   const currentData = apiData;
-  console.log("CURRENT DATA:::", currentData);
   const paginate = (pageNumber) => {
     const startAt = (pageNumber - 1) * rowsPerPage;
     if (Object.keys(searchValues).length === 0) {
@@ -691,6 +690,35 @@ const RenderTable = (props) => {
         return null;
       })
       .filter(Boolean);
+  };
+
+  const handleSetAPIData = (data) => {
+    if (props.props.source.calculates.length) {
+      const newData = [...data];
+      props.props.source.calculates.map(({ fomular }) => {
+        const calculation_type = fomular.split("_");
+        calculation_type.map((type) => {
+          const regex = /([A-Z]+)\((\w+)\)/;
+          const t = regex.exec(type)[1];
+          const k = regex.exec(type)[2];
+          console.log("EO~", t, k);
+          switch (t) {
+            case "GROUPBY":
+              // newData = newData.reduce((prev,curr) => {
+
+              // },[])
+              break;
+            default:
+              break;
+          }
+        });
+        console.log("ehhh3", calculation_type);
+      });
+      // console.log("ehhh3", props.props.source, data);
+    } else {
+      console.log("ehhh2");
+    }
+    setApiData(data.filter((record) => record != undefined));
   };
 
   const callApiView = (url, startAt = 0, amount = rowsPerPage) => {
@@ -732,7 +760,7 @@ const RenderTable = (props) => {
             res;
           setApiData([]);
           if (data && data.length > 0) {
-            setApiData(data.filter((record) => record != undefined));
+            handleSetAPIData(data);
             setSumerize(count);
           }
           clearTimeout(loadingTimeout);
@@ -814,7 +842,7 @@ const RenderTable = (props) => {
           const statisticValues = res.statistic;
           ////////////////console.log(74, res)
           if (success) {
-            setApiData(data.filter((record) => record != undefined));
+            handleSetAPIData(data);
             setLoaded(true);
             // setDataStatis(statisticValues);
             // setLoaded(true);
@@ -874,8 +902,9 @@ const RenderTable = (props) => {
             sumerize,
           } = res;
           const statisticValues = res.statistic;
+
           if (success) {
-            setApiData(data.filter((record) => record != undefined));
+            handleSetAPIData(data);
             // setDataStatis(statisticValues);
             // setLoaded(true);
             // if (data.length < 15) {
@@ -1059,32 +1088,6 @@ const RenderTable = (props) => {
                             </td>
                             {fields?.map((header) =>
                               header.DATATYPE === "FILE" ? (
-                                // <td key={header.fomular_alias} className="cell" title={functions.renderData(header, row)}>
-                                //     {
-                                //         functions.isExcelDocumentFormatTableView(functions.renderData(header, row)) ?
-                                //             <img src={"/images/icon/excel.svg"} className="selected-image-list" />
-                                //             :
-                                //             functions.isPdfDocumentFormatTableView(functions.renderData(header, row)) ?
-                                //                 <img src={"/images/icon/pdf.svg"} className="selected-image-list" />
-                                //                 :
-                                //                 functions.isDocDocumentFormatTableView(functions.renderData(header, row)) ?
-                                //                     <img src={"/images/icon/docs.svg"} className="selected-image-list" />
-                                //                     :
-                                //                     functions.isZipDocumentFormatTableView(functions.renderData(header, row)) ?
-                                //                         <img src={"/images/icon/zip.svg"} className="selected-image-list" />
-                                //                         :
-
-                                //                         functions.isOtherDocumentFormatTableView(functions.renderData(header, row)) ?
-                                //                             <img src={"/images/icon/file-unknown.svg"} className="selected-image-list" />
-                                //                             :
-                                //                             functions.renderData(header, row) &&
-                                //                             functions.renderData(header, row).length > 0 &&
-                                //                             functions.renderData(header, row).map((imageUrl, index) => (
-                                //                                 <img key={index} src={proxy() + imageUrl} className="selected-image-list" />
-                                //                             ))
-
-                                //     }
-                                // </td>
                                 <td
                                   key={header.fomular_alias}
                                   className="cell"
@@ -2051,7 +2054,7 @@ const RenderChart = (props) => {
     () => transformDataForChart(apiDataStatis),
     [apiDataStatis]
   );
-
+  console.log("chartData", chartData);
   return (
     <div className="col-md-12 mt-5">
       {paramsSearch && paramsSearch.length > 0 && (

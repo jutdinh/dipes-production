@@ -1243,7 +1243,7 @@ const COMPONENT = () => {
     setCurrentPage(pageNumber);
   };
 
-  const accurateTotalPages = Math.ceil(sumerize / rowsPerPage);
+  const accurateTotalPages = Math.ceil(sumerize / rowsPerPage) || totalPages;
   if (totalPages !== accurateTotalPages) {
     setTotalPages(accurateTotalPages);
   }
@@ -1723,49 +1723,6 @@ const COMPONENT = () => {
         </div>
         {/* List table */}
         <div class="row">
-          {/* modal export excel/csv example */}
-          {/* <div class={`modal `} id="exportExcelEx">
-                        <div class="modal-dialog modal-dialog-center">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title">{lang["export sample data"]}</h4>
-                                    <button type="button" class="close" onClick={handleCloseModal} data-dismiss="modal">&times;</button>
-                                </div>
-                                <div class="modal-body">
-                                    <form>
-                                        <h5 class="mt-4 mb-2">{lang["select export type"]}:</h5>
-                                        <div>
-                                            <label>
-                                                <input
-                                                    type="radio"
-                                                    name="fileType"
-                                                    value="xlsx"
-                                                    checked={selectedFileType === 'xlsx'}
-                                                    onChange={e => setSelectedFileType(e.target.value)}
-                                                />
-                                                <span className="ml-2">Excel</span>
-                                            </label>
-                                            <label className="ml-4">
-                                                <input
-                                                    type="radio"
-                                                    name="fileType"
-                                                    value="csv"
-                                                    checked={selectedFileType === 'csv'}
-                                                    onChange={e => setSelectedFileType(e.target.value)}
-                                                />
-                                                <span className="ml-2">CSV</span>
-                                            </label>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" onClick={exportToCSV} class="btn btn-success">{lang["export"]}</button>
-                                    <button type="button" id="closeModalExportFileSample" onClick={handleCloseModal} class="btn btn-danger" data-dismiss="modal">{lang["btn.close"]}</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div> */}
-          {/* modal export excel/csv */}
           <div class={`modal `} id="exportExcel">
             <div class="modal-dialog modal-dialog-center">
               <div class="modal-content">
