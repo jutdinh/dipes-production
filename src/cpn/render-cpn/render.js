@@ -1635,6 +1635,8 @@ const RenderInlineButtonsForRow = (props) => {
                         table,
                         indexField,
                         onField,
+                        onOption,
+                        prefix,
                       },
                     },
                   } = child;
@@ -1642,8 +1644,10 @@ const RenderInlineButtonsForRow = (props) => {
                   const payload = {
                     amount: +props.row[amount.fomular_alias],
                     pattern,
+                    prefix,
                     indexField: indexField.id,
                     onField: onField.id,
+                    onOption: onOption.id,
                     table: table.id,
                     foreign_table: props.props.source.tables[0].id,
                     foreign_value:
