@@ -384,7 +384,7 @@ const COMPONENT = () => {
             );
             // console.log("Parsed Excel Result:", modifiedData);
           }
-
+          
           if (isValidHeader) {
             setUploadedJson({ data: modifiedData });
             setSumerize(modifiedData.length);
@@ -529,6 +529,7 @@ const COMPONENT = () => {
   }
 
   const importData = async (uploadedJson, bulkUpdate = false) => {
+
     if (!uploadedJson?.data) return;
 
     const BATCH_SIZE = 1000;
@@ -554,7 +555,7 @@ const COMPONENT = () => {
     const startTime = new Date().getTime();
 
     console.log("BULK UPDATE AFTER ::", uploadedJson);
-
+    
     for (let batch of batches) {
       const requestBody = {
         data: batch,
@@ -574,9 +575,13 @@ const COMPONENT = () => {
           body: JSON.stringify(requestBody),
         });
 
+        console.log("day la j", requestBody)
+        
         const jsonResponse = await response.json();
+
+        console.log("dang vuong o day", jsonResponse)
+        
         const { success } = jsonResponse;
-        console.log("jsonResponse", jsonResponse);
         if (!success) {
           console.error(
             "Server did not process batch successfully:",

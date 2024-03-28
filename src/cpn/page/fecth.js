@@ -1469,7 +1469,7 @@ const COMPONENT = () => {
         const segments = page.page_title.split("/");
         const lastSegment = segments[segments.length - 1]; //tên
         const result = lastSegment.replace(/-/g, "");
-        const criteriaContent = Object.values(exportBody.criteria)[0]
+        const criteriaContent = Object.values(exportBody.criteria)
 
         a.download =
           exportType === "excel"
